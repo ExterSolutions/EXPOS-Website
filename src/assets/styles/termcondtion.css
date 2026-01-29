@@ -1,0 +1,12 @@
+.para .paraTitle {
+  text-align: left;
+}
+
+.para p {
+  line-height: 22px;
+}
+
+.para a,
+a:hover {
+  color: #f26724;
+}

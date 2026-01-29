@@ -1,0 +1,208 @@
+body {
+   
+    background-repeat: repeat;
+    background-size: 100%;
+    background-attachment: fixed;
+    /* background-color: #f1f0f5 !important; */
+}
+
+/* Background Colors */
+.primary-background-color {
+    /* background-color: #f1f0f5 !important; */
+   
+    background-repeat: repeat;
+    background-size: 100%;
+    background-attachment: fixed;
+}
+
+.secondary-background-color {
+    background-color: #ffffff !important;
+}
+
+.card-background-color {
+    /* background-color: #efefefa6 !important; */
+    background: rgba(255, 255, 255, 0.105);
+    box-shadow: 0 6px 20px 0 rgba(114, 114, 114, 0.221);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(0.5px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 175, 126, 0.288);
+}
+
+.selected-card-background-color {
+    background: var(--secondary);
+    box-shadow: 0 6px 20px 0 #9f4b0152;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(0.6px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 175, 126, 0.288);
+}
+
+.selected-quantity-btn {
+    background: #fff;
+    border-color: #fff;
+}
+
+/* .selected-card-background-color {
+  background: rgba(255, 255, 255, 0.105);
+  box-shadow: 0px 6px 20px 0 rgba(255, 175, 126, 0.818);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(0.5px);
+  border-radius: 10px;
+  border: 3px solid rgba(255, 175, 126, 0.818);
+} */
+
+.card-secondary-tabs-background-color {
+    background-color: #f5f3ef !important;
+}
+
+.logo-primary-background-color {
+    background-color: #f26724 !important;
+}
+
+.accordian-border-color {
+    border-color: #f26724 !important;
+}
+
+.logo-secondary-background-color {
+    background-color: #f26724 !important;
+}
+
+.logo-light-background-color {
+    background-color: #f26724 !important;
+}
+
+.pizza-card-btn-background-color {
+    background-color: #f26724 !important;
+}
+
+.pizza-card-btn-text-color {
+    color: #ffffff !important;
+}
+
+.pizza-view-selection-btn-background-color {
+    background-color: #f26724 !important;
+}
+
+.pizza-card-btn-text-color {
+    color: #ffffff !important;
+}
+
+.pizza-card-btn-background-color:hover {
+    background-color: #f26724 !important;
+}
+
+.pizza-card-btn-text-color:hover {
+    color: #ffffff !important;
+}
+
+.pizza-card-border-color {
+    border-color: #f26724 !important;
+}
+
+/* Text Colors */
+.primary-text-color {
+    color: #393c43 !important;
+}
+
+.secondary-text-color {
+    color: #ffffff !important;
+}
+
+.card-text-color {
+    color: #393c43 !important;
+}
+
+.selected-card-text-color {
+    color: #ffffff !important;
+}
+
+.page-heading-text-color {
+    color: #f26724 !important;
+}
+
+.logo-primary-text-color {
+    color: var(--primary); 
+}
+
+.logo-secondary-text-color {
+    color: #f29640 !important;
+}
+
+.responsive-card-background-color {
+    /* background-color: #efefefa6 !important; */
+    background: rgba(255, 253, 250, 0.701);
+    box-shadow: 0 -6px 20px 0 rgba(114, 114, 114, 0.304);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(0.7px);
+    border-radius: 10px 10px 0px 0px;
+    border: 2px solid rgba(255, 175, 126, 0.288);
+}
+
+.responsive-card-text-color {
+    color: #393c43 !important;
+}
+
+.form-check-input {
+    border: 1px solid #f26724 !important;
+}
+
+.bgprimaryWhiteColor {
+    /* background-color: #ffffff !important; */
+  
+    background-repeat: repeat;
+    background-size: 100%;
+    background-attachment: fixed;
+}
+
+.card-bg-color {
+    background-color: #111413 !important;
+}
+
+.bgPrimaryBlackColor {
+    background-color: #fbfaff !important;
+}
+
+.BgsecondaryBlackColor {
+    background-color: #f1f0f5 !important;
+}
+
+.BgternaryBlackColor {
+    background-color: #050505 !important;
+}
+
+.bgprimary-orange-color {
+    background-color: #f26724 !important;
+}
+
+.bgsecondary-orange-color {
+    background-color: #e58022 !important;
+}
+
+.primaryBlackColor {
+    color: #ffffff !important;
+}
+
+.secondaryBlackColor {
+    color: #393c43 !important;
+}
+
+.tertiaryBlackColor {
+    color: #393c43;
+}
+
+.primaryWhiteColor {
+    color: #111413 !important;
+}
+
+.secondaryWhiteColor {
+    color: #111413 !important;
+}
+
+.primary-orange-color {
+    color: #f26724 !important;
+}
+
+.secondary-orange-color {
+    color: #e6852b !important;
+}

@@ -1,0 +1,59 @@
+body {
+  background-color: #f1f0f5 !important;
+}
+
+.bgprimaryWhiteColor {
+  background-color: #ffffff !important;
+}
+
+.card-bg-color {
+  background-color: #111413 !important;
+}
+
+.bgPrimaryBlackColor {
+  background-color: #111413 !important;
+}
+
+.BgsecondaryBlackColor {
+  background-color: #393c43 !important;
+}
+
+.BgternaryBlackColor {
+  background-color: #050505 !important;
+}
+
+.bgprimary-orange-color {
+  background-color: #f26724 !important;
+}
+
+.bgsecondary-orange-color {
+  background-color: #f29640 !important;
+}
+
+.primaryBlackColor {
+  color: #111413 !important;
+}
+
+.secondaryBlackColor {
+  color: #393c43 !important;
+}
+
+.tertiaryBlackColor {
+  color: #393c43;
+}
+
+.primaryWhiteColor {
+  color: #ffffff !important;
+}
+
+.secondaryWhiteColor {
+  color: #f1f1f1 !important;
+}
+
+.primary-orange-color {
+  color: #f26724 !important;
+}
+
+.secondary-orange-color {
+  color: #f29640 !important;
+}

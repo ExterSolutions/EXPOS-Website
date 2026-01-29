@@ -1,0 +1,33 @@
+.right-side-internal-div-new {
+  max-width: 550px;
+  overflow-y: hidden;
+  transition: transform 0.1s ease-out;
+}
+
+.right-side-internal-div-new .scrollable-content {
+  overflow-y: auto;
+  max-height: 30vh;
+}
+
+.right-side-internal-div-new.translate {
+  transform: translateY(var(--translate-y));
+}
+
+@media (max-width: 1024px) {
+  .right-side-internal-div-new {
+    max-width: 100%;
+    max-height: 100dvh;
+  }
+}
+
+@media (max-width: 766px) {
+  .mainContainer {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .right-side-internal-div-new {
+    max-width: 100%;
+    max-height: 100dvh;
+  }
+}

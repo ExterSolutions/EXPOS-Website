@@ -1,0 +1,684 @@
+/* navmenu.css - Fixed: Desktop navigation menu with submenus */
+
+/* ===== DESKTOP NAVIGATION MENU ===== */
+.navbar-nav {
+  background-color: #f76c26 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  list-style: none !important;
+  margin: 0 !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+  padding: 1rem 1.5rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: 60px; 
+}
+
+/* Ensure desktop nav is always visible on desktop */
+@media (min-width: 768px) {
+  .navbar-nav {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+.nav-menu-ul {
+  margin-bottom: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.nav-menu-scroll {
+  background: transparent !important;
+  padding: 0 !important;
+  gap: 1.5rem !important;
+  height: auto !important;
+}
+
+.navbar-nav .nav-item {
+  margin: 0 !important;
+  position: relative;
+}
+
+.navbar-nav .nav-item a.nav-link {
+  color: #ffffff !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 400 !important;
+  border: 2px solid transparent !important;
+  transition: all 0.3s ease-in-out !important;
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  justify-content: center !important;
+  position: relative;
+  overflow: hidden;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  margin-top: -3px;
+}
+
+/* Underline animation */
+.navbar-nav .nav-item a.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #f26724;
+  transition: all 0.3s ease-in-out;
+  transform: translateX(-50%);
+}
+
+.navbar-nav .nav-item a.nav-link:hover,
+.navbar-nav .nav-item a.nav-link:focus,
+.navbar-nav .nav-item a.nav-link:active {
+  transform: scale(1.05);
+  font-weight: 600;
+  color: #f26724;
+  outline: none;
+  background: rgba(241, 102, 36, 0.05);
+}
+
+.navbar-nav .nav-item a.nav-link:hover::after,
+.navbar-nav .nav-item a.nav-link:focus::after,
+.navbar-nav .nav-item a.nav-link:active::after {
+  width: 80%;
+}
+
+.navbar-nav .nav-item a.nav-link.active {
+  font-weight: 600;
+  color: #f26724;
+  border: 2px solid #f26724;
+  background: rgba(241, 102, 36, 0.1);
+}
+
+.navbar-nav .nav-item a.nav-link.active::after {
+  width: 80%;
+  background: #f26724;
+}
+
+/* ===== DESKTOP SUBMENU STYLES ===== */
+.navbar-nav .nav-item.has-submenu {
+  position: relative;
+}
+
+/* Desktop Submenu Container */
+.navbar-nav .nav-item.has-submenu .submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 0.75rem 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-15px);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1000;
+  margin-top: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Show submenu on hover */
+.navbar-nav .nav-item.has-submenu:hover .submenu,
+.navbar-nav .nav-item.has-submenu.show-submenu .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Submenu items */
+.navbar-nav .nav-item.has-submenu .submenu li {
+  margin: 0;
+  position: relative;
+}
+
+.navbar-nav .nav-item.has-submenu .submenu li a {
+  color: #333333 !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.9rem;
+  border: none !important;
+  background: transparent !important;
+  justify-content: flex-start;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  position: relative;
+}
+
+/* Submenu item hover effects */
+.navbar-nav .nav-item.has-submenu .submenu li a:hover {
+  background: rgba(241, 102, 36, 0.08) !important;
+  color: #f16623 !important;
+  transform: translateX(5px);
+  padding-left: 1.75rem !important;
+}
+
+.navbar-nav .nav-item.has-submenu .submenu li a.active {
+  background: rgba(241, 102, 36, 0.12) !important;
+  color: #f16623 !important;
+  font-weight: 500;
+  border-left: 3px solid #f16623 !important;
+}
+
+/* Arrow Icon for Submenu */
+.navbar-nav .nav-item.has-submenu > a .submenu-arrow {
+  margin-left: 0.4rem;
+  transition: transform 0.3s ease;
+  opacity: 0.8;
+}
+
+.navbar-nav .nav-item.has-submenu:hover > a .submenu-arrow,
+.navbar-nav .nav-item.has-submenu.show-submenu > a .submenu-arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* Submenu divider */
+.navbar-nav .nav-item.has-submenu .submenu li:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ===== CART LINK STYLES ===== */
+.navbar-nav .nav-item a.nav-link.cart-link {
+  text-decoration: none;
+  background: #f26724;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  border: 2px solid #f26724;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  border-radius: 25px;
+}
+
+.navbar-nav .nav-item a.nav-link.cart-link::after {
+  display: none;
+}
+
+.navbar-nav .nav-item a.nav-link.cart-link:hover {
+  background: #e55b1a;
+  border-color: #e55b1a;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(241, 102, 36, 0.3);
+}
+
+/* ===== MOBILE SIDEBAR STYLES ===== */
+.mobile-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1049;
+  animation: fadeIn 0.3s ease-in-out;
+  backdrop-filter: blur(2px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile Styles */
+@media (max-width: 767.98px) {
+  /* Hide desktop nav on mobile */
+  .navbar-nav:not(.mobile-menu-collapse .navbar-nav) {
+    display: none !important;
+  }
+
+  /* Mobile sidebar */
+  .mobile-menu-collapse {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 80% !important;
+    height: 100vh !important;
+    background: #ffffff !important;
+    z-index: 1050 !important;
+    transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .mobile-menu-collapse.show {
+    left: 0 !important;
+  }
+
+  .mobile-menu-collapse .navbar-nav {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 2rem 1.5rem !important;
+    gap: 1.5rem !important;
+    align-items: stretch !important;
+    height: auto !important;
+    background: transparent !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  .mobile-menu-collapse .nav-menu-ul {
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    height: auto;
+  }
+  
+  .mobile-menu-collapse .nav-item {
+    width: 100%;
+    text-align: left;
+  }
+  
+  .mobile-menu-collapse .nav-item a.nav-link {
+    padding: 1.2rem 0 !important;
+    font-size: 1.2rem !important;
+    border-radius: 0 !important;
+    justify-content: flex-start !important;
+    border: none !important;
+    background: transparent !important;
+    color: #000000 !important;
+    transition: all 0.3s ease !important;
+    position: relative;
+    overflow: visible;
+    text-decoration: none;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+  
+  .mobile-menu-collapse .nav-item a.nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(135deg, #f16623, #e55b1a);
+    transition: height 0.3s ease;
+    transform: translateY(-50%);
+  }
+  
+  .mobile-menu-collapse .nav-item a.nav-link:hover,
+  .mobile-menu-collapse .nav-item a.nav-link:focus {
+    color: #f16623 !important;
+  }
+  
+  .mobile-menu-collapse .nav-item a.nav-link:hover::before,
+  .mobile-menu-collapse .nav-item a.nav-link:focus::before {
+    height: 100%;
+  }
+  
+  .mobile-menu-collapse .nav-item a.nav-link.active {
+    color: #f16623 !important;
+    font-weight: 500;
+    background: rgba(241, 102, 36, 0.1) !important;
+    padding-left: 1.5rem !important;
+    border-left: 4px solid #f16623 !important;
+  }
+  
+  .mobile-menu-collapse .nav-item a.nav-link.active::before {
+    height: 100%;
+    background: #f16623;
+    opacity: 0;
+  }
+  
+  /* Mobile Submenu Styles */
+  .mobile-menu-collapse .nav-item.has-submenu .submenu {
+    display: none;
+    list-style: none;
+    margin: 0.5rem 0 0 1.5rem !important;
+    padding: 0;
+    background: rgba(241, 102, 36, 0.05);
+    border-left: 2px solid rgba(241, 102, 36, 0.2);
+    border-radius: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .mobile-menu-collapse .nav-item.has-submenu.show-submenu .submenu {
+    display: block !important;
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .mobile-menu-collapse .nav-item.has-submenu .submenu li a {
+    padding: 0.8rem 0 !important;
+    font-size: 1rem !important;
+    color: #666666 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .mobile-menu-collapse .nav-item.has-submenu .submenu li a:hover {
+    color: #f16623 !important;
+  }
+
+  .mobile-menu-collapse .nav-item.has-submenu .submenu li a.active {
+    color: #f16623 !important;
+    font-weight: 500;
+  }
+
+  /* Submenu Arrow in Mobile */
+  .mobile-menu-collapse .nav-item.has-submenu > a {
+    position: relative;
+    padding-right: 2rem !important;
+  }
+
+  .mobile-menu-collapse .nav-item.has-submenu > a .submenu-arrow {
+    position: absolute;
+    right: 0;
+    transition: transform 0.3s ease;
+    color: #666;
+  }
+
+  .mobile-menu-collapse .nav-item.has-submenu.show-submenu > a .submenu-arrow {
+    transform: rotate(180deg);
+    color: #f16623;
+  }
+
+  body.mobile-menu-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+  }
+}
+
+/* ===== DESKTOP ONLY STYLES ===== */
+@media (min-width: 768px) {
+  /* Ensure desktop nav is visible */
+  .navbar-nav {
+    display: flex !important;
+    visibility: visible !important;
+  }
+  
+  .mobile-menu-collapse {
+    display: none !important;
+  }
+  
+  .desktop-flex {
+    display: flex !important;
+  }
+}
+
+/* Responsive Adjustments */
+@media (min-width: 1200px) {
+  .navbar-nav .nav-item a.nav-link {
+    padding: 0.5rem 1.9rem !important;
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .navbar-nav .nav-item a.nav-link {
+    padding: 0.5rem 1.2rem !important;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .navbar-nav {
+    padding: 0.8rem 1rem !important;
+    gap: 0.4rem !important;
+  }
+  .navbar-nav .nav-item a.nav-link {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.85rem;
+  }
+}
+
+/* Z-index stacking */
+.customNav, .navbar {
+  z-index: 1030;
+}
+.mobile-menu-backdrop {
+  z-index: 1049;
+}
+.mobile-menu-collapse {
+  z-index: 1050;
+}////
+
+
+import React, { useRef, useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom"; 
+import { LuShoppingCart, LuChevronDown } from "react-icons/lu";
+import "../../assets/styles/new/header/navmenu.css";
+
+const NavMenu = ({
+  dropMenu,
+  handleDrawerToggle,
+  location,
+  isAuthenticated,
+  cart,
+  handleCartBarToggle,
+  hideCart = false,
+  scrolled = false,
+}) => {
+  const menuRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+  const currentLocation = useLocation(); 
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Handle click outside to close drawer
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropMenu &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !event.target.closest(".navbar-toggler")
+      ) {
+        handleDrawerToggle();
+        setOpenSubmenu(null); // Close submenu
+      }
+    };
+    if (dropMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.classList.add("mobile-menu-open");
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.classList.remove("mobile-menu-open");
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.classList.remove("mobile-menu-open");
+    };
+  }, [dropMenu, handleDrawerToggle]);
+
+  // Close drawer on link click (mobile)
+  const handleLinkClick = () => {
+    if (dropMenu) {
+      handleDrawerToggle();
+      setOpenSubmenu(null); // Close submenu when any link is clicked
+    }
+  };
+
+  // Toggle submenu
+  const handleSubmenuToggle = (menuName, event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    if (openSubmenu === menuName) {
+      setOpenSubmenu(null);
+    } else {
+      setOpenSubmenu(menuName);
+    }
+  };
+
+  // Close submenu when clicking outside (desktop hover mode)
+  useEffect(() => {
+    const handleClickOutsideSubmenu = (event) => {
+      if (!isMobile && openSubmenu && !event.target.closest('.has-submenu')) {
+        setOpenSubmenu(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutsideSubmenu);
+    return () => {
+      document.removeEventListener('click', handleClickOutsideSubmenu);
+    };
+  }, [openSubmenu, isMobile]);
+
+  // Dynamic class for links
+  const linkClass = ({ isActive }) =>
+    `nav-link ${scrolled ? "nav-link-scrolled" : ""} ${
+      isActive ? "active" : ""
+    }`;
+
+  // Dynamic class for ul
+  const ulClass = `navbar-nav nav-menu-ul ${
+    scrolled ? "justify-content-center nav-menu-scroll" : "justify-content-center"
+  }`;
+
+  const activeLocation = location || currentLocation;
+
+  // Sample menu data with submenus (5 items as per your data, can adjust to 7)
+  const menuItems = [
+    { 
+      name: "Home", 
+      path: "/", 
+      end: true 
+    },
+    { 
+      name: "Menu", 
+      path: "/menu",
+      submenu: [
+        { name: "Signature Pizza", path: "/signaturepizza" },
+        { name: "Create Your Own", path: "/create-your-own" },
+        { name: "Sides", path: "/sides" },
+        { name: "Dips", path: "/dips" },
+        { name: "Drinks", path: "/drinks" },
+        { name: "Deals", path: "/deals" },
+        { name: "Specials Offer", path: "/special-offer" },
+       
+      ]
+    },
+    { 
+      name: "Stores", 
+      path: "/stores" 
+    },
+    { 
+      name: "About", 
+      path: "/about-us" 
+    },
+    { 
+      name: "Contact", 
+      path: "/contact-us" 
+    },
+    { 
+      name: isAuthenticated ? "My Account" : "Login", 
+      path: isAuthenticated ? "/my-account" : "/login" 
+    }
+  ];
+
+  return (
+    <ul ref={menuRef} className={ulClass}>
+      {menuItems.map((item, index) => (
+        <li 
+          key={index} 
+          className={`nav-item ${item.submenu ? 'has-submenu' : ''} ${
+            openSubmenu === item.name ? 'show-submenu' : ''
+          }`}
+          onMouseLeave={() => !isMobile && setOpenSubmenu(null)} // Close on mouse leave desktop
+        >
+          {item.submenu ? (
+            // Menu item with submenu
+            <>
+              <a
+                className={`nav-link ${scrolled ? "nav-link-scrolled" : ""} ${
+                  activeLocation.pathname.startsWith('/menu') ? "active" : ""
+                }`}
+                href="#"
+                onClick={(e) => handleSubmenuToggle(item.name, e)}
+                onMouseEnter={() => !isMobile && setOpenSubmenu(item.name)}
+                aria-haspopup="true"
+                aria-expanded={openSubmenu === item.name}
+              >
+                {item.name}
+                <LuChevronDown className="submenu-arrow" size={12} />
+              </a>
+              
+              {/* Submenu */}
+              <ul className="submenu">
+                {item.submenu.map((subItem, subIndex) => (
+                  <li key={subIndex}>
+                    <NavLink
+                      className={linkClass}
+                      to={subItem.path}
+                      onClick={handleLinkClick}
+                    >
+                      {subItem.name}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            // Regular menu item
+            <NavLink
+              className={linkClass}
+              to={item.path}
+              onClick={handleLinkClick}
+              end={item.end}
+            >
+              {item.name}
+            </NavLink>
+          )}
+        </li>
+      ))}
+      
+      {/* Cart Link */}
+      {!hideCart && (
+        <li className="nav-item desktop-flex">
+          <Link
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              handleCartBarToggle();
+              if (dropMenu) handleDrawerToggle();
+            }}
+            className={`nav-link cart-link ${
+              scrolled ? "nav-link-scrolled" : ""
+            }`}
+          >
+            <LuShoppingCart size={18} />
+            <span className="nav-price ms-1">
+              ${cart?.grandtotal
+                ? parseFloat(cart.grandtotal).toFixed(2)
+                : (0.0).toFixed(2)}
+            </span>
+          </Link>
+        </li>
+      )}
+    </ul>
+  );
+};
+
+export default NavMenu;

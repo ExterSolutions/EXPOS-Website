@@ -1,0 +1,187 @@
+/* Submenu.css - Basic styles without animations */
+
+/* Main Submenu Container */
+.circle-submenu-container {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36rem; /* Scaled 1.5x from 24rem */
+  background: white;
+  border-radius: 1.5rem; /* Scaled 1.5x from 1rem */
+  box-shadow: 0 37.5px 75px -18px rgba(0, 0, 0, 0.25); /* Scaled shadows 1.5x */
+  border: 1.5px solid #f3f4f6; /* Scaled border 1.5x */
+  overflow: hidden;
+  z-index: 50;
+  padding: 1.5rem; /* Scaled 1.5x from 1rem */
+  margin-top: 0.75rem; /* Scaled 1.5x from 0.5rem */
+}
+
+/* Grid Layout */
+.circle-submenu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem; /* Scaled 1.5x from 1rem */
+  justify-items: center;
+}
+
+/* Individual Menu Item */
+.circle-submenu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Link Styling */
+.circle-submenu-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Circular Button Container */
+.circle-button-container {
+  position: relative;
+  margin-bottom: 0.75rem; /* Scaled 1.5x from 0.5rem */
+}
+
+/* Main Circle */
+.circle-main {
+  position: relative;
+  width: 4.5rem; /* Scaled 1.5x from 3rem */
+  height: 4.5rem; /* Scaled 1.5x from 3rem */
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white; /* Scaled 1.5x from 2px */
+  box-shadow: 0 15px 22.5px -4.5px rgba(0, 0, 0, 0.1), 0 6px 9px -3px rgba(0, 0, 0, 0.05); /* Scaled shadows 1.5x */
+  background: linear-gradient(to bottom right, #ffffff, #f9fafb);
+}
+
+.circle-active {
+  box-shadow: 0 0 0 3px #f97316, 0 0 0 6px white, 0 15px 22.5px -4.5px rgba(0, 0, 0, 0.1); /* Scaled 1.5x */
+}
+
+/* Icon Styling */
+.circle-icon {
+  font-size: 1.6875rem; /* Scaled 1.5x from 1.125rem */
+  color: #4b5563;
+}
+
+.icon-active {
+  color: #ea580c;
+}
+
+.submenu-icon {
+  width: 2.25rem; /* Scaled 1.5x from 1.5rem */
+  height: 2.25rem; /* Scaled 1.5x from 1.5rem */
+}
+
+/* Active Indicator Dot */
+.circle-active-dot {
+  position: absolute;
+  top: -0.375rem; /* Scaled 1.5x from -0.25rem */
+  right: -0.375rem; /* Scaled 1.5x from -0.25rem */
+  width: 0.75rem; /* Scaled 1.5x from 0.5rem */
+  height: 0.75rem; /* Scaled 1.5x from 0.5rem */
+  background-color: #f97316;
+  border-radius: 9999px;
+  border: 3px solid white; /* Scaled 1.5x from 2px */
+}
+
+/* Name Label - Always Shown */
+.submenu-item-name {
+  font-size: 1.125rem; /* Scaled 1.5x from 0.75rem */
+  color: #374151;
+  text-align: center;
+  margin-top: 0.375rem; /* Scaled 1.5x from 0.25rem */
+  font-weight: 500;
+  max-width: 6rem; /* Scaled 1.5x from 4rem */
+  line-height: 1.2;
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+  .circle-submenu-container {
+    width: 42rem; /* Scaled 1.5x from 28rem */
+    padding: 2.25rem; /* Scaled 1.5x from 1.5rem */
+  }
+
+  .circle-submenu-grid {
+    gap: 1.875rem; /* Scaled 1.5x from 1.25rem */
+  }
+
+  .circle-main {
+    width: 5.25rem; /* Scaled 1.5x from 3.5rem */
+    height: 5.25rem; /* Scaled 1.5x from 3.5rem */
+  }
+
+  .circle-icon {
+    font-size: 1.875rem; /* Scaled 1.5x from 1.25rem */
+  }
+
+  .submenu-icon {
+    width: 2.625rem; /* Scaled 1.5x from 1.75rem */
+    height: 2.625rem; /* Scaled 1.5x from 1.75rem */
+  }
+
+  .submenu-item-name {
+    font-size: 1.2rem; /* Scaled 1.5x from 0.8rem */
+  }
+}
+
+@media (max-width: 640px) {
+  .circle-submenu-container {
+    width: 30rem; /* Scaled 1.5x from 20rem */
+  }
+
+  .circle-submenu-grid {
+    gap: 1.125rem; /* Scaled 1.5x from 0.75rem */
+  }
+
+  .circle-main {
+    width: 3.75rem; /* Scaled 1.5x from 2.5rem */
+    height: 3.75rem; /* Scaled 1.5x from 2.5rem */
+  }
+
+  .circle-icon {
+    font-size: 1.5rem; /* Scaled 1.5x from 1rem */
+  }
+
+  .submenu-icon {
+    width: 1.875rem; /* Scaled 1.5x from 1.25rem */
+    height: 1.875rem; /* Scaled 1.5x from 1.25rem */
+  }
+
+  .submenu-item-name {
+    font-size: 1.05rem; /* Scaled 1.5x from 0.7rem */
+  }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .circle-submenu-container {
+    position: static;
+    transform: none;
+    left: auto;
+    width: 100%;
+    margin-top: 1.5rem; /* Scaled 1.5x from 1rem */
+    box-shadow: none;
+    border: 1.5px solid #e5e7eb; /* Scaled 1.5x from 1px */
+    border-radius: 0.75rem; /* Scaled 1.5x from 0.5rem */
+    padding: 1.5rem; /* Scaled 1.5x from 1rem */
+  }
+
+  .circle-submenu-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+    gap: 1.5rem; /* Scaled 1.5x from 1rem */
+  }
+
+  .submenu-item-name {
+    font-size: 1.275rem; /* Scaled 1.5x from 0.85rem */
+  }
+}

@@ -1,0 +1,309 @@
+/* NavButtons Styles (nav-buttons.css) */
+/* Styles for NavButtons.jsx and related components */
+
+/* Base nav container */
+.nav-buttons {
+  background: linear-gradient(135deg, #f16623 0%, #e55b1e 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(241, 102, 35, 0.3);
+  transition: all 0.3s ease;
+}
+
+.nav-buttons.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Desktop navigation list */
+.navbar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem; /* space-x-4 */
+}
+
+@media (min-width: 1024px) {
+  .navbar-nav {
+    gap: 2rem; /* lg:space-x-8 */
+  }
+}
+
+/* Nav item */
+.nav-item {
+  position: relative;
+  list-style: none;
+}
+
+/* Nav link base */
+.nav-link {
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  letter-spacing: 0.025em; /* tracking-wide */
+  padding: 0.5rem 0.5rem; /* px-2 py-2 */
+  border-radius: 0.5rem; /* rounded-lg */
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* space-x-1 */
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+@media (min-width: 1024px) {
+  .nav-link {
+    font-size: 1rem; /* lg:text-base */
+    padding: 0.5rem 1.5rem; /* lg:px-6 */
+  }
+}
+
+/* Active nav link */
+.nav-link.active,
+.nav-link.active:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Hover effects for nav link */
+.nav-link:hover,
+.nav-link.group:hover {
+  transform: scale(1.05);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.group:hover .group-hover\:w-4\/5 {
+  width: 80%;
+}
+
+.nav-link.group:hover .group-hover\:left-1\/10 {
+  left: 10%;
+}
+
+.nav-link.group:hover .group-hover\:translate-x-0 {
+  transform: translateX(0);
+}
+
+/* Underline animation */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px; /* h-0.5 */
+  background-color: white;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.group:hover::after {
+  width: 80%; /* w-4/5 */
+  left: 10%; /* left-1/10 */
+  transform: translateX(0);
+}
+
+/* Order button */
+.orderButton {
+  color: #953c0f;
+  font-weight: bold;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 9999px; /* rounded-full */
+  border: 2px solid #f59e0b; /* border-yellow-200 */
+  background: linear-gradient(to right, white 0%, #ffffff 100%);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+  position: relative;
+  transition: all 0.3s ease;
+  z-index: 1;
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .orderButton {
+    padding: 0.5rem 1.5rem; /* lg:px-6 */
+    font-size: 1rem; /* lg:text-base */
+  }
+}
+
+.orderButton:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-2xl */
+  transform: scale(1.05);
+  background: linear-gradient(to right, white 0%, #fef3c7 100%); /* to-yellow-100 */
+  color: #e55b1e;
+}
+
+.orderButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid #f59e0b;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.orderButton:hover::after,
+.orderButton.group:hover::after {
+  opacity: 1;
+  animation-delay: 0s;
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Cart link */
+.cart-link,
+.navbar-cart {
+  color: #953c0f;
+  font-weight: bold;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 2px solid #f59e0b;
+  background: linear-gradient(to right, white 0%, #ffffff 100%);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.cart-link:hover,
+.navbar-cart:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: scale(1.05);
+  background: linear-gradient(to right, white 0%, #fef3c7 100%);
+  color: #e55b1e;
+}
+
+.cart-link::after,
+.navbar-cart::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid #f59e0b;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cart-link:hover::after,
+.navbar-cart:hover::after,
+.cart-link.group:hover::after,
+.navbar-cart.group:hover::after {
+  opacity: 1;
+}
+
+/* Nav price */
+.nav-price {
+  font-weight: bold;
+}
+
+/* Toggler for mobile */
+.navbar-toggler {
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navbar-toggler:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile menu overlay */
+.nav-buttons .md\:hidden.fixed.inset-0 {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to right, #f16623 0%, #e55b1e 100%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem; /* space-y-6 */
+}
+
+/* Mobile nav links */
+.nav-link.text-white.font-semibold.text-xl {
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem; /* text-xl */
+  letter-spacing: 0.025em;
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.nav-link.text-white.font-semibold.text-xl:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile order button */
+.orderButton.text-white.font-bold.text-lg {
+  color: white;
+  font-weight: bold;
+  font-size: 1.125rem; /* text-lg */
+  padding: 0.5rem 1.5rem; /* py-2 px-6 */
+  border-radius: 9999px;
+  border: 2px solid white;
+  background: transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.orderButton.text-white.font-bold.text-lg:hover {
+  background-color: white;
+  color: #f16623;
+}
+
+/* Submenu positioning (for desktop hover) */
+.nav-item.relative .relative.top-full {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+}
+
+/* Additional styles for compact mode */
+.nav-buttons.compact {
+  padding: 0.25rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .navbar-nav {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-toggler {
+    display: none;
+  }
+}

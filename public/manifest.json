@@ -1,0 +1,25 @@
+{
+    "short_name": "Panjab Pizza",
+    "name": "Panjab Pizza | Authentic Punjabi-Style Pizza in Calgary",
+    "icons": [
+        {
+            "src": "panjab_pizza.png",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "panjab_pizza.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "panjab_pizza.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}

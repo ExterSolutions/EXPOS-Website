@@ -1,0 +1,84 @@
+.contentTitle {
+  font-size: 0.95rem;
+  font-weight: 450;
+}
+.contentText {
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+.headingTitle h4 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.04rem;
+  text-transform: uppercase;
+}
+.productTable .tableHead {
+  font-size: 0.9rem !important;
+  font-weight: 410;
+  color: #606060;
+}
+.productTable .tableData {
+  font-size: 0.85rem;
+}
+.pizzaDetailsTitle {
+  font-weight: 500;
+}
+.productName {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.products {
+  width: 350px;
+  line-height: 1.4rem;
+}
+.qty {
+  width: 170px;
+}
+.amount {
+  width: 150px;
+}
+.productName {
+  font-weight: 550;
+}
+
+.subText {
+  font-size: 0.85rem;
+}
+
+.subTotal,
+.taxPer,
+.taxAmount,
+.deliveryCharge,
+.grandTotal {
+  width: 750px;
+}
+
+.orderSummaryTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.orderSummaryText {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* .contentDiv:not(:first-child) {
+  border-top: 1px solid #606060;
+} */
+
+@media (max-width: 1560px) {
+  .subTotal,
+  .taxPer,
+  .taxAmount,
+  .deliveryCharge,
+  .grandTotal {
+    width: 625px;
+  }
+}
+
+@media (max-width: 400px) {
+  .qty {
+    font-size: 0.85rem;
+  }
+}

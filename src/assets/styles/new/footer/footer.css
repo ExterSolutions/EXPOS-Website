@@ -1,0 +1,327 @@
+/* footer.css - Enhanced Attractive Footer Styles */
+
+/* Main Footer Background - Gradient Dark Theme */
+.main-footer {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%) !important; /* Subtle black gradient */
+  color: #ffffff !important;
+  padding: 4rem 0 2.5rem 0; /* Increased top padding for breathing room */
+  position: relative;
+  overflow: hidden;
+}
+
+.main-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #f26724, transparent); /* Glowing orange top line */
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Container and Row Adjustments */
+.main-footer .container {
+  max-width: 1200px;
+  position: relative;
+  z-index: 1;
+}
+
+.main-footer .row {
+  margin-bottom: 2.5rem;
+}
+
+/* Logo Section - Enhanced */
+.main-footer .logo {
+  margin-bottom: 1.5rem;
+}
+
+.main-footer .footer-logo {
+  filter: brightness(0) invert(1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(242, 103, 36, 0.3); /* Orange glow */
+}
+
+.main-footer .footer-logo:hover {
+  filter: brightness(0) invert(1) sepia(1) hue-rotate(20deg) saturate(3);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 30px rgba(242, 103, 36, 0.6);
+}
+
+/* Description Paragraph */
+.main-footer .footer-description {
+  font-size: 1rem;
+  line-height: 1.7;
+  opacity: 0.9;
+  font-style: italic; /* Subtle italic for elegance */
+}
+
+.main-footer .main {
+  color: #f26724 !important;
+  text-shadow: 0 0 10px rgba(242, 103, 36, 0.5); /* Glowing text */
+}
+
+/* Contact Section */
+.main-footer .contact-section {
+  border-left: 2px solid #f26724; /* Orange accent border */
+  padding-left: 1rem;
+}
+
+.main-footer .contact-item {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+  padding: 0.5rem;
+}
+
+.main-footer .contact-item:hover {
+  opacity: 1;
+  background: rgba(242, 103, 36, 0.1);
+  transform: translateX(5px);
+}
+
+.main-footer .contact-item svg {
+  color: #f26724 !important;
+  transition: all 0.3s ease;
+}
+
+.main-footer .contact-item:hover svg {
+  color: #ffffff !important;
+  transform: scale(1.2);
+}
+
+/* Newsletter Section - New Attractive Addition */
+.main-footer .newsletter-form {
+  margin-top: 1rem;
+}
+
+.main-footer .footer-news-desc {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
+.main-footer .newsletter-input {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-radius: 25px 0 0 25px;
+  padding: 0.75rem 1rem;
+}
+
+.main-footer .newsletter-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.main-footer .newsletter-btn {
+  background: linear-gradient(135deg, #f26724, #e55b1a);
+  border: none;
+  border-radius: 0 25px 25px 0;
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.main-footer .newsletter-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(242, 103, 36, 0.4);
+}
+
+/* Quick/Useful Links Headers */
+.main-footer .footer-link-header {
+  color: #f26724 !important;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.main-footer .footer-link-header::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: #f26724;
+}
+
+/* Link Styles - Enhanced */
+.main-footer .footer-links .footer-link {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-size: 0.95rem;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  display: block;
+  padding: 0.5rem 0;
+  border-radius: 5px;
+  margin: 0.25rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-footer .footer-links .footer-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 2px;
+  background: #f26724;
+  transition: width 0.3s ease;
+  transform: translateY(-50%);
+}
+
+.main-footer .footer-links .footer-link:hover {
+  opacity: 1;
+  color: #f26724 !important;
+  padding-left: 1rem;
+  transform: translateX(5px);
+}
+
+.main-footer .footer-links .footer-link:hover::before {
+  width: 100%;
+}
+
+/* Copyright Section - Enhanced */
+.main-footer .copy-right {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 2.5rem;
+  text-align: center;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.main-footer .footer-copy-text {
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.main-footer .footer-copy-link {
+  color: #f26724 !important;
+  font-weight: 700;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.main-footer .footer-copy-link:hover {
+  color: #ffffff !important;
+}
+
+/* Social Icons - Enhanced with Animation */
+.main-footer .social-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.main-footer .social-nav li {
+  display: inline-block;
+}
+
+.main-footer .social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(242, 103, 36, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #ffffff !important;
+  font-size: 1.2rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0.8;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-footer .social-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.main-footer .social-link:hover {
+  background: linear-gradient(135deg, #f26724, #e55b1a) !important;
+  opacity: 1;
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 10px 25px rgba(242, 103, 36, 0.4);
+}
+
+.main-footer .social-link:hover::before {
+  left: 100%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .main-footer {
+    padding: 3rem 0 2rem 0;
+  }
+
+  .main-footer .sm-center {
+    text-align: center !important;
+  }
+
+  .main-footer .contact-section {
+    border-left: none;
+    padding-left: 0;
+    border-top: 2px solid #f26724;
+    padding-top: 1rem;
+  }
+
+  .main-footer .contact-item {
+    justify-content: center !important;
+  }
+
+  .main-footer .newsletter-form .input-group {
+    flex-direction: column;
+  }
+
+  .main-footer .newsletter-input {
+    border-radius: 25px;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-footer .newsletter-btn {
+    border-radius: 25px;
+    width: 100%;
+  }
+
+  .main-footer .social-nav {
+    gap: 1rem;
+  }
+
+  .main-footer .social-link {
+    width: 45px;
+    height: 45px;
+    font-size: 1rem;
+  }
+
+  .main-footer .col-md-4 {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Dark Mode Compatibility */
+@media (prefers-color-scheme: dark) {
+  .main-footer {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+  }
+}
