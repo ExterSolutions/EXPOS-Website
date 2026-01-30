@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import '../../../assets/styles/new/header/search-dropdown.css';
 import '../../../assets/styles/ultimateheader.css';
 import { GlobalContext } from '../../../context/GlobalContext';
-import DeliveryPickupModalPopup from '../DeliveryPickupModalPopup';
+// import DeliveryPickupModalPopup from '../DeliveryPickupModalPopup';
 import SearchDropdown from './SearchDropdown';
 
 // Import custom hooks
@@ -352,13 +352,13 @@ const Header = () => {
                     </div>
                 </div>
             </nav>
-
+{/* 
             {showStorePopup && (
                 <DeliveryPickupModalPopup
                     show={showStorePopup}
                     setShow={setShowStorePopup}
                 />
-            )}
+            )} */}
         </header>
     );
 };
