@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import {GlobalContext} from "../../../context/GlobalContext";
+import DataTableComponent from "react-data-table-component";
+const DataTable = DataTableComponent.default || DataTableComponent;
+import { GlobalContext } from "../../../context/GlobalContext";
 import { getOrderList } from "../../../services";
 import ViewOrder from "./ViewOrder";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
@@ -16,9 +17,9 @@ function MyOrders({ reset }) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [totalRows, setTotalRows] = useState(0);
-    const [fromDate, setFromDate] = useState(null);
-    const [toDate, setToDate] = useState(null);
-    const [transactionId, setTransactionId] = useState(null);
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [transactionId, setTransactionId] = useState("");
     const [perPage, setPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState();
     const [viewOrder, setViewOrder] = useState(false);
@@ -28,33 +29,29 @@ function MyOrders({ reset }) {
     const columns = [
         {
             name: "Order Code",
-            selector: (row) => {
-                return <span>{row?.orderCode}</span>;
-            },
+            selector: (row) => row?.orderCode,
+            sortable: true,
         },
         {
             name: "Order Date",
-            selector: (row) => {
-                return <span>{row?.created_at}</span>;
-            },
+            selector: (row) => row?.created_at,
+            sortable: true,
         },
         {
             name: "Order Status",
-            selector: (row) => {
-                return <span>{row?.orderStatus}</span>;
-            },
+            selector: (row) => row?.orderStatus,
+            sortable: true,
         },
         {
             name: "GrandTotal",
-            selector: (row) => {
-                return <span>$ {row?.grandTotal}</span>;
-            },
+            selector: (row) => row?.grandTotal,
+            sortable: true,
+            cell: (row) => <span>$ {row?.grandTotal}</span>,
         },
         {
             name: "Transaction Id",
-            selector: (row) => {
-                return <span>{row?.txnId}</span>;
-            },
+            selector: (row) => row?.txnId,
+            sortable: true,
         },
         {
             name: "Actions",
