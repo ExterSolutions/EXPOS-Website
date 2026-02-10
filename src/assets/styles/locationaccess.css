@@ -1,0 +1,71 @@
+.block-inner {
+  padding: 20px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.locationAccess.card:hover {
+  transform: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.block-inner::before {
+  content: "";
+  background-image: url("../images/location-access.jpg");
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: 0;
+  background-position: top right;
+}
+
+.viewMenuBtn {
+  --borderWidth: 4px;
+  --borderRadius: 25px;
+  background: #f26724; /* Semi-transparent white */
+  color: #fff;
+  font-weight: 400;
+  font-size: 14px;
+  position: relative;
+  padding: 9px 14px;
+  z-index: 3;
+  border-radius: var(--borderRadius);
+  box-shadow: 14px 8px 20px 5px rgba(40, 23, 0, 0.221); /* Glassmorphism shadow */
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+}
+
+.viewMenuBtn:hover,
+.viewMenuBtn:active,
+.viewMenuBtn:focus {
+  color: #fff;
+  transform: translateY(-3.5px);
+  background: #f26724; /* Semi-transparent white */
+}
+
+/* Media query for tablet (max-width: 768px) and smaller screens */
+@media (max-width: 768px) {
+  .block-inner::before {
+    background-image: none; /* Remove the background image */
+  }
+}
+
+.locationAccessModal .btn1,
+.block-inner .btn1 {
+  color: #fff;
+}
+
+.getLatLong {
+  flex-wrap: wrap;
+}
+
+.nav-tabs {
+  border: none !important;
+}

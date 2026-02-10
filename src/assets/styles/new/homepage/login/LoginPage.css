@@ -1,0 +1,90 @@
+.login-container {
+    min-height: calc(100vh - 200px); /* Adjusted for header/footer */
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+
+    /* padding: 20px; */
+    box-sizing: border-box;
+}
+
+.login-card {
+    background: white;
+    border-radius: 16px;
+    /* REMOVED: box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
+    width: 100%;
+    max-width: 1200px; /* Increased from 400px for more width */
+    padding: 40px 30px;
+    animation: slideUp 0.5s ease-out;
+    /* Optional: Add a subtle border instead */
+   
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.login-footer p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.login-footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .login-card {
+        padding: 30px 20px;
+        margin: 10px;
+        max-width: 90%; /* Ensures it doesn't overflow on mobile */
+    }
+    
+    .login-header h2 {
+        font-size: 24px;
+    }
+}
+
+/* .nav-margin {
+    height: 80px; 
+} */

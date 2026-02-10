@@ -1,0 +1,274 @@
+#location .locatinaddress {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 19px !important;
+}
+
+#location .storelocation {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 23px;
+}
+#location .cities {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 23px;
+}
+
+/* Ensure consistent styling */
+.store-list-container {
+  background-color: #f8f9fa !important; /* Light gray */
+}
+
+.map {
+  border: 1px solid #dee2e6;
+}
+
+/* If StoreCard needs adjustments for vertical stack */
+.store-card {
+  /* Assuming class in StoreCard */
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+/* Fix for footer visibility */
+.page-container {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* Ensure footer stays at bottom */
+footer {
+  flex-shrink: 0;
+}
+
+/* Additional styling for better layout */
+#location {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.new-block {
+  flex: 1;
+}
+
+/* Make sure map container has proper height */
+.map {
+  height: 500px;
+  width: 100%;
+}
+
+.store-list-container {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.store-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.store-list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.store-list-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.store-list-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Global for section */
+.primary-background-color {
+  background-color: #fff; /* Adjust to your theme */
+}
+
+.primary-text-color {
+  color: #f97316; /* Orange for title, matching about page */
+}
+
+.mainconatiner {
+  max-height: 450px;
+  overflow-y: scroll; /* Keeps content scrollable */
+  scrollbar-width: none; /* Firefox */
+}
+
+.mainconatiner::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.store-list-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+  padding: 0 0.75rem;
+}
+
+#location .citycontainer {
+  cursor: default;
+  background-color: transparent;
+}
+
+#location .addresscontainer {
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+  background-color: #f26724;
+}
+
+#location .addresscontainer.active {
+  transform: scale(1.05);
+  background-color: #f26724;
+}
+
+#location .addresscontainer:hover {
+  transform: scale(1.05);
+  background-color: #f26724;
+}
+
+#location .store-location,
+.store-locator {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.custom-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card-body {
+  padding: 10px;
+}
+
+.custom-card-content {
+  display: flex;
+  align-items: flex-start;
+}
+
+.custom-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 16px;
+}
+
+.storeCardtitle {
+  font-size: 1.1rem;
+  font-weight: 550;
+}
+.storeCardcity {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.storeCardaddress {
+  font-size: 0.8rem;
+}
+
+.storeKM {
+  font-size: 0.95rem;
+  font-weight: 550;
+}
+.isNearest {
+  font-size: 0.78rem;
+  font-weight: 550;
+  padding: 5px 10px;
+  user-select: none;
+}
+
+.card.inactive-card {
+  background: #ffffffbe;
+}
+
+.card.active-card {
+  border: 4px solid #f26724; /* Blue border for active card */
+  background: #ffe1c395;
+}
+
+/* Hover effect on card */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Active state for card */
+.card.active-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+/* Inactive state for card */
+.card.inactive-card {
+  box-shadow: none;
+}
+
+/* Hover effect */
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transition for map iframe */
+iframe {
+  transition: all 0.5s ease-in-out;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--primary);
+  border-radius: 5px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.search-container input {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  margin-right: 5px;
+  background: transparent;
+}
+
+.startOrderBtn {
+  color: #fff;
+  background-color: #f26724;
+  padding: 7px 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.startOrderBtn:hover,
+.startOrderBtn:active {
+  color: #fff !important;
+  background-color: #f26724 !important;
+  border: 1px solid #f26724 !important;
+  transform: scale(1.05);
+}
+
+.selectedStartOrderBtn {
+  color: #fff;
+  background-color: #048500;
+  padding: 7px 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.selectedStartOrderBtn:hover,
+.selectedStartOrderBtn:active {
+  color: #fff !important;
+  background-color: #048500 !important;
+  border: 1px solid #048500 !important;
+  transform: scale(1.05);
+}

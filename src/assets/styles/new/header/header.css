@@ -1,0 +1,145 @@
+/* TopBanner.css */
+.top-banner {
+  background-color: #fc7a00; /* Light orange bg */
+  color: #000000; /* Black text */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  transition: all 0.3s ease;
+  height: 40px; /* Fixed height for single row */
+}
+
+.top-banner.scrolled {
+  background-color: #f97316;
+  color: #f11a1a;
+}
+
+.top-banner.hidden {
+  transform: translateY(-100%);
+  height: 0;
+  overflow: hidden;
+}
+
+.top-banner-content {
+  max-width: 1280px; /* max-w-7xl */
+  margin: 0 auto;
+  padding: 0.25rem 0.5rem; /* py-1 px-2 */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .top-banner-content {
+    padding-left: 1rem;
+    padding-right: 1rem; /* sm:px-4 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .top-banner-content {
+    padding-left: 3rem;
+    padding-right: 3rem; /* lg:px-12 */
+  }
+}
+
+/* Mobile: Centered Phone (flex sm:hidden) */
+.top-banner-mobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.75rem; /* text-xs */
+  width: 100%;
+}
+
+.top-banner-phone-link {
+  font-weight: bold;
+  
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+.top-banner-phone-link:hover {
+  text-decoration: underline;
+}
+
+.top-banner-icon {
+  font-size: 0.75rem; /* text-xs */
+   color: #000000; /* Black text */
+}
+
+/* Desktop: Message Left, Phone Right (hidden sm:flex) */
+.top-banner-desktop {
+  display: none;
+   color: #000000;
+  
+}
+
+@media (min-width: 640px) {
+  .top-banner-desktop {
+    display: flex;
+     color: #000000;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .top-banner-mobile {
+    display: none;
+    color: #000000;
+    
+  }
+}
+
+.top-banner-message {
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 600; /* font-semibold */
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* gap-1 */
+  flex: 1; /* flex-1 to take space */
+}
+
+@media (min-width: 640px) {
+  .top-banner-message {
+    font-size: 0.875rem; /* sm:text-sm */
+  }
+
+  .top-banner-message .top-banner-icon,
+  .top-banner-phone .top-banner-icon {
+    font-size: 0.875rem; /* sm:text-sm */
+     color: #000000;
+    
+  }
+}
+
+.top-banner-phone {
+  font-size: 0.75rem; /* text-xs */
+   color: #000000;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* gap-1 */
+  text-decoration: none;
+  margin-left: 1rem; /* ml-4 */
+  transition: text-decoration 0.2s;
+}
+
+.top-banner-phone:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 640px) {
+  .top-banner-phone {
+    font-size: 0.875rem; /* sm:text-sm */
+  }
+}

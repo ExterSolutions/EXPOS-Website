@@ -1,0 +1,100 @@
+/* General Styles */
+.tabs-container {
+  overflow: hidden;
+  white-space: nowrap;
+  margin-bottom: 10px; /* Added to create space below the menu */
+}
+
+.tabs-list {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  flex-wrap: nowrap;
+  list-style: none;
+  margin: 24px 0 0 0; /* adds 20px space above (top) */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #ebe4df;
+  align-items: center;   /* vertically align items */
+}
+
+.tabs-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tabs-list::-webkit-scrollbar-thumb {
+  background-color: #e2e2e2;
+  border-radius: 10px;
+}
+
+.tab-item {
+  flex-grow: 1;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.tab-button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000000;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.3s ease-in-out;
+}
+
+.tab-button:hover,
+.tab-button.active {
+  background-color: #fb6833;
+}
+
+@media (max-width: 992px) {
+  .tabs-list {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs-list:active {
+    cursor: grabbing;
+  }
+
+  .tab-item {
+    flex-shrink: 0;
+  }
+
+  .tabs-container {
+    /* padding: 10px 15px; */
+  }
+}
+
+/* Mobile Only */
+@media (max-width: 576px) {
+  .tab-button {
+    font-size: 12px;
+    padding: 12px 15px;
+  }
+
+  .tab-item {
+    /* margin-right: 8px; */
+  }
+
+  .tabs-list {
+    /* gap: 5px; */
+  }
+}
+
+/* JavaScript-based Draggable Tabs (Optional for added UX) */
+.tabs-list {
+  cursor: grab;
+}
+
+.tabs-list:active {
+  cursor: grabbing;
+}

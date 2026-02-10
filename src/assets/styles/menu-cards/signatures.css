@@ -1,0 +1,454 @@
+/* Special Menu Card Section Specific Styles */
+#signaturemenucard .m-card .grid-top-container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Remove card-specific styling */
+#signaturemenucard .m-card a {
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+}
+
+#signaturemenucard .m-card a:hover {
+  transform: scale(1.02);
+}
+
+#signaturemenucard .m-card .grid-card-placeholder {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#signaturemenucard .m-card img {
+  width: 90%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+#signaturemenucard .flat-layout {
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+#signaturemenucard .flat-top-container {
+  position: relative;
+}
+
+#signaturemenucard .flat-top-container .bestseller-placeholder {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  backface-visibility: hidden;
+}
+
+#signaturemenucard .grid-card-outer .top-pizza-toggle.panjabi-tag {
+  display: flex;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  background: #ff9933;
+  font-size: 12px;
+  z-index: 2;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+#signaturemenucard .sideType {
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  background: #ff9933;
+  font-size: 12px;
+  z-index: 2;
+  color: #fff;
+}
+
+#signaturemenucard .grid-card-placeholder .tag_list span:first-child {
+  margin-right: 0px;
+}
+
+#signaturemenucard .grid-card-placeholder .tag_list span {
+  color: #ffffff;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+#signaturemenucard .flat-detail.panjabi-detail {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  background-color: #ffffff;
+}
+
+#signaturemenucard .inner-div {
+  width: 100%;
+  flex: 1;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+/* BUTTON FUNCTIONALITY CHANGES ONLY */
+
+#signaturemenucard .btn-add-to-cart.signaturemenu-button {
+  background-color: #e5651f;
+  color: #ffffff;
+}
+
+#signaturemenucard .btn-add-to-cart.signaturemenu-button-customize {
+  background-color: transparent;
+  color: #e5651f;
+}
+
+#signaturemenucard .btn-add-to-cart.signaturemenu-button,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button-customize {
+  width: 95%;
+  text-align: center;
+  border-radius: 8rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #e77e16;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  margin: 15px 5px;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+/* Remove all underlines and focus effects */
+#signaturemenucard .btn-add-to-cart.signaturemenu-button,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button:hover,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button:focus,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button:active,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button-customize,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button-customize:hover,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button-customize:focus,
+#signaturemenucard .btn-add-to-cart.signaturemenu-button-customize:active {
+  text-decoration: none !important;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Make grid-card-right take full width and center content */
+#signaturemenucard .grid-card-detail .grid-card-right {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+/* Remove left grid card for drinks to center button */
+#signaturemenucard .grid-card-detail .grid-card-left {
+  display: none;
+}
+
+#signaturemenucard .grid-card-detail .grid-card-left {
+  width: 50%;
+  max-width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+#signaturemenucard .grid-card-name .grid-card-left {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+#signaturemenucard .grid-card-name h5 {
+  margin: 0px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#signaturemenucard .panjabi-title {
+  color: #ff9933;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none !important;
+  font-size: 0.9rem;
+}
+
+#signaturemenucard .panjabi-subtitle {
+  color: #e16112;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+#signaturemenucard .panjabi-price {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  display: block;
+  text-decoration: none !important;
+}
+
+#signaturemenucard .panjabi-select {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ff9933;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+  margin: 0 auto;
+  display: block;
+}
+
+#signaturemenucard .qtySelect {
+  width: max-content;
+  padding-right: 2.2rem;
+}
+
+#signaturemenucard .panjabi-select option {
+  background-color: #fafafa;
+  color: #ff8000;
+}
+
+#signaturemenucard .grid-card-detail .pizzaTitle {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#signaturemenucard .grid-card-detail .pizzaTitleDiv {
+  position: relative;
+  height: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+#signaturemenucard .grid-card-detail .pizzaSubTitleDiv {
+  position: relative;
+  height: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#signaturemenucard .grid-card-detail .pizzaSubTitle {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#signaturemenucard .pizzaSubTitle p {
+  margin: 2px 0px;
+  color: #171717;
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none !important;
+}
+
+#signaturemenucard .pizzaTitle h5 {
+  margin: 0 auto;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  word-break: break-word;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  /* Multiline ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* show exactly 2 lines */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 3rem;
+}
+
+#signaturemenucard .grid-card-name p {
+  margin: 2px 0px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#signaturemenucard .subtitle {
+  margin: 5px 0px;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 500;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#signaturemenucard .panjabi-count {
+  color: #000000;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 10px;
+}
+
+#signaturemenucard #grid_count {
+  margin: 0px 9px;
+}
+
+#signaturemenucard .pizzaPriceSelect,
+#signaturemenucard .pizzaPriceSelect option {
+  font-weight: 600;
+}
+
+/* Responsive styles for special menu card section */
+@media (max-width: 450px) {
+  #signaturemenucard #grid_count {
+    margin: 0px 3px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  #signaturemenucard .btn-add-to-cart.signaturemenu-button,
+  #signaturemenucard .btn-add-to-cart.signaturemenu-button-customize {
+    width: 100%;
+    margin: 4px 0px;
+    font-size: 0.75rem !important;
+    padding: 0.3rem 1rem;
+  }
+
+  #signaturemenucard .button-div {
+    margin-top: 5px;
+  }
+
+  #signaturemenucard .panjabi-select {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  #signaturemenucard .qtySelect {
+    width: max-content;
+    padding-right: 1.8rem;
+  }
+
+  #signaturemenucard .panjabi-count {
+    font-size: 12px;
+    margin: 0 5px;
+  }
+
+  #signaturemenucard .panjabi-price {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 1024px) {
+  #signaturemenucard .btn-add-to-cart.signaturemenu-button,
+  #signaturemenucard .btn-add-to-cart.signaturemenu-button-customize {
+    font-size: 0.61rem;
+  }
+
+  #signaturemenucard .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  #signaturemenucard .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  #signaturemenucard .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  #signaturemenucard .btn-add-to-cart.signaturemenu-button,
+  #signaturemenucard .btn-add-to-cart.signaturemenu-button-customize {
+    width: 100%;
+    margin: 4px 0px;
+    font-size: 0.8rem;
+  }
+
+  #signaturemenucard .button-div {
+    margin-top: 5px;
+  }
+}
+
+/* Ensure no text decoration on all elements within special menu card */
+#signaturemenucard a,
+#signaturemenucard button,
+#signaturemenucard span,
+#signaturemenucard h5,
+#signaturemenucard p {
+  text-decoration: none !important;
+}
+
+#signaturemenucard a:hover,
+#signaturemenucard a:focus,
+#signaturemenucard a:active {
+  text-decoration: none !important;
+}
+
+/* Additional responsive grid for the special menu card */
+#signaturemenucard .row.g-3 {
+  margin-left: -6px;
+  margin-right: -6px;
+}
+
+#signaturemenucard .row.g-3 > [class*="col-"] {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+/* Card hover effects specific to special menu */
+#signaturemenucard .m-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#signaturemenucard .m-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+/* bottom space */
+#signaturemenucard .signature-grid {
+    margin-bottom: 2rem !important;
+    padding-bottom: 1rem; /* optional */
+}

@@ -1,0 +1,438 @@
+
+
+/* Special Menu Card Section Specific Styles */
+#specialmenucard .m-card .grid-top-container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Remove card-specific styling */
+#specialmenucard .m-card a {
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+}
+
+#specialmenucard .m-card a:hover {
+  transform: scale(1.02);
+}
+
+#specialmenucard .m-card .grid-card-placeholder {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#specialmenucard .m-card img {
+  width: 90%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+#specialmenucard .flat-layout {
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+#specialmenucard .flat-top-container {
+  position: relative;
+}
+
+#specialmenucard .flat-top-container .bestseller-placeholder {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  backface-visibility: hidden;
+}
+
+#specialmenucard .grid-card-outer .top-pizza-toggle.panjabi-tag {
+  display: flex;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  background: #ff9933;
+  font-size: 12px;
+  z-index: 2;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+#specialmenucard .sideType {
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  background: #ff9933;
+  font-size: 12px;
+  z-index: 2;
+  color: #fff;
+}
+
+#specialmenucard .grid-card-placeholder .tag_list span:first-child {
+  margin-right: 0px;
+}
+
+#specialmenucard .grid-card-placeholder .tag_list span {
+  color: #ffffff;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+#specialmenucard .flat-detail.panjabi-detail {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  background-color: #ffffff;
+}
+
+#specialmenucard .inner-div {
+  width: 100%;
+  flex: 1;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+/* BUTTON FUNCTIONALITY CHANGES ONLY */
+#specialmenucard .btn-add-to-cart.specialdealmenu-button {
+  width: 100%;
+  background-color: #e5651f;
+  text-align: center;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #ffffff;
+  padding: 0.6rem;
+  border: 2px solid #e77e16;
+  text-transform: uppercase;
+  transition: none;
+  margin: 15px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+/* Remove all underlines and focus effects */
+#specialmenucard .btn-add-to-cart.specialdealmenu-button,
+#specialmenucard .btn-add-to-cart.specialdealmenu-button:hover,
+#specialmenucard .btn-add-to-cart.specialdealmenu-button:focus,
+#specialmenucard .btn-add-to-cart.specialdealmenu-button:active {
+  text-decoration: none !important;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Center the button container */
+#specialmenucard .btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Make grid-card-right take full width and center content */
+#specialmenucard .grid-card-detail .grid-card-right {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+/* Remove left grid card for drinks to center button */
+#specialmenucard .grid-card-detail .grid-card-left {
+  display: none;
+}
+
+#specialmenucard .grid-card-detail .grid-card-left {
+  width: 50%;
+  max-width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+#specialmenucard .grid-card-name .grid-card-left {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+#specialmenucard .grid-card-name h5 {
+  margin: 0px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#specialmenucard .panjabi-title {
+  color: #ff9933;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+#specialmenucard .panjabi-subtitle {
+  color: #e16112;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+#specialmenucard .panjabi-price {
+  color: #f26724;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  display: block;
+  text-decoration: none !important;
+}
+
+#specialmenucard .panjabi-select {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ff9933;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+  margin: 0 auto;
+  display: block;
+}
+
+#specialmenucard .panjabi-select option {
+  background-color: #fafafa;
+  color: #ff8000;
+}
+
+#specialmenucard .grid-card-detail .pizzaTitle {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#specialmenucard .grid-card-detail .pizzaTitleDiv {
+  position: relative;
+  height: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+#specialmenucard .grid-card-detail .pizzaSubTitleDiv {
+  position: relative;
+  height: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#specialmenucard .grid-card-detail .pizzaSubTitle {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#specialmenucard .pizzaSubTitle p {
+  margin: 2px 0px;
+  color: #171717;
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none !important;
+}
+
+#specialmenucard .pizzaTitle h5 {
+  margin: 0 auto;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  word-break: break-word;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  /* Multiline ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* show exactly 2 lines */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 3rem;
+}
+
+#specialmenucard .grid-card-name p {
+  margin: 2px 0px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#specialmenucard .subtitle {
+  margin: 5px 0px;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 500;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#specialmenucard .specialdealmenu-button:not(.view-btn-disabled) {
+  max-width: 90%;
+  background-color: #f26724;
+  color: #ffffff;
+  border-radius: 8rem;
+  padding: 0.5rem 2.8rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+#specialmenucard .panjabi-count {
+  color: #000000;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 10px;
+}
+
+#specialmenucard #grid_count {
+  margin: 0px 9px;
+}
+
+#specialmenucard .pizzaPriceSelect,
+#specialmenucard .pizzaPriceSelect option {
+  font-weight: 600;
+}
+
+/* Responsive styles for special menu card section */
+@media (max-width: 450px) {
+  #specialmenucard #grid_count {
+    margin: 0px 3px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  #specialmenucard .btn-add-to-cart.specialdealmenu-button {
+    width: 100%;
+    /* Keep same width */
+  }
+
+  #specialmenucard .specialdealmenu-button:not(.view-btn-disabled) {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.4rem;
+  }
+
+  #specialmenucard .panjabi-select {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  #specialmenucard .panjabi-count {
+    font-size: 12px;
+    margin: 0 5px;
+  }
+
+  #specialmenucard .panjabi-price {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 1024px) {
+  #specialmenucard .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  #specialmenucard .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  #specialmenucard .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Ensure no text decoration on all elements within special menu card */
+#specialmenucard a,
+#specialmenucard button,
+#specialmenucard span,
+#specialmenucard h5,
+#specialmenucard p {
+  text-decoration: none !important;
+}
+
+#specialmenucard a:hover,
+#specialmenucard a:focus,
+#specialmenucard a:active {
+  text-decoration: none !important;
+}
+
+/* Additional responsive grid for the special menu card */
+#specialmenucard .row.g-3 {
+  margin-left: -6px;
+  margin-right: -6px;
+}
+
+#specialmenucard .row.g-3 > [class*="col-"] {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+/* Card hover effects specific to special menu */
+#specialmenucard .m-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#specialmenucard .m-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+/* bottom space */
+#specialmenucard .signature-grid {
+    margin-bottom: 2rem !important;
+    padding-bottom: 1rem;
+}

@@ -1,0 +1,142 @@
+/* New Registration Styles */
+.registration-container {
+    display: flex;
+    justify-content: center;
+}
+
+.registration-card {
+    background: white;
+  
+    
+    width: 100%;
+    max-width: 950px; 
+
+    transition: all 0.3s ease;
+}
+
+.registration-content {
+    width: 100%; 
+}
+
+.createAccount {
+    color: #f26724;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.createAccount:hover {
+    color: #d45a1f;
+    text-decoration: underline;
+    transform: translateY(-1px);
+}
+
+.otp-inputs {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px; /* increased gap */
+    margin-bottom: 25px;
+}
+
+.otp-input {
+    width: 60px; /* increased width */
+    height: 60px; /* increased height */
+    font-size: 20px; /* bigger font */
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.otp-input:focus {
+    border-color: #f26724;
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(241, 102, 36, 0.15);
+    transform: scale(1.05);
+}
+
+.otp-input:last-child {
+    margin-right: 0;
+}
+
+.otp-input-label {
+    font-weight: 600;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 8px;
+    color: #2d3748;
+    text-align: left;
+}
+
+.otp-input input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.otp-input input:focus {
+    border-color: #f26724;
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(241, 102, 36, 0.1);
+}
+
+/* Enhanced responsive design */
+@media only screen and (max-width: 1024px) {
+    .registration-card {
+        max-width: 500px;
+        padding: 40px 30px;
+    }
+    
+    .otp-inputs {
+        gap: 14px;
+    }
+    
+    .otp-input {
+        width: 55px;
+        height: 55px;
+        font-size: 18px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .registration-card {
+        max-width: 480px;
+        padding: 35px 25px;
+        border-radius: 14px;
+    }
+    
+    .otp-inputs {
+        gap: 12px;
+    }
+    
+    .otp-input {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .registration-card {
+        max-width: 360px;
+        padding: 25px 20px;
+    }
+    
+    .otp-inputs {
+        gap: 10px;
+    }
+    
+    .otp-input {
+        width: 45px;
+        height: 45px;
+        font-size: 14px;
+    }
+}
