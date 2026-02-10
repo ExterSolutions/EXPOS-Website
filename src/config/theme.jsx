@@ -1,19 +1,19 @@
 // config/theme.js
 export const theme = {
     primary: {
-        main: '#f16724',
+        main: '#e52c2c',
         light: '#EF5350',
         dark: '#8E0000',
         contrast: '#FFFFFF'
     },
     subprimary: {
-        main: '#f16724',
+        main: '#e52c2c',
         light: '#EF5350',
         dark: '#8E0000',
         contrast: '#FFFFFF'
     },
     secondary: {
-        main: '#f16724',
+        main: '#e52c2c',
         light: '#FF8B57',
         dark: '#D44F20',
         contrast: '#FFFFFF'
@@ -37,4 +37,4 @@ export const colors = {
 
 
 
-{/*f26724 = Chandigarh  theme //panjabtheme =f16724 */ }
+{/*e52c2c = Chandigarh  theme //panjabtheme =f16724 */ }
