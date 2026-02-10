@@ -1,4 +1,4 @@
-/* ===== IMPROVED HERO SECTION WITH BETTER MOBILE RESPONSIVENESS ===== */
+/* 
 .hero-section-perfect {
   background: linear-gradient(
     135deg,
@@ -7,9 +7,9 @@
     rgba(255, 120, 70, 0.3) 100%
   );
   background-size: cover;
-  background-position: center center; /* Better centering */
+  background-position: center center; 
   background-repeat: no-repeat;
-  background-attachment: scroll; /* Ensure it scrolls properly on mobile */
+  background-attachment: scroll;
   padding: 140px 40px 120px;
   text-align: center;
   position: relative;
@@ -20,24 +20,21 @@
   justify-content: center;
 }
 
-/* When background image is loaded from API */
+
 .hero-section-perfect[style*="backgroundImage"] {
   background-size: cover !important;
   background-position: center center !important;
 }
 
-/* ===== RESPONSIVE IMPROVEMENTS ===== */
 
-/* Tablets (768px and below) */
 @media (max-width: 768px) {
   .hero-section-perfect {
     padding: 100px 30px 80px;
     min-height: 400px;
-    background-position: center center; /* Keep centered */
-    background-size: cover; /* Ensure full coverage */
+    background-position: center center; 
+    background-size: cover; 
   }
 
-  /* Reduce floating image opacity on smaller screens for better readability */
   .floating-food-img {
     opacity: 0.8;
   }
@@ -45,18 +42,18 @@
   .hero-title-perfect {
     font-size: 3.5rem;
     letter-spacing: 6px;
-    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); /* Stronger shadow for readability */
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); 
   }
 }
 
-/* Mobile Devices (480px and below) */
+
 @media (max-width: 480px) {
   .hero-section-perfect {
     padding: 80px 20px 60px;
     min-height: 350px;
     background-position: center center;
     background-size: cover;
-    /* Add darker overlay on mobile for better text readability */
+ 
     background-image: linear-gradient(
       135deg,
       rgba(241, 90, 36, 0.5) 0%,
@@ -71,18 +68,18 @@
     text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
   }
 
-  /* Further reduce floating image opacity on mobile */
+
   .floating-food-img {
     opacity: 0.6;
   }
 }
 
-/* Extra Small Devices (360px and below) */
+
 @media (max-width: 360px) {
   .hero-section-perfect {
     padding: 70px 15px 50px;
     min-height: 300px;
-    background-position: center 40%; /* Slightly adjust position */
+    background-position: center 40%; 
   }
 
   .hero-title-perfect {
@@ -95,7 +92,7 @@
   }
 }
 
-/* Landscape Mobile Devices */
+
 @media (max-height: 500px) and (orientation: landscape) {
   .hero-section-perfect {
     padding: 60px 20px 50px;
@@ -108,14 +105,13 @@
   }
 }
 
-/* iOS Safari specific fix for background-attachment */
 @supports (-webkit-touch-callout: none) {
   .hero-section-perfect {
     background-attachment: scroll;
   }
 }
 
-/* High DPI displays */
+
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .hero-section-perfect {
     background-size: cover;
@@ -127,7 +123,7 @@
   font-family: "Montserrat", sans-serif !important;
 }
 
-/* Global Styles */
+
 .franchise-hero-page {
   width: 100%;
   overflow-x: hidden;
@@ -135,7 +131,7 @@
     "Ubuntu", "Cantarell", sans-serif;
 }
 
-/* ===== HERO SECTION ===== */
+
 .hero-section-perfect {
   background: linear-gradient(
     135deg,
@@ -178,7 +174,7 @@
   margin: 0;
 }
 
-/* Floating Food Images */
+
 .floating-food-img {
   position: absolute;
   z-index: 5;
@@ -215,7 +211,7 @@
   bottom: 20%;
 }
 
-/* ===== STATS SECTION ===== */
+
 .stats-section-perfect {
   background: white;
   padding: 90px 40px;
@@ -295,7 +291,7 @@
   transform: translateX(-12px) scale(1.02) rotate(3deg);
 }
 
-/* ===== BENEFITS SECTION ===== */
+
 .benefits-section-perfect {
   background: linear-gradient(
     to bottom right,
@@ -373,7 +369,7 @@
   margin: 0;
 }
 
-/* ===== TESTIMONIAL SECTION ===== */
+
 .testimonial-section-perfect {
   background: white;
   padding: 90px 40px;
@@ -546,7 +542,7 @@
   box-shadow: 0 0 0 3px rgba(241, 90, 36, 0.25);
 }
 
-/* ===== FORM SECTION ===== */
+
 .form-section-perfect {
   background: #fff5e6;
   padding: 90px 40px;
@@ -777,9 +773,7 @@
   box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
 }
 
-/* ===== RESPONSIVE BREAKPOINTS ===== */
 
-/* Large Tablets (1024px and below) */
 @media (max-width: 1024px) {
   .hero-title-perfect {
     font-size: 5rem;
@@ -825,9 +819,9 @@
   }
 }
 
-/* Tablets (768px and below) */
+
 @media (max-width: 768px) {
-  /* Hero Section */
+ 
   .hero-section-perfect {
     padding: 100px 30px 80px;
     min-height: 400px;
@@ -860,7 +854,7 @@
     bottom: 15%;
   }
 
-  /* Stats Section */
+
   .stats-section-perfect {
     padding: 60px 30px;
   }
@@ -889,7 +883,7 @@
     font-size: 2.2rem;
   }
 
-  /* Benefits Section */
+  
   .benefits-section-perfect {
     padding: 60px 30px;
   }
@@ -911,7 +905,7 @@
     font-size: 1.15rem;
   }
 
-  /* Testimonial Section */
+
   .testimonial-section-perfect {
     padding: 60px 20px;
   }
@@ -954,7 +948,6 @@
     gap: 10px;
   }
 
-  /* Form Section */
   .form-section-perfect {
     padding: 60px 20px;
   }
@@ -995,9 +988,9 @@
   }
 }
 
-/* Mobile Devices (576px and below) */
+
 @media (max-width: 576px) {
-  /* Hero Section */
+ 
   .hero-section-perfect {
     padding: 80px 20px 60px;
     min-height: 350px;
@@ -1030,7 +1023,7 @@
     bottom: 12%;
   }
 
-  /* Stats Section */
+
   .stats-section-perfect {
     padding: 50px 20px;
   }
@@ -1054,7 +1047,7 @@
     padding: 15px;
   }
 
-  /* Benefits Section */
+
   .benefits-section-perfect {
     padding: 50px 20px;
   }
@@ -1083,7 +1076,7 @@
     font-size: 1.1rem;
   }
 
-  /* Testimonial Section */
+  
   .testimonial-section-perfect {
     padding: 50px 15px;
   }
@@ -1126,7 +1119,7 @@
     font-size: 18px;
   }
 
-  /* Form Section */
+ 
   .form-section-perfect {
     padding: 50px 15px;
   }
@@ -1169,7 +1162,7 @@
   }
 }
 
-/* Extra Small Devices (360px and below) */
+
 @media (max-width: 360px) {
   .hero-title-perfect {
     font-size: 2rem;
@@ -1211,7 +1204,7 @@
   }
 }
 
-/* Landscape Mobile Devices */
+
 @media (max-height: 500px) and (orientation: landscape) {
   .hero-section-perfect {
     padding: 60px 20px 50px;
@@ -1229,9 +1222,6 @@
 }
 
 
-
-/* icons css here... */
-/* Float Animation */
 @keyframes floatY {
   0% {
     transform: translateY(0);
@@ -1244,7 +1234,7 @@
   }
 }
 
-/* Pulse Glow Animation */
+
 @keyframes pulseGlow {
   0%, 100% {
     box-shadow: 
@@ -1279,7 +1269,7 @@
     rgba(255, 159, 28, 0.06)
   );
 
-  /* Dual animations: float + glow */
+ 
   animation: 
     floatY 1.8s ease-in-out infinite,
     pulseGlow 2.5s ease-in-out infinite;
@@ -1290,10 +1280,10 @@
 }
 
 .benefit-item:hover .benefit-icon-wrapper {
-  animation-play-state: paused;   /* freeze both animations */
+  animation-play-state: paused;   
   transform: translateY(-6px) scale(1.08);
   box-shadow: 
     0 12px 40px rgba(255, 159, 28, 0.6),
     0 0 80px rgba(255, 159, 28, 0.4),
     inset 0 0 40px rgba(255, 159, 28, 0.3);
-}
+} */

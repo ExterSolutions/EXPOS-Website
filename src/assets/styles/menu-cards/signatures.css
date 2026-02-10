@@ -1,10 +1,10 @@
-/* Special Menu Card Section Specific Styles */
+/* 
 #signaturemenucard .m-card .grid-top-container {
   width: 100%;
   margin: 0 auto;
 }
 
-/* Remove card-specific styling */
+
 #signaturemenucard .m-card a {
   transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
@@ -100,7 +100,7 @@
   justify-content: center;
 }
 
-/* BUTTON FUNCTIONALITY CHANGES ONLY */
+
 
 #signaturemenucard .btn-add-to-cart.signaturemenu-button {
   background-color: #e5651f;
@@ -128,7 +128,6 @@
   cursor: pointer;
 }
 
-/* Remove all underlines and focus effects */
 #signaturemenucard .btn-add-to-cart.signaturemenu-button,
 #signaturemenucard .btn-add-to-cart.signaturemenu-button:hover,
 #signaturemenucard .btn-add-to-cart.signaturemenu-button:focus,
@@ -142,7 +141,7 @@
   box-shadow: none;
 }
 
-/* Make grid-card-right take full width and center content */
+
 #signaturemenucard .grid-card-detail .grid-card-right {
   width: 100%;
   max-width: 100%;
@@ -151,7 +150,6 @@
   justify-content: center;
 }
 
-/* Remove left grid card for drinks to center button */
 #signaturemenucard .grid-card-detail .grid-card-left {
   display: none;
 }
@@ -287,9 +285,9 @@
   text-align: center;
   max-width: 100%;
   overflow: hidden;
-  /* Multiline ellipsis */
+
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* show exactly 2 lines */
+  -webkit-line-clamp: 2; 
   line-clamp: 2;
   -webkit-box-orient: vertical;
   min-height: 3rem;
@@ -333,7 +331,7 @@
   font-weight: 600;
 }
 
-/* Responsive styles for special menu card section */
+
 @media (max-width: 450px) {
   #signaturemenucard #grid_count {
     margin: 0px 3px;
@@ -408,7 +406,6 @@
   }
 }
 
-/* Ensure no text decoration on all elements within special menu card */
 #signaturemenucard a,
 #signaturemenucard button,
 #signaturemenucard span,
@@ -423,7 +420,6 @@
   text-decoration: none !important;
 }
 
-/* Additional responsive grid for the special menu card */
 #signaturemenucard .row.g-3 {
   margin-left: -6px;
   margin-right: -6px;
@@ -434,7 +430,7 @@
   padding-right: 6px;
 }
 
-/* Card hover effects specific to special menu */
+
 #signaturemenucard .m-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -447,8 +443,7 @@
 
 
 
-/* bottom space */
 #signaturemenucard .signature-grid {
     margin-bottom: 2rem !important;
-    padding-bottom: 1rem; /* optional */
-}
+    padding-bottom: 1rem;
+} */

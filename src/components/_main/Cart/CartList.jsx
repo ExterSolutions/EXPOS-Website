@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
 import CartFunction from "../../cart";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../../../assets/styles/Cart/CartList.css";
+// import "../../../assets/styles/Cart/CartList.css";
 import { toast } from "react-toastify";
 import CustomPizzaCart from "./CartComponents/ShowPizzaConfigForCart/CustomPizzaCart";
 import SpecialPizzaCart from "./CartComponents/ShowPizzaConfigForCart/SpecialPizzaCart";

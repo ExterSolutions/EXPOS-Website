@@ -3,7 +3,7 @@ import { A11y, Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import '../../../assets/styles/HeroSlider/heroSlider.css';
+// import '../../../assets/styles/HeroSlider/heroSlider.css';
 
 function HeroSliderNew({ sliderData }) {
   // Fallback if sliderData is empty or undefined

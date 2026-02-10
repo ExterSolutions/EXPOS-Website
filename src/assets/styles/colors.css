@@ -1,4 +1,4 @@
-.top-h,
+/* .top-h,
 .slider1 .number-block .text-stl3,
 .special-offer-block .nav > li > span.active,
 .special-offer-block .nav > li > a:hover,
@@ -104,7 +104,7 @@ a.link:hover,
 .btn3,
 .deal-of-day .block-stl2 .btn1.stl2:hover,
 .btn4:hover,
-/* .block-stl2:hover, */
+
 .limited-deal .nav-pills>li.active>a .img-holder,
 .btn1.stl3:hover,
 .block-stl13 .btn1:hover,
@@ -136,9 +136,9 @@ a.link:hover,
   background: #f26724;
 }
 .main-nav:before {
-  /* background: url(../images/brd.png); */
+
 }
-/*bg color shades*/
+
 .bg1 {
   background: #f26724;
 }
@@ -162,4 +162,4 @@ a.link:hover,
 }
 .bg8 {
   background: #f26724;
-}
+} */

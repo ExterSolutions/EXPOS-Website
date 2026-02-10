@@ -1,33 +1,32 @@
-/* Default for small screens (1-2 cards) */
+/* 
 .drinkslist-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
-  gap: 16px; /* Adjust the gap between cards */
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 16px; 
 }
 
-/* For screens above 600px (3 cards) */
 @media (min-width: 600px) {
   .drinkslist-container {
-    grid-template-columns: repeat(2, 1fr); /* 3 cards per row */
+    grid-template-columns: repeat(2, 1fr); 
     gap: 16px;
   }
 }
 
-/* For screens above 766px (4 cards) */
+
 @media (min-width: 766px) {
   .drinkslist-container {
-    grid-template-columns: repeat(3, 1fr); /* 4 cards per row */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* For screens above 1024px (5 cards) */
+
 @media (min-width: 1024px) {
   .drinkslist-container {
-    grid-template-columns: repeat(4, 1fr); /* 5 cards per row */
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* Optional: Styling for individual cards */
+
 .drinkslist-card-outer {
   border: none;
   text-align: center;
@@ -170,8 +169,8 @@
   color: #fff;
   font-size: 16px;
   font-weight: 500;
-  white-space: nowrap; /* Prevents text from wrapping to the next line */
-  overflow: hidden; /* Hides any overflowing content */
+  white-space: nowrap; 
+  overflow: hidden; 
   text-overflow: ellipsis;
 }
 .drinkslist-card-name p {
@@ -179,8 +178,8 @@
   color: #fff;
   font-size: 12px;
   font-weight: 500;
-  white-space: nowrap; /* Prevents text from wrapping to the next line */
-  overflow: hidden; /* Hides any overflowing content */
+  white-space: nowrap; 
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -194,4 +193,4 @@
   color: #2e2e2e;
   padding: 0.2rem 0.5rem;
   border: 2px solid #f26724;
-}
+} */

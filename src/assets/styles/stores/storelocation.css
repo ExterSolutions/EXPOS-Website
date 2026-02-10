@@ -1,4 +1,4 @@
-#location .locatinaddress {
+/* #location .locatinaddress {
   font-size: 14px !important;
   font-weight: 500 !important;
   line-height: 19px !important;
@@ -15,24 +15,23 @@
   line-height: 23px;
 }
 
-/* Ensure consistent styling */
+
 .store-list-container {
-  background-color: #f8f9fa !important; /* Light gray */
+  background-color: #f8f9fa !important; 
 }
 
 .map {
   border: 1px solid #dee2e6;
 }
 
-/* If StoreCard needs adjustments for vertical stack */
+
 .store-card {
-  /* Assuming class in StoreCard */
+
   border-bottom: 1px solid #eee;
   padding-bottom: 15px;
   margin-bottom: 15px;
 }
 
-/* Fix for footer visibility */
 .page-container {
   min-height: 100dvh;
   display: flex;
@@ -44,12 +43,11 @@
   width: 100%;
 }
 
-/* Ensure footer stays at bottom */
 footer {
   flex-shrink: 0;
 }
 
-/* Additional styling for better layout */
+
 #location {
   min-height: 100dvh;
   display: flex;
@@ -60,7 +58,7 @@ footer {
   flex: 1;
 }
 
-/* Make sure map container has proper height */
+
 .map {
   height: 500px;
   width: 100%;
@@ -89,23 +87,23 @@ footer {
   background: #555;
 }
 
-/* Global for section */
+
 .primary-background-color {
-  background-color: #fff; /* Adjust to your theme */
+  background-color: #fff; 
 }
 
 .primary-text-color {
-  color: #f97316; /* Orange for title, matching about page */
+  color: #f97316; 
 }
 
 .mainconatiner {
   max-height: 450px;
-  overflow-y: scroll; /* Keeps content scrollable */
-  scrollbar-width: none; /* Firefox */
+  overflow-y: scroll; 
+  scrollbar-width: none; 
 }
 
 .mainconatiner::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none; 
 }
 
 .store-list-container {
@@ -195,33 +193,33 @@ footer {
 }
 
 .card.active-card {
-  border: 4px solid #f26724; /* Blue border for active card */
+  border: 4px solid #f26724;
   background: #ffe1c395;
 }
 
-/* Hover effect on card */
+
 .card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Active state for card */
+
 .card.active-card {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: scale(1.02);
 }
 
-/* Inactive state for card */
+
 .card.inactive-card {
   box-shadow: none;
 }
 
-/* Hover effect */
+
 .card:hover {
   transform: scale(1.02);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Smooth transition for map iframe */
+
 iframe {
   transition: all 0.5s ease-in-out;
 }
@@ -271,4 +269,4 @@ iframe {
   background-color: #048500 !important;
   border: 1px solid #048500 !important;
   transform: scale(1.05);
-}
+} */

@@ -1,4 +1,4 @@
-.profilePhoto {
+/* .profilePhoto {
   width: 5rem;
   height: 5rem;
   overflow: hidden;
@@ -87,30 +87,30 @@
   font-size: 0.9rem;
 }
 
-/* navbar  */
+
 .navMenu {
   display: flex;
-  flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
-  overflow-x: auto; /* Enable horizontal scrolling */
-  white-space: nowrap; /* Prevent text from wrapping */
+  flex-wrap: nowrap;
+  overflow-x: auto; 
+  white-space: nowrap; 
 }
 
 .navMenu::-webkit-scrollbar {
-  height: 5px; /* Customize scrollbar height */
+  height: 5px; 
 }
 
 .navMenu::-webkit-scrollbar-thumb {
-  background: #888; /* Scrollbar thumb color */
-  border-radius: 10px; /* Scrollbar thumb border radius */
+  background: #888; 
+  border-radius: 10px;
 }
 
 .navMenu::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Scrollbar thumb hover color */
+  background: #555; 
 }
 
 @media (min-width: 768px) {
   .navMenu {
-    flex-direction: column; /* Default vertical layout for larger screens */
-    overflow-x: hidden; /* No scrolling needed */
+    flex-direction: column; 
+    overflow-x: hidden; 
   }
-}
+} */

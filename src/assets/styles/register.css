@@ -1,4 +1,4 @@
-/* New Registration Styles */
+/* 
 .registration-container {
     display: flex;
     justify-content: center;
@@ -34,14 +34,14 @@
 .otp-inputs {
     display: flex;
     justify-content: space-between;
-    gap: 16px; /* increased gap */
+    gap: 16px; 
     margin-bottom: 25px;
 }
 
 .otp-input {
-    width: 60px; /* increased width */
-    height: 60px; /* increased height */
-    font-size: 20px; /* bigger font */
+    width: 60px; 
+    height: 60px; 
+    font-size: 20px; 
     font-weight: 600;
     text-align: center;
     border: 2px solid #e1e5e9;
@@ -88,7 +88,7 @@
     box-shadow: 0 0 0 3px rgba(241, 102, 36, 0.1);
 }
 
-/* Enhanced responsive design */
+
 @media only screen and (max-width: 1024px) {
     .registration-card {
         max-width: 500px;
@@ -139,4 +139,4 @@
         height: 45px;
         font-size: 14px;
     }
-}
+} */

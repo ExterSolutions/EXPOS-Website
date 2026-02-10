@@ -1,10 +1,9 @@
-/* Special Menu Card Section Specific Styles */
+/* 
 #sidesmenucard .m-card .grid-top-container {
   width: 100%;
   margin: 0 auto;
 }
 
-/* Remove card-specific styling */
 #sidesmenucard .m-card a {
   transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
@@ -102,7 +101,7 @@
 
 
 
-/* BUTTON FUNCTIONALITY CHANGES ONLY */
+
 
 #sidesmenucard .btn-add-to-cart.sidemenu-button-add {
   background-color: #e5651f;
@@ -182,7 +181,7 @@
   height: 32px;
 }
 
-/* Remove all underlines and focus effects */
+
 #sidesmenucard .btn-add-to-cart.sidemenu-button-add,
 #sidesmenucard .btn-add-to-cart.sidemenu-button-add:hover,
 #sidesmenucard .btn-add-to-cart.sidemenu-button-add:focus,
@@ -196,7 +195,7 @@
   box-shadow: none;
 }
 
-/* Make grid-card-right take full width and center content */
+
 #sidesmenucard .grid-card-detail .grid-card-right {
   width: 100%;
   max-width: 100%;
@@ -205,7 +204,6 @@
   justify-content: center;
 }
 
-/* Remove left grid card for drinks to center button */
 #sidesmenucard .grid-card-detail .grid-card-left {
   display: none;
 }
@@ -340,9 +338,9 @@
   text-align: center;
   max-width: 100%;
   overflow: hidden;
-  /* Multiline ellipsis */
+
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* show exactly 2 lines */
+  -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   min-height: 3rem;
@@ -386,7 +384,7 @@
   font-weight: 600;
 }
 
-/* Responsive styles for special menu card section */
+
 @media (max-width: 1024px) {
   #sidesmenucard .btn-add-to-cart.sidemenu-button-add,
   #sidesmenucard .btn-add-to-cart.sidemenu-button-customize {
@@ -501,7 +499,7 @@
   }
 }
 
-/* Ensure no text decoration on all elements within special menu card */
+
 #sidesmenucard a,
 #sidesmenucard button,
 #sidesmenucard span,
@@ -516,7 +514,7 @@
   text-decoration: none !important;
 }
 
-/* Additional responsive grid for the special menu card */
+
 #sidesmenucard .row.g-3 {
   margin-left: -6px;
   margin-right: -6px;
@@ -527,7 +525,7 @@
   padding-right: 6px;
 }
 
-/* Card hover effects specific to special menu */
+
 #sidesmenucard .m-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -541,4 +539,4 @@
 
 
 
-
+ */

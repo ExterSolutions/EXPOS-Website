@@ -11,7 +11,7 @@ import {
     settingApi,
 } from "../services";
 import LoadingLayout from "../layouts/LoadingLayout";
-import "../assets/styles/CreateYourOwn/style.css";
+// import "../assets/styles/CreateYourOwn/style.css";
 import {GlobalContext} from "../context/GlobalContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

@@ -1,4 +1,4 @@
-#czcustomcmsblock2 {
+/* #czcustomcmsblock2 {
   clear: both;
   width: 100%;
   position: relative;
@@ -120,10 +120,10 @@
     display: inline;
   }
 
-  /* Reduce image size a little in mobile only */
+ 
   #czcustomcmsblock2 .czcustomcms .custombanner-part1 .custombanner-content img {
-    transform: scale(1); /* Reduces size by 10% */
-    transform-origin: top left; /* Keeps positioning consistent */
+    transform: scale(1); 
+    transform-origin: top left; 
   }
 }
 @media (max-width: 480px) {
@@ -143,8 +143,8 @@
     margin-top: 30px;
   }
 
-  /* Optional: Reduce even more on very small screens if needed */
+ 
   #czcustomcmsblock2 .czcustomcms .custombanner-part1 .custombanner-content img {
-    transform: scale(1); /* Reduces by 15% on xs screens */
+    transform: scale(1); 
   }
-}
+} */

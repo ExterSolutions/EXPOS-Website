@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Header from "../components/_main/Header/Header";
 import Footer from "../components/_main/Footer";
-import "../assets/styles/Cart/MainCartList.css";
+// import "../assets/styles/Cart/MainCartList.css";
 import bgImage from "../assets/images/bg-img.jpg";
 import {GlobalContext} from "../context/GlobalContext";
 import { toast } from "react-toastify";

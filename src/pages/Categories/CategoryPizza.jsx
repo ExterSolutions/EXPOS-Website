@@ -4,12 +4,14 @@ import { A11y } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import createPizza from "../../assets/images/download/new/cat/Thumbails/Createyourown-1.png";
 import Deals from "../../assets/images/download/new/cat/Thumbails/Deals-1.png";
-import Sides from "../../assets/images/download/new/cat/Thumbails/Sides.png";
+import Sides from "../../assets/images/download/new/cat/Thumbails/Sides-nw.png";
 import SignaturePizza from "../../assets/images/download/new/cat/Thumbails/SignaturePizza-1.png";
-import dips from "../../assets/images/download/new/cat/Thumbails/dips.png";
-import drinks from "../../assets/images/download/new/cat/Thumbails/drinks.png";
+import dips from "../../assets/images/download/new/cat/Thumbails/dips-nw.png";
+import drinks from "../../assets/images/download/new/cat/Thumbails/drinks-nw.png";
 import '../../assets/styles/new/homepage/category/CategoryPizza.css';
 import { useTheme } from '../../context/ThemeContext';
+
+
 
 const CategoryPizza = () => {
 

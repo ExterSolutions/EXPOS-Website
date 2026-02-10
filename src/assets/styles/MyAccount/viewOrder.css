@@ -1,4 +1,4 @@
-.contentTitle {
+/* .contentTitle {
   font-size: 0.95rem;
   font-weight: 450;
 }
@@ -63,9 +63,7 @@
   font-weight: 600;
 }
 
-/* .contentDiv:not(:first-child) {
-  border-top: 1px solid #606060;
-} */
+
 
 @media (max-width: 1560px) {
   .subTotal,
@@ -81,4 +79,4 @@
   .qty {
     font-size: 0.85rem;
   }
-}
+} */
