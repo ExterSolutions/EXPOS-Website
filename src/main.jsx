@@ -9,21 +9,27 @@ import { GlobalProvider } from './context/GlobalContext';
 import { ThemeProvider } from './context/ThemeContext';
 import App from './App';
 import './index.css';
+import { HelmetProvider } from 'react-helmet-async';
+import { SiteDataProvider } from './context/SiteDataContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <GlobalProvider>
-          <ThemeProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </ThemeProvider>
-        </GlobalProvider>
-      </PersistGate>
-    </Provider>
+    <SiteDataProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <HelmetProvider>
+            <GlobalProvider>
+              <ThemeProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </ThemeProvider>
+            </GlobalProvider>
+          </HelmetProvider>
+        </PersistGate>
+      </Provider>
+    </SiteDataProvider>
   </React.StrictMode>
 );

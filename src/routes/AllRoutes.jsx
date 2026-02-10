@@ -41,22 +41,24 @@ import EditSpecialOfferPage from "../pages/SpecialOfferNew/EditSpecialOfferPage.
 import ScrollToTop from "../ScrollToTop.jsx";
 import Sidebar from "../layouts/Sidebar";
 import MobileMenu from "../components/_main/MobileMenu";
+import { DynamicSEO } from "../config/DynamicSEO.jsx";
 
 
 
 const AllRoutes = () => {
     return (
         <>
+            <DynamicSEO />
             <ScrollToTop />
             <MobileMenu />
             <Sidebar />
             <Routes>
                 <Route index path="/" element={<Home />} />
-                <Route path="/stores" element={<Stores />} />
-                <Route path="/about-us" element={<AboutUs />} />
-                <Route path="/contact-us" element={<ContactUs />} />
+                {/* <Route path="/stores" element={<Stores />} /> */}
+                {/* <Route path="/about-us" element={<AboutUs />} /> */}
+                {/* <Route path="/contact-us" element={<ContactUs />} /> */}
                 <Route path="/menu" element={<Menu />} />
-                <Route path="/franchise" element={<Franchise />} />
+                {/* <Route path="/franchise" element={<Franchise />} /> */}
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/terms-conditions" element={<TermsCondtions />} />
