@@ -41,14 +41,16 @@ import EditSpecialOfferPage from "../pages/SpecialOfferNew/EditSpecialOfferPage.
 import ScrollToTop from "../ScrollToTop.jsx";
 import Sidebar from "../layouts/Sidebar";
 import MobileMenu from "../components/_main/MobileMenu";
-import { DynamicSEO } from "../config/DynamicSEO.jsx";
-
-
+import { useDynamicSEO } from "../hooks/useDynamicSEO.js";
+import { useSiteDataContext } from "../context/SiteDataContext.jsx";
 
 const AllRoutes = () => {
+    const { siteData } = useSiteDataContext();
+    
+    // Call the custom hook here
+    useDynamicSEO(siteData);
     return (
         <>
-            <DynamicSEO />
             <ScrollToTop />
             <MobileMenu />
             <Sidebar />

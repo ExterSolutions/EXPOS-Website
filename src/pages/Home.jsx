@@ -28,7 +28,6 @@ const Home = () => {
     // Check if context is available
     if (!globalctx) {
         console.error("GlobalContext is not available in Home component");
-        console.log("Make sure GlobalProvider wraps App in main.jsx");
         return <LoadingLayout message="Loading context..." />;
     }
     

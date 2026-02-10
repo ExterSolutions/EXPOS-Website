@@ -44,7 +44,6 @@ const ToppingsSelector = ({
             // If already selected → remove it
             if (alreadySelected) {
                 const filtered = selected.filter((t) => t.toppingsCode !== toppingCode);
-                console.log(" *********** ting tong ", alreadySelected, filtered)
                 onChange(filtered);
                 return;
             }

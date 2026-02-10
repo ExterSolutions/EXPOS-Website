@@ -381,7 +381,6 @@ function ForgetPassword() {
             };
 
             const res = await customerVerifyOtp(payload);
-            console.log("OTP Verification Response:", res);
 
             // SUCCESS CONDITION BASED ON YOUR BACKEND'S MESSAGE
             if (res?.message?.toLowerCase().includes("verified")) {
@@ -443,7 +442,6 @@ function ForgetPassword() {
                 const res = await customerResetPassword(payload);
                 if (res) {
                     const response = res;
-                    console.log("Reset Password Response:", response);
                     if (response.status !== "200") {
                         toast.error(response.message || "Failed to send OTP. Please try again.");
                     } else {

@@ -19,7 +19,6 @@ root.render(
     <SiteDataProvider>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <HelmetProvider>
             <GlobalProvider>
               <ThemeProvider>
                 <BrowserRouter>
@@ -27,7 +26,6 @@ root.render(
                 </BrowserRouter>
               </ThemeProvider>
             </GlobalProvider>
-          </HelmetProvider>
         </PersistGate>
       </Provider>
     </SiteDataProvider>

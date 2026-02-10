@@ -17,11 +17,7 @@ export const ThemeProvider = ({ children }) => {
         root.style.setProperty('--secondary', theme.secondary.main);
         root.style.setProperty('--secondary-light', theme.secondary.light);
         root.style.setProperty('--secondary-dark', theme.secondary.dark);
-        
-        console.log('Theme injected into CSS variables:', {
-            primary: theme.primary.main,
-            secondary: theme.secondary.main
-        });
+
     }, []);
     
     return (

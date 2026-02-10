@@ -70,7 +70,7 @@ const PizzaCarousel = ({
                     const image = item?.pizzaImage || item?.image;
                     const rating = parseFloat(item?.ratings) || 0;
                     const visitLink = getRedirectPath(item);
-                    console.log("visitLink", visitLink);
+                   
                     return (
                         <div key={item.code || index}>
                             <Link to={visitLink} className="pizza-item">

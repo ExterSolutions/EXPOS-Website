@@ -59,8 +59,6 @@ const PizzaCustomizerAccordion = ({
             [type]: list,
         };
 
-        console.log("Updated Toppings:", updatedToppings);
-
         onUpdateCustomization(index, "toppings", updatedToppings);
     };
 

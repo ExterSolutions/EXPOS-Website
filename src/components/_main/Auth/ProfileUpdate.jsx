@@ -69,7 +69,6 @@ function ProfileUpdate() {
                 setSelectedFile(null);
                 setPreviewUrl(null);
 
-                console.log("api-response", formData);
                 const data = result.data;
                 localStorage.setItem("user", JSON.stringify(data));
                 setUser(data);
@@ -82,7 +81,6 @@ function ProfileUpdate() {
             }
         } catch (err) {
             toast.error(err.response.data.message);
-            console.log("Exception From RegisterApi", err);
         }
     };
 

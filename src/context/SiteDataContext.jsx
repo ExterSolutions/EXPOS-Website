@@ -14,10 +14,10 @@ export const useSiteDataContext = () => {
 
 export const SiteDataProvider = ({ children }) => {
     const [siteData, setSiteData] = useState({
-        site_name: "Chandigarh  Pizza",
+        site_name: "",
         logo: null,
-        contact_email: "contact@chandigarhpizza.ca",
-        contact_phone: "+1 403 492 5500",
+        contact_email: "",
+        contact_phone: "",
         address: "",
         favicon: null,
         qrcode: null
@@ -31,10 +31,10 @@ export const SiteDataProvider = ({ children }) => {
             const response = await getSiteData();
             if (response.status && response.data) {
                 setSiteData({
-                    site_name: response.data.site_name || "Chandigarh Pizza",
+                    site_name: response.data.site_name || "",
                     logo: response.data.logo || null,
-                    contact_email: response.data.contact_email || "hello@chandigarhpizza.in",
-                    contact_phone: response.data.contact_phone || "+1 403 492 5500",
+                    contact_email: response.data.contact_email || "",
+                    contact_phone: response.data.contact_phone || "",
                     address: response.data.address || "",
                     favicon: response.data.favicon || null,
                     qrcode: response.data.qrcode || null

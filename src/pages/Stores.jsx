@@ -130,7 +130,6 @@ const Stores = () => {
 
     useEffect(() => {
         const lowerQuery = (searchQuery || "").toLowerCase().trim();
-        console.log(storeLocations)
         if (!storeLocations || storeLocations.length === 0) {
             setFilteredStores([]);
             return;
@@ -151,7 +150,6 @@ const Stores = () => {
     }, [searchQuery, storeLocations]);
 
     if (loading || !isLoaded) return <LoadingLayout />;
-    console.log("filteredStores: ", filteredStores);
 
     return (
         <div id="location">

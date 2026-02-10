@@ -124,7 +124,6 @@ export const getSignatureDetails = async (code) => {
 };
 
 export const getOtherDetails = async (code, storeCode) => {
-  console.log(code, storeCode);
   const { data: response } = await http.get(
     storeCode ? `/pizzas/${code}?storeCode=${storeCode}` : `/pizzas/${code}`
   );
