@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getPopularItems } from "../../services";
 import Pupuler from "./Pupuler";
 import LoadingLayout from "../../layouts/LoadingLayout";
-import "../../assets/styles/menu-cards/signatures.css";
+// import "../../assets/styles/menu-cards/signatures.css";
 
 function PopulerPizza({ toppingsData }) {
     const [popularData, setPopularData] = useState([]);

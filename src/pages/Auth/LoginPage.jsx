@@ -4,7 +4,7 @@ import Footer from "../../components/_main/Footer";
 import Login from "../../components/_main/Auth/Login";
 import { useNavigate } from "react-router-dom";
 import LoadingLayout from "../../layouts/LoadingLayout";
-import "../../assets/styles/new/homepage/login/LoginPage.css"; 
+// import "../../assets/styles/new/homepage/login/LoginPage.css"; 
 
 function LoginPage() {
     const navigate = useNavigate();

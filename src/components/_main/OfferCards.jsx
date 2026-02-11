@@ -1,6 +1,6 @@
 import React from 'react';
 import fallbackImage from '../../assets/images/default-pizza.jpg';
-import '../../assets/styles/offercard.css';
+// import '../../assets/styles/offercard.css';
 import { Link } from 'react-router-dom';
 
 const OfferCards = ({ offers }) => {

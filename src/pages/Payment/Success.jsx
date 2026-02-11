@@ -54,7 +54,7 @@ function Success() {
                             className="mt-3"
                             style={{ fontSize: "1.3rem", letterSpacing: ".08rem" }}
                         >
-                            <strong>Chandigarh pizza</strong>
+                            <strong>pizza</strong>
                         </h2>
                     </div>
                     <div className="container-fluid row m-0 p-0 px-3 d-flex justify-content-center">

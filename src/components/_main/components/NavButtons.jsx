@@ -4,7 +4,7 @@ import { Link, NavLink, useLocation } from "react-router-dom"; // Added useLocat
 import { FaChevronDown, FaBars } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu"; // Added for cart icon
 import Submenu from "./Submenu";
-import '../../../assets/styles/new/header/nav-buttons.css'; // Import NavButtons CSS
+// import '../../../assets/styles/new/header/nav-buttons.css'; 
 
 const NavButtons = ({
     onToggleMobileMenu,

@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
-import http from '../../services/http'; // Import your HTTP service to fetch menu data
-import '../../assets/styles/new/header/searchResult.css'; // Assuming CSS file path
+import http from '../../services/http'; 
+// import '../../assets/styles/new/header/searchResult.css';
 
 const SearchResult = () => {
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const navigate = useNavigate();
     const query = searchParams.get('q') || '';
-    const { results = [] } = location.state || {}; // Get results from state
+    const { results = [] } = location.state || {}; 
     const [menuData, setMenuData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Fetch full menu data to get slugs and detailed info
     useEffect(() => {
         const fetchMenuData = async () => {
             try {
                 setIsLoading(true);
-                // Assuming your menu API endpoint; adjust as needed (e.g., /api/menu or /products)
-                const response = await http.get('/menu'); // Or whatever your menu API is
-                setMenuData(response.data.data || response.data || []); // Adjust based on response structure
+               
+                const response = await http.get('/menu'); 
+                setMenuData(response.data.data || response.data || []);
             } catch (err) {
                 console.error('Error fetching menu data:', err);
                 // Optionally set error state

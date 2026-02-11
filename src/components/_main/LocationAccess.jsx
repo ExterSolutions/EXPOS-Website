@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import '../../assets/styles/locationaccess.css';
+// import '../../assets/styles/locationaccess.css';
 import { LuBike } from 'react-icons/lu';
 import { FaPeopleCarry } from 'react-icons/fa';
 import LocationAccessContent from './LocationAccessContent';

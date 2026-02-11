@@ -1,5 +1,5 @@
-import "../../../assets/styles/grid-cards.css";
-import "../../../assets/styles/menu-cards/signatures.css";
+// import "../../../assets/styles/grid-cards.css";
+// import "../../../assets/styles/menu-cards/signatures.css";
 import SignaturePizzas from '../../_main/SignaturePizza/signturePizza';
 import CartFunction from '../../cart';
 

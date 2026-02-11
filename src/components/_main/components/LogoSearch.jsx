@@ -4,7 +4,7 @@ import { FaSearch, FaShoppingCart, FaUser, FaTimes, FaPhoneAlt, FaFire } from 'r
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from "../../../assets/images/logo.png";
-import '../../../assets/styles/new/header/logo-search.css';
+// import '../../../assets/styles/new/header/logo-search.css';
 
 const LogoSearch = ({ compact = false, onOpenCart }) => {
     const navigate = useNavigate();

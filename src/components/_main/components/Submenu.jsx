@@ -8,7 +8,7 @@ import { MdRestaurantMenu } from "react-icons/md";
 import { SiCoffeescript } from "react-icons/si";
 import { PiHamburgerFill } from "react-icons/pi";
 import { GiPizzaSlice } from "react-icons/gi";
-import '../../../assets/styles/new/header/submenu.css'; 
+// import '../../../assets/styles/new/header/submenu.css'; 
 
 const Submenu = ({ isOpen, className = "" }) => {
   const menuItems = [

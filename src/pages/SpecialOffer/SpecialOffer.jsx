@@ -7,7 +7,7 @@ import { FaEye, FaMinus, FaPlus } from "react-icons/fa6";
 import { IoMdCheckmarkCircleOutline, IoMdClose } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import pizzaimage from "../../assets/images/pz.png";
-import "../../assets/styles/new/homepage/specialpizza/additional.css";
+// import "../../assets/styles/new/homepage/specialpizza/additional.css";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";

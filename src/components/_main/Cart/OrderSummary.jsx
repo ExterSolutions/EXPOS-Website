@@ -1,5 +1,5 @@
 import React from "react";
-import "../../../assets/styles/custom.css";
+// import "../../../assets/styles/custom.css";
 
 function OrderSummary({ cart }) {
   return (

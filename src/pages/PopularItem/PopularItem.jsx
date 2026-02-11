@@ -4,7 +4,7 @@ import Header from "../../components/_main/Header/Header";
 import PopulerPizza from "./PopulerPizza";  
 import { useEffect, useState } from "react";
 import { getToppings } from "../../services";
-import "../../assets/styles/new/homepage/pizza/specialoffer.css";
+// import "../../assets/styles/new/homepage/pizza/specialoffer.css";
 
 
 const PopularItem = () => {

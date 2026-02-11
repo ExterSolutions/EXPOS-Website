@@ -1,4 +1,4 @@
-import "../../../assets/styles/menu-cards/speicaldeal.css";
+// import "../../../assets/styles/menu-cards/speicaldeal.css";
 import SpecialOfferCard from '../../_main/SpecialOffer/SpecialOfferCard';
 
 function SpecialOfferSelector({ specialOffers }) {

@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import {GlobalContext} from "../context/GlobalContext";
 import { toast } from "react-toastify";
 import { sendContactUsEmail } from "../services";
-import "../assets/styles/new/homepage/contact/contact-us.css";
+// import "../assets/styles/new/homepage/contact/contact-us.css";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { useTheme } from '../context/ThemeContext';
 

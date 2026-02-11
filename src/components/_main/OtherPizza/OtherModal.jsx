@@ -5,7 +5,7 @@ import {GlobalContext} from "../../../context/GlobalContext";
 import { v4 as uuidv4 } from "uuid";
 import CartFunction from "../../cart";
 import { IoClose } from "react-icons/io5";
-import "../../../assets/styles/modal-popups.css";
+// import "../../../assets/styles/modal-popups.css";
 
 function OtherModel({
     show,

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import "../assets/styles/menu-cards/signatures.css";
+// import "../assets/styles/menu-cards/signatures.css";
 import OtherPizzas from "../components/_main/OtherPizza/otherPizza";
 import {GlobalContext} from "../context/GlobalContext";
 import DataNotFound from "../layouts/DataNotFound";

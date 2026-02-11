@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
-import '../../assets/styles/slider.css';
+// import '../../assets/styles/slider.css';
 
 function CustomizePizzaSlider({ List, ViewAllRedirect }) {
     const customizePizzaSliderRef = useRef(null);

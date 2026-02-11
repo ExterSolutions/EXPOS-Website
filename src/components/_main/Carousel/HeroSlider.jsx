@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Slider from "react-slick"; // Importing react-slick
-import "slick-carousel/slick/slick.css"; // Import Slick Carousel CSS
-import "slick-carousel/slick/slick-theme.css"; // Import Slick Carousel theme CSS
+import Slider from "react-slick"; 
+import "slick-carousel/slick/slick.css";
+// import "slick-carousel/slick/slick-theme.css";
 import bgSlider from "../../../assets/images/slider-bg1.jpg";
 import pizzaImage from "../../../assets/images/pz.png";
 

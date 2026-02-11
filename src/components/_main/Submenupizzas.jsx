@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, Link, NavLink } from "react-router-dom";
 import { LuShoppingCart } from "react-icons/lu";
-import "../../assets/styles/new/header/submenupizzas.css"; // Shared styles for everything (merge navmenu.css here if separate)
+// import "../../assets/styles/new/header/submenupizzas.css"; 
+
 
 
 const SubMenuPizzas = ({

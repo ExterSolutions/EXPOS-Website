@@ -1,4 +1,4 @@
-import "../assets/styles/menu-cards/speicaldeal.css";
+// import "../assets/styles/menu-cards/speicaldeal.css";
 import SpecialOfferCard from '../components/_main/SpecialOffer/SpecialOfferCard';
 import DataNotFound from '../layouts/DataNotFound';
 

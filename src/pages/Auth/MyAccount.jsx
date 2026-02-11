@@ -13,7 +13,7 @@ import Tab from "react-bootstrap/Tab";
 import Col from "react-bootstrap/Col";
 import ProfileUpdate from "../../components/_main/Auth/ProfileUpdate";
 import defaultAvatar from "../../assets/images/avatar.jpg";
-import "../../assets/styles/MyAccount/profile.css";
+// import "../../assets/styles/MyAccount/profile.css";
 import ChangePassword from "../../components/_main/Auth/ChangePassword";
 import MyOrders from "../../components/_main/Auth/MyOrders";
 

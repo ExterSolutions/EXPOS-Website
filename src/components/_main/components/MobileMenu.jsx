@@ -16,7 +16,7 @@ import {
 } from "react-icons/fa";
 import Submenu from "./Submenu";
 import { useModal } from "../../../contexts/ModalContext";
-import './mobile-menu.css'; // Import MobileMenu CSS
+// import './mobile-menu.css';
 
 const MobileMenu = ({ isOpen, onClose }) => {
   const { openOrder } = useModal();

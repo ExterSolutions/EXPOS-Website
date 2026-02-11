@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../assets/styles/menu-cards/signatures.css";
+// import "../assets/styles/menu-cards/signatures.css";
 import '../cardsui/cardsui.css';
 import SignaturePizzas from "../components/_main/SignaturePizza/signturePizza";
 import CartFunction from "../components/cart";

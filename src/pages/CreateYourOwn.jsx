@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Header from "../components/_main/Header/Header";
 import Footer from "../components/_main/Footer";
-import "../assets/styles/custom.css";
+// import "../assets/styles/custom.css";
 import {
     deliverable,
     getAllIngredients,

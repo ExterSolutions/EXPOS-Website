@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../assets/styles/termcondtion.css";
+// import "../assets/styles/termcondtion.css";
 import Footer from "../components/_main/Footer";
 import Header from "../components/_main/Header/Header";
 import { termsPage } from "../services";

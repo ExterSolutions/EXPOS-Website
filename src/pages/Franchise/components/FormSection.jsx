@@ -214,7 +214,7 @@ const FormSection = ({ formData, errors, loading, handleChange, handleSubmit }) 
                             checked={formData.marketing_consent}
                             onChange={handleChange}
                         />
-                        <span>I consent to receive marketing text messages from PanjabPizza Franchise at the phone number provided. I understand that my consent is not a condition of my FDD request. Msg&data rates apply. *</span>
+                        <span>I consent to receive marketing text messages from Pizza Franchise at the phone number provided. I understand that my consent is not a condition of my FDD request. Msg&data rates apply. *</span>
                     </label>
                     {errors.marketing_consent && <p className="input-error">{errors.marketing_consent}</p>}
                 </div>
@@ -227,7 +227,7 @@ const FormSection = ({ formData, errors, loading, handleChange, handleSubmit }) 
                             checked={formData.terms_consent}
                             onChange={handleChange}
                         />
-                        <span>I consent to receive non-marketing text messages from PanjabPizza Franchise email. My initial website registration and submission of this Franchise inquiry form constitutes my electronic signature. *</span>
+                        <span>I consent to receive non-marketing text messages from Pizza Franchise email. My initial website registration and submission of this Franchise inquiry form constitutes my electronic signature. *</span>
                     </label>
                     {errors.terms_consent && <p className="input-error">{errors.terms_consent}</p>}
                 </div>

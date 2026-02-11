@@ -1,4 +1,4 @@
-import "../../../assets/styles/menu-cards/sides.css";
+// import "../../../assets/styles/menu-cards/sides.css";
 import Sides from '../../_main/Sides/Sides';
 import CartFunction from '../../cart';
 

@@ -4,7 +4,7 @@ import Footer from "../../components/_main/Footer";
 import Registration from "../../components/_main/Auth/Registration";
 import { useNavigate } from "react-router-dom";
 import LoadingLayout from "../../layouts/LoadingLayout";
-import "../../../src/assets/styles/register.css"
+// import "../../../src/assets/styles/register.css"
 
 function RegistrationPage() {
     const navigate = useNavigate();

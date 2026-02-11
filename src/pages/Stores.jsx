@@ -2,7 +2,7 @@ import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import React, { memo, useContext, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import mapMaker from "../assets/images/map-maker.png";
-import "../assets/styles/stores/storelocation.css";
+// import "../assets/styles/stores/storelocation.css";
 import Footer from "../components/_main/Footer";
 import Header from "../components/_main/Header/Header";
 import SearchBox from "../components/_main/Stores/SearchBox";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import pizzaImg from "../../assets/images/customizePizza.jpg";
-import "../../assets/styles/new/homepage/about/about.css";
+// import "../../assets/styles/new/homepage/about/about.css";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 import { aboutPage } from "../../services";

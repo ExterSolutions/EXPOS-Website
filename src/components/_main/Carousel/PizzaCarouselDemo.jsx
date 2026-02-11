@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import "./style-pizza-carousel.css";
-import "../../../assets/styles/grid-cards.css";
+// import "../../../assets/styles/grid-cards.css";
 import pizzaLeft from "../../../assets/images/pizza-left.png";
 import pizzaRight from "../../../assets/images/pizza-right.png";
 

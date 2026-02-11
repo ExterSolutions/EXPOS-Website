@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaPhoneAlt, FaPizzaSlice, FaEnvelope } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "../../assets/styles/new/header/topBanner.css";
+// import "../../assets/styles/new/header/topBanner.css";
 
 const TopBanner = ({ isScrolled, showBanner }) => {
   const [animate, setAnimate] = useState(false);

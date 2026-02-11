@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import pizzaimage from "../../assets/images/pz.png";
-import "../../assets/styles/new/homepage/specialpizza/additional.css";
+// import "../../assets/styles/new/homepage/specialpizza/additional.css";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";

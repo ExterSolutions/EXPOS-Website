@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 import { MdRestaurantMenu } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../assets/styles/mobilemenu.css';
+// import '../../assets/styles/mobilemenu.css';
 import { GlobalContext } from '../../context/GlobalContext';
 
 const MobileMenu = () => {
@@ -236,7 +236,7 @@ const MobileMenu = () => {
                             </ul>
                         </li>
 
-                        <li>
+                        {/* <li>
                             <Link
                                 to="/contact-us"
                                 className={activeLink === 'contact' ? 'active' : ''}
@@ -248,7 +248,7 @@ const MobileMenu = () => {
                                 <FaPhone />
                                 <span className="nav-text">Contact</span>
                             </Link>
-                        </li>
+                        </li> */}
                     </ul>
                 </nav>
 

@@ -1,7 +1,7 @@
 import { useFranchiseData } from "./hooks/useFranchiseData";
 import { useFranchiseForm } from "./hooks/useFranchiseForm";
 import { useTestimonialSlider } from "./hooks/useTestimonialSlider";
-import "../../assets/styles/Franchise.css";
+// import "../../assets/styles/Franchise.css";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 

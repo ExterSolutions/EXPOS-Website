@@ -1,7 +1,7 @@
 
 
 import { useEffect, useState } from 'react';
-import '../assets/styles/privacypolicy.css';
+// import '../assets/styles/privacypolicy.css';
 import Footer from '../components/_main/Footer';
 import Header from '../components/_main/Header/Header';
 import { privacyPage } from '../services';

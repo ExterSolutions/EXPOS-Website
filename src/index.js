@@ -15,10 +15,10 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "animate.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/styles/style.css";
-import "./assets/styles/colors.css";
-import "./assets/styles/custom.css";
-import "./assets/styles/responsive.css";
-import "./assets/styles/main-item-card.css";
+// import "./assets/styles/colors.css";
+// import "./assets/styles/custom.css";
+// import "./assets/styles/responsive.css";
+// import "./assets/styles/main-item-card.css";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

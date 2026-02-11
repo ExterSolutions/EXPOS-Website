@@ -3,7 +3,7 @@ import { getOrderDetails } from "../../../services";
 import { toast } from "react-toastify";
 // import moment from "moment/moment";
 import LoadingLayout from "../../../layouts/LoadingLayout";
-import "../../../assets/styles/MyAccount/viewOrder.css";
+// import "../../../assets/styles/MyAccount/viewOrder.css";
 import ViewOrderProductDetails from "./ViewOrderProductDetails";
 
 function ViewOrder({ selectedCode }) {

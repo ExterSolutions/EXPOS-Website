@@ -1,6 +1,6 @@
 // components/MenuNavButtons.jsx (Updated with CSS import)
 import React from "react";
-import './menu-nav-buttons.css'; // Import MenuNavButtons CSS
+// import './menu-nav-buttons.css';
 
 const MenuNavButtons = ({ activeCategory, onCategoryChange }) => {
   const categories = [

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {GlobalContext} from "../../context/GlobalContext";
-import "../../assets/styles/nav.css";
+// import "../../assets/styles/nav.css";
 import { LuShoppingCart } from "react-icons/lu";
 
 import DeliveryPickupModalPopup from "./DeliveryPickupModalPopup";

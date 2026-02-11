@@ -8,10 +8,8 @@ import Sides from "../../assets/images/download/new/cat/Thumbails/Sides-nw.png";
 import SignaturePizza from "../../assets/images/download/new/cat/Thumbails/SignaturePizza-1.png";
 import dips from "../../assets/images/download/new/cat/Thumbails/dips-nw.png";
 import drinks from "../../assets/images/download/new/cat/Thumbails/drinks-nw.png";
-import '../../assets/styles/new/homepage/category/CategoryPizza.css';
+// import '../../assets/styles/new/homepage/category/CategoryPizza.css';
 import { useTheme } from '../../context/ThemeContext';
-
-
 
 const CategoryPizza = () => {
 

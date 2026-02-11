@@ -4,7 +4,7 @@ import Tabs from "../../components/Tabs/Tabs";
 import { useEffect, useState } from "react";
 import { getToppings } from "../../services";
 import SignaturePizza from "../SignaturePizza";
-import "../../assets/styles/new/homepage/pizza/specialoffer.css"; // Import the CSS for hero section
+// import "../../assets/styles/new/homepage/pizza/specialoffer.css"; 
 
 const SignaturePizzaList = () => {
     const [toppingsData, setToppingsData] = useState(null);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import "../assets/styles/menu-cards/sides.css";
+// import "../assets/styles/menu-cards/sides.css";
 import SideSlider from "../components/_main/Sides/SideSlider";
 import CartFunction from "../components/cart";
 import LoadingLayout from "../layouts/LoadingLayout";

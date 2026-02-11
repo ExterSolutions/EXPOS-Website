@@ -3,7 +3,7 @@ import backgroundImage from '../../assets/images/download-bg.jpg';
 import { Link } from 'react-router-dom';
 import appStore from '../../assets/images/appstore.svg';
 import playStore from '../../assets/images/playstore.svg';
-import '../../assets/styles/downloadsection.css';
+// import '../../assets/styles/downloadsection.css';
 
 const DownloadSection = () => {
     return (

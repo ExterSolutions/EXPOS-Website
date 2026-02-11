@@ -1,4 +1,4 @@
-import "../../../assets/styles/menu-cards/speicaldeal.css";
+// import "../../../assets/styles/menu-cards/speicaldeal.css";
 import Drink from '../../_main/DrinksOld/Drink';
 import CartFunction from '../../cart';
 
