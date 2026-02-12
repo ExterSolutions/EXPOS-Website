@@ -118,7 +118,7 @@ const Footer = ({ isdemo }) => {
                         </div>
 
                         <p className="my-3 lh-sm">
-                            <span className="main fw-bold">Chandigarh  Pizza</span><br /><br />
+                            <span>{footerData?.contact_info?.metaTitle}</span><br /><br />
                             {/* {footerNote.includes("Chandigarh Pizza")
                                 ? footerNote.replace("Chandigarh Pizza", "").trim()
                                 : ` ${footerNote}`

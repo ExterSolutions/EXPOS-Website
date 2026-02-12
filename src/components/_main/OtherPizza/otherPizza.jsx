@@ -110,12 +110,12 @@ function OtherPizzas({ data, toppingsData }) {
                     </div>
 
                     <div className="d-flex gap-2 flex-row">
-                        <button type="button" className="view-button" onClick={handleAddOtherPizza}>
+                        <button type="button" className="view-button-new" onClick={handleAddOtherPizza}>
                             Add to Cart
                         </button>
                         {
                             !hideCustomize && (
-                                <button type="button" className="customize-btn" onClick={handleRedirect}>
+                                <button type="button" className="customize-btn-new" onClick={handleRedirect}>
                                     Customize
                                 </button>
                             )

@@ -53,7 +53,7 @@ const CustomizeDrink = () => {
     }
 
 
-\
+
 return (
     <div className="customize-drink-page">
         <div className="container">

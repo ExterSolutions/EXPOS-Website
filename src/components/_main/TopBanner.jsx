@@ -7,7 +7,7 @@ const TopBanner = ({ isScrolled, showBanner }) => {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimate(true), 3000); // 3 sec delay
+    const timer = setTimeout(() => setAnimate(true), 3000); 
     return () => clearTimeout(timer);
   }, []);
 

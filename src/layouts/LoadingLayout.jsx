@@ -15,7 +15,7 @@ function LoadingLayout() {
     },
   };
   return (
-    <div className="d-flex w-100 vh-100 justify-content-center align-items-center bgprimaryWhiteColor">
+    <div className="d-flex w-100 vh-100 justify-content-center align-items-center ">
       <div className="loader-bg">
         <Lottie options={defaultOptions} height={200} width={200} />
       </div>

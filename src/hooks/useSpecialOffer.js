@@ -51,7 +51,7 @@ export function useSpecialOffer(pid) {
                     setDips(dipsData);
                 }
             } catch (err) {
-                console.error("❌ Special offer load failed:", err);
+               
                 setError(err);
                 toast.error("Could not load special offer data. Please try again.");
             } finally {

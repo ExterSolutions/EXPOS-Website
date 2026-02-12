@@ -113,7 +113,7 @@ const Drink = ({ data, cartFn }) => {
 
                         <button
                             type="button"
-                            className="view-button"
+                            className="view-button-new"
                             onClick={handleAddToCart}
                         >
                             Add to Cart
@@ -123,7 +123,7 @@ const Drink = ({ data, cartFn }) => {
                 
                     <button
                         type="button"
-                        className="customize-btn-drinks"
+                        className="customize-btn-new"
                         onClick={handleNavigate}
                     >
                         Customize

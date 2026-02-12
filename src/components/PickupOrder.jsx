@@ -137,7 +137,7 @@ function PickupOrder() {
                 toast.error(`Error ${error.response.status}: ${error.response.data?.message || 'Unknown error'}`);
             }
         } else {
-            // Handle network errors or timeouts
+   
             console.error('Network error or no response:', error);
             
             if (error.message) {

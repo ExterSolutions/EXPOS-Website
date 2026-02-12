@@ -172,13 +172,13 @@ function AddressDetails() {
                 }
             })
             .catch((err) => {
-                // console.log(err);
+              
             });
     };
 
     // START TIMER FUNCTION
     const startTimer = () => {
-        setTimer(180); // Reset to 3 minutes
+        setTimer(180); 
         setTimerActive(true);
 
         timerInterval.current = setInterval(() => {

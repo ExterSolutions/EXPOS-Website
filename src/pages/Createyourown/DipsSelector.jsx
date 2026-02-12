@@ -52,10 +52,24 @@ export const DipsSelector = ({ data, Dips, handleDips, handleDipsQuantity }) => 
                         <input type="radio" className="form-check-input" checked={Dips?.some(item => item.code === data?.dipsCode)} />
                         <p className="fs-6">{`${data?.dipsName} ($ ${data?.price})`}</p>
                     </div>
-                    <div className="mt-3 px-3 d-flex align-items-center gap-2">
-                        <button disabled={Dips?.some(item => item.code === data?.dipsCode) ? quantity <= 1 : true} onClick={() => handleQuantityChange(-1)} className={`${Dips?.some(item => item.code === data?.dipsCode) ? 'selected-quantity-btn' : 'bg-transparent'} border-1 rounded-2 w-2`}>-</button>
-                        <p>{quantity}</p>
-                        <button disabled={Dips?.some(item => item.code === data?.dipsCode) ? quantity >= 10 : true} onClick={() => handleQuantityChange(1)} className={`${Dips?.some(item => item.code === data?.dipsCode) ? 'selected-quantity-btn' : 'bg-transparent'} border-1 rounded-2 fs-6 w-1`}>+</button>
+                    <div className="dip-qty-container">
+                        <button
+                            disabled={Dips?.some(item => item.code === data?.dipsCode) ? quantity <= 1 : true}
+                            onClick={() => handleQuantityChange(-1)}
+                            className="dip-qty-btn"
+                        >
+                            -
+                        </button>
+
+                        <p className="dip-qty-count">{quantity}</p>
+
+                        <button
+                            disabled={Dips?.some(item => item.code === data?.dipsCode) ? quantity >= 10 : true}
+                            onClick={() => handleQuantityChange(1)}
+                            className="dip-qty-btn"
+                        >
+                            +
+                        </button>
                     </div>
                 </div>
                 {Dips?.some(item => item.code === data?.dipsCode) ? <IoMdCheckmarkCircleOutline color="#90EE90" size={25} /> : <IoMdCheckmarkCircleOutline color="transparent" size={25} />}

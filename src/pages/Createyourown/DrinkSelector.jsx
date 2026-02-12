@@ -52,10 +52,24 @@ export const DrinkSelector = ({ data, Drinks, handleDrink, handleDrinkQuantity }
                         <input type="radio" className="form-check-input" checked={Drinks?.some(item => item.code === data?.softdrinkCode)} />
                         <p className="fs-6">{`${data?.softDrinksName} ($ ${data?.price})`}</p>
                     </div>
-                    <div className="mt-3 px-3 d-flex align-items-center gap-2">
-                        <button disabled={Drinks?.some(item => item.code === data?.softdrinkCode) ? quantity <= 1 : true} onClick={() => handleQuantityChange(-1)} className={`${Drinks?.some(item => item.code === data?.softdrinkCode) ? 'selected-quantity-btn' : 'bg-transparent'} border-1 rounded-2 w-2`}>-</button>
-                        <p>{quantity}</p>
-                        <button disabled={Drinks?.some(item => item.code === data?.softdrinkCode) ? quantity >= 10 : true} onClick={() => handleQuantityChange(1)} className={`${Drinks?.some(item => item.code === data?.softdrinkCode) ? 'selected-quantity-btn' : 'bg-transparent'} border-1 rounded-2 fs-6 w-1`}>+</button>
+                    <div className="drink-qty-container">
+                        <button
+                            disabled={quantity <= 1}
+                            onClick={() => handleQuantityChange(-1)}
+                            className="qty-btn"
+                        >
+                            -
+                        </button>
+
+                        <p className="qty-count">{quantity}</p>
+
+                        <button
+                            disabled={quantity >= 10}
+                            onClick={() => handleQuantityChange(1)}
+                            className="qty-btn"
+                        >
+                            +
+                        </button>
                     </div>
                 </div>
                 {Drinks?.some(item => item.code === data?.softdrinkCode) ? <IoMdCheckmarkCircleOutline color="#90EE90" size={25} /> : <IoMdCheckmarkCircleOutline color="transparent" size={25} />}

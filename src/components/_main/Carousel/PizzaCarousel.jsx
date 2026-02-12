@@ -15,7 +15,7 @@ const PizzaCarousel = ({
     if (!pizzas || !Array.isArray(pizzas) || pizzas.length === 0) {
         return (
             <div className="section pizza-carousel-section">
-                No pizzas available
+                {/* No pizzas available */}
             </div>
         );
     }

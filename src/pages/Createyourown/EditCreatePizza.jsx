@@ -844,10 +844,10 @@ const EditCreatePizza = () => {
           {/* <div className="nav-margin"></div>
           <Tabs /> */}
           <div
-            className="new-block primary-background-color"
+            className="new-block "
             id="create-your-own-new"
           >
-            <section className="primary-background-color special-offers-sec new-block ">
+            <section className="  new-block ">
               <div className="container">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb custom-breadcrumb mt-5">

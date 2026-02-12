@@ -111,12 +111,12 @@ function SignaturePizzas({ data, toppingsData }) {
                     </div>
 
                     <div className="d-flex gap-2 flex-row">
-                        <button type="button" className="view-button" onClick={handleSides}>
+                        <button type="button" className="view-button-new" onClick={handleSides}>
                             Add to Cart
                         </button>
                         {
                             !hideCustomize && (
-                                <button type="button" className="customize-btn" onClick={handleRedirect}>
+                                <button type="button" className="customize-btn-new" onClick={handleRedirect}>
                                     Customize
                                 </button>
                             )
