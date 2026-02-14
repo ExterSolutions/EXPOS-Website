@@ -685,10 +685,10 @@ const CreatePizza = () => {
             className="new-block primary-background-color"
             id="create-your-own-new"
           >
-            <section className="primary-background-color special-offers-sec new-block">
+            <section className="primary-background-color special-offers-sec new-block py-2">
               <div className="container ">
                 <nav aria-label="breadcrumb">
-                  <ol className="breadcrumb custom-breadcrumb mt-2">
+                  <ol className="breadcrumb custom-breadcrumb ">
                     <li className="breadcrumb-item " aria-current="page">
                       Home
                     </li>

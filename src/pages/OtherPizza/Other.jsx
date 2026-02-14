@@ -641,11 +641,11 @@ const Other = () => {
                 <div>
                     <Header />
                     <div className="nav-margin"></div>
-                    <div className="d-flex align-items-center justify-content-between innder-page-header">
+                    {/* <div className="d-flex align-items-center justify-content-between innder-page-header">
                         <div className="flex-grow-1 section-header">
                             <span className="category-subtitle"></span>
                         </div>
-                    </div>
+                    </div> */}
                     {getOtherData ? (
                         <div className="new-block" id="create-your-own-new">
                             <section className="special-offers-sec new-block primary-background-color">

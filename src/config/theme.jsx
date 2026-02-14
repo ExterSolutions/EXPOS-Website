@@ -1,19 +1,19 @@
 // config/theme.js
 export const theme = {
     primary: {
-        main: '#f16724',
+        main: '#ef4507',
         light: '#EF5350',
         dark: '#8E0000',
         contrast: '#FFFFFF'
     },
     subprimary: {
-        main: '#f16724',
+        main: '#ef4507',
         light: '#EF5350',
         dark: '#8E0000',
         contrast: '#FFFFFF'
     },
     secondary: {
-        main: '#f16724',
+        main: '#ef4507',
         light: '#FF8B57',
         dark: '#D44F20',
         contrast: '#FFFFFF'

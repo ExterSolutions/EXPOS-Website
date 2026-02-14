@@ -720,11 +720,11 @@ const EditSignature = () => {
                 <div>
                     <Header />
                     <div className="nav-margin"></div>
-                    <div className="d-flex align-items-center justify-content-between innder-page-header">
+                    {/* <div className="d-flex align-items-center justify-content-between innder-page-header">
                         <div className="flex-grow-1 section-header">
                             <span className="category-subtitle"></span>
                         </div>
-                    </div>
+                    </div> */}
                     <div
                         className="new-block primary-background-color"
                         id="create-your-own-new"
@@ -955,7 +955,7 @@ const EditSignature = () => {
                                                         data-bs-parent="#accordionExample4"
                                                         style={{ overflow: "hidden" }}
                                                     >
-                                                        <div className="accordion-body primary-background-color">
+                                                        <div className="d-flex flex-wrap flex-row gap-2 py-3 px-3">
                                                             {Ingredients?.cheese?.map((data, index) => {
                                                                 return (
                                                                     <CheeseSelector
@@ -999,7 +999,7 @@ const EditSignature = () => {
                                                         data-bs-parent="#accordionExample6"
                                                         style={{ overflow: "hidden" }}
                                                     >
-                                                        <div className="accordion-body primary-background-color">
+                                                        <div className="d-flex flex-wrap flex-row gap-2 py-3 px-3">
                                                             {Ingredients?.spices?.map((data, index) => {
                                                                 return (
                                                                     <SpicySelector
@@ -1041,7 +1041,7 @@ const EditSignature = () => {
                                                         data-bs-parent="#accordionExample7"
                                                         style={{ overflow: "hidden" }}
                                                     >
-                                                        <div className="accordion-body primary-background-color">
+                                                        <div className="d-flex flex-wrap flex-row gap-2 py-3 px-3">
                                                             {Ingredients?.sauce?.map((data, index) => {
                                                                 return (
                                                                     <SauceSelector
@@ -1083,7 +1083,7 @@ const EditSignature = () => {
                                                         data-bs-parent="#accordionExample7"
                                                         style={{ overflow: "hidden" }}
                                                     >
-                                                        <div className="accordion-body primary-background-color">
+                                                        <div className="d-flex flex-wrap flex-row gap-2 py-3 px-3">
                                                             {Ingredients?.cook?.map((data, index) => {
                                                                 return (
                                                                     <CookSelector
