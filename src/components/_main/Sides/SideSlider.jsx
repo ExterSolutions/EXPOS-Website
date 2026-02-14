@@ -22,7 +22,7 @@ function SideSlider({ data, cartFn }) {
     return (
         <div className="section" id="sidesmenucard">
             <div className="container">
-                <h4 className="text-center text-capitalize mb-4">
+                <h4 className="text-center text-capitalize mb-4 py-3">
                     <span className="sp-hr-left"></span>
                     <span>{data?.type}</span>
                     <span className="sp-hr-right"></span>
