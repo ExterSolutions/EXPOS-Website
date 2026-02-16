@@ -91,7 +91,7 @@ const Drink = ({ data, cartFn }) => {
                 />
             </div>
 
-            <div className="pizza-content">
+            <div className="pizza-content mb-2">
                 <h5 className="pizza-name">{data?.softDrinksName}</h5>
 
                 {data?.description && (

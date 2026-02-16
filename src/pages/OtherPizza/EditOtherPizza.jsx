@@ -1218,7 +1218,7 @@ const EditOther = () => {
                                         </div> */}
                                         <div className="mt-3">
                                             <div className="accordion" id="accordionExample9">
-                                                <div className="accordion-item">
+                                                <div className="accordion-item mb-3">
                                                     <h2 className="accordion-header" id="headingNine">
                                                         <button
                                                             className={`fw-bold fs-6 accordion-button ${activeAccordion === "toppings" ? "" : "collapsed"
@@ -1324,13 +1324,13 @@ const EditOther = () => {
                                                         alt="pizza-icon"
                                                     />
                                                 </div>
-                                                <div className="col-lg-6 p-4">
-                                                    <div className="d-flex flex-column py-4">
+                                                <div className="col-lg-6 p-2">
+                                                    <div className="d-flex flex-column ">
                                                         <p className=" fs-1 fw-bold text-center text-lg-start">
                                                             $ {price}
                                                         </p>
                                                         <div
-                                                            className="d-flex justify-content-center  justify-content-lg-start align-items-center mt-3"
+                                                            className="d-flex justify-content-center  justify-content-lg-start align-items-center "
                                                             style={{ userSelect: "none" }}
                                                         >
                                                             <button
