@@ -108,8 +108,8 @@ const Header = () => {
 
             {/* MIDDLE SECTION */}
             <div className={`middle-section bg-white ${isSticky ? "fixed-top-middle-mobile" : ""}`}>
-                {/* Mobile small row */}
-                <div className="middle-small">
+                {/* Mobile small row - hidden on md and above */}
+                <div className="middle-small d-md-none">
                     <button
                         className="navbar-toggler border-0"
                         type="button"
@@ -139,8 +139,8 @@ const Header = () => {
                     </button>
                 </div>
 
-                {/* Desktop mode */}
-                <div className='d-none d-lg-block position-relative' ref={searchRef} style={{ width: "200px" }}>
+                {/* Desktop Search - shown from md (tablet) and above */}
+                <div className='d-none d-md-block position-relative' ref={searchRef} style={{ width: "200px" }}>
                     <form onSubmit={handleSearchSubmit}>
                         <div className="search-box flex-grow-1 position-relative">
                             <div className="input-group shadow-sm rounded-pill">
@@ -295,7 +295,7 @@ const Header = () => {
                     >
                         <ul className="navbar-nav gap-4 fs-6 fw-semibold align-items-center">
                             <li className="nav-item">
-                                <Link to="/" className="nav-link active">Home</Link>
+                                <a href="https://chandigarhpizza.ca/" className="nav-link active">Home</a>
                             </li>
                             <li className="nav-item dropdown position-static" ref={dropdownRef}>
                                 <button
@@ -352,7 +352,7 @@ const Header = () => {
                     </div>
                 </div>
             </nav>
-{/* 
+            {/* 
             {showStorePopup && (
                 <DeliveryPickupModalPopup
                     show={showStorePopup}

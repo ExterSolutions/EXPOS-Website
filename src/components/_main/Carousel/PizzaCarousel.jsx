@@ -70,7 +70,7 @@ const PizzaCarousel = ({
                     const image = item?.pizzaImage || item?.image;
                     const rating = parseFloat(item?.ratings) || 0;
                     const visitLink = getRedirectPath(item);
-                   
+
                     return (
                         <div key={item.code || index}>
                             <Link to={visitLink} className="pizza-item">
@@ -123,13 +123,65 @@ const PizzaCarousel = ({
                                             item?.dipsDescription ||
                                             item?.dipsDiscription}
                                     </div>
-                                    <button
-                                        type="button"
-                                        title="Order Now"
-                                        className="view-button"
+                                    <div
+                                        className="d-flex align-items-center justify-content-between mt-3"
+                                        style={{
+                                            width: '100%',
+                                            flexWrap: 'wrap',
+                                            gap: '8px'
+                                        }}
                                     >
-                                        Order Now
-                                    </button>
+
+                                        {/* Left Side: Price Group (Stacked) */}
+                                        <div
+                                            className="d-flex flex-column mt-3"
+                                            style={{ flex: 1, minWidth: 0 }}
+                                        >
+                                            {/* Upper Side: Starts From */}
+                                            <span
+                                                style={{
+                                                    fontSize: '0.8rem',
+                                                    color: '#0c0c0cff',
+                                                    fontWeight: '500',
+                                                    lineHeight: '1',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                Starts From
+                                            </span>
+
+                                            {/* Down Side: Actual Price */}
+                                            <div
+                                                className=""
+                                                style={{
+                                                    fontWeight: '700',
+                                                    color: 'var(--secondary)',
+                                                    fontSize: '1.2rem',
+                                                    // marginTop: '1px',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                ${item?.pizza_prices?.[0]?.price || item?.price || '0.00'}
+                                            </div>
+                                        </div>
+
+                                        {/* Right Side: Button */}
+                                        <button
+                                            type="button"
+                                            title="Order Now"
+                                            className="view-button"
+                                            style={{
+                                                margin: 0,
+                                                width: 'auto',
+                                                padding: '7px 16px',
+                                                flexShrink: 0,
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '0.85rem'
+                                            }}
+                                        >
+                                            Order Now
+                                        </button>
+                                    </div>
                                 </div>
                             </Link>
                         </div>

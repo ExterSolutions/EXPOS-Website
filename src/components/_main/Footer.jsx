@@ -1,6 +1,6 @@
 
 import { useContext, useEffect, useState } from "react";
-import { CgMail, CgPhone } from "react-icons/cg";
+import { CgPin , CgMail, CgPhone } from "react-icons/cg";
 import { FaLinkedinIn, FaSnapchatGhost, FaTiktok, FaTwitter } from "react-icons/fa";
 import { FiFacebook, FiInstagram, FiYoutube } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -156,6 +156,27 @@ const Footer = ({ isdemo }) => {
                                 >
                                     <CgPhone size={16} className="me-2" />
                                     <span className="">{footerData?.contact_info?.phone}</span>
+                                </Link>
+                            </div>
+
+
+                            <div
+                                className="d-flex justify-content-start align-items-center gap-1"
+                                style={{
+                                    wordWrap: "break-word",
+                                    overflowWrap: "break-word",
+                                }}
+                            >
+                                <Link
+                                    to={`tel:${footerData?.contact_info?.address}`}
+                                    className="text-decoration-none"
+                                    style={{
+                                        wordWrap: "break-word",
+                                        overflowWrap: "break-word",
+                                    }}
+                                >
+                                    <CgPin  size={16} className="me-2" />
+                                    <span className="">{footerData?.contact_info?.address}</span>
                                 </Link>
                             </div>
                         </div>

@@ -99,7 +99,7 @@ const Drink = ({ data, cartFn }) => {
                 )}
 
                 <div className="card-price">
-                    $ {Number(data?.price).toFixed(2)}
+                    ${Number(data?.price).toFixed(2)}
                 </div>
 
 
