@@ -3,7 +3,7 @@ import SpecialOfferCard from '../components/_main/SpecialOffer/SpecialOfferCard'
 import DataNotFound from '../layouts/DataNotFound';
 
 
-function SpecialOffer({ specialOfferData }) {
+function SpecialOffer({ specialOfferData, basePath }) {
 
     if (specialOfferData?.length < 0) return <DataNotFound />;
     return (
@@ -13,7 +13,7 @@ function SpecialOffer({ specialOfferData }) {
                     {specialOfferData?.map((data) => {
                         return (
                             <div className="col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
-                                <SpecialOfferCard key={data.code} data={data} />
+                                <SpecialOfferCard key={data.code} data={data} basePath={basePath} />
                             </div>
                         );
                     })}

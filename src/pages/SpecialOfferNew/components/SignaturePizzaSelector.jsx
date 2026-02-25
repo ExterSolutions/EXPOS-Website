@@ -3,6 +3,7 @@ const SignaturePizzaSelector = ({
     selectedCode,
     onChange,
 }) => {
+    // console.log("SignaturePizzaSelector received signaturePizzas:", signaturePizzas);
     return (
         <div className="mb-3">
             <div className="fw-bold text-dark mb-2">SELECT PIZZA</div>
@@ -12,9 +13,9 @@ const SignaturePizzaSelector = ({
                 onChange={(e) => onChange(e.target.value)}
             >
                 <option value="">-- Select Pizza --</option>
-                {signaturePizzas.map((p) => (
-                    <option key={p.code} value={p.code}>
-                        {p.pizzaName || p.name}
+                {(Array.isArray(signaturePizzas) ? signaturePizzas : (signaturePizzas?.data || []))?.map((p, idx) => (
+                    <option key={p.code || p.sideCode || p.id || idx} value={p.code || p.sideCode || p.id}>
+                        {p.pizza_name || p.pizzaName || p.name || p.sideName || `Pizza ${idx + 1}`}
                     </option>
                 ))}
             </select>

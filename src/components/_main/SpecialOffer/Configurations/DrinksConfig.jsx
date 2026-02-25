@@ -17,48 +17,32 @@ function DrinksConfig({ Drinks, setDrinks, specialOfferData, activeAccordion, to
     };
 
     return (
-        <div className="mt-3">
-            <div className="accordion" id="accordionExample1">
-                <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingOne">
-                        <button
-                            className={`fw-bold fs-6 accordion-button ${activeAccordion === 'drinks' ? '' : 'collapsed'}`}
-                            type="button"
-                            onClick={() => toggleAccordion('drinks')}
-                            aria-expanded={activeAccordion === 'drinks' ? 'true' : 'false'}
-                            aria-controls="collapseOne"
-                        >
-                            DRINKS
-                        </button>
-                    </h2>
-                    <div
-                        id="collapseOne"
-                        className={`accordion-collapse collapse ${activeAccordion === 'drinks' ? 'show' : ''}`}
-                        aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample1"
-                        style={{ overflow: "hidden" }}
-                    >
-                        <div className="accordion-body primary-background-color">
-                            {specialOfferData?.pops?.map((data) => (
-                                <DrinksSelector
-                                    key={data?.code}
-                                    Drinks={Drinks[0]}
-                                    setDrinks={setDrinks}
-                                    data={data}
-                                    handleDrinks={handleDrinks}
-                                />
-                            ))}
-                            {specialOfferData?.bottle?.map((data) => (
-                                <DrinksSelector
-                                    key={data?.code}
-                                    Drinks={Drinks[0]}
-                                    setDrinks={setDrinks}
-                                    data={data}
-                                    handleDrinks={handleDrinks}
-                                />
-                            ))}
-                        </div>
-                    </div>
+        <div className="mt-4">
+            <div className="topping-header-bar" onClick={() => toggleAccordion('drinks')}>
+                <span>DRINKS</span>
+                <span className={`fa ${activeAccordion === 'drinks' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+            </div>
+
+            <div className={`mt-2 ${activeAccordion === 'drinks' ? 'd-block' : 'd-none'}`}>
+                <div className="accordion-body px-0 py-2">
+                    {specialOfferData?.pops?.map((data, index) => (
+                        <DrinksSelector
+                            key={`${index}-${data?.code}`}
+                            Drinks={Drinks[0]}
+                            setDrinks={setDrinks}
+                            data={data}
+                            handleDrinks={handleDrinks}
+                        />
+                    ))}
+                    {specialOfferData?.bottle?.map((data, index) => (
+                        <DrinksSelector
+                            key={`${index}-${data?.code}`}
+                            Drinks={Drinks[0]}
+                            setDrinks={setDrinks}
+                            data={data}
+                            handleDrinks={handleDrinks}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

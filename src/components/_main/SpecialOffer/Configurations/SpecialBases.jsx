@@ -1,53 +1,50 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SpecialBasesSelector } from '../../../_main/SpecialOffer/Selector/SpecialBasesSelector';
 
 function SpecialSpecialBases({ count, specialOfferData, pizzaState, setPizzaState }) {
-    // HANDLE SPECIALBASES
-    const handleSpecialBases = (code) => {
-        const selectedSpecialBases = specialOfferData?.specialbases?.find((data) => data.code === code);
-        if (!selectedSpecialBases) return;
-        const updatedPizzaState = [...pizzaState];
-        // Check if the selected special base is already set for the current pizza
-        if (updatedPizzaState[count]?.specialBases?.specialbaseCode === code) {
-            // If the selected base is already applied, remove it by setting an empty object
-            updatedPizzaState[count] = {
-                ...updatedPizzaState[count],
-                specialBases: {}, // Set to an empty object
-            };
-        } else {
-            // Otherwise, update with the selected base
-            const updatedSpecialBases = {
-                specialbaseCode: selectedSpecialBases.code,
-                specialbaseName: selectedSpecialBases.specialbaseName,
-                price: selectedSpecialBases.price,
-            };
+    const getItemID = (item) => item?.code || item?.specialBasesCode || item?.specialbaseCode || item?.specialbaseName || item?.name || item?.specialBases || "";
 
-            updatedPizzaState[count] = {
-                ...updatedPizzaState[count],
-                specialBases: updatedSpecialBases,
-            };
-        }
-        setPizzaState(updatedPizzaState);
+    const handleSpecialBases = (id) => {
+        const list = specialOfferData?.specialbases || specialOfferData?.specialBases || [];
+        const item = list.find((data) => getItemID(data) === id);
+        if (!item) return;
+
+        setPizzaState((prev) => {
+            const updatedPizzaState = [...prev];
+            const currentCode = updatedPizzaState[count]?.specialBases?.specialbaseCode;
+
+            if (currentCode === id) {
+                updatedPizzaState[count] = {
+                    ...updatedPizzaState[count],
+                    specialBases: {},
+                };
+            } else {
+                const updatedSpecialBases = {
+                    specialbaseCode: getItemID(item),
+                    specialbaseName: item.specialbaseName || item.specialBases || item.name || "None",
+                    price: item.price,
+                };
+                updatedPizzaState[count] = {
+                    ...updatedPizzaState[count],
+                    specialBases: updatedSpecialBases,
+                };
+            }
+            return updatedPizzaState;
+        });
     };
 
     return (
         <div className="mt-3">
-            <div className="">
-                <div className="">
-                    <h2 className="mb-3 primary-text-color" id="headingTwo">
-                        SPECIALBASES
-                    </h2>
-                    <div className="primary-background-color">
-                        {specialOfferData?.specialbases?.map((data) => (
-                            <SpecialBasesSelector
-                                key={data.code}
-                                data={data}
-                                selectedSpecialBases={pizzaState[count]?.specialBases?.specialbaseCode}
-                                handleSpecialBases={handleSpecialBases}
-                            />
-                        ))}
-                    </div>
-                </div>
+            <div className="customization-category-label">Special Base</div>
+            <div className="theme-pill-selector">
+                {(specialOfferData?.specialbases || specialOfferData?.specialBases)?.map((data, index) => (
+                    <SpecialBasesSelector
+                        key={`${index}-${getItemID(data)}`}
+                        data={data}
+                        selectedSpecialBases={pizzaState[count]?.specialBases?.specialbaseCode}
+                        handleSpecialBases={handleSpecialBases}
+                    />
+                ))}
             </div>
         </div >
     );

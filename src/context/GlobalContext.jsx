@@ -1,7 +1,7 @@
 // src/context/GlobalContext.js
 import { createContext, useState } from "react";
 
-// Default Calgary location data
+
 const DEFAULT_CITY = {
     value: "Calgary",
     label: "Calgary",
@@ -19,12 +19,11 @@ const DEFAULT_STORE = {
     label: "Calgary"
 };
 
-// Create the context - export as NAMED
 export const GlobalContext = createContext();
 
-// Create the provider - export as NAMED
+
 export const GlobalProvider = ({ children }) => {
-    // Helper function to set default Calgary location
+
     const setDefaultCalgaryLocation = () => {
         localStorage.setItem('currentCity', JSON.stringify(DEFAULT_CITY));
         localStorage.setItem('currentStoreCode', DEFAULT_STORE.value);
@@ -41,12 +40,12 @@ export const GlobalProvider = ({ children }) => {
         const storedCity = localStorage.getItem("currentCity");
         const storedStoreCode = localStorage.getItem("currentStoreCode");
         const storedStore = localStorage.getItem("currentStore");
-        
+
         // If nothing is stored, set Calgary as default
         if (!storedCity && !storedStoreCode && !storedStore) {
             return setDefaultCalgaryLocation();
         }
-        
+
         // Return existing data if available
         return {
             city: storedCity ? JSON.parse(storedCity) : null,
@@ -111,7 +110,7 @@ export const GlobalProvider = ({ children }) => {
     });
     const [reset, setReset] = useState(false);
     const [openMobileMenu, setOpenMobileMenu] = useState(false);
-    
+
     // Function to manually set Calgary as location
     const setCalgaryAsDefault = () => {
         setCurrentCity(DEFAULT_CITY);
@@ -155,7 +154,7 @@ export const GlobalProvider = ({ children }) => {
         setCalgaryAsDefault,
         resetToCalgary
     };
-    
+
     return (
         <GlobalContext.Provider value={value}>
             {children}

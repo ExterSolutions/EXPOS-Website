@@ -18,6 +18,7 @@ a {
   /* color: #646cff; */
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -46,9 +47,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -59,10 +62,201 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Custom Pill Selectors UI */
+.customization-category-label {
+  color: #fb8c00;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.theme-pill-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.theme-pill-item {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #c0c0c0;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #333333;
+}
+
+.theme-pill-item:hover {
+  border-color: #fb8c00;
+  background-color: #fffaf0;
+}
+
+.theme-pill-item.active {
+  border-color: #fb8c00;
+  color: #fb8c00;
+  border-width: 1.5px;
+}
+
+.theme-pill-item .price-label {
+  color: #fb8c00;
+  margin-left: 4px;
+}
+
+.theme-pill-item.active .price-label {
+  color: #fb8c00;
+}
+
+.theme-pill-item:not(.active) .price-label {
+  color: #fb8c00;
+  /* Matching the image where price is also orange-ish or distinct */
+}
+
+/* Adjusting price label to look like the image ($0.00) */
+.price-tag {
+  color: #fb8c00;
+  font-weight: 400;
+}
+
+.theme-pill-item:not(.active) .price-tag {
+  color: #fb8c00;
+}
+
+.topping-item {
+  position: relative;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.customization-category-label {
+  color: #fb8c00;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  margin-top: 20px;
+}
+
+.theme-pill-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.theme-pill-item {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.theme-pill-item:hover {
+  border-color: #fb8c00;
+}
+
+.theme-pill-item.active {
+  border-color: #fb8c00;
+  box-shadow: 0 0 0 1px #fb8c00;
+  color: #fb8c00;
+}
+
+.theme-pill-item span.price-tag {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.theme-pill-item.active span.price-tag {
+  color: #fb8c00;
+}
+
+.topping-header-bar {
+  background-color: #fb8c00;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.topping-tab {
+  cursor: pointer;
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.topping-tab.active {
+  color: #fb8c00;
+  font-weight: 600;
+  border-bottom: 2px solid #fb8c00;
+}
+
+.topping-radio-circle {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fb8c00;
+  border-radius: 50%;
+  padding: 3px;
+  display: inline-block;
+}
+
+.topping-radio-circle.checked::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #fb8c00;
+  border-radius: 50%;
+}
+
+.topping-check-icon {
+  color: #a5d6a7;
+  font-size: 1.5rem;
+}
+
+.topping-select {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  width: auto;
+  min-width: 120px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.topping-item-name {
+  font-size: 1.05rem;
+  color: #333;
+  margin-left: 12px;
+  font-weight: 500;
 }

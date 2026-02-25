@@ -5,12 +5,14 @@ import { v4 as uuidv4 } from "uuid";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 import CartFunction from "../../components/cart";
-import {GlobalContext} from "../../context/GlobalContext";
+import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import {
     getDips,
-    getSpecialOfferNew,
+    getSpecialDetails,
+    getSignaturePizza,
     getToppings,
+    getAllIngredients,
     settingApi,
 } from "../../services";
 import { calculateOfferPrice } from "../../utils/priceUtils";
@@ -54,6 +56,7 @@ const SpecialOfferPage = () => {
     const [totalPrice, setTotalPrice] = useState("0.00");
     const [quantity, setQuantity] = useState(1);
     const [showSummaryPopup, setShowSummaryPopup] = useState(false);
+    const [allSignaturePizzas, setAllSignaturePizzas] = useState([]);
 
     useEffect(() => {
         fetchOfferDetailsWithSettings();
@@ -89,16 +92,59 @@ const SpecialOfferPage = () => {
                 settingsResponse,
                 toppingsResponse,
                 dipsResponse,
+                signaturePizzasResponse,
+                ingredientsResponse,
             ] = await Promise.all([
-                getSpecialOfferNew(sid),
+                getSpecialDetails(sid, currentStoreCode),
                 settingApi(),
                 getToppings(),
                 getDips(),
+                getSignaturePizza(),
+                getAllIngredients(),
             ]);
-            const specialOfferData = specialOfferResponse.data;
+            let specialOfferData = specialOfferResponse.data;
+            // Handle case where API returns array for single item
+            if (Array.isArray(specialOfferData) && specialOfferData.length > 0) {
+                specialOfferData = specialOfferData[0];
+            }
+
             const settingsData = settingsResponse.data;
             const toppingsData = toppingsResponse.data.toppings;
             const dipsData = dipsResponse.data;
+            const fetchedSignaturePizzas = Array.isArray(signaturePizzasResponse)
+                ? signaturePizzasResponse
+                : signaturePizzasResponse?.data || [];
+            setAllSignaturePizzas(fetchedSignaturePizzas);
+
+            // Ensure signaturePizzas is available in specialOfferData for the component
+            const offerSignaturePizzas = Array.isArray(specialOfferData.signaturePizzas)
+                ? specialOfferData.signaturePizzas
+                : (specialOfferData.signaturePizzas?.data || []);
+
+            if (offerSignaturePizzas.length === 0) {
+                specialOfferData.signaturePizzas = fetchedSignaturePizzas;
+            } else {
+                specialOfferData.signaturePizzas = offerSignaturePizzas;
+            }
+
+            const ingredientsData = ingredientsResponse?.data || ingredientsResponse;
+            const allIng = Array.isArray(ingredientsData) ? {} : ingredientsData;
+
+            // Merge global ingredients if offer doesn't provide specific lists
+            if (!specialOfferData.cheese || specialOfferData.cheese.length === 0)
+                specialOfferData.cheese = allIng.cheese || [];
+            if (!specialOfferData.crust || specialOfferData.crust.length === 0)
+                specialOfferData.crust = allIng.crust || [];
+            if (!specialOfferData.crustType || specialOfferData.crustType.length === 0)
+                specialOfferData.crustType = allIng.crustType || [];
+            if (!specialOfferData.specialbases || specialOfferData.specialbases.length === 0)
+                specialOfferData.specialbases = allIng.specialbases || [];
+            if (!specialOfferData.sauce || specialOfferData.sauce.length === 0)
+                specialOfferData.sauce = allIng.sauce || [];
+            if (!specialOfferData.spices || specialOfferData.spices.length === 0)
+                specialOfferData.spices = allIng.spices || [];
+            if (!specialOfferData.cook || specialOfferData.cook.length === 0)
+                specialOfferData.cook = allIng.cook || [];
             const systemsettings = {
                 premiumToppingsCount:
                     settingsData.find((s) => s.settingCode === "STG_7")
@@ -340,14 +386,15 @@ const SpecialOfferPage = () => {
             {
                 position: "top-center",
                 autoClose: 3000,
-                onHide: () => {
-                    navigate("/menu");
-                },
             },
         );
+        return null;  // ← guard: prevents destructuring null on line below
     }
 
-    const { noofPizzas, signaturePizzas } = offerData;
+    const { noofPizzas = 0 } = offerData;
+    const signaturePizzas = (offerData.signaturePizzas && offerData.signaturePizzas.length > 0)
+        ? offerData.signaturePizzas
+        : allSignaturePizzas;
 
     return (
         <div>

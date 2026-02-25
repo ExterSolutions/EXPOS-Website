@@ -38,6 +38,7 @@ import Stores from "../pages/Stores.jsx";
 import TermsCondtions from "../pages/TermsCondtions.jsx";
 import SpecialOfferPage from "../pages/SpecialOfferNew/SpecialOfferPage.jsx";
 import EditSpecialOfferPage from "../pages/SpecialOfferNew/EditSpecialOfferPage.jsx";
+import SpecialOfferWithToppingsList from "../pages/SpecialOffer/SpecialOfferWithToppingsList.jsx";
 import ScrollToTop from "../ScrollToTop.jsx";
 import Sidebar from "../layouts/Sidebar";
 import MobileMenu from "../components/_main/MobileMenu";
@@ -46,7 +47,7 @@ import { useSiteDataContext } from "../context/SiteDataContext.jsx";
 
 const AllRoutes = () => {
     const { siteData } = useSiteDataContext();
-    
+
     // Call the custom hook here
     useDynamicSEO(siteData);
     return (
@@ -84,6 +85,11 @@ const AllRoutes = () => {
                 <Route path="/specialoffer" element={<SpecialOfferList />} />
                 <Route path="/specialoffer/:sid" element={<SpecialOfferPage />} />
                 <Route path="/specialoffer/:pid/:sid" element={<EditSpecialOfferPage />} />
+
+                {/* Deals+toppings — dedicated list page with its own API call */}
+                <Route path="/special-offers-with-toppings" element={<SpecialOfferWithToppingsList />} />
+                <Route path="/special-offers-with-toppings/:sid" element={<SpecialOffer />} />
+                <Route path="/special-offers-with-toppings/:pid/:sid" element={<EditSpecialOffer />} />
 
                 {/* Signature Pizzas */}
                 <Route path="/signaturepizza" element={<SignaturePizzaList />} />

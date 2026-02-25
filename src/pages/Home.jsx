@@ -147,6 +147,7 @@ const Home = () => {
                 <CategoryPizza />
                 <OfferCards offers={offerCards} />
                 <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
+                <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals+toppings`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
                 <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Our Delicious Items`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} />
                 <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Our Customers Top Picks`} pizzas={otherPizzaList} type="other" redirectBase={'/otherpizza'} />
                 <PizzaCarousel sectionSubTitle={`Select your Flavour`} sectionTitle={`Try Our Bestsellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} />

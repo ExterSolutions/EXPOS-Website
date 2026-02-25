@@ -111,23 +111,19 @@ const MobileMenu = () => {
 
                 <nav className="sidebar-nav">
                     <ul>
-                        <li>
-                            <Link
-                                to="/"
-                                className={activeLink === 'home' ? 'active' : ''}
+                        <li className="nav-item">
+                            <a
+                                href="https://chandigarhpizza.ca/"
+                                className={`nav-link ${activeLink === 'home' ? 'active' : ''}`}
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    handleLinkClick('/');
+                                    // Optional: if you want to update state before the page leaves
+                                    handleLinkClick('home');
                                 }}
                             >
                                 <FaHome />
                                 <span className="nav-text">Home</span>
-                            </Link>
+                            </a>
                         </li>
-
-
-
-
 
 
                         {/* MENU with Submenu */}

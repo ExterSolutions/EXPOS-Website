@@ -1,6 +1,8 @@
+import { useContext } from "react";
 import { Button, Container, Modal } from "react-bootstrap";
 import { GoDotFill } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
+import { GlobalContext } from "../../context/GlobalContext";
 
 function DealsViewSelectionModal({
     viewSelection,
@@ -15,8 +17,14 @@ function DealsViewSelectionModal({
     Dips,
     dipsData,
     handleRemoveDips,
-    Sides
+    Sides,
+    pizzaState,
+    specialOfferData
 }) {
+    const { settings } = useContext(GlobalContext);
+    const settingsData = settings?.[0];
+    const premiumToppingCount = Number(settingsData?.find(s => s.settingCode === 'STG_7')?.settingValue || 1);
+
     return (
         <Modal
             show={viewSelection}
@@ -42,6 +50,34 @@ function DealsViewSelectionModal({
                                                 <p className="fs-5 mb-2 fw-bold">Free Dips: <span className='mx-2'>{freeDipsCount} / {numberOfDips}</span></p>
                                                 <p className="fs-5 fw-bold">Additional Dips: <span className='mx-2'>{addtionalDipsCount}</span></p>
                                             </>}
+                                            {specialOfferData?.noofToppings > 0 && (() => {
+                                                const noofPizzasCount = specialOfferData?.noofPizzas || 1;
+                                                const totalToppingsLimit = (specialOfferData.noofToppings || 0) * noofPizzasCount;
+
+                                                const totalSelected = pizzaState.reduce((acc, pizza) => {
+                                                    return acc + (pizza?.toppings?.countAsOneToppings?.length || 0) + ((pizza?.toppings?.countAsTwoToppings?.length || 0) * (premiumToppingCount || 1));
+                                                }, 0);
+
+                                                const freeUsed = Math.min(totalSelected, totalToppingsLimit);
+                                                const additional = Math.max(0, totalSelected - totalToppingsLimit);
+
+                                                return (
+                                                    <div className="mt-3">
+                                                        <p className="fs-5 mb-2 fw-bold">
+                                                            Free Toppings:{" "}
+                                                            <span className="mx-2">
+                                                                {freeUsed} / {totalToppingsLimit}
+                                                            </span>
+                                                        </p>
+                                                        <p className="fs-5 fw-bold">
+                                                            Additional Toppings:{" "}
+                                                            <span className={`mx-2 ${additional > 0 ? 'text-danger' : ''}`}>
+                                                                {additional}
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
@@ -59,7 +95,7 @@ function DealsViewSelectionModal({
                                 <p>DRINKS YOU SELECTED</p>
                                 <div className="mt-3 d-flex flex-wrap gap-3">
                                     {Drinks?.map((el) => {
-                                        return <div>
+                                        return <div key={el.drinksCode}>
                                             <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">{`${el?.drinksName}(${el?.quantity}) ($${el?.totalPrice})`}</button>
                                         </div>
                                     })}
@@ -69,8 +105,8 @@ function DealsViewSelectionModal({
                                 <p>DIPS YOU SELECTED</p>
                                 <div className="mt-3 d-flex flex-wrap gap-3">
                                     {Dips?.map((el) => {
-                                        return <div>
-                                            <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">{`${el?.dipsName}(${el?.quantity}) ($${dipsData?.find((data) => data?.dipsCode === el?.dipsCode)?.price * el?.quantity})`} <span className="ms-2" onClick={() => handleRemoveDips(el)}><IoMdClose /></span></button>
+                                        return <div key={el.dipsCode}>
+                                            <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">{`${el?.dipsName}(${el?.quantity}) ($${(dipsData?.find((data) => data?.dipsCode === el?.dipsCode)?.price || 0) * el?.quantity})`} <span className="ms-2" style={{ cursor: 'pointer' }} onClick={() => handleRemoveDips(el)}><IoMdClose /></span></button>
                                         </div>
                                     })}
                                 </div>
@@ -78,8 +114,8 @@ function DealsViewSelectionModal({
                             {Sides?.length > 0 && <div className="py-3 border-top pizza-card-border-color">
                                 <p>SIDES YOU SELECTED</p>
                                 <div className="mt-3 d-flex flex-wrap gap-3">
-                                    {Sides?.map((el) => {
-                                        return <div>
+                                    {Sides?.map((el, index) => {
+                                        return <div key={`${index}-${el.sideCode}`}>
                                             <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">{`${el?.sideName}(${el?.quantity}) ($${el?.totalPrice})`}</button>
                                         </div>
                                     })}
@@ -93,7 +129,7 @@ function DealsViewSelectionModal({
                 <Button
                     variant="danger"
                     onClick={() => {
-                        setViewSelection();
+                        setViewSelection(false);
                     }}
                 >
                     Close

@@ -20,39 +20,23 @@ function SidesConfig({ Sides, setSides, specialOfferData, activeAccordion, toggl
     };
 
     return (
-        <div className="mt-3">
-            <div className="accordion" id="accordionExample1">
-                <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingOne">
-                        <button
-                            className={`fw-bold fs-6 accordion-button ${activeAccordion === 'sides' ? '' : 'collapsed'}`}
-                            type="button"
-                            onClick={() => toggleAccordion('sides')}
-                            aria-expanded={activeAccordion === 'sides' ? 'true' : 'false'}
-                            aria-controls="collapseOne"
-                        >
-                            SIDES
-                        </button>
-                    </h2>
-                    <div
-                        id="collapseOne"
-                        className={`accordion-collapse collapse ${activeAccordion === 'sides' ? 'show' : ''}`}
-                        aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample1"
-                        style={{ overflow: "hidden" }}
-                    >
-                        <div className="accordion-body primary-background-color">
-                            {specialOfferData?.freesides?.map((data) => (
-                                <SidesSelector
-                                    key={data?.code}
-                                    Sides={Sides[0]}
-                                    setSides={setSides}
-                                    data={data}
-                                    handleSides={handleSides}
-                                />
-                            ))}
-                        </div>
-                    </div>
+        <div className="mt-4">
+            <div className="topping-header-bar" onClick={() => toggleAccordion('sides')}>
+                <span>SIDES</span>
+                <span className={`fa ${activeAccordion === 'sides' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+            </div>
+
+            <div className={`mt-2 ${activeAccordion === 'sides' ? 'd-block' : 'd-none'}`}>
+                <div className="accordion-body px-0 py-2">
+                    {specialOfferData?.freesides?.map((data, index) => (
+                        <SidesSelector
+                            key={`${index}-${data?.code}`}
+                            Sides={Sides[0]}
+                            setSides={setSides}
+                            data={data}
+                            handleSides={handleSides}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

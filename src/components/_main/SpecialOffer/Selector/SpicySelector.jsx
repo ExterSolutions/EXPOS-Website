@@ -1,34 +1,17 @@
 import { IoMdCheckmarkCircleOutline } from "react-icons/io"
 
 export const SpicySelector = ({ data, selectedSpicy, handleSpicy }) => {
-    const isSelected = selectedSpicy === data.spicyCode;
-    const containerStyle = {
-        cursor: 'pointer',
-    };
+    const code = data.spicyCode || data.code;
+    const isSelected = selectedSpicy === code;
+    const displayName = data.spicy || data.name || data.label || data.sideName || "Normal";
 
     return (
         <div
-            className={`${isSelected ? 'active' : ''}  py-3 px-3 mb-3 rounded-3`}
-            style={containerStyle}
-            onClick={() => handleSpicy(data.spicyCode)}
+            className={`theme-pill-item ${isSelected ? 'active' : ''}`}
+            onClick={() => handleSpicy(code)}
         >
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center gap-2">
-                    <input
-                        type="radio"
-                        className="form-check-input"
-                        checked={isSelected}
-                        readOnly
-                    />
-                    <p className="fs-6">
-                        {`${data.spicy} ($${data.price})`}
-                    </p>
-                </div>
-                <IoMdCheckmarkCircleOutline
-                    color={isSelected ? '#90EE90' : 'transparent'}
-                    size={25}
-                />
-            </div>
+            <span>{displayName}</span>
+            <span className="price-tag ms-1">(${parseFloat(data.price || 0).toFixed(2)})</span>
         </div>
     );
 };

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import ToppingsTwo from "./Toppings/ToppingsTwo";
 import ToppingsOne from "./Toppings/ToppingsOne";
 import ToppingsFree from "./Toppings/ToppingsFree";
+import { GlobalContext } from "../../../../context/GlobalContext";
 
 function Toppings({
     count,
@@ -10,16 +11,16 @@ function Toppings({
     setPizzaState,
     activeAccordion,
     toggleAccordion,
-    nonRegularToppingsTitle,
-    regularToppingsTitle,
-    premiumToppingCount,
+    noofToppings
 }) {
+    const { settings } = useContext(GlobalContext);
+    const settingsData = settings?.[0];
+
     const [Topping, setTopping] = useState("two");
-    //
-    const accordionButtonClass = `fw-bold fs-6 accordion-button ${activeAccordion === `toppings${count}` ? "" : "collapsed"
-        }`;
-    const accordionCollapseClass = `accordion-collapse collapse ${activeAccordion === `toppings${count}` ? "show" : ""
-        }`;
+
+    const nonRegularToppingsTitle = settingsData?.find(s => s.settingCode === 'STG_5')?.settingValue || "Premium Toppings";
+    const regularToppingsTitle = settingsData?.find(s => s.settingCode === 'STG_6')?.settingValue || "Regular Toppings";
+    const premiumToppingCount = Number(settingsData?.find(s => s.settingCode === 'STG_7')?.settingValue || 1);
 
     // Toggle isAllIndiansTps Flag - TRUE OR FALSE
     useEffect(() => {
@@ -52,98 +53,93 @@ function Toppings({
     }, [pizzaState[count]?.toppings?.freeToppings]);
 
     return (
-        <div className="mt-3">
-            <div className="accordion" id="accordionExample9">
-                <div className="accordion-item sub-accordion">
-                    <h2 className="accordion-header" id="headingNine">
-                        <button
-                            className={accordionButtonClass}
-                            type="button"
-                            onClick={() => toggleAccordion(`toppings${count}`)}
-                            aria-expanded={
-                                activeAccordion === `toppings${count}` ? "true" : "false"
-                            }
-                            aria-controls="collapseNine"
-                        >
-                            TOPPINGS
-                        </button>
-                    </h2>
+        <div className="mt-4">
+            <div className="topping-header-bar" onClick={() => toggleAccordion(`toppings${count}`)}>
+                <span>TOPPINGS</span>
+                <span className={`fa ${activeAccordion === `toppings${count}` ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+            </div>
+
+            <div className={`mt-2 ${activeAccordion === `toppings${count}` ? 'd-block' : 'd-none'}`}>
+                <div className="badge-container px-3 py-2">
+                    {noofToppings > 0 && (() => {
+                        const totalSelected = pizzaState.reduce((acc, pizza) => {
+                            return acc + (pizza?.toppings?.countAsOneToppings?.length || 0) + ((pizza?.toppings?.countAsTwoToppings?.length || 0) * (premiumToppingCount || 1));
+                        }, 0);
+                        const remaining = noofToppings - totalSelected;
+
+                     
+                    })()}
+                </div>
+
+                <div className="d-flex border-bottom">
                     <div
-                        id="collapseNine"
-                        className={accordionCollapseClass}
-                        aria-labelledby="headingNine"
-                        data-bs-parent="#accordionExample9"
-                        style={{ overflow: "hidden" }}
+                        className={`topping-tab flex-grow-1 ${Topping === "two" ? "active" : ""}`}
+                        onClick={() => setTopping("two")}
                     >
-                        <div className="accordion-body primary-background-color">
-                            <div className="pb-2 mb-2 d-flex justify-content-between row">
-                                <div
-                                    className={`cursor-pointer col-4 py-2 lh-sm text-center card-text-color ${Topping === "two" ? "tab-border" : ""
-                                        }`}
-                                    onClick={() => setTopping("two")}
-                                >
-                                    {nonRegularToppingsTitle}
-                                </div>
-                                <div
-                                    className={`cursor-pointer col-4 py-2 lh-sm text-center card-text-color ${Topping === "one" ? "tab-border" : ""
-                                        }`}
-                                    onClick={() => setTopping("one")}
-                                >
-                                    {regularToppingsTitle}
-                                </div>
-                                <div
-                                    className={`cursor-pointer col-4 py-2 lh-sm text-center card-text-color ${Topping === "free" ? "tab-border" : ""
-                                        }`}
-                                    onClick={() => setTopping("free")}
-                                >
-                                    Indian Style
-                                </div>
-                            </div>
-                            {Topping === "two" &&
-                                toppingsData?.toppings?.countAsTwo?.map((data, index) => {
-                                    return (
-                                        <ToppingsTwo
-                                            key={index}
-                                            count={count}
-                                            pizzaState={pizzaState}
-                                            setPizzaState={setPizzaState}
-                                            data={data}
-                                            ToppingsTwo={
-                                                pizzaState[count]?.toppings?.countAsTwoToppings
-                                            }
-                                        />
-                                    );
-                                })}
-                            {Topping === "one" &&
-                                toppingsData?.toppings?.countAsOne?.map((data, index) => {
-                                    return (
-                                        <ToppingsOne
-                                            key={index}
-                                            count={count}
-                                            pizzaState={pizzaState}
-                                            setPizzaState={setPizzaState}
-                                            data={data}
-                                            ToppingsOne={
-                                                pizzaState[count]?.toppings?.countAsOneToppings
-                                            }
-                                        />
-                                    );
-                                })}
-                            {Topping === "free" &&
-                                toppingsData?.toppings?.freeToppings?.map((data, index) => {
-                                    return (
-                                        <ToppingsFree
-                                            key={index}
-                                            count={count}
-                                            pizzaState={pizzaState}
-                                            setPizzaState={setPizzaState}
-                                            data={data}
-                                            ToppingsFree={pizzaState[count]?.toppings?.freeToppings}
-                                        />
-                                    );
-                                })}
-                        </div>
+                        {nonRegularToppingsTitle}
                     </div>
+                    <div
+                        className={`topping-tab flex-grow-1 ${Topping === "one" ? "active" : ""}`}
+                        onClick={() => setTopping("one")}
+                    >
+                        {regularToppingsTitle}
+                    </div>
+                    <div
+                        className={`topping-tab flex-grow-1 ${Topping === "free" ? "active" : ""}`}
+                        onClick={() => setTopping("free")}
+                    >
+                        Indian Style
+                    </div>
+                </div>
+
+                <div className="px-3 mt-3">
+                    {Topping === "two" &&
+                        toppingsData?.toppings?.countAsTwo?.map((data, index) => {
+                            return (
+                                <ToppingsTwo
+                                    key={index}
+                                    count={count}
+                                    pizzaState={pizzaState}
+                                    setPizzaState={setPizzaState}
+                                    data={data}
+                                    noofToppings={noofToppings}
+                                    premiumToppingCount={premiumToppingCount}
+                                    ToppingsTwo={
+                                        pizzaState[count]?.toppings?.countAsTwoToppings
+                                    }
+                                />
+                            );
+                        })}
+                    {Topping === "one" &&
+                        toppingsData?.toppings?.countAsOne?.map((data, index) => {
+                            return (
+                                <ToppingsOne
+                                    key={index}
+                                    count={count}
+                                    pizzaState={pizzaState}
+                                    setPizzaState={setPizzaState}
+                                    data={data}
+                                    noofToppings={noofToppings}
+                                    premiumToppingCount={premiumToppingCount}
+                                    ToppingsOne={
+                                        pizzaState[count]?.toppings?.countAsOneToppings
+                                    }
+                                />
+                            );
+                        })}
+                    {Topping === "free" &&
+                        toppingsData?.toppings?.freeToppings?.map((data, index) => {
+                            return (
+                                <ToppingsFree
+                                    key={index}
+                                    count={count}
+                                    pizzaState={pizzaState}
+                                    setPizzaState={setPizzaState}
+                                    data={data}
+                                    ToppingsFree={pizzaState[count]?.toppings?.freeToppings}
+                                />
+                            );
+                        })}
                 </div>
             </div>
         </div>

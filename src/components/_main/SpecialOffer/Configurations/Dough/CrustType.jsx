@@ -2,44 +2,40 @@ import React from 'react';
 import { CrustTypeSelector } from '../../Selector/CrustTypeSelector';
 
 function SpecialCrustType({ count, specialOfferData, pizzaState, setPizzaState }) {
-    // HANDLE CRUSTTYPE
-    const handleCrustType = (code) => {
-        const selectedCrustType = specialOfferData?.crustType?.find((data) => data.crustTypeCode === code);
-        if (!selectedCrustType) return;
+    const getItemID = (item) => item?.code || item?.crustTypeCode || item?.crustType || item?.name || item?.label || "";
+
+    const handleCrustType = (id) => {
+        const item = specialOfferData?.crustType?.find((data) => getItemID(data) === id);
+        if (!item) return;
 
         const updatedCrustType = {
-            crustTypeCode: selectedCrustType.crustTypeCode,
-            crustTypeName: selectedCrustType.crustType,
-            price: selectedCrustType.price,
+            crustTypeCode: getItemID(item),
+            crustTypeName: item.crustType || item.name || "Regular",
+            price: item.crustTypePrice || item.price || 0,
         };
 
-        const updatedPizzaState = [...pizzaState];
-        updatedPizzaState[count] = {
-            ...updatedPizzaState[count],
-            crustType: updatedCrustType,
-        };
-
-        setPizzaState(updatedPizzaState);
+        setPizzaState((prev) => {
+            const updatedPizzaState = [...prev];
+            updatedPizzaState[count] = {
+                ...updatedPizzaState[count],
+                crustType: updatedCrustType,
+            };
+            return updatedPizzaState;
+        });
     };
 
     return (
         <div className="mt-3">
-            <div className="">
-                <div className="">
-                    <h2 className="mb-3 primary-text-color" id="headingTwo">
-                        CRUST TYPE
-                    </h2>
-                    <div className="primary-background-color">
-                        {specialOfferData?.crustType?.map((data) => (
-                            <CrustTypeSelector
-                                key={data.code}
-                                data={data}
-                                selectedCrustType={pizzaState[count]?.crustType?.crustTypeCode}
-                                handleCrustType={handleCrustType}
-                            />
-                        ))}
-                    </div>
-                </div>
+            <div className="customization-category-label">Crust Type</div>
+            <div className="theme-pill-selector">
+                {specialOfferData?.crustType?.map((data, index) => (
+                    <CrustTypeSelector
+                        key={`${index}-${getItemID(data)}`}
+                        data={data}
+                        selectedCrustType={pizzaState[count]?.crustType?.crustTypeCode}
+                        handleCrustType={handleCrustType}
+                    />
+                ))}
             </div>
         </div>
     );

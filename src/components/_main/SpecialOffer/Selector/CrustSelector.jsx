@@ -1,34 +1,17 @@
 import { IoMdCheckmarkCircleOutline } from "react-icons/io"
 
 export const CrustSelector = ({ data, selectedCrust, handleCrust }) => {
-    const isSelected = selectedCrust === data.code;
-    const containerStyle = {
-        cursor: 'pointer',
-    };
+    const itemID = data?.code || data?.crustCode || data?.crustName || data?.name || data?.sideName || data?.pizza_crust_name || "";
+    const isSelected = !!selectedCrust && selectedCrust === itemID;
+    const displayName = data.crustName || data.name || data.sideName || data.pizza_crust_name || "Regular Crust";
 
     return (
         <div
-            className={`${isSelected ? 'active' : ''}  py-3 px-3 mb-3 rounded-3`}
-            style={containerStyle}
-            onClick={() => handleCrust(data.code)}
+            className={`theme-pill-item ${isSelected ? 'active' : ''}`}
+            onClick={() => handleCrust(itemID)}
         >
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center gap-2">
-                    <input
-                        type="radio"
-                        className="form-check-input"
-                        checked={isSelected}
-                        readOnly
-                    />
-                    <p className="fs-6">
-                        {`${data.crustName} ($${data.price})`}
-                    </p>
-                </div>
-                <IoMdCheckmarkCircleOutline
-                    color={isSelected ? '#90EE90' : 'transparent'}
-                    size={25}
-                />
-            </div>
+            <span>{displayName}</span>
+            <span className="price-tag ms-1">(${parseFloat(data.price || 0).toFixed(2)})</span>
         </div>
     );
 };

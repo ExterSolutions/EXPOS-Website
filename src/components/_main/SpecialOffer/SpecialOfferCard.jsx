@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
-function SpecialOfferCard({ data, colors }) {
+function SpecialOfferCard({ data, colors, basePath = "/specialoffer" }) {
     const navigate = useNavigate();
 
     const handleLinkClick = (e, productCode) => {
         e.preventDefault();
         if (!productCode) return;
-        navigate(`/specialoffer/${productCode}`);
+        navigate(`${basePath}/${productCode}`);
     };
 
     return (
@@ -46,7 +46,7 @@ function SpecialOfferCard({ data, colors }) {
                         className="pizza-price d-flex flex-column"
                         style={{
                             fontWeight: '700',
-                             color: 'var(--secondary)',
+                            color: 'var(--secondary)',
                             fontSize: '1.3rem',
                             lineHeight: '1.2',
                             flexShrink: 0

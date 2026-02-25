@@ -31,38 +31,23 @@ function DipsConfig({ Dips, setDips, dipsData, activeAccordion, toggleAccordion 
     };
 
     return (
-        <div className="mt-3">
-            <div className="accordion" id="accordionExample1">
-                <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingOne">
-                        <button
-                            className={`fw-bold fs-6 accordion-button ${activeAccordion === 'dips' ? '' : 'collapsed'}`}
-                            type="button"
-                            onClick={() => toggleAccordion('dips')}
-                            aria-expanded={activeAccordion === 'dips' ? 'true' : 'false'}
-                            aria-controls="collapseOne"
-                        >
-                            DIPS
-                        </button>
-                    </h2>
-                    <div
-                        id="collapseOne"
-                        className={`accordion-collapse collapse ${activeAccordion === 'dips' ? 'show' : ''}`}
-                        aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample1"
-                    >
-                        <div className="accordion-body primary-background-color">
-                            {dipsData?.map((data) => (
-                                <DipsSelector
-                                    key={data?.dipsCode}
-                                    Dips={Dips}
-                                    data={data}
-                                    handleDips={handleDips}
-                                    handleDipsQuantity={handleDipsQuantity}
-                                />
-                            ))}
-                        </div>
-                    </div>
+        <div className="mt-4">
+            <div className="topping-header-bar" onClick={() => toggleAccordion('dips')}>
+                <span>DIPS</span>
+                <span className={`fa ${activeAccordion === 'dips' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+            </div>
+
+            <div className={`mt-2 ${activeAccordion === 'dips' ? 'd-block' : 'd-none'}`}>
+                <div className="accordion-body px-0 py-2">
+                    {dipsData?.map((data, index) => (
+                        <DipsSelector
+                            key={`${index}-${data?.dipsCode}`}
+                            Dips={Dips}
+                            data={data}
+                            handleDips={handleDips}
+                            handleDipsQuantity={handleDipsQuantity}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

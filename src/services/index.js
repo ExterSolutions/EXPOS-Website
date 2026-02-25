@@ -334,10 +334,19 @@ export const fetchSignaturePizzaDefaults = async (code) => {
 };
 
 export const getSpecialOfferNew = async (code) => {
-  const { data: response } = await http.get(`/special-offers-web/${code}`);
+  const { data: response } = await http.get(`/special-offers-with-toppings/${code}`);
   return response;
 };
 
+// List for SpecialOfferWithToppingsList → GET /special-offers-with-toppings?storeCode=...
+export const getSpecialOffersWithToppingsList = async (storeCode) => {
+  const { data: response } = await http.get(
+    storeCode
+      ? `/special-offers-with-toppings?storeCode=${storeCode}`
+      : `/special-offers-with-toppings`
+  );
+  return response;
+};
 
 
 export const getSiteData = async () => {

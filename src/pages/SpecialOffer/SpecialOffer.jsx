@@ -17,13 +17,14 @@ import SidesConfig from "../../components/_main/SpecialOffer/Configurations/Side
 import ShowSpecialPizzaConfig from "../../components/_main/SpecialOffer/ShowSpecialPizzaConfig";
 import SpecialPizzaConfig from "../../components/_main/SpecialOffer/SpecialPizzaConfig";
 import CartFunction from "../../components/cart";
-import {GlobalContext} from "../../context/GlobalContext";
+import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import SPNotFound from "../../layouts/SPNotFound";
 import {
     getDips,
     getSpecialDetails,
     getToppings,
+    getAllIngredients,
     settingApi,
 } from "../../services";
 import DealsViewSelectionModal from "./DealsViewSelectionModal";
@@ -36,13 +37,14 @@ function SpecialOffer() {
     // context
     const globalCtx = useContext(GlobalContext);
     const [cart, setCart] = globalCtx.cart;
-    const settings = globalCtx.settings[0];
+    const [settings, setSettings] = globalCtx.settings;
     const currentStoreCode = globalCtx.currentStoreCode[0];
     const [showStorePopup, setShowStorePopup] = globalCtx.showStorePopup;
     const selectedType = globalCtx.selectedType[0];
 
     // states management
     const [toppingsData, setToppingsData] = useState(null);
+    const [allIngredients, setAllIngredients] = useState(null);
     const [dipsData, setDipsData] = useState(null);
     const [specialOfferData, setSpecialOfferData] = useState(null);
     const [specialOfferDealType, setSpecialOfferDealType] = useState(null);
@@ -76,6 +78,7 @@ function SpecialOffer() {
     const [viewSelection, setViewSelection] = useState(false);
     const [dealTypeAlert, setDealTypeAlert] = useState(false);
     const [settingsData, setSettingsData] = useState([]);
+    const premiumToppingCount = Number(settingsData?.find(s => s.settingCode === 'STG_7')?.settingValue || 1);
     //
     let calcDipsArr = [];
     let noOfAdditionalDips = Number(0);
@@ -87,11 +90,15 @@ function SpecialOffer() {
     // Get all ingredients data initially and maintain initial states
     const fetchData = async () => {
         try {
-            const [toppingsResponse, dipsResponse, settingResponse] =
-                await Promise.all([getToppings(), getDips(), settingApi()]);
+            const [toppingsResponse, dipsResponse, settingResponse, allIngredientsResponse] =
+                await Promise.all([getToppings(), getDips(), settingApi(), getAllIngredients()]);
             setSettingsData(settingResponse?.data);
+            setSettings(settingResponse?.data);
             setToppingsData(toppingsResponse?.data || []);
             setDipsData(dipsResponse?.data || []);
+            const ing = allIngredientsResponse?.data || allIngredientsResponse;
+            setAllIngredients(ing);
+            return ing;
         } catch (error) {
             if (error.response?.status === 400 || error.response?.status === 500) {
                 toast.error(
@@ -130,27 +137,41 @@ function SpecialOffer() {
     };
 
     // Get special data
-    const specialOffersData = async () => {
+    const specialOffersData = async (ingParam) => {
         try {
             const res = await getSpecialDetails(sid, currentStoreCode);
             const data = res?.data || null;
             if (data && isLimitedOfferActive(data)) {
-                setSpecialOfferData(data);
-                setName(data.name || "");
+                // Merge global ingredients if offer doesn't provide specific lists
+                const mergedData = { ...data };
+                const allIng = ingParam || allIngredients;
+                if (allIng) {
+                    if (allIng.cheese?.length > 0) mergedData.cheese = allIng.cheese;
+                    if (allIng.crust?.length > 0) mergedData.crust = allIng.crust;
+                    if (allIng.crustType?.length > 0) mergedData.crustType = allIng.crustType;
+                    if (allIng.specialbases?.length > 0) mergedData.specialBases = allIng.specialbases;
+                    else if (allIng.specialBases?.length > 0) mergedData.specialBases = allIng.specialBases;
+                    if (allIng.sauce?.length > 0) mergedData.sauce = allIng.sauce;
+                    if (allIng.spices?.length > 0) mergedData.spices = allIng.spices;
+                    if (allIng.cook?.length > 0) mergedData.cook = allIng.cook;
+                }
+
+                setSpecialOfferData(mergedData);
+                setName(mergedData.name || "");
                 const firstValidSize =
-                    data.pizza_prices?.find((price) => parseFloat(price.price) > 0)
+                    mergedData.pizza_prices?.find((price) => parseFloat(price.price) > 0)
                         ?.size || "";
                 setSize(firstValidSize);
-                setPizzaSubTitle(data.subtitle || "");
-                setPizzaSizeArr(data.pizza_prices || []);
-                setSpecialOfferDealType(data.dealType || "");
-                setNumberOfPizza(data.noofPizzas || 0);
-                setNumberOfDips(data.noofDips || 0);
-                setFreeDipsCount(data.noofDips || 0);
-                setNumberOfSides(data?.noofSides || 0);
-                setNumberOfDrinks(data?.noofDrinks || 0);
-                if (data?.noofSides > 0) {
-                    const selected = data?.freesides[0];
+                setPizzaSubTitle(mergedData.subtitle || "");
+                setPizzaSizeArr(mergedData.pizza_prices || []);
+                setSpecialOfferDealType(mergedData.dealType || "");
+                setNumberOfPizza(mergedData.noofPizzas || 0);
+                setNumberOfDips(mergedData.noofDips || 0);
+                setFreeDipsCount(mergedData.noofDips || 0);
+                setNumberOfSides(mergedData?.noofSides || 0);
+                setNumberOfDrinks(mergedData?.noofDrinks || 0);
+                if (mergedData?.noofSides > 0) {
+                    const selected = mergedData?.freesides[0];
                     const payload = {
                         sideCode: selected?.code,
                         sideName: selected?.sideName,
@@ -163,12 +184,12 @@ function SpecialOffer() {
                     };
                     setSides([payload]);
                 }
-                if (data?.noofDrinks > 0) {
+                if (mergedData?.noofDrinks > 0) {
                     const selected =
-                        data?.pops?.length > 0
-                            ? data.pops[0]
-                            : data?.bottle?.length > 0
-                                ? data.bottle[0]
+                        mergedData?.pops?.length > 0
+                            ? mergedData.pops[0]
+                            : mergedData?.bottle?.length > 0
+                                ? mergedData.bottle[0]
                                 : null;
                     if (selected) {
                         const payload = {
@@ -183,56 +204,60 @@ function SpecialOffer() {
                         setDrinks([]);
                     }
                 }
-                const crustObject = {
-                    crustCode: data.crust?.[0]?.code || '',
-                    crustName: data.crust?.[0]?.crustName || '',
-                    price: data.crust?.[0]?.price || 0,
-                };
-                const crustTypeObject = {
-                    crustTypeCode: data.crustType?.[0]?.crustTypeCode || '',
-                    crustType: data.crustType?.[0]?.crustType || '',
-                    price: data.crustType?.[0]?.price || 0,
-                };
-                const cheeseObject = {
-                    cheeseCode: data.cheese?.[0]?.code || '',
-                    cheeseName: data.cheese?.[0]?.cheeseName || '',
-                    price: data.cheese?.[0]?.price || 0,
-                };
-                const spicyObject = {
-                    spicyCode: data.spices?.[0]?.spicyCode || '',
-                    spicy: data.spices?.[0]?.spicy || '',
-                    price: data.spices?.[0]?.price || 0,
-                };
-                const sauceObject = {
-                    sauceCode: data.sauce?.[0]?.sauceCode || '',
-                    sauce: data.sauce?.[0]?.sauce || '',
-                    price: data.sauce?.[0]?.price || 0,
-                };
-                const cookObject = {
-                    cookCode: data.cook?.[0]?.cookCode || '',
-                    cook: data.cook?.[0]?.cook || '',
-                    price: data.cook?.[0]?.price || 0,
-                };
-                const specialBasesObject = {
-                    specialBasesCode: data.specialBases?.[0]?.specialBasesCode || '',
-                    specialBases: data.specialBases?.[0]?.specialBases || '',
-                    price: data.specialBases?.[0]?.price || 0,
-                }
-                const emptyObjectsArray = Array.from({ length: data.noofPizzas || 0 }, () => ({
-                    crust: crustObject,
-                    cheese: cheeseObject,
-                    crustType: crustTypeObject,
-                    specialBases: specialBasesObject,
-                    spicy: spicyObject,
-                    sauce: sauceObject,
-                    cook: cookObject,
-                    toppings: {
-                        countAsTwoToppings: [],
-                        countAsOneToppings: [],
-                        freeToppings: [],
-                        isAllIndiansTps: false,
-                    },
-                }));
+                const emptyObjectsArray = Array.from({ length: mergedData.noofPizzas || 0 }, () => {
+                    const firstCrust = mergedData.crust?.[0];
+                    const firstCrustType = mergedData.crustType?.[0];
+                    const firstCheese = mergedData.cheese?.[0];
+                    const firstSpicy = mergedData.spices?.[0];
+                    const firstSauce = mergedData.sauce?.[0];
+                    const firstCook = mergedData.cook?.[0];
+                    const firstSpecialBase = mergedData.specialBases?.[0];
+
+                    return {
+                        signaturePizza: mergedData.signaturePizzas?.[0] ? { ...mergedData.signaturePizzas[0] } : null,
+                        crust: {
+                            crustCode: firstCrust?.code || firstCrust?.crustCode || firstCrust?.crustName || firstCrust?.name || firstCrust?.sideName || firstCrust?.pizza_crust_name || 'Regular',
+                            crustName: firstCrust?.crustName || firstCrust?.name || 'Regular',
+                            price: firstCrust?.price || 0,
+                        },
+                        crustType: {
+                            crustTypeCode: firstCrustType?.code || firstCrustType?.crustTypeCode || firstCrustType?.crustType || firstCrustType?.name || firstCrustType?.label || 'Regular',
+                            crustTypeName: firstCrustType?.crustType || firstCrustType?.name || 'Regular',
+                            price: firstCrustType?.price || 0,
+                        },
+                        cheese: {
+                            cheeseCode: firstCheese?.code || firstCheese?.cheeseCode || firstCheese?.cheeseName || firstCheese?.name || firstCheese?.sideName || firstCheese?.pizza_cheese_name || 'Regular',
+                            cheeseName: firstCheese?.cheeseName || firstCheese?.name || 'Regular',
+                            price: firstCheese?.price || 0,
+                        },
+                        spicy: {
+                            spicyCode: firstSpicy?.code || firstSpicy?.spicyCode || firstSpicy?.spicy || firstSpicy?.name || firstSpicy?.label || 'Normal',
+                            spicy: firstSpicy?.spicy || firstSpicy?.name || 'Normal',
+                            price: firstSpicy?.price || 0,
+                        },
+                        sauce: {
+                            sauceCode: firstSauce?.code || firstSauce?.sauceCode || firstSauce?.sauce || firstSauce?.name || 'Normal',
+                            sauce: firstSauce?.sauce || firstSauce?.name || 'Normal',
+                            price: firstSauce?.price || 0,
+                        },
+                        cook: {
+                            cookCode: firstCook?.code || firstCook?.cookCode || firstCook?.cook || firstCook?.name || firstCook?.label || 'Normal',
+                            cook: firstCook?.cook || firstCook?.name || 'Normal',
+                            price: firstCook?.price || 0,
+                        },
+                        specialBases: {
+                            specialbaseCode: firstSpecialBase?.code || firstSpecialBase?.specialBasesCode || firstSpecialBase?.specialbaseCode || firstSpecialBase?.specialbaseName || firstSpecialBase?.name || firstSpecialBase?.specialBases || '',
+                            specialbaseName: firstSpecialBase?.specialbaseName || firstSpecialBase?.specialBases || firstSpecialBase?.name || 'None',
+                            price: firstSpecialBase?.price || 0,
+                        },
+                        toppings: {
+                            countAsTwoToppings: [],
+                            countAsOneToppings: [],
+                            freeToppings: [],
+                            isAllIndiansTps: false,
+                        },
+                    };
+                });
                 setPizzaState(emptyObjectsArray);
             }
         } catch (error) {
@@ -264,6 +289,7 @@ function SpecialOffer() {
                 count={i}
                 specialOfferData={specialOfferData}
                 toppingsData={toppingsData}
+                allIngredients={allIngredients}
                 pizzaState={pizzaState}
                 setPizzaState={setPizzaState}
                 activeAccordion={activeAccordion}
@@ -287,8 +313,8 @@ function SpecialOffer() {
 
     // Fetching data when the page loads
     const getData = async () => {
-        await fetchData();
-        await specialOffersData();
+        const ing = await fetchData();
+        await specialOffersData(ing);
     };
 
     useEffect(() => {
@@ -392,6 +418,18 @@ function SpecialOffer() {
             });
             price += Number(totalDipsPrice);
 
+            // Toppings Price Calculations
+            let totalToppingsPrice = 0;
+            pizzaState?.forEach((pizza) => {
+                pizza?.toppings?.countAsOneToppings?.forEach((t) => {
+                    totalToppingsPrice += Number(t.toppingsPrice || 0);
+                });
+                pizza?.toppings?.countAsTwoToppings?.forEach((t) => {
+                    totalToppingsPrice += Number(t.toppingsPrice || 0);
+                });
+            });
+            price += Number(totalToppingsPrice);
+
             let fixed_price = price.toFixed(2);
             let finalPrice = Number(fixed_price) * Number(pizzaQuantity);
             setPrice(Number(finalPrice).toFixed(2));
@@ -406,6 +444,7 @@ function SpecialOffer() {
         calcDipsArr,
         noOfFreeDips,
         noOfAdditionalDips,
+        pizzaQuantity
     ]);
 
     // Throttle function to limit scroll event frequency
@@ -511,24 +550,7 @@ function SpecialOffer() {
             <Header />
             <div className="nav-margin"></div>
             <div className="d-flex align-items-center justify-content-between innder-page-header">
-                <div className="flex-grow-1 section-header">
-                    <div className="container">
-                        <nav aria-label="breadcrumb">
-                            <ol className="breadcrumb custom-breadcrumb mt-3">
-                                <li className="breadcrumb-item" aria-current="page">
-                                    Home
-                                </li>
-                                <li
-                                    className="breadcrumb-item active"
-                                    aria-current="page"
-                                >
-                                    Deals
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <span className="category-subtitle"></span>
-                </div>
+
             </div>
 
             <div className="new-block" id="create-your-own-new">
@@ -797,27 +819,54 @@ function SpecialOffer() {
                                                         <div className="d-flex flex-column py-2">
                                                             {numberOfDips > 0 && (
                                                                 <>
-                                                                    <p className="fs-5 mb-2 fw-bold">
+                                                                    {/* <p className="fs-5 mb-2 fw-bold">
                                                                         Free Dips:{" "}
                                                                         <span className="mx-2">
                                                                             {freeDipsCount} / {numberOfDips}
                                                                         </span>
-                                                                    </p>
-                                                                    <p className="fs-5 fw-bold">
+                                                                    </p> */}
+                                                                    {/* <p className="fs-5 mb-2 fw-bold">
                                                                         Additional Dips:{" "}
                                                                         <span className="mx-2">
                                                                             {addtionalDipsCount}
                                                                         </span>
-                                                                    </p>
+                                                                    </p> */}
                                                                 </>
                                                             )}
+                                                            {specialOfferData?.noofToppings > 0 && (() => {
+                                                                const totalToppingsLimit = Number(specialOfferData.noofToppings || 0);
+
+                                                                const totalSelected = pizzaState.reduce((acc, pizza) => {
+                                                                    return acc + (pizza?.toppings?.countAsOneToppings?.length || 0) + ((pizza?.toppings?.countAsTwoToppings?.length || 0) * (premiumToppingCount || 1));
+                                                                }, 0);
+
+                                                                const freeUsed = Math.min(totalSelected, totalToppingsLimit);
+                                                                const additional = Math.max(0, totalSelected - totalToppingsLimit);
+
+                                                                return (
+                                                                    <>
+                                                                        <p className="fs-5 mb-2 fw-bold">
+                                                                            Free Toppings:{" "}
+                                                                            <span className="mx-2">
+                                                                                {freeUsed} / {totalToppingsLimit}
+                                                                            </span>
+                                                                        </p>
+                                                                        <p className="fs-5 fw-bold">
+                                                                            Additional Toppings:{" "}
+                                                                            <span className={`mx-2 ${additional > 0 ? 'text-danger' : ''}`}>
+                                                                                {additional}
+                                                                            </span>
+                                                                        </p>
+                                                                    </>
+                                                                );
+                                                            })()}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {size && (
-                                                <div className="border-top pizza-card-border-color mt-1 py-3">
+                                                <div className="border-top pizza-card-border-color ">
                                                     <div className="row">
                                                         <div className="col-lg-12">
                                                             {size && (
@@ -907,7 +956,7 @@ function SpecialOffer() {
 
             <DealsViewSelectionModal
                 viewSelection={viewSelection}
-                setViewSelection={setViewSelection}
+                setViewSelection={() => setViewSelection(false)}
                 numberOfDips={numberOfDips}
                 freeDipsCount={freeDipsCount}
                 addtionalDipsCount={addtionalDipsCount}
@@ -919,6 +968,8 @@ function SpecialOffer() {
                 dipsData={dipsData}
                 handleRemoveDips={handleRemoveDips}
                 Sides={Sides}
+                pizzaState={pizzaState}
+                specialOfferData={specialOfferData}
             />
             <Footer />
         </div>

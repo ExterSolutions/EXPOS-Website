@@ -4,10 +4,21 @@ import SpecialOffer from "../SpecialOffer";
 import Footer from "../../components/_main/Footer";
 import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
-import { specialIngredients } from "../../services";
+import { getSpecialOffersWithToppingsList } from "../../services";
 import { toast } from "react-toastify";
 
-function SpecialOfferList() {
+/**
+ * SpecialOfferWithToppingsList
+ * ----------------------------
+ * Dedicated list page for /special-offers-with-toppings
+ *
+ * API: GET /special-offers-with-toppings?storeCode=...
+ *      (completely separate endpoint from /special-offers used by SpecialOfferList)
+ *
+ * Card click → /special-offers-with-toppings/:code
+ *           → opens SpecialOffer.jsx (full toppings + crust + sauce + dips config)
+ */
+function SpecialOfferWithToppingsList() {
     const globalCtx = useContext(GlobalContext);
     const currentStoreCode = globalCtx.currentStoreCode[0];
 
@@ -24,22 +35,26 @@ function SpecialOfferList() {
         return true;
     };
 
-    const fetchSpecialOffers = async () => {
+    const fetchSpecialOffersWithToppings = async () => {
         try {
-            const res = await specialIngredients(currentStoreCode);
+            // Calls GET /special-offers-with-toppings?storeCode=...
+            const res = await getSpecialOffersWithToppingsList(currentStoreCode);
             if (res?.data && res?.data?.length > 0) {
                 const activeOffers = res.data.filter(isLimitedOfferActive);
                 setSpecialOfferData(activeOffers);
+            } else {
+                setSpecialOfferData([]);
             }
         } catch (err) {
-            toast.error("Error fetching Special Deals.");
+            toast.error("Error fetching Special Pizza with Toppings.");
+            console.error(err);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchSpecialOffers();
+        fetchSpecialOffersWithToppings();
     }, [currentStoreCode]);
 
     if (loading) return <LoadingLayout />;
@@ -50,15 +65,22 @@ function SpecialOfferList() {
             <div className="nav-margin"></div>
             <div className="d-flex align-items-center justify-content-between innder-page-header">
                 <div className="flex-grow-1 section-header">
-                    <span className="category-subtitle">Craving Something New?</span>
-                    <div className="section-title">Explore Our Special Deals</div>
+                    <span className="category-subtitle">Build It Your Way</span>
+                    <div className="section-title">Special Pizza + Toppings</div>
                 </div>
             </div>
-            {/* basePath /specialoffer → opens SpecialOfferPage (new clean UI, no toppings config) */}
-            <SpecialOffer specialOfferData={specialOfferData} basePath="/specialoffer" />
+            {/*
+                basePath="/special-offers-with-toppings"
+                → card Customize → /special-offers-with-toppings/:code
+                → opens SpecialOffer.jsx (full toppings, crust, sauce, dips customisation)
+            */}
+            <SpecialOffer
+                specialOfferData={specialOfferData}
+                basePath="/special-offers-with-toppings"
+            />
             <Footer />
         </div>
     );
 }
 
-export default SpecialOfferList;
+export default SpecialOfferWithToppingsList;
