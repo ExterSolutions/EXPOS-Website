@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import SpecialDough from "./Configurations/Dough";
 import SpecialCheese from "./Configurations/Cheese";
 import SpecialSpicy from "./Configurations/Spicy";
@@ -28,9 +29,9 @@ function SpecialPizzaConfig({ count, specialOfferData, pizzaState, setPizzaState
 
     return (
         <div className="mt-3">
-            <div className="topping-header-bar mb-1" onClick={() => setIsOpen(!isOpen)}>
+            <div className="topping-header-bar mb-1" style={{ backgroundColor: 'var(--primary)' }} onClick={() => setIsOpen(!isOpen)}>
                 <span>PIZZA - {count + 1}</span>
-                <span className={`fa ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+                {isOpen ? <FaChevronUp /> : <FaChevronDown />}
             </div>
 
             <div className={`mt-2 ${isOpen ? 'd-block' : 'd-none'} border p-3 rounded-2`}>

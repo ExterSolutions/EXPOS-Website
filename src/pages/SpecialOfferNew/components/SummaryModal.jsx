@@ -47,15 +47,15 @@ const SummaryModal = ({ ...props }) => {
                                     ...(pizza.toppings?.countAsOneToppings || []),
                                     ...(pizza.toppings?.freeToppings || [])
                                 ];
-                                if (pizza?.signaturePizzaCode === undefined && pizza?.signaturePizzaCode === null && pizza?.signaturePizzaCode === "") {
-                                    return <></>
+                                if (!pizza?.signaturePizzaCode || pizza?.signaturePizzaCode === "") {
+                                    return null;
                                 }
 
                                 return (
                                     <div className="my-2 theme-top-border" key={idx}>
                                         <div className="d-flex gap-2 mb-1 pt-1">
                                             <strong className="text-muted">Pizza :</strong>
-                                            <span className="fw-medium">{pizza.signaturePizzaName || "Not Selected"}</span>
+                                            <span className="fw-medium">{pizza.signaturePizzaName}</span>
                                         </div>
 
                                         <div className="d-flex flex-row gap-1">
@@ -121,7 +121,7 @@ const SummaryModal = ({ ...props }) => {
                         }
 
                         {/* Selected Side */}
-                        {selectedSide && Object.keys(selectedSide).length > 0 && (
+                        {selectedSide && (Array.isArray(selectedSide) ? selectedSide.length > 0 : Object.keys(selectedSide).length > 0) && (
                             <div className="my-2 theme-top-border">
                                 <div className="d-flex flex-row align-items-center gap-2 pt-1">
                                     <strong className="text-muted">Side:</strong>
@@ -135,7 +135,7 @@ const SummaryModal = ({ ...props }) => {
                         )}
 
                         {/* Selected Drink */}
-                        {selectedDrink && Object.keys(selectedDrink).length > 0 && (
+                        {selectedDrink && (Array.isArray(selectedDrink) ? selectedDrink.length > 0 : Object.keys(selectedDrink).length > 0) && (
                             <div className="my-2 theme-top-border">
                                 <div className="d-flex flex-row align-items-center gap-2 pt-1">
                                     <strong className="text-muted">Drink:</strong>

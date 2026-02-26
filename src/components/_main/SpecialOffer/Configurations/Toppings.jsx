@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import ToppingsTwo from "./Toppings/ToppingsTwo";
 import ToppingsOne from "./Toppings/ToppingsOne";
 import ToppingsFree from "./Toppings/ToppingsFree";
@@ -56,7 +57,7 @@ function Toppings({
         <div className="mt-4">
             <div className="topping-header-bar" onClick={() => toggleAccordion(`toppings${count}`)}>
                 <span>TOPPINGS</span>
-                <span className={`fa ${activeAccordion === `toppings${count}` ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+                {activeAccordion === `toppings${count}` ? <FaChevronUp /> : <FaChevronDown />}
             </div>
 
             <div className={`mt-2 ${activeAccordion === `toppings${count}` ? 'd-block' : 'd-none'}`}>
@@ -67,7 +68,7 @@ function Toppings({
                         }, 0);
                         const remaining = noofToppings - totalSelected;
 
-                     
+
                     })()}
                 </div>
 

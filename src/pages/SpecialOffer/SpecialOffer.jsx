@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 // import Tabs from "../../components/Tabs/Tabs";
 import { useContext, useEffect, useState } from "react";
-import { FaEye, FaMinus, FaPlus } from "react-icons/fa6";
+import { FaEye, FaMinus, FaPlus, FaChevronUp, FaChevronDown } from "react-icons/fa6";
 import { IoMdCheckmarkCircleOutline, IoMdClose } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import pizzaimage from "../../assets/images/pz.png";
@@ -647,6 +647,7 @@ function SpecialOffer() {
                                         </div>
                                     </div>
                                 </div>
+
                                 {/* size */}
                                 <div className="mt-3">
                                     <div className="accordion" id="accordion-size">
@@ -663,6 +664,7 @@ function SpecialOffer() {
                                                     aria-controls="collapseSize"
                                                 >
                                                     SELECT SIZE
+                                                    {/* {activeAccordion === "size" ? <FaChevronUp className="ms-auto" /> : <FaChevronDown className="ms-auto" />} */}
                                                 </button>
                                             </h2>
                                             <div
@@ -709,6 +711,8 @@ function SpecialOffer() {
                                         </div>
                                     </div>
                                 </div>
+
+
 
                                 <p className="fs-3 fw-bold mt-5">CUSTOMIZE</p>
 
@@ -776,7 +780,7 @@ function SpecialOffer() {
                                                     $ {price}
                                                 </p>
                                                 <div
-                                                    className="d-flex justify-content-center  justify-content-lg-start align-items-center mt-3"
+                                                    className="d-flex justify-content-center  justify-content-lg-start align-items-center mt-3 py-2"
                                                     style={{ userSelect: "none" }}
                                                 >
                                                     <button
@@ -788,7 +792,7 @@ function SpecialOffer() {
                                                     >
                                                         <FaMinus className="pizzaQtyButtonSpan" />
                                                     </button>
-                                                    <p className="lh-sm fs-4 fw-bold mx-2">
+                                                    <p className="lh-sm fs-4 fw-bold mx-3">
                                                         {pizzaQuantity}
                                                     </p>
                                                     <button
@@ -946,7 +950,7 @@ function SpecialOffer() {
                         </div>
                     </div>
                 </section>
-            </div>
+            </div >
 
             <ResponsiveCart
                 handleCart={handleAddToCart}
@@ -972,7 +976,7 @@ function SpecialOffer() {
                 specialOfferData={specialOfferData}
             />
             <Footer />
-        </div>
+        </div >
 
     );
 }

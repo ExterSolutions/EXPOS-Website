@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 import DrinksSelector from '../Selector/DrinksSelector';
 
 function DrinksConfig({ Drinks, setDrinks, specialOfferData, activeAccordion, toggleAccordion }) {
@@ -20,10 +21,10 @@ function DrinksConfig({ Drinks, setDrinks, specialOfferData, activeAccordion, to
         <div className="mt-4">
             <div className="topping-header-bar" onClick={() => toggleAccordion('drinks')}>
                 <span>DRINKS</span>
-                <span className={`fa ${activeAccordion === 'drinks' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+                {activeAccordion === 'drinks' ? <FaChevronUp /> : <FaChevronDown />}
             </div>
 
-            <div className={`mt-2 ${activeAccordion === 'drinks' ? 'd-block' : 'd-none'}`}>
+            <div className={`mt-2 ${activeAccordion === 'drinks' ? 'd-block' : 'd-none'} border p-3 rounded-2`}>
                 <div className="accordion-body px-0 py-2">
                     {specialOfferData?.pops?.map((data, index) => (
                         <DrinksSelector

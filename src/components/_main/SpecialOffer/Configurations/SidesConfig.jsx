@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 import SidesSelector from '../Selector/SidesSelector';
 
 function SidesConfig({ Sides, setSides, specialOfferData, activeAccordion, toggleAccordion }) {
@@ -23,10 +24,10 @@ function SidesConfig({ Sides, setSides, specialOfferData, activeAccordion, toggl
         <div className="mt-4">
             <div className="topping-header-bar" onClick={() => toggleAccordion('sides')}>
                 <span>SIDES</span>
-                <span className={`fa ${activeAccordion === 'sides' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+                {activeAccordion === 'sides' ? <FaChevronUp /> : <FaChevronDown />}
             </div>
 
-            <div className={`mt-2 ${activeAccordion === 'sides' ? 'd-block' : 'd-none'}`}>
+            <div className={`mt-2 ${activeAccordion === 'sides' ? 'd-block' : 'd-none'} border p-3 rounded-2`}>
                 <div className="accordion-body px-0 py-2">
                     {specialOfferData?.freesides?.map((data, index) => (
                         <SidesSelector

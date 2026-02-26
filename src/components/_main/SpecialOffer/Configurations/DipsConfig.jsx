@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import DipsSelector from '../Selector/DipsSelector';
 
 function DipsConfig({ Dips, setDips, dipsData, activeAccordion, toggleAccordion }) {
@@ -33,12 +34,12 @@ function DipsConfig({ Dips, setDips, dipsData, activeAccordion, toggleAccordion 
     return (
         <div className="mt-4">
             <div className="topping-header-bar" onClick={() => toggleAccordion('dips')}>
-                <span>DIPS</span>
-                <span className={`fa ${activeAccordion === 'dips' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></span>
+                <span>Choose Your Dips (Free limit: 2)</span>
+                {activeAccordion === 'dips' ? <FaChevronUp /> : <FaChevronDown />}
             </div>
 
-            <div className={`mt-2 ${activeAccordion === 'dips' ? 'd-block' : 'd-none'}`}>
-                <div className="accordion-body px-0 py-2">
+            <div className={`${activeAccordion === 'dips' ? 'd-block' : 'd-none'} dips-container`}>
+                <div className="accordion-body px-0 py-0">
                     {dipsData?.map((data, index) => (
                         <DipsSelector
                             key={`${index}-${data?.dipsCode}`}

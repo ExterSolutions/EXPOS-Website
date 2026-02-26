@@ -5,7 +5,7 @@ import Footer from "../components/_main/Footer";
 import { useLocation } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
 import CartFunction from "../components/cart";
-import { getDynamicSlider, getDynamicSlidersImage, getHomePizzas, settingApi } from "../services";
+import { getDynamicSlider, getDynamicSlidersImage, getHomePizzas, settingApi, getSpecialOffersWithToppingsList } from "../services";
 import { toast } from "react-toastify";
 import PizzaCarousel from "../components/_main/Carousel/PizzaCarousel";
 // import "../assets/styles/theme/theme.css";
@@ -21,32 +21,33 @@ const HeroSliderNew = lazy(() => import('../components/_main/Carousel/HeroSlider
 
 const Home = () => {
     const [loading, setLoading] = useState(true);
-    
+
     // Global Context - WITH SAFE ACCESS
     const globalctx = useContext(GlobalContext);
-    
+
     // Check if context is available
     if (!globalctx) {
         console.error("GlobalContext is not available in Home component");
         return <LoadingLayout message="Loading context..." />;
     }
-    
+
     // Safely destructure with defaults
-    const cartContext = globalctx.cart || [{ product: [] }, () => {}];
-    const urlPathContext = globalctx.urlPath || [null, () => {}];
-    const settingsContext = globalctx.settings || [null, () => {}];
-    const selectedTypeContext = globalctx.selectedType || ["delivery", () => {}];
-    const scrollToSignatureContext = globalctx.scrollToSignature || [false, () => {}];
-    
+    const cartContext = globalctx.cart || [{ product: [] }, () => { }];
+    const urlPathContext = globalctx.urlPath || [null, () => { }];
+    const settingsContext = globalctx.settings || [null, () => { }];
+    const selectedTypeContext = globalctx.selectedType || ["delivery", () => { }];
+    const scrollToSignatureContext = globalctx.scrollToSignature || [false, () => { }];
+
     const [cart, setCart] = cartContext;
     const [url, setUrl] = urlPathContext;
     const [settings, setSettings] = settingsContext;
     const [selectedType, setSelectedType] = selectedTypeContext;
     const [scrollToSignature, setScrollToSignature] = scrollToSignatureContext;
-    
+
     const [otherPizzaList, setOtherPizzaList] = useState(null);
     const [PopulerPizzaList, setPopulerPizzaList] = useState(null);
     const [specialOfferList, setSpecialOfferList] = useState(null);
+    const [specialPizzaWithToppings, setSpecialPizzaWithToppings] = useState(null);
     const [signaturePizzaList, setSignaturePizzaList] = useState(null);
     const [offerCards, setOfferCards] = useState([]);
     const [getSlider, setGetSlider] = useState([]);
@@ -77,16 +78,18 @@ const Home = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [getHomePizzasResponse, sliderData, getDynamicSliderResponse] = await Promise.all([
+            const [getHomePizzasResponse, sliderData, getDynamicSliderResponse, specialWithToppingsResponse] = await Promise.all([
                 getHomePizzas(),
                 getDynamicSlider(),
                 getDynamicSlidersImage(),
+                getSpecialOffersWithToppingsList(),
             ]);
 
             setOtherPizzaList(getHomePizzasResponse?.data?.otherPizzas);
             setSpecialOfferList(getHomePizzasResponse?.data?.specialPizzas);
             setSignaturePizzaList(getHomePizzasResponse?.data?.signaturePizzas);
             setOfferCards(getHomePizzasResponse?.data?.offerCards);
+            setSpecialPizzaWithToppings(specialWithToppingsResponse?.data || []);
             setGetSlider(sliderData?.data);
             setSliderDataNew(getDynamicSliderResponse?.data?.filter((data) => data?.code !== "static"));
 
@@ -147,7 +150,7 @@ const Home = () => {
                 <CategoryPizza />
                 <OfferCards offers={offerCards} />
                 <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
-                <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals+toppings`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
+                <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals+toppings`} pizzas={specialPizzaWithToppings} type="special" redirectBase={'/special-offers-with-toppings'} />
                 <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Our Delicious Items`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} />
                 <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Our Customers Top Picks`} pizzas={otherPizzaList} type="other" redirectBase={'/otherpizza'} />
                 <PizzaCarousel sectionSubTitle={`Select your Flavour`} sectionTitle={`Try Our Bestsellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} />

@@ -29,7 +29,7 @@ function ToppingsTwoSelector({ data, multiplier, ToppingsTwo, handleTopping, han
                 <div className="d-flex align-items-center">
                     <span className={`topping-radio-circle ${isSelected ? 'checked' : ''}`}></span>
                     <span className="topping-item-name">
-                        {data?.toppingsName} {multiplier > 0 && <span className="text-secondary opacity-75 ms-1" style={{ fontSize: '0.8em' }}>( -{multiplier} )</span>} {data?.price > 0 ? `($${data.price})` : ''}
+                        {data?.toppingsName} {multiplier > 0 } {data?.price > 0 ? `($${data.price})` : ''}
                     </span>
                 </div>
                 {isSelected && <IoMdCheckmarkCircleOutline className="topping-check-icon" />}

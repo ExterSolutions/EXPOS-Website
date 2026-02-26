@@ -1,7 +1,6 @@
 import React from "react";
 import fallbackImage from "../../../assets/images/default-pizza.jpg";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { GoDotFill } from "react-icons/go";
 
 const SummarySidebar = ({ ...props }) => {
     const {
@@ -15,7 +14,7 @@ const SummarySidebar = ({ ...props }) => {
         totalPrice,
         quantity,
         setQuantity,
-        isEditMode = false, // New prop to determine mode
+        isEditMode = false,
     } = props;
 
     const buttonText = isEditMode ? "Update Cart" : "Add to Cart";
@@ -23,8 +22,8 @@ const SummarySidebar = ({ ...props }) => {
     return (
         <div className="right-side-div sticky-top">
             <div className="p-3 right-side-internal-div-new card-background-color card-text-color">
-
                 <div className="px-3 row">
+
                     <div className="col-lg-6 p-3 rounded-3">
                         <img
                             className="pizzaImageBorder"
@@ -36,15 +35,14 @@ const SummarySidebar = ({ ...props }) => {
                             }}
                         />
                     </div>
+
                     {/* Quantity Selector */}
                     <div className="col-lg-6">
                         <div className="d-flex flex-column align-items-center gap-3 py-3">
                             <div className="lh-sm fs-1 fw-bold text-center">
                                 ${(parseFloat(totalPrice) * quantity).toFixed(2)}
                             </div>
-                            <div
-                                className="d-flex align-items-center justify-content-center gap-2"
-                            >
+                            <div className="d-flex align-items-center justify-content-center gap-2">
                                 <button
                                     type="button"
                                     className="btn btn-secondary rounded-circle pizzaQtyButton"
@@ -53,7 +51,7 @@ const SummarySidebar = ({ ...props }) => {
                                 >
                                     <FaMinus className="pizzaQtyButtonSpan" />
                                 </button>
-                                <div className=" fs-4 fw-bold mx-2">
+                                <div className="fs-4 fw-bold mx-2">
                                     {quantity}
                                 </div>
                                 <button
@@ -68,7 +66,7 @@ const SummarySidebar = ({ ...props }) => {
                             {/* Action Button */}
                             <button
                                 type="button"
-                                className={`view-button px-3`}
+                                className="view-button px-3"
                                 onClick={onAddToCart}
                             >
                                 {buttonText}
@@ -77,6 +75,7 @@ const SummarySidebar = ({ ...props }) => {
                     </div>
 
                     <div className="col-12">
+
                         {/* Selected Size */}
                         {selectedSize && (
                             <div className="mb-1 theme-top-border">
@@ -91,29 +90,29 @@ const SummarySidebar = ({ ...props }) => {
                         {pizzaSelections && pizzaSelections.length > 0 &&
                             pizzaSelections.map((pizza, idx) => {
 
+                                // Skip pizzas that haven't been selected yet
+                                if (!pizza?.signaturePizzaCode || pizza?.signaturePizzaCode === "") {
+                                    return null;
+                                }
+
                                 // Collect all toppings into one array
                                 const allToppings = [
                                     ...(pizza.toppings?.countAsTwoToppings || []),
                                     ...(pizza.toppings?.countAsOneToppings || []),
-                                    ...(pizza.toppings?.freeToppings || [])
+                                    ...(pizza.toppings?.freeToppings || []),
                                 ];
-                                if (pizza?.signaturePizzaCode === undefined && pizza?.signaturePizzaCode === null && pizza?.signaturePizzaCode === "") {
-                                    return <></>
-                                }
 
                                 return (
-                                    <div className="my-2 theme-top-border" key={idx}>
+                                    <div className="my-2 theme-top-border" key={`pizza-${idx}`}>
                                         <div className="d-flex gap-2 mb-1 pt-1">
                                             <strong className="text-muted">Pizza :</strong>
-                                            <span className="fw-medium">{pizza.signaturePizzaName || "Not Selected"}</span>
+                                            <span className="fw-medium">{pizza.signaturePizzaName}</span>
                                         </div>
 
                                         <div className="d-flex flex-row gap-1">
                                             <div className="flex-fill">
                                                 <div className="small">
-                                                    <span>
-                                                        Cheese:
-                                                    </span>
+                                                    <span>Cheese:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.cheese?.cheeseName}</span>
                                                 </div>
                                                 <div className="small">
@@ -121,40 +120,30 @@ const SummarySidebar = ({ ...props }) => {
                                                     <span className="ms-2 fw-medium">{pizza?.crust?.crustName}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>
-                                                        Crust Type:
-                                                    </span>
+                                                    <span>Crust Type:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.crustType?.crustType}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>
-                                                        Special Base:
-                                                    </span>
+                                                    <span>Special Base:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.specialBases?.specialbaseName}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>
-                                                        Sauce:
-                                                    </span>
+                                                    <span>Sauce:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.sauce?.sauce}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>
-                                                        Cook:
-                                                    </span>
+                                                    <span>Cook:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.cook?.cook}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>
-                                                        Spicy:
-                                                    </span>
+                                                    <span>Spicy:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.spicy?.spicy}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {allToppings.length > 0 && (
-                                            <div className="d-flex flex-column gap-1">
+                                            <div className="d-flex flex-column gap-1 mt-1">
                                                 <div className="text-muted small">Toppings:</div>
                                                 <div className="fw-medium d-flex flex-wrap gap-1">
                                                     {allToppings.map((topping, tIdx) => (
@@ -166,12 +155,12 @@ const SummarySidebar = ({ ...props }) => {
                                             </div>
                                         )}
                                     </div>
-                                )
+                                );
                             })
                         }
 
                         {/* Selected Side */}
-                        {selectedSide && Object.keys(selectedSide).length > 0 && (
+                        {selectedSide && (Array.isArray(selectedSide) ? selectedSide.length > 0 : Object.keys(selectedSide).length > 0) && (
                             <div className="my-2 theme-top-border">
                                 <div className="d-flex flex-row align-items-center gap-2 pt-1">
                                     <strong className="text-muted">Side:</strong>
@@ -185,7 +174,7 @@ const SummarySidebar = ({ ...props }) => {
                         )}
 
                         {/* Selected Drink */}
-                        {selectedDrink && Object.keys(selectedDrink).length > 0 && (
+                        {selectedDrink && (Array.isArray(selectedDrink) ? selectedDrink.length > 0 : Object.keys(selectedDrink).length > 0) && (
                             <div className="my-2 theme-top-border">
                                 <div className="d-flex flex-row align-items-center gap-2 pt-1">
                                     <strong className="text-muted">Drink:</strong>
@@ -213,10 +202,11 @@ const SummarySidebar = ({ ...props }) => {
                                 </div>
                             </div>
                         )}
+
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

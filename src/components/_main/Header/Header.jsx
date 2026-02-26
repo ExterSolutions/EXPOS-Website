@@ -14,7 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from '../../../context/GlobalContext';
 // import DeliveryPickupModalPopup from '../DeliveryPickupModalPopup';
 import SearchDropdown from './SearchDropdown';
-
+import { GiFullPizza } from "react-icons/gi";
 // Import custom hooks
 import { useStickyHeader } from './hooks/useStickyHeader';
 import { useDropdown } from './hooks/useDropdown';
@@ -72,7 +72,7 @@ const Header = () => {
 
     const circleMenuItems = [
         { id: "specialoffer", name: "Special Deals", icon: <FaTag className="w-4 h-4" /> },
-        { id: "special-offers-with-toppings", name: "SpecialPizza + Toppings", icon: <FaTag className="w-4 h-4" /> },
+        { id: "special-offers-with-toppings", name: "SpecialPizza + Toppings", icon: <GiFullPizza className="w-4 h-4" /> },
         { id: "signaturepizza", name: "Signature Pizza", icon: <FaPizzaSlice className="w-4 h-4" /> },
         { id: "otherpizza", name: "Other Pizza", icon: <GiPizzaSlice className="w-4 h-4" /> },
         { id: "sides", name: "Sides", icon: <PiHamburgerFill className="w-4 h-4" /> },

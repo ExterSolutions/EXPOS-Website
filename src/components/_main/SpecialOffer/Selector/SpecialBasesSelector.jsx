@@ -11,7 +11,7 @@ export const SpecialBasesSelector = ({ data, selectedSpecialBases, handleSpecial
             onClick={() => handleSpecialBases(itemID)}
         >
             <span>{displayName}</span>
-            <span className="price-tag ms-1">(${parseFloat(data.price || 0).toFixed(2)})</span>
+            <span className=" ms-1">(${parseFloat(data.price || 0).toFixed(2)})</span>
         </div>
     );
 };

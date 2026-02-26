@@ -97,7 +97,7 @@ const PizzaCustomizerAccordion = ({
         const selectedPizza = pizzas?.find((p) => (p.code || p.sideCode || p.id) === code) || null;
         if (selectedPizza) {
             onUpdateCustomization(index, "signaturePizzaCode", selectedPizza.code || selectedPizza.sideCode || selectedPizza.id);
-            onUpdateCustomization(index, "signaturePizzaName", selectedPizza.pizzaName || selectedPizza.name || "");
+            onUpdateCustomization(index, "signaturePizzaName", selectedPizza.pizza_name || selectedPizza.pizzaName || selectedPizza.name || selectedPizza.sideName || "");
             // ✅ CRITICAL: Reset toppings when signature pizza changes
             onUpdateCustomization(index, "toppings", {
                 countAsTwoToppings: [],
