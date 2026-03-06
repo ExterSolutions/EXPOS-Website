@@ -26,8 +26,8 @@ function SpecialCrustType({ count, specialOfferData, pizzaState, setPizzaState }
 
     return (
         <div className="mt-3">
-            <div className="customization-category-label">Crust Type</div>
-            <div className="theme-pill-selector">
+            <div className="fw-medium mb-2 text-secondary">Crust Type</div>
+            <div className="d-flex flex-wrap gap-2">
                 {specialOfferData?.crustType?.map((data, index) => (
                     <CrustTypeSelector
                         key={`${index}-${getItemID(data)}`}

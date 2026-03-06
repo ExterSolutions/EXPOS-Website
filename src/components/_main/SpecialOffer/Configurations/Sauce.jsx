@@ -25,8 +25,8 @@ function SpecialSauce({ count, specialOfferData, pizzaState, setPizzaState, acti
 
     return (
         <div className="mt-3">
-            <div className="customization-category-label">Sauce</div>
-            <div className="theme-pill-selector">
+            <div className="fw-medium mb-2 text-secondary">Sauce</div>
+            <div className="d-flex flex-wrap gap-2">
                 {specialOfferData?.sauce?.map((data) => (
                     <SauceSelector
                         key={data.sauceCode || data.code}

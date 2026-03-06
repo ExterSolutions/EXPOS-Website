@@ -26,8 +26,8 @@ function SpecialSpicy({ count, specialOfferData, pizzaState, setPizzaState, acti
 
     return (
         <div className="mt-3">
-            <div className="customization-category-label">Spicy</div>
-            <div className="theme-pill-selector">
+            <div className="fw-medium mb-2 text-secondary">Spicy</div>
+            <div className="d-flex flex-wrap gap-2">
                 {(specialOfferData?.spices || specialOfferData?.spicy)?.map((data) => (
                     <SpicySelector
                         key={data.spicyCode || data.code}

@@ -206,7 +206,7 @@ const MobileMenu = () => {
                                     </Link>
                                 </li>
 
-                                <li key="mmenu-drinks">
+                                <li key="mmenu-allmenu">
                                     <Link
                                         to="/create-your-own"
                                         onClick={(e) => {
@@ -218,7 +218,7 @@ const MobileMenu = () => {
                                     </Link>
                                 </li>
 
-                                <li key="mmenu-drinks">
+                                <li key="mmenu-own">
                                     <Link
                                         to="/create-your-own"
                                         onClick={(e) => {

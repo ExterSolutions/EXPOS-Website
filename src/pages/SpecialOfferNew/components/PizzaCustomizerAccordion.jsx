@@ -15,6 +15,7 @@ const PizzaCustomizerAccordion = ({
     onUpdateCustomization,
     isEditMode = false,
 }) => {
+    console.log('offerData',offerData)
     const hasPreselectedFreeToppingsRef = useRef(false);
     const hasHydratedEditRef = useRef(false);
     const accordionId = `pizzaAccordion-${index}`;

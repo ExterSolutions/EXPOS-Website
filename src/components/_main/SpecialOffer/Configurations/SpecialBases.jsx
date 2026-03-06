@@ -35,8 +35,8 @@ function SpecialSpecialBases({ count, specialOfferData, pizzaState, setPizzaStat
 
     return (
         <div className="mt-3">
-            <div className="customization-category-label">Special Base</div>
-            <div className="theme-pill-selector">
+            <div className="fw-medium mb-2 text-secondary">Special Base</div>
+            <div className="d-flex flex-wrap gap-2">
                 {(specialOfferData?.specialbases || specialOfferData?.specialBases)?.map((data, index) => (
                     <SpecialBasesSelector
                         key={`${index}-${getItemID(data)}`}

@@ -26,8 +26,8 @@ function SpecialCook({ count, specialOfferData, pizzaState, setPizzaState, activ
 
     return (
         <div className="mt-3">
-            <div className="customization-category-label">Cook</div>
-            <div className="theme-pill-selector">
+            <div className="fw-medium mb-2 text-secondary">Cook</div>
+            <div className="d-flex flex-wrap gap-2">
                 {specialOfferData?.cook?.map((data) => (
                     <CookSelector
                         key={data.cookCode || data.code}

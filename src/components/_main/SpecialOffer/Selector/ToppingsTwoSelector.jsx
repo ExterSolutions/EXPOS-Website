@@ -18,36 +18,63 @@ function ToppingsTwoSelector({ data, multiplier, ToppingsTwo, handleTopping, han
 
     const isSelected = ToppingsTwo?.some(obj => obj?.toppingsCode === data?.toppingsCode);
 
-    return (
-        <div className={`topping-item ${isSelected ? 'active' : ''}`}
-            onClick={(e) => {
-                if (e.target.tagName !== "SELECT" && e.target.tagName !== "OPTION") {
-                    handleTopping({ toppingsCode: data?.toppingsCode, toppingsName: data?.toppingsName, toppingsPrice: data?.price, type: "two", size: pizzaSize })
-                }
-            }}>
-            <div className="d-flex justify-content-between align-items-start">
-                <div className="d-flex align-items-center">
-                    <span className={`topping-radio-circle ${isSelected ? 'checked' : ''}`}></span>
-                    <span className="topping-item-name">
-                        {data?.toppingsName} {multiplier > 0 } {data?.price > 0 ? `($${data.price})` : ''}
-                    </span>
-                </div>
-                {isSelected && <IoMdCheckmarkCircleOutline className="topping-check-icon" />}
-            </div>
-            <div className="mt-2 pl-4 ml-4">
-                <select
-                    className="topping-select"
-                    value={ToppingsTwo?.find((el) => el?.toppingsCode === data?.toppingsCode)?.toppingsPlacement || pizzaSize}
-                    onChange={(e) => handleChange(e.target.value)}
-                >
-                    <option value={"whole"}>Whole</option>
-                    <option value={"righthalf"}>Right Half</option>
-                    <option value={"lefthalf"}>Left Half</option>
-                    <option value={"1/4"}>1/4</option>
-                </select>
-            </div>
-        </div>
-    );
+   return (
+  <div
+    className={`theme-border ${isSelected ? "active text-primary" : "text-dark"}`}
+    onClick={(e) => {
+      if (
+        e.target.tagName !== "SELECT" &&
+        e.target.tagName !== "OPTION"
+      ) {
+        handleTopping({
+          toppingsCode: data?.toppingsCode,
+          toppingsName: data?.toppingsName,
+          toppingsPrice: data?.price,
+          type: "two",
+          size: pizzaSize,
+        });
+      }
+    }}
+  >
+    {/* TOP ROW */}
+    <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex align-items-center gap-2 flex-wrap">
+        {isSelected ? (
+          <i className="bi bi-check-circle-fill flex-shrink-0" />
+        ) : (
+          <i className="bi bi-plus-circle flex-shrink-0" />
+        )}
+
+        <span className="fw-semibold text-truncate">
+          {data?.toppingsName ?? "Topping"}
+        </span>
+
+        {data?.price > 0 && (
+          <span className="text-nowrap">(${data.price})</span>
+        )}
+      </div>
+    </div>
+
+    {/* POSITION SELECTOR */}
+    <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+      <select
+        className="form-select form-select-sm"
+        value={
+          ToppingsTwo?.find(
+            (el) => el?.toppingsCode === data?.toppingsCode
+          )?.toppingsPlacement || pizzaSize
+        }
+        onChange={(e) => handleChange(e.target.value)}
+        disabled={!isSelected}
+      >
+        <option value="whole">Whole</option>
+        <option value="righthalf">Right Half</option>
+        <option value="lefthalf">Left Half</option>
+        <option value="1/4">1/4</option>
+      </select>
+    </div>
+  </div>
+);
 }
 
 export default ToppingsTwoSelector

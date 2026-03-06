@@ -3,7 +3,7 @@ const SignaturePizzaSelector = ({
     selectedCode,
     onChange,
 }) => {
-    // console.log("SignaturePizzaSelector received signaturePizzas:", signaturePizzas);
+    console.log("SignaturePizzaSelector received signaturePizzas:", signaturePizzas);
     return (
         <div className="mb-3">
             <div className="fw-bold text-dark mb-2">SELECT PIZZA</div>

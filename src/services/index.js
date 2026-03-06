@@ -105,7 +105,8 @@ export const getSpecialDetails = async (code, storeCode) => {
   const { data: response } = await http.get(
     storeCode
       ? `/special-offers/${code}?storeCode=${storeCode}`
-      : `/special-offers/${code}`
+      :
+      `/special-offers/${code}`
   );
   return response;
 };
@@ -334,7 +335,8 @@ export const fetchSignaturePizzaDefaults = async (code) => {
 };
 
 export const getSpecialOfferNew = async (code) => {
-  const { data: response } = await http.get(`/special-offers-with-toppings/${code}`);
+  const { data: response } = await http.get(`/special-offers-with-signature-pizza/${code}`);
+  console.log('response', response)
   return response;
 };
 
