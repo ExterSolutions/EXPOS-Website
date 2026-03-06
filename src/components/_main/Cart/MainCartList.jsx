@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {GlobalContext} from "../../../context/GlobalContext";
+import { GlobalContext } from "../../../context/GlobalContext";
 import CartFunction from "../../cart";
 
 function MainCartList({ cData, setLoading }) {
@@ -44,12 +44,16 @@ function MainCartList({ cData, setLoading }) {
                 navigate("/create-your-own");
             }, 1200);
         }
-        if (cData?.productType === "special_pizza" && cData?.id) {
+        if ((cData?.productType === "special_pizza" || cData?.productType === "special_pizza_topping") && cData?.id) {
             setPayloadEdit(cData);
             setLoading(true);
             setTimeout(() => {
                 setLoading(false);
-                navigate(`/specialoffer/${cData?.productCode}/${cData?.id}`);
+                if (cData?.productType === "special_pizza") {
+                    navigate(`/specialoffer/${cData?.productCode}/${cData?.id}`);
+                } else {
+                    navigate(`/special-offers-with-toppings/${cData?.productCode}/${cData?.id}`);
+                }
             }, 1200);
         }
     };
@@ -85,6 +89,7 @@ function MainCartList({ cData, setLoading }) {
                             onClick={handleDelete}
                         ></i>
                         {cData.productType === "special_pizza" ||
+                            cData.productType === "special_pizza_topping" ||
                             cData.productType === "custom_pizza" ? (
                             <i
                                 className="fa fa-edit mx-2 editIcon"

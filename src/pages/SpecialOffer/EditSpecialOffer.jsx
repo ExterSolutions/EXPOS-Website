@@ -374,10 +374,10 @@ const EditSpecialOffer = () => {
     }
 
     const payload = {
-      id: cart?.product?.find((el) => el?.id === pid)?.id,
-      productCode: cart?.product?.find((el) => el?.id === pid)?.productCode,
-      productName: cart?.product?.find((el) => el?.id === pid)?.productName,
-      productType: "special_pizza",
+      id: sid,
+      productCode: pid,
+      productName: name,
+      productType: "special_pizza_topping",
       config: {
         pizza: pizzaState,
         sides: Sides,
@@ -386,7 +386,7 @@ const EditSpecialOffer = () => {
       },
       quantity: Number(pizzaQuantity),
       price: Number(price).toFixed(2),
-      amount: Number(price).toFixed(2) * Number(1),
+      amount: Number(price).toFixed(2),
       pizzaSize: size,
       pizzaPrice: Number(
         pizzaSizeArr?.find((data) => data?.size === size)?.price,

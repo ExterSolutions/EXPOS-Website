@@ -45,6 +45,39 @@ function SpecialPizzaCart({ data, index }) {
                         <span>{data?.cook?.cook}</span>
                     </div>
                 )}
+                {/* Toppings Display */}
+                <div className="sm-font">
+                    {data?.toppings?.countAsTwoToppings.length > 0 && (
+                        <div className="">
+                            <span>- Toppings (x2) : </span>
+                            {data?.toppings?.countAsTwoToppings?.map((t, idx) => (
+                                <span key={idx} className="mx-1">
+                                    {t?.toppingsName} ({t?.toppingsPlacement === "whole" ? "W" : t?.toppingsPlacement === "lefthalf" ? "L" : t?.toppingsPlacement === "righthalf" ? "R" : t?.toppingsPlacement}),
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    {data?.toppings?.countAsOneToppings?.length > 0 && (
+                        <div className="">
+                            <span>- Toppings (x1) : </span>
+                            {data?.toppings?.countAsOneToppings?.map((t, idx) => (
+                                <span key={idx} className="mx-1">
+                                    {t?.toppingsName} ({t?.toppingsPlacement === "whole" ? "W" : t?.toppingsPlacement === "lefthalf" ? "L" : t?.toppingsPlacement === "righthalf" ? "R" : t?.toppingsPlacement}),
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    {data?.toppings?.freeToppings?.length > 0 && (
+                        <div className="">
+                            <span>- Indian Style : </span>
+                            {data?.toppings?.freeToppings?.map((t, idx) => (
+                                <span key={idx} className="mx-1">
+                                    {t?.toppingsName},
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </>
     )

@@ -174,7 +174,7 @@ function CartList({ cData }) {
           {cData?.config?.pizza?.length > 0 &&
             cData.config.pizza.map((data, index) => {
               const isCustom = cData.productType === "custom_pizza";
-              const isSpecial = cData.productType === "special_pizza";
+              const isSpecial = cData.productType === "special_pizza" || cData.productType === "special_pizza_topping";
               if (!isCustom && !isSpecial) return null;
               return (
                 <div
@@ -258,21 +258,21 @@ function CartList({ cData }) {
               cData.productType === "custom_pizza" ||
               cData.productType === "signature_pizza" ||
               cData.productType === "other_pizza") && (
-              <button
-                type="button"
-                className="btn btn-icon btn-colours-new btn-sm d-flex align-items-center justify-content-center"
-                onClick={handleEdit}
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  padding: "0",
-                }}
-                title="Edit"
-              >
-                <FaEdit size={14} />
-              </button>
-            )}
+                <button
+                  type="button"
+                  className="btn btn-icon btn-colours-new btn-sm d-flex align-items-center justify-content-center"
+                  onClick={handleEdit}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "50%",
+                    padding: "0",
+                  }}
+                  title="Edit"
+                >
+                  <FaEdit size={14} />
+                </button>
+              )}
           </div>
           <div className="col-15">
             <hr className="theme-top-border w-100 m-0" />
