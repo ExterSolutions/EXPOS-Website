@@ -70,6 +70,7 @@ const EditSpecialOffer = () => {
   const [size, setSize] = useState("Large");
   const [price, setPrice] = useState(16);
   const [pizzaState, setPizzaState] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [loading, setLoading] = useState(true);
   //
   const [isFixed, setIsFixed] = useState(false);
@@ -241,8 +242,32 @@ const EditSpecialOffer = () => {
         setFreeDipsCount(data.noofDips || 0);
         setNumberOfSides(data?.noofSides || 0);
         setNumberOfDrinks(data?.noofDrinks || 0);
-        setPizzaState(cProduct?.config?.pizza);
-        setPizzaQuantity(cProduct?.quantity);
+
+        // Robust initialization of pizzaState
+        if (cProduct?.config?.pizza) {
+          setPizzaState(cProduct.config.pizza);
+        } else if (data.noofPizzas > 0) {
+          // Fallback if pizza config is missing from cart (should not happen but adds safety)
+          const defaultPizza = {
+            signaturePizza: data.signaturePizzas?.[0] || null,
+            crust: {},
+            crustType: {},
+            cheese: {},
+            spicy: {},
+            sauce: {},
+            cook: {},
+            specialBases: {},
+            toppings: {
+              countAsOneToppings: [],
+              countAsTwoToppings: [],
+              freeToppings: [],
+              isAllIndiansTps: false,
+            }
+          };
+          setPizzaState(Array(data.noofPizzas).fill(defaultPizza));
+        }
+
+        setPizzaQuantity(cProduct?.quantity || 1);
         if (data?.noofDips > 0) {
           if (cProduct?.config?.dips?.length > 0) {
             setDips(cProduct?.config?.dips);
@@ -385,8 +410,11 @@ const EditSpecialOffer = () => {
   };
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (cart?.product?.length > 0 && !isInitialized) {
+      getData();
+      setIsInitialized(true);
+    }
+  }, [cart, isInitialized]);
 
 
 

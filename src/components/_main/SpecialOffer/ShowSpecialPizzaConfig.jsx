@@ -9,7 +9,7 @@ function ShowSpecialPizzaConfig({ count, pizzaState }) {
                         <div className="d-flex align-items-center  flex-wrap">
                             <p className="fw-bold primary-orange-color mb-0 d-flex align-items-center flex-wrap">
                                 <span className='fs-5 me-2'>PIZZA - {count + 1}</span>
-                                {/* <span className='fs-6 text-break'>({pizzaState[count]?.signaturePizza?.pizzaName})</span> */}
+                                <span className='fs-6 text-break'>({pizzaState[count]?.signaturePizza?.name || pizzaState[count]?.signaturePizza?.pizzaName || "Custom Pizza"})</span>
                             </p>
                         </div>
                     </div>
@@ -19,7 +19,7 @@ function ShowSpecialPizzaConfig({ count, pizzaState }) {
             {pizzaState[count] && (
                 <div className="px-3 py-1">
                     <div className="d-flex flex-column gap-1 mb-2 cart-selection-summary " style={{ fontSize: '0.9rem' }}>
-                       
+
 
                         {pizzaState[count]?.cheese?.cheeseName && <p className="mb-0">Cheese: <span className="text-black">{pizzaState[count].cheese.cheeseName}</span></p>}
                         {pizzaState[count]?.crust?.crustName && <p className="mb-0">Crust: <span className="text-dark">{pizzaState[count].crust.crustName}</span></p>}
