@@ -508,6 +508,16 @@ const EditSpecialOffer = () => {
       });
       price += Number(totalAdditionalPrice);
 
+      // Sides & Drinks (Usually free in deals, but added for completeness)
+      let sidesDrinksPrice = 0;
+      Sides?.forEach((side) => {
+        sidesDrinksPrice += Number(side?.totalPrice || 0);
+      });
+      Drinks?.forEach((drink) => {
+        sidesDrinksPrice += Number(drink?.totalPrice || 0);
+      });
+      price += Number(sidesDrinksPrice);
+
       let fixed_price = price.toFixed(2);
       let finalPrice = Number(fixed_price) * Number(pizzaQuantity);
       setPrice(Number(finalPrice).toFixed(2));
@@ -516,11 +526,17 @@ const EditSpecialOffer = () => {
       setAdditionalDipsCount(noOfAdditionalDips);
     }
   }, [
+    sid,
+    size,
+    pizzaState,
     Dips,
     calcDipsArr,
     noOfFreeDips,
     noOfAdditionalDips,
     pizzaQuantity,
+    specialOfferData,
+    Sides,
+    Drinks,
   ]);
 
   useEffect(() => {
