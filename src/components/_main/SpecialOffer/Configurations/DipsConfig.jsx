@@ -6,6 +6,7 @@ function DipsConfig({
   Dips,
   setDips,
   dipsData,
+  numberOfDips,
   activeAccordion,
   toggleAccordion,
 }) {
@@ -42,7 +43,7 @@ function DipsConfig({
         className="topping-header-bar"
         onClick={() => toggleAccordion("dips")}
       >
-        <span>Choose Your Dips (Free limit: 2)</span>
+        <span>Choose Your Dips (Free limit: {numberOfDips})</span>
         {activeAccordion === "dips" ? <FaChevronUp /> : <FaChevronDown />}
       </div>
 
@@ -57,6 +58,7 @@ function DipsConfig({
               data={data}
               handleDips={handleDips}
               handleDipsQuantity={handleDipsQuantity}
+              numberOfDips={numberOfDips}
             />
           ))}
         </div>

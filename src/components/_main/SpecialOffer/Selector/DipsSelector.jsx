@@ -1,7 +1,7 @@
 import React from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 
-function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity }) {
+function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity, numberOfDips }) {
   const selectedItem = Dips?.find((item) => item.dipsCode === data?.dipsCode);
   const quantity = selectedItem ? selectedItem.quantity : 0;
   const isSelected = quantity > 0;
@@ -11,6 +11,14 @@ function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity }) {
     if (newQuantity < 0) return;
 
     if (newQuantity === 0) {
+      if (numberOfDips > 0) {
+        // Count total quantity of all selected dips
+        const totalSelectedDips = Dips?.reduce((acc, curr) => acc + curr.quantity, 0);
+        if (totalSelectedDips <= 1) {
+          // If this is the last one (total quantity across all dips is 1), don't allow 0
+          return;
+        }
+      }
       handleDips(data.dipsCode, 0);
     } else {
       const payload = {
@@ -31,9 +39,8 @@ function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity }) {
 
   return (
     <div
-      className={`rounded p-2 mb-2 theme-border ${
-        isSelected ? "active text-primary" : "text-dark"
-      }`}
+      className={`rounded p-2 mb-2 theme-border ${isSelected ? "active text-primary" : "text-dark"
+        }`}
     >
       <div className="d-flex flex-column">
         {/* Name + Price */}

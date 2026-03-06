@@ -9,7 +9,7 @@ import LoadingLayout from "../../layouts/LoadingLayout";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoMdCheckmarkCircleOutline, IoMdClose } from "react-icons/io";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   getAllIngredients,
   getDips,
@@ -82,10 +82,41 @@ const EditSpecialOffer = () => {
   const [viewSelection, setViewSelection] = useState(false);
   const [settingsData, setSettingsData] = useState([]);
 
-  // For Dips
-  let calcDipsArr = [];
-  let noOfAdditionalDips = Number(0);
-  let noOfFreeDips = Number(specialOfferData?.noofDips) ?? 0;
+  // Premium Topping Count from settings
+  const premiumToppingCount = Number(
+    settingsData?.find((s) => s.settingCode === "STG_7")?.settingValue || 1,
+  );
+
+  // Memoized Dips Calculations
+  const { calcDipsArr, noOfAdditionalDips, noOfFreeDips } = useMemo(() => {
+    let calcDipsArr = [];
+    let noOfAdditionalDips = 0;
+    let noOfFreeDips = Number(specialOfferData?.noofDips) ?? 0;
+
+    if (Dips?.length > 0) {
+      Dips?.forEach((item) => {
+        let usedFreeDips = 0;
+        if (noOfFreeDips > 0) {
+          if (item.quantity <= noOfFreeDips) {
+            usedFreeDips = item.quantity;
+          } else {
+            usedFreeDips = noOfFreeDips;
+          }
+          noOfFreeDips -= usedFreeDips;
+        }
+        let paidQuantity = Number(item.quantity) - Number(usedFreeDips);
+        noOfAdditionalDips += paidQuantity;
+        let dipsObj = {
+          ...item,
+          freeQuantity: usedFreeDips,
+          paidQuantity: paidQuantity,
+          totalPrice: Number(paidQuantity) * Number(item.dipsPrice),
+        };
+        calcDipsArr.push(dipsObj);
+      });
+    }
+    return { calcDipsArr, noOfAdditionalDips, noOfFreeDips };
+  }, [Dips, specialOfferData]);
 
   // Healper Function
   const cartFn = new CartFunction();
@@ -106,7 +137,7 @@ const EditSpecialOffer = () => {
       console.log('allIngredientsResponse', allIngredientsResponse)
       const ing = allIngredientsResponse?.data || allIngredientsResponse;
       setAllIngredients(ing);
-      return ing;
+      return { ing, dips: dipsResponse?.data || [] };
     } catch (error) {
       if (error.response?.status === 400 || error.response?.status === 500) {
         toast.error(
@@ -178,23 +209,23 @@ const EditSpecialOffer = () => {
   };
 
   // Get special data
-  const specialOffersData = async () => {
+  const specialOffersData = async (fetchRes) => {
     setLoading(true);
     try {
       const cProduct = cart?.product?.find((el) => el?.id === sid);
       const res = await getSpecialDetails(pid);
       // const res = await getSpecialDetails(sid, currentStoreCode);
       const data = res?.data || null;
-      console.log('allIngredients', allIngredients)
+      const allIng = fetchRes?.ing || allIngredients;
       const enrichData = {
         ...data,
-        cheese: allIngredients?.cheese || [],
-        crust: allIngredients?.crust || [],
-        crustType: allIngredients?.crustType || [],
-        specialbases: allIngredients?.specialbases || [],
-        cook: allIngredients?.cook || [],
-        sauce: allIngredients?.sauce || [],
-        spices: allIngredients?.spices || [],
+        cheese: data?.cheese?.length > 0 ? data.cheese : (allIng?.cheese || []),
+        crust: data?.crust?.length > 0 ? data.crust : (allIng?.crust || []),
+        crustType: data?.crustType?.length > 0 ? data.crustType : (allIng?.crustType || []),
+        specialBases: data?.specialBases?.length > 0 ? data.specialBases : (allIng?.specialbases || []),
+        cook: data?.cook?.length > 0 ? data.cook : (allIng?.cook || []),
+        sauce: data?.sauce?.length > 0 ? data.sauce : (allIng?.sauce || []),
+        spices: data?.spices?.length > 0 ? data.spices : (allIng?.spices || []),
       }
       console.log("datttttaaa", enrichData);
 
@@ -215,6 +246,19 @@ const EditSpecialOffer = () => {
         if (data?.noofDips > 0) {
           if (cProduct?.config?.dips?.length > 0) {
             setDips(cProduct?.config?.dips);
+          } else {
+            const allIng = allIngredients || fetchRes?.ing;
+            const defaultDip = allIng?.dips?.[0] || fetchRes?.dips?.[0];
+            if (defaultDip) {
+              const payload = {
+                dipsCode: defaultDip.dipsCode,
+                dipsName: defaultDip.dipsName,
+                dipsPrice: Number(defaultDip.price),
+                quantity: 1,
+                totalPrice: Number(0.0).toFixed(2),
+              };
+              setDips([payload]);
+            }
           }
         }
         setSize(cProduct?.pizzaSize);
@@ -326,39 +370,25 @@ const EditSpecialOffer = () => {
 
   // handle Remove Dips
   const handleRemoveDips = (el) => {
+    if (numberOfDips > 0 && Dips.length <= 1) {
+      toast.warning("At least one dip must be selected.");
+      return;
+    }
     const new_dips = Dips.filter((dip) => dip.dipsCode !== el.dipsCode);
     setDips(new_dips);
   };
 
   // Fetching data when the page loads
   const getData = async () => {
-    await fetchData();
-    await specialOffersData();
+    const res = await fetchData();
+    await specialOffersData(res);
   };
 
   useEffect(() => {
     getData();
   }, []);
 
-  useEffect(() => {
-    if (!specialOfferData || !allIngredients) return;
 
-    const enriched = {
-      ...specialOfferData,
-      cheese: allIngredients.cheese || [],
-      crust: allIngredients.crust || [],
-      crustType: allIngredients.crustType || [],
-      specialbases: allIngredients.specialbases || [],
-      cook: allIngredients.cook || [],
-      sauce: allIngredients.sauce || [],
-      spices: allIngredients.spices || [],
-    };
-
-    // Only update if something actually changed
-    if (JSON.stringify(enriched) !== JSON.stringify(specialOfferData)) {
-      setSpecialOfferData(enriched);
-    }
-  }, [specialOfferData, allIngredients]);
 
   const handleAddToCart = () => {
     if (currentStoreCode === undefined || currentStoreCode === null) {
@@ -417,31 +447,8 @@ const EditSpecialOffer = () => {
       }
 
       // Handle Dips
-      let totalDipsPrice = Number(0);
-      if (Dips?.length > 0) {
-        Dips?.forEach((item) => {
-          let usedFreeDips = 0;
-          if (noOfFreeDips > 0) {
-            if (item.quantity <= noOfFreeDips) {
-              usedFreeDips = item.quantity;
-            } else {
-              usedFreeDips = noOfFreeDips;
-            }
-
-            noOfFreeDips -= usedFreeDips;
-          }
-          let paidQuantity = Number(item.quantity) - Number(usedFreeDips);
-          noOfAdditionalDips += paidQuantity;
-          let dipsObj = {
-            ...item,
-            freeQuantity: usedFreeDips,
-            paidQuantity: paidQuantity,
-            totalPrice: Number(paidQuantity) * Number(item.dipsPrice),
-          };
-          calcDipsArr.push(dipsObj);
-        });
-      }
-      calcDipsArr?.map((dips) => {
+      let totalDipsPrice = 0;
+      calcDipsArr?.forEach((dips) => {
         totalDipsPrice += Number(dips?.totalPrice);
       });
       price += Number(totalDipsPrice);
@@ -481,13 +488,11 @@ const EditSpecialOffer = () => {
       setAdditionalDipsCount(noOfAdditionalDips);
     }
   }, [
-    sid,
-    size,
-    pizzaState,
     Dips,
     calcDipsArr,
     noOfFreeDips,
     noOfAdditionalDips,
+    pizzaQuantity,
   ]);
 
   useEffect(() => {
@@ -723,6 +728,7 @@ const EditSpecialOffer = () => {
                                                 type="radio"
                                                 className="form-check-input"
                                                 checked={size === data?.size}
+                                                readOnly
                                               />
                                             </span>
                                             {data?.size} (${data?.price})
@@ -768,6 +774,7 @@ const EditSpecialOffer = () => {
                           Dips={Dips}
                           setDips={setDips}
                           dipsData={dipsData}
+                          numberOfDips={numberOfDips}
                           activeAccordion={activeAccordion}
                           toggleAccordion={toggleAccordion}
                         />
@@ -860,17 +867,65 @@ const EditSpecialOffer = () => {
                                         <p className="fs-5 mb-2 fw-bold">
                                           Free Dips:{" "}
                                           <span className="mx-2">
-                                            {freeDipsCount} / {numberOfDips}
+                                            {numberOfDips - noOfFreeDips} / {numberOfDips}
                                           </span>
                                         </p>
                                         <p className="fs-5 fw-bold">
                                           Additional Dips:{" "}
-                                          <span className="mx-2">
-                                            {addtionalDipsCount}
+                                          <span className="mx-2 text-danger">
+                                            {noOfAdditionalDips}
                                           </span>
                                         </p>
                                       </>
                                     )}
+                                    {specialOfferData?.noofToppings > 0 &&
+                                      (() => {
+                                        const totalToppingsLimit = Number(
+                                          specialOfferData.noofToppings || 0,
+                                        );
+
+                                        const totalSelected = pizzaState.reduce(
+                                          (acc, pizza) => {
+                                            return (
+                                              acc +
+                                              (pizza?.toppings?.countAsOneToppings
+                                                ?.length || 0) +
+                                              (pizza?.toppings?.countAsTwoToppings
+                                                ?.length || 0) *
+                                              (premiumToppingCount || 1)
+                                            );
+                                          },
+                                          0,
+                                        );
+
+                                        const freeUsed = Math.min(
+                                          totalSelected,
+                                          totalToppingsLimit,
+                                        );
+                                        const additional = Math.max(
+                                          0,
+                                          totalSelected - totalToppingsLimit,
+                                        );
+
+                                        return (
+                                          <>
+                                            <p className="fs-5 mb-2 fw-bold">
+                                              Free Toppings:{" "}
+                                              <span className="mx-2">
+                                                {freeUsed} / {totalToppingsLimit}
+                                              </span>
+                                            </p>
+                                            <p className="fs-5 fw-bold">
+                                              Additional Toppings:{" "}
+                                              <span
+                                                className={`mx-2 ${additional > 0 ? "text-danger" : ""}`}
+                                              >
+                                                {additional}
+                                              </span>
+                                            </p>
+                                          </>
+                                        );
+                                      })()}
                                   </div>
                                 </div>
                               </div>

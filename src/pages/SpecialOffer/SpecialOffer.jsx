@@ -2,7 +2,7 @@ import { GoDotFill } from "react-icons/go";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 // import Tabs from "../../components/Tabs/Tabs";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   FaEye,
   FaMinus,
@@ -92,9 +92,36 @@ function SpecialOffer() {
   );
   console.log("settingsData", settingsData);
   //
-  let calcDipsArr = [];
-  let noOfAdditionalDips = Number(0);
-  let noOfFreeDips = Number(specialOfferData?.noofDips) ?? 0;
+  // Memoized Dips Calculations
+  const { calcDipsArr, noOfAdditionalDips, noOfFreeDips } = useMemo(() => {
+    let calcDipsArr = [];
+    let noOfAdditionalDips = 0;
+    let noOfFreeDips = Number(specialOfferData?.noofDips) ?? 0;
+
+    if (Dips?.length > 0) {
+      Dips?.forEach((item) => {
+        let usedFreeDips = 0;
+        if (noOfFreeDips > 0) {
+          if (item.quantity <= noOfFreeDips) {
+            usedFreeDips = item.quantity;
+          } else {
+            usedFreeDips = noOfFreeDips;
+          }
+          noOfFreeDips -= usedFreeDips;
+        }
+        let paidQuantity = Number(item.quantity) - Number(usedFreeDips);
+        noOfAdditionalDips += paidQuantity;
+        let dipsObj = {
+          ...item,
+          freeQuantity: usedFreeDips,
+          paidQuantity: paidQuantity,
+          totalPrice: Number(paidQuantity) * Number(item.dipsPrice),
+        };
+        calcDipsArr.push(dipsObj);
+      });
+    }
+    return { calcDipsArr, noOfAdditionalDips, noOfFreeDips };
+  }, [Dips, specialOfferData]);
 
   // Healper Function
   const cartFn = new CartFunction();
@@ -119,7 +146,7 @@ function SpecialOffer() {
       setDipsData(dipsResponse?.data || []);
       const ing = allIngredientsResponse?.data || allIngredientsResponse;
       setAllIngredients(ing);
-      return ing;
+      return { ing, dips: dipsResponse?.data || [] };
     } catch (error) {
       if (error.response?.status === 400 || error.response?.status === 500) {
         toast.error(
@@ -158,7 +185,7 @@ function SpecialOffer() {
   };
 
   // Get special data
-  const specialOffersData = async (ingParam) => {
+  const specialOffersData = async (fetchRes) => {
     try {
       const res = await getSpecialDetails(sid, currentStoreCode);
       const data = res?.data || null;
@@ -166,7 +193,7 @@ function SpecialOffer() {
       if (data && isLimitedOfferActive(data)) {
         // Merge global ingredients if offer doesn't provide specific lists
         const mergedData = { ...data };
-        const allIng = ingParam || allIngredients;
+        const allIng = fetchRes?.ing || allIngredients;
         if (allIng) {
           if (allIng.cheese?.length > 0) mergedData.cheese = allIng.cheese;
           if (allIng.crust?.length > 0) mergedData.crust = allIng.crust;
@@ -195,6 +222,19 @@ function SpecialOffer() {
         setFreeDipsCount(mergedData.noofDips || 0);
         setNumberOfSides(mergedData?.noofSides || 0);
         setNumberOfDrinks(mergedData?.noofDrinks || 0);
+        if (mergedData?.noofDips > 0) {
+          const defaultDip = allIng?.dips?.[0] || fetchRes?.dips?.[0];
+          if (defaultDip) {
+            const payload = {
+              dipsCode: defaultDip.dipsCode,
+              dipsName: defaultDip.dipsName,
+              dipsPrice: Number(defaultDip.price),
+              quantity: 1,
+              totalPrice: Number(0.0).toFixed(2),
+            };
+            setDips([payload]);
+          }
+        }
         if (mergedData?.noofSides > 0) {
           const selected = mergedData?.freesides[0];
           const payload = {
@@ -359,6 +399,10 @@ function SpecialOffer() {
 
   // handle Remove Dips
   const handleRemoveDips = (el) => {
+    if (numberOfDips > 0 && Dips.length <= 1) {
+      toast.warning("At least one dip must be selected.");
+      return;
+    }
     const new_dips = Dips.filter((dip) => dip.dipsCode !== el.dipsCode);
     setDips(new_dips);
   };
@@ -474,30 +518,10 @@ function SpecialOffer() {
         price = +price + +new_price;
       }
 
-      let totalDipsPrice = Number(0);
-      if (Dips?.length > 0) {
-        Dips?.forEach((item) => {
-          let usedFreeDips = 0;
-          if (noOfFreeDips > 0) {
-            if (item.quantity <= noOfFreeDips) {
-              usedFreeDips = item.quantity;
-            } else {
-              usedFreeDips = noOfFreeDips;
-            }
-
-            noOfFreeDips -= usedFreeDips;
-          }
-          let paidQuantity = Number(item.quantity) - Number(usedFreeDips);
-          noOfAdditionalDips += paidQuantity;
-          let dipsObj = {
-            ...item,
-            freeQuantity: usedFreeDips,
-            paidQuantity: paidQuantity,
-            totalPrice: Number(paidQuantity) * Number(item.dipsPrice),
-          };
-          calcDipsArr.push(dipsObj);
-        });
-      }
+      let totalDipsPrice = 0;
+      calcDipsArr?.forEach((dips) => {
+        totalDipsPrice += Number(dips?.totalPrice);
+      });
       price += Number(totalDipsPrice);
 
       // Toppings & Pizza Configurations Price Calculations
@@ -821,6 +845,7 @@ function SpecialOffer() {
                     Dips={Dips}
                     setDips={setDips}
                     dipsData={dipsData}
+                    numberOfDips={numberOfDips}
                     activeAccordion={activeAccordion}
                     toggleAccordion={toggleAccordion}
                   />
@@ -905,18 +930,18 @@ function SpecialOffer() {
                             <div className="d-flex flex-column py-2">
                               {numberOfDips > 0 && (
                                 <>
-                                  {/* <p className="fs-5 mb-2 fw-bold">
-                                                                        Free Dips:{" "}
-                                                                        <span className="mx-2">
-                                                                            {freeDipsCount} / {numberOfDips}
-                                                                        </span>
-                                                                    </p> */}
-                                  {/* <p className="fs-5 mb-2 fw-bold">
-                                                                        Additional Dips:{" "}
-                                                                        <span className="mx-2">
-                                                                            {addtionalDipsCount}
-                                                                        </span>
-                                                                    </p> */}
+                                  <p className="fs-5 mb-2 fw-bold">
+                                    Free Dips:{" "}
+                                    <span className="mx-2">
+                                      {numberOfDips - noOfFreeDips} / {numberOfDips}
+                                    </span>
+                                  </p>
+                                  <p className="fs-5 mb-2 fw-bold">
+                                    Additional Dips:{" "}
+                                    <span className="mx-2 text-danger">
+                                      {noOfAdditionalDips}
+                                    </span>
+                                  </p>
                                 </>
                               )}
                               {specialOfferData?.noofToppings > 0 &&

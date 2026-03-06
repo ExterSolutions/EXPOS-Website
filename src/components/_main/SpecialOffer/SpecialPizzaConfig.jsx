@@ -16,7 +16,7 @@ function SpecialPizzaConfig({
   activeAccordion,
   toggleAccordion,
 }) {
-  console.log('specialOfferData',specialOfferData)
+  console.log('specialOfferData', specialOfferData)
   const [isOpen, setIsOpen] = useState(true);
   const signaturePizzas = specialOfferData?.signaturePizzas ?? [];
   const handlePizzaChange = (e) => {
@@ -50,6 +50,24 @@ function SpecialPizzaConfig({
       <div
         className={`mt-2 ${isOpen ? "d-block" : "d-none"} border p-3 rounded-2`}
       >
+        {signaturePizzas?.length > 0 && (
+          <div className="mb-4">
+            <label className="fw-medium mb-2 text-secondary d-block">
+              Select Pizza
+            </label>
+            <select
+              className="form-select"
+              value={pizzaState[count]?.signaturePizza?.code || ""}
+              onChange={handlePizzaChange}
+            >
+              {signaturePizzas.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <SpecialCheese
           count={count}
           pizzaState={pizzaState}
