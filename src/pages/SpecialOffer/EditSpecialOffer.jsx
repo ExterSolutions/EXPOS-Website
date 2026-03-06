@@ -446,6 +446,33 @@ const EditSpecialOffer = () => {
       });
       price += Number(totalDipsPrice);
 
+      // Pizza Configurations Price Calculations
+      let totalAdditionalPrice = 0;
+      pizzaState?.forEach((pizza) => {
+        // Dough (Crust & CrustType)
+        totalAdditionalPrice += Number(pizza?.crust?.price || 0);
+        totalAdditionalPrice += Number(pizza?.crustType?.price || 0);
+        // Cheese
+        totalAdditionalPrice += Number(pizza?.cheese?.price || 0);
+        // Sauce
+        totalAdditionalPrice += Number(pizza?.sauce?.price || 0);
+        // Spicy
+        totalAdditionalPrice += Number(pizza?.spicy?.price || 0);
+        // Cook
+        totalAdditionalPrice += Number(pizza?.cook?.price || 0);
+        // Special Bases
+        totalAdditionalPrice += Number(pizza?.specialBases?.price || 0);
+
+        // Toppings
+        pizza?.toppings?.countAsOneToppings?.forEach((t) => {
+          totalAdditionalPrice += Number(t.toppingsPrice || 0);
+        });
+        pizza?.toppings?.countAsTwoToppings?.forEach((t) => {
+          totalAdditionalPrice += Number(t.toppingsPrice || 0);
+        });
+      });
+      price += Number(totalAdditionalPrice);
+
       let fixed_price = price.toFixed(2);
       let finalPrice = Number(fixed_price) * Number(pizzaQuantity);
       setPrice(Number(finalPrice).toFixed(2));

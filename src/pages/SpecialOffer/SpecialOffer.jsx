@@ -50,7 +50,7 @@ function SpecialOffer() {
 
   // states management
   const [toppingsData, setToppingsData] = useState(null);
-      // console.log('toppingsData123',toppingsData)
+  // console.log('toppingsData123',toppingsData)
 
   const [allIngredients, setAllIngredients] = useState(null);
   const [dipsData, setDipsData] = useState(null);
@@ -162,7 +162,7 @@ function SpecialOffer() {
     try {
       const res = await getSpecialDetails(sid, currentStoreCode);
       const data = res?.data || null;
-      console.log('Dataaa:',res);
+      console.log('Dataaa:', res);
       if (data && isLimitedOfferActive(data)) {
         // Merge global ingredients if offer doesn't provide specific lists
         const mergedData = { ...data };
@@ -498,22 +498,34 @@ function SpecialOffer() {
           calcDipsArr.push(dipsObj);
         });
       }
-      calcDipsArr?.map((dips) => {
-        totalDipsPrice += Number(dips?.totalPrice);
-      });
       price += Number(totalDipsPrice);
 
-      // Toppings Price Calculations
-      let totalToppingsPrice = 0;
+      // Toppings & Pizza Configurations Price Calculations
+      let totalAdditionalPrice = 0;
       pizzaState?.forEach((pizza) => {
+        // Dough (Crust & CrustType)
+        totalAdditionalPrice += Number(pizza?.crust?.price || 0);
+        totalAdditionalPrice += Number(pizza?.crustType?.price || 0);
+        // Cheese
+        totalAdditionalPrice += Number(pizza?.cheese?.price || 0);
+        // Sauce
+        totalAdditionalPrice += Number(pizza?.sauce?.price || 0);
+        // Spicy
+        totalAdditionalPrice += Number(pizza?.spicy?.price || 0);
+        // Cook
+        totalAdditionalPrice += Number(pizza?.cook?.price || 0);
+        // Special Bases
+        totalAdditionalPrice += Number(pizza?.specialBases?.price || 0);
+
+        // Toppings
         pizza?.toppings?.countAsOneToppings?.forEach((t) => {
-          totalToppingsPrice += Number(t.toppingsPrice || 0);
+          totalAdditionalPrice += Number(t.toppingsPrice || 0);
         });
         pizza?.toppings?.countAsTwoToppings?.forEach((t) => {
-          totalToppingsPrice += Number(t.toppingsPrice || 0);
+          totalAdditionalPrice += Number(t.toppingsPrice || 0);
         });
       });
-      price += Number(totalToppingsPrice);
+      price += Number(totalAdditionalPrice);
 
       let fixed_price = price.toFixed(2);
       let finalPrice = Number(fixed_price) * Number(pizzaQuantity);
