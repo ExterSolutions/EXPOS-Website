@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef } from "react";
+import { colors } from "../../../config/theme";
 
 const TOPPING_POSITIONS = {
     whole: "Whole",
@@ -119,12 +120,12 @@ const ToppingsSelector = ({
     return (
         <div className="mb-3">
             {/* TITLE */}
-            <div className="d-flex justify-content-between align-items-center mb-1">
+            {/* <div className="d-flex justify-content-between align-items-center mb-1">
                 <h6 className="fw-medium m-0 text-secondary">{title}</h6>
-            </div>
+            </div> */}
 
             {/* OPTIONS */}
-            <div className="d-flex flex-row flex-wrap gap-2 mt-2">
+            <div className=" gap-2 mt-2">
                 {options.map((opt) => {
                     const code = opt.toppingsCode || opt.code;
                     const active = isSelected(code);
@@ -133,56 +134,149 @@ const ToppingsSelector = ({
                     return (
                         <div
                             key={`${title}-${code}`}
-                            className={`theme-border ${active ? "active text-primary" : "text-dark"}`}
+                            className={`theme-border d-flex align-items-center justify-content-between px-3 py-2 mb-2 rounded cursor-pointer transition-all`}
                             onClick={() => toggleTopping(opt)}
+                            style={{
+                                backgroundColor: active ? 'white' : 'white',
+                                borderColor: active ? colors['primary'] : '#dee2e6', // Bootstrap's subtle border color
+                            }}
                         >
-                            {/* TOP ROW */}
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="d-flex align-items-center gap-2">
+                            {/* LEFT: Selection icon + Name + Price + Badge */}
+                            <div className="d-flex align-items-center flex-grow-1 gap-3">
+                                {/* Fixed-size icon container */}
+                                <div style={{ width: 20, height: 20, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     {active ? (
-                                        <i className="bi bi-check-circle-fill" />
+                                        <i className="bi bi-check-circle-fill text-primary fs-6" />
                                     ) : (
-                                        <i className="bi bi-plus-circle" />
+                                        <i className="bi bi-plus-circle text-secondary fs-6" />
                                     )}
-                                    <span className="fw-semibold">
+                                </div>
+
+                                {/* Text content – explicit color control */}
+                                <div className="d-flex align-items-center flex-wrap gap-2">
+                                    <span className={`fw-semibold ${active ? "text-primary" : "text-dark"}`}>
                                         {opt.toppingsName ?? opt.name ?? "Topping"}
                                     </span>
-                                    {!isIndianStyle && (
-                                        <span>({opt.price ?? "0.00"})</span>
+
+                                    {!isIndianStyle && opt.price && (
+                                        <span className="text-muted small">
+                                            ₹{Number(opt.price).toFixed(2)}
+                                        </span>
                                     )}
-                                    {((isIndianStyle || defaultCodes.has(code)) && (
-                                        <span className="badge bg-light text-dark ms-2">
+
+                                    {(isIndianStyle || defaultCodes.has(code)) && (
+                                        <span className="badge bg-success-subtle text-success px-2 py-1 fs-12 fw-normal border border-success">
                                             Free
                                         </span>
-                                    ))}
+                                    )}
                                 </div>
                             </div>
 
-                            {/* POSITION SELECTOR */}
+                            {/* RIGHT: Placement controls – only when active */}
+                            {active && (
+                                <div
+                                    className="d-flex align-items-center gap-2 ps-3"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {/* Whole */}
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm rounded-circle ${selectedItem?.toppingsPlacement === "whole"
+                                            ? "btn-primary"
+                                            : "btn-outline-secondary"
+                                            }`}
+                                        style={{
+                                            width: 22,
+                                            height: 22,
+                                            padding: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                        onClick={() => updatePosition(code, "whole")}
+                                        title="Whole pizza"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                            <circle cx="8" cy="8" r="7" />
+                                        </svg>
+                                    </button>
 
-                            <div className="row">
-                                <div className="mt-2 col-12">
-                                    <div onClick={(e) => e.stopPropagation()}>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={selectedItem?.toppingsPlacement ?? "whole"}
-                                            onChange={(e) =>
-                                                updatePosition(code, e.target.value)
-                                            }
-                                            disabled={!active}
+                                    {/* Left */}
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm rounded-circle ${selectedItem?.toppingsPlacement === "left"
+                                            ? "btn-primary"
+                                            : "btn-outline-secondary"
+                                            }`}
+                                        style={{
+                                            width: 22,
+                                            height: 22,
+                                            padding: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                        onClick={() => updatePosition(code, "left")}
+                                        title="Left half"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                            <path d="M8 0A8 8 0 1 0 8 16V0Z" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Right */}
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm rounded-circle ${selectedItem?.toppingsPlacement === "right"
+                                            ? "btn-primary"
+                                            : "btn-outline-secondary"
+                                            }`}
+                                        style={{
+                                            width: 22,
+                                            height: 22,
+                                            padding: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                        onClick={() => updatePosition(code, "right")}
+                                        title="Right half"
+                                    >
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 16 16"
+                                            fill="currentColor"
+                                            style={{ transform: "scaleX(-1)" }}
                                         >
-                                            {Object.entries(TOPPING_POSITIONS).map(
-                                                ([key, label]) => (
-                                                    <option key={key} value={key}>
-                                                        {label}
-                                                    </option>
-                                                )
-                                            )}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                                            <path d="M8 0A8 8 0 1 0 8 16V0Z" />
+                                        </svg>
+                                    </button>
 
+                                    {/* Quarter */}
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm rounded-circle ${selectedItem?.toppingsPlacement === "quarter"
+                                            ? "btn-primary"
+                                            : "btn-outline-secondary"
+                                            }`}
+                                        style={{
+                                            width: 22,
+                                            height: 22,
+                                            padding: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                        onClick={() => updatePosition(code, "quarter")}
+                                        title="Top-left quarter"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                            <path d="M8 0C3.582 0 0 3.582 0 8h8V0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     );
                 })}

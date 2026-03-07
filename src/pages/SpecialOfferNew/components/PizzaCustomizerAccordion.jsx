@@ -15,7 +15,7 @@ const PizzaCustomizerAccordion = ({
     onUpdateCustomization,
     isEditMode = false,
 }) => {
-    console.log('offerData',offerData)
+    console.log('offerData', offerData)
     const hasPreselectedFreeToppingsRef = useRef(false);
     const hasHydratedEditRef = useRef(false);
     const accordionId = `pizzaAccordion-${index}`;
@@ -26,6 +26,8 @@ const PizzaCustomizerAccordion = ({
     const [signatureCode, setSignatureCode] = useState(pizzaSelections?.signaturePizzaCode || null);
     const [loading, setLoading] = useState(false);
     const [signatureDetails, setSignatureDetails] = useState(null);
+    const [activeTab, setActiveTab] = useState("basics");
+    const [activeToppingsTab, setActiveToppingsTab] = useState("countAsTwo");
 
     /* ---------- Initialize signature code from pizzaSelections (for edit mode) ---------- */
     useEffect(() => {
@@ -213,13 +215,26 @@ const PizzaCustomizerAccordion = ({
         fetchSignatureDetails();
     }, [signatureCode]);
 
+    const TABS = [
+        { id: "basics", label: "Basics" },
+        { id: "bases", label: "Special Base" },
+        { id: "preferences", label: "Preferences" },
+        { id: "toppings", label: "Toppings" },
+    ];
+    const ToppingsTabs = [
+        { id: "countAsTwo", label: "Premium" },
+        { id: "countAsOne", label: "Regular" },
+        { id: "free", label: "Indian Style" },
+    ];
+
     /* ---------- Render ---------- */
     return (
         <div className="accordion mb-3" id={accordionId}>
             <div className="accordion-item">
                 <h2 className="accordion-header" id={headerId}>
                     <button
-                        className={`accordion-button fw-bold ${isOpen ? "text-white" : "collapsed text-dark"}`}
+                        className={`accordion-button fw-bold ${isOpen ? "text-white" : "collapsed text-dark"
+                            }`} 
                         type="button"
                         aria-expanded={isOpen ? "true" : "false"}
                         aria-controls={collapseId}
@@ -235,7 +250,7 @@ const PizzaCustomizerAccordion = ({
                     aria-labelledby={headerId}
                     data-bs-parent={`#${accordionId}`}
                 >
-                    <div className="accordion-body">
+                    <div className="accordion-body p-2 p-md-3">
                         {/* Signature Pizza Selector */}
                         <SignaturePizzaSelector
                             signaturePizzas={signaturePizzas}
@@ -243,132 +258,193 @@ const PizzaCustomizerAccordion = ({
                             onChange={(code) => handleSignaturePizzaChange(code)}
                         />
 
-                        {/* Loader or Customization Options */}
                         {loading ? (
-                            <div className="text-muted">Loading customisations...</div>
+                            <div className="text-muted p-3 text-center">
+                                Loading customisations...
+                            </div>
                         ) : (
                             signatureDetails && (
-                                <>
-                                    {/* --- Options --- */}
-                                    <OptionSelector
-                                        optionkey="cheese"
-                                        title="Cheese"
-                                        options={offerData.cheese}
-                                        defaultOption={signatureDetails.cheese}
-                                        selectedOption={pizzaSelections?.cheese}
-                                        onSelect={makeOptionHandler("cheese")}
-                                    />
+                                <div className="mt-3">
+                                    {/* Tabs Header */}
+                                    <div
+                                        className="d-flex overflow-auto scrollbar-hide border-bottom px-2 py-1"
+                                        style={{
+                                            scrollbarWidth: 'none',
+                                            msOverflowStyle: 'none',
+                                        }}
+                                    >
+                                        {TABS.map((tab) => (
+                                            <div
+                                                key={tab.id}
+                                                className={`px-3 py-1 fw-semibold text-nowrap cursor-pointer transition-all ${activeTab === tab.id
+                                                    ? "border-bottom border-3 border-dark text-dark"
+                                                    : "text-secondary"}`}
+                                                role="button"
+                                                onClick={() => setActiveTab(tab.id)}
+                                            >
+                                                {tab.label}
+                                            </div>
+                                        ))}
+                                    </div>
 
-                                    <OptionSelector
-                                        optionkey="crust"
-                                        title="Crust"
-                                        options={offerData.crust}
-                                        defaultOption={signatureDetails.crust}
-                                        selectedOption={pizzaSelections?.crust}
-                                        onSelect={makeOptionHandler("crust")}
-                                    />
+                                    {/* Tab Content */}
+                                    <div className="py-2">
+                                        {activeTab === "basics" && (
+                                            <>
+                                                <OptionSelector
+                                                    optionkey="cheese"
+                                                    title="Cheese"
+                                                    options={offerData.cheese}
+                                                    defaultOption={signatureDetails.cheese}
+                                                    selectedOption={pizzaSelections?.cheese}
+                                                    onSelect={makeOptionHandler("cheese")}
+                                                />
 
-                                    <OptionSelector
-                                        optionkey="crustType"
-                                        title="Crust Type"
-                                        options={offerData.crustType}
-                                        defaultOption={signatureDetails.crust_type}
-                                        selectedOption={pizzaSelections?.crustType}
-                                        onSelect={makeOptionHandler("crustType")}
-                                    />
+                                                <OptionSelector
+                                                    optionkey="crust"
+                                                    title="Crust"
+                                                    options={offerData.crust}
+                                                    defaultOption={signatureDetails.crust}
+                                                    selectedOption={pizzaSelections?.crust}
+                                                    onSelect={makeOptionHandler("crust")}
+                                                />
 
-                                    <OptionSelector
-                                        optionkey="specialBases"
-                                        title="Special Base"
-                                        options={offerData.specialbases}
-                                        defaultOption={signatureDetails.special_base}
-                                        selectedOption={pizzaSelections?.specialBases}
-                                        onSelect={makeOptionHandler("specialBases")}
-                                    />
+                                                <OptionSelector
+                                                    optionkey="crustType"
+                                                    title="Crust Type"
+                                                    options={offerData.crustType}
+                                                    defaultOption={signatureDetails.crust_type}
+                                                    selectedOption={pizzaSelections?.crustType}
+                                                    onSelect={makeOptionHandler("crustType")}
+                                                />
+                                            </>
+                                        )}
 
-                                    <OptionSelector
-                                        optionkey="cook"
-                                        title="Cook"
-                                        options={offerData.cook}
-                                        defaultOption={signatureDetails.cook}
-                                        selectedOption={pizzaSelections?.cook}
-                                        onSelect={makeOptionHandler("cook")}
-                                    />
+                                        {activeTab === "bases" && (
+                                            <OptionSelector
+                                                optionkey="specialBases"
+                                                title="Special Base"
+                                                options={offerData.specialbases}
+                                                defaultOption={signatureDetails.special_base}
+                                                selectedOption={pizzaSelections?.specialBases}
+                                                onSelect={makeOptionHandler("specialBases")}
+                                            />
+                                        )}
 
-                                    <OptionSelector
-                                        optionkey="sauce"
-                                        title="Sauce"
-                                        options={offerData.sauce}
-                                        defaultOption={signatureDetails.sauce}
-                                        selectedOption={pizzaSelections?.sauce}
-                                        onSelect={makeOptionHandler("sauce")}
-                                    />
+                                        {activeTab === "preferences" && (
+                                            <>
+                                                <OptionSelector
+                                                    optionkey="cook"
+                                                    title="Cook Level"
+                                                    options={offerData.cook}
+                                                    defaultOption={signatureDetails.cook}
+                                                    selectedOption={pizzaSelections?.cook}
+                                                    onSelect={makeOptionHandler("cook")}
+                                                />
 
-                                    <OptionSelector
-                                        optionkey="spicy"
-                                        title="Spicy"
-                                        options={offerData.spices}
-                                        defaultOption={signatureDetails.spices}
-                                        selectedOption={pizzaSelections?.spicy}
-                                        onSelect={makeOptionHandler("spicy")}
-                                    />
+                                                <OptionSelector
+                                                    optionkey="sauce"
+                                                    title="Sauce"
+                                                    options={offerData.sauce}
+                                                    defaultOption={signatureDetails.sauce}
+                                                    selectedOption={pizzaSelections?.sauce}
+                                                    onSelect={makeOptionHandler("sauce")}
+                                                />
 
-                                    {/* --- Toppings Section --- */}
-                                    <ToppingAccordion index={index}>
-                                        <ToppingsSelector
-                                            key={`premium-${signatureCode}`}
-                                            title={settings.premiumTopppingLabel}
-                                            options={toppings.countAsTwo ?? []}
-                                            defaultOptions={signatureDetails.topping_as_2 ?? []}
-                                            selected={
-                                                pizzaSelections?.toppings?.countAsTwoToppings ?? []
-                                            }
-                                            onChange={(list) =>
-                                                handleToppingsChange("countAsTwoToppings", list)
-                                            }
-                                            toppingCount={offerData.premiumToppingsCount}
-                                            isIndianStyle={false}
-                                        />
+                                                <OptionSelector
+                                                    optionkey="spicy"
+                                                    title="Spicy Level"
+                                                    options={offerData.spices}
+                                                    defaultOption={signatureDetails.spices}
+                                                    selectedOption={pizzaSelections?.spicy}
+                                                    onSelect={makeOptionHandler("spicy")}
+                                                />
+                                            </>
+                                        )}
 
-                                        <ToppingsSelector
-                                            key={`regular-${signatureCode}`}
-                                            title={settings.regularToppingLabel}
-                                            options={toppings.countAsOne ?? []}
-                                            defaultOptions={signatureDetails.topping_as_1 ?? []}
-                                            selected={
-                                                pizzaSelections?.toppings?.countAsOneToppings ?? []
-                                            }
-                                            onChange={(list) =>
-                                                handleToppingsChange("countAsOneToppings", list)
-                                            }
-                                            toppingCount={1}
-                                            isIndianStyle={false}
-                                        />
+                                        {activeTab === "toppings" && (
 
-                                        <ToppingsSelector
-                                            key={`indian-${signatureCode}`}
-                                            title="Indian Style"
-                                            options={toppings.freeToppings ?? []}
-                                            defaultOptions={signatureDetails.topping_as_free ?? []}
-                                            selected={pizzaSelections?.toppings?.freeToppings ?? []}
-                                            onChange={(list) => {
-                                                const totalFree = toppings.freeToppings.length;
-                                                const isAllSelected = list.length === totalFree;
+                                            <><div className="d-flex overflow-auto border-bottom mb-3">
+                                                {ToppingsTabs.map((tab) => (
+                                                    <div
+                                                        key={tab.id}
+                                                        className={`px-2 py-1 small fw-semibold text-nowrap cursor-pointer ${activeToppingsTab === tab.id
+                                                            ? "border-bottom border-2 border-primary text-primary"
+                                                            : "text-muted"
+                                                            }`}
+                                                        role="button"
+                                                        onClick={() => setActiveToppingsTab(tab.id)}
+                                                    >
+                                                        {tab.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                                <div>
+                                                    {activeToppingsTab === "countAsTwo" && (
+                                                        <ToppingsSelector
+                                                            key={`premium-${signatureCode}`}
+                                                            title={settings.premiumTopppingLabel}
+                                                            options={toppings.countAsTwo ?? []}
+                                                            defaultOptions={signatureDetails.topping_as_2 ?? []}
+                                                            selected={
+                                                                pizzaSelections?.toppings?.countAsTwoToppings ?? []
+                                                            }
+                                                            onChange={(list) =>
+                                                                handleToppingsChange("countAsTwoToppings", list)
+                                                            }
+                                                            toppingCount={offerData.premiumToppingsCount}
+                                                            isIndianStyle={false}
+                                                        />
+                                                    )}
+                                                    {activeToppingsTab === "countAsOne" && (
+                                                        <ToppingsSelector
+                                                            key={`regular-${signatureCode}`}
+                                                            title={settings.regularToppingLabel}
+                                                            options={toppings.countAsOne ?? []}
+                                                            defaultOptions={signatureDetails.topping_as_1 ?? []}
+                                                            selected={
+                                                                pizzaSelections?.toppings?.countAsOneToppings ?? []
+                                                            }
+                                                            onChange={(list) =>
+                                                                handleToppingsChange("countAsOneToppings", list)
+                                                            }
+                                                            toppingCount={1}
+                                                            isIndianStyle={false}
+                                                        />)}
+                                                    {activeToppingsTab === "free" && (
+                                                        <ToppingsSelector
+                                                            key={`indian-${signatureCode}`}
+                                                            title="Indian Style"
+                                                            options={toppings.freeToppings ?? []}
+                                                            defaultOptions={signatureDetails.topping_as_free ?? []}
+                                                            selected={
+                                                                pizzaSelections?.toppings?.freeToppings ?? []
+                                                            }
+                                                            onChange={(list) => {
+                                                                const totalFree = toppings.freeToppings.length;
+                                                                const isAllSelected = list.length === totalFree;
 
-                                                // Update toppings
-                                                onUpdateCustomization(index, "toppings", {
-                                                    ...pizzaSelections.toppings,
-                                                    freeToppings: list,
-                                                });
+                                                                onUpdateCustomization(index, "toppings", {
+                                                                    ...pizzaSelections.toppings,
+                                                                    freeToppings: list,
+                                                                });
 
-                                                // Update flag
-                                                onUpdateCustomization(index, "isAllIndiansTps", isAllSelected);
-                                            }}
-                                            toppingCount={1}
-                                            isIndianStyle={true}
-                                        />
-                                    </ToppingAccordion>
-                                </>
+                                                                onUpdateCustomization(
+                                                                    index,
+                                                                    "isAllIndiansTps",
+                                                                    isAllSelected
+                                                                );
+                                                            }}
+                                                            toppingCount={1}
+                                                            isIndianStyle={true}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
                             )
                         )}
                     </div>
