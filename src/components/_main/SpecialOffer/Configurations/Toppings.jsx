@@ -29,13 +29,13 @@ function Toppings({
     settingsData?.find((s) => s.settingCode === "STG_7")?.settingValue || 1,
   );
 
-  // Toggle isAllIndiansTps Flag - TRUE OR FALSE
+  // Toggle isIndianStyle Flag - TRUE OR FALSE
   useEffect(() => {
     if (
-      toppingsData?.toppings?.freeToppings.length ===
-      pizzaState[count]?.toppings?.freeToppings.length
+      toppingsData?.toppings?.freeToppings?.length ===
+      pizzaState[count]?.toppings?.freeToppings?.length
     ) {
-      // Update isAllIndiansTps to true
+      // Update isIndianStyle to true
       const updatedPizzaState = [...pizzaState];
       updatedPizzaState[count] = {
         ...updatedPizzaState[count],
@@ -57,7 +57,7 @@ function Toppings({
       };
       setPizzaState(updatedPizzaState);
     }
-  }, [pizzaState[count]?.toppings?.freeToppings]);
+  }, [pizzaState[count]?.toppings?.freeToppings?.length]);
 
   return (
     <div className="mt-4">

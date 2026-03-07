@@ -146,7 +146,7 @@ function SpecialOffer() {
       setDipsData(dipsResponse?.data || []);
       const ing = allIngredientsResponse?.data || allIngredientsResponse;
       setAllIngredients(ing);
-      return { ing, dips: dipsResponse?.data || [] };
+      return { ing, dips: dipsResponse?.data || [], toppings: toppingsResponse?.data || [] };
     } catch (error) {
       if (error.response?.status === 400 || error.response?.status === 500) {
         toast.error(
@@ -194,6 +194,8 @@ function SpecialOffer() {
         // Merge global ingredients if offer doesn't provide specific lists
         const mergedData = { ...data };
         const allIng = fetchRes?.ing || allIngredients;
+        const toppingsD = fetchRes?.toppings || toppingsData;
+
         if (allIng) {
           if (allIng.cheese?.length > 0) mergedData.cheese = allIng.cheese;
           if (allIng.crust?.length > 0) mergedData.crust = allIng.crust;
@@ -375,8 +377,15 @@ function SpecialOffer() {
               toppings: {
                 countAsTwoToppings: [],
                 countAsOneToppings: [],
-                freeToppings: [],
-                isAllIndiansTps: false,
+                freeToppings: toppingsD?.toppings?.freeToppings?.map((t) => ({
+                  toppingsCode: t.toppingsCode,
+                  toppingsName: t.toppingsName,
+                  toppingsPrice: "0",
+                  toppingsPlacement: "whole",
+                  amount: t.price || "0",
+                  pizzaIndex: mergedData.noofPizzas || 0,
+                })) || [],
+                isAllIndiansTps: true,
               },
             };
           },

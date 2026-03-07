@@ -605,35 +605,32 @@ const EditSpecialOffer = () => {
       ) : (
         <div>
           <Header />
-          <div className="nav-margin"></div>
-          <div className="d-flex align-items-center justify-content-between innder-page-header">
+          {/* <div className="nav-margin"></div> */}
+          {/* <div className="d-flex align-items-center justify-content-between innder-page-header">
             <div className="flex-grow-1 section-header">
               <span className="category-subtitle"></span>
             </div>
-          </div>
+          </div> */}
           {specialOfferData ? (
             <div className="new-block" id="create-your-own-new">
               <section className="special-offers-sec new-block primary-background-color">
-                <div className="container">
+                {/* <div className="container">
                   <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb custom-breadcrumb mt-5">
-                      <li className="breadcrumb-item" aria-current="page">
-                        Home
-                      </li>
-                      <li
-                        className="breadcrumb-item active"
-                        aria-current="page"
-                      >
-                        Deals
-                      </li>
+                    <ol className="breadcrumb custom-breadcrumb">
+                      <li className="breadcrumb-item">Home</li>
+                      <li className="breadcrumb-item active">Deals</li>
                     </ol>
                   </nav>
-                </div>
+                </div> */}
+
                 <div className="container">
                   <div className="mainContainer primary-text-color">
-                    {/* left side */}
+
+                    {/* LEFT SIDE */}
                     <div className="p-3">
-                      <p className="fs-1 fw-bold">{name}</p>
+
+                      <p className="fw-bold fs-5 text-dark">{name}</p>
+
                       <p
                         className={`mt-3 mb-3 fs-6 ${specialOfferDealType === "pickupdeal"
                           ? "pickup-deal-style"
@@ -643,10 +640,8 @@ const EditSpecialOffer = () => {
                         {pizzaSubtitle}
                       </p>
 
-                      <div
-                        className="right-side-div p-0 w-100 d-lg-none d-block"
-                        style={{ position: "relative !important" }}
-                      >
+                      {/* MOBILE SUMMARY */}
+                      <div className="right-side-div p-0 w-100 d-lg-none d-block">
                         <div
                           className={`p-3 card-background-color card-text-color ${isFixed ? "fixed" : ""
                             }`}
@@ -656,151 +651,127 @@ const EditSpecialOffer = () => {
                               : "none",
                           }}
                         >
-                          <div className="row justify-content-start align-content-center p-0 m-0">
-                            <div className="col-auto p-0 m-0 rounded-3 text-center">
+                          <div className="row align-items-center">
+
+                            <div className="col-auto">
                               <img
                                 className="pizzaImageBorderSM"
                                 src={specialOfferData?.image || pizzaimage}
-                                alt="Pizza icon"
+                                alt="Pizza"
                               />
                             </div>
-                            <div className="col-7 p-0 m-0">
+
+                            <div className="col">
+                              <p className="fw-bold pizzaPriceSm">$ {price}</p>
+
                               <div
-                                className="d-flex flex-column justify-content-center "
-                                style={{ padding: "0px 10px" }}
+                                className="d-flex align-items-center my-2"
+                                style={{ userSelect: "none" }}
                               >
-                                <p className="lh-sm fw-bold text-start my-1 pizzaPriceSm">
-                                  $ {price}
-                                </p>
-                                <div
-                                  className="d-flex justify-content-start align-items-center my-1"
-                                  style={{ userSelect: "none" }}
+                                <button
+                                  disabled={pizzaQuantity <= 1}
+                                  onClick={() =>
+                                    setPizzaQuantity((prev) => prev - 1)
+                                  }
+                                  className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
                                 >
-                                  <button
-                                    disabled={pizzaQuantity <= 1}
-                                    onClick={() =>
-                                      setPizzaQuantity((prev) => prev - 1)
-                                    }
-                                    className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
-                                    aria-label="Decrease Quantity"
-                                  >
-                                    <FaMinus className="pizzaQtyButtonSpanSm fs-6" />
-                                  </button>
-                                  <div className="lh-sm fs-5 fw-bold mx-2">
-                                    {pizzaQuantity}
-                                  </div>
-                                  <button
-                                    disabled={pizzaQuantity >= 10}
-                                    onClick={() =>
-                                      setPizzaQuantity((prev) => prev + 1)
-                                    }
-                                    className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
-                                    aria-label="Increase Quantity"
-                                  >
-                                    <FaPlus className="pizzaQtyButtonSpanSm fs-6" />
-                                  </button>
-                                </div>
-                                <div className="d-flex flex-row justify-content-start">
-                                  <div className="d-flex me-2 justify-content-start py-2">
-                                    <button
-                                      onClick={handleAddToCart}
-                                      className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
-                                    >
-                                      UPDATE PIZZA
-                                    </button>
-                                  </div>
-                                  <div className="d-flex justify-content-start py-2">
-                                    <button
-                                      onClick={() => setViewSelection(true)}
-                                      className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
-                                    >
-                                      <FaEye />
-                                    </button>
-                                  </div>
-                                </div>
+                                  <FaMinus className="pizzaQtyButtonSpanSm" />
+                                </button>
+
+                                <div className="mx-2 fw-bold">{pizzaQuantity}</div>
+
+                                <button
+                                  disabled={pizzaQuantity >= 10}
+                                  onClick={() =>
+                                    setPizzaQuantity((prev) => prev + 1)
+                                  }
+                                  className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
+                                >
+                                  <FaPlus className="pizzaQtyButtonSpanSm" />
+                                </button>
+                              </div>
+
+                              <div className="d-flex gap-2">
+
+                                <button
+                                  onClick={handleAddToCart}
+                                  className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
+                                >
+                                  UPDATE PIZZA
+                                </button>
+
+                                <button
+                                  onClick={() => setViewSelection(true)}
+                                  className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
+                                >
+                                  <FaEye />
+                                </button>
+
                               </div>
                             </div>
+
                           </div>
                         </div>
                       </div>
-                      {/* size */}
+
+                      {/* SIZE SECTION */}
+
                       <div className="mt-3">
-                        <div className="accordion" id="accordionExample1">
+                        <div className="accordion" id="accordion-size">
                           <div className="accordion-item">
-                            <h2 className="accordion-header" id="headingOne">
+
+                            <h2 className="accordion-header">
                               <button
                                 className={`fw-bold fs-6 accordion-button ${activeAccordion === "size" ? "" : "collapsed"
                                   }`}
                                 type="button"
                                 onClick={() => toggleAccordion("size")}
-                                aria-expanded={
-                                  activeAccordion === "size" ? "true" : "false"
-                                }
-                                aria-controls="collapseOne"
                               >
                                 SELECT SIZE
                               </button>
                             </h2>
+
                             <div
-                              id="collapseOne"
                               className={`accordion-collapse collapse ${activeAccordion === "size" ? "show" : ""
                                 }`}
-                              aria-labelledby="headingOne"
-                              data-bs-parent="#accordionExample1"
-                              style={{ overflow: "hidden" }}
                             >
                               <div className="accordion-body primary-background-color">
-                                {pizzaSizeArr
-                                  ?.filter(
-                                    (price) => parseFloat(price.price) > 0,
-                                  )
-                                  ?.map((data, index) => {
-                                    return (
-                                      <div
-                                        className={`${size === data?.size
-                                          ? "selected-card-background-color selected-card-text-color"
-                                          : "card-background-color card-text-color"
-                                          }  py-3 px-3 mb-3 rounded-3`}
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => setSize(data?.size)}
-                                        key={index}
-                                      >
-                                        <div className="d-flex justify-content-between align-items-center">
-                                          <p className="fs-6">
-                                            <span className="me-2">
-                                              <input
-                                                type="radio"
-                                                className="form-check-input"
-                                                checked={size === data?.size}
-                                                readOnly
-                                              />
-                                            </span>
-                                            {data?.size} (${data?.price})
-                                          </p>
-                                          {size === data?.size ? (
-                                            <IoMdCheckmarkCircleOutline
-                                              color="#90EE90"
-                                              size={25}
-                                            />
-                                          ) : (
-                                            <IoMdCheckmarkCircleOutline
-                                              color="transparent"
-                                              size={25}
-                                            />
-                                          )}
+
+                                <div className="size-grid">
+
+                                  {pizzaSizeArr
+                                    ?.filter((price) => parseFloat(price.price) > 0)
+                                    ?.map((data, index) => {
+
+                                      const active = size === data?.size;
+
+                                      return (
+                                        <div
+                                          key={index}
+                                          className={`py-2 px-3 rounded-3 ${active
+                                            ? "selected-card-background-color selected-card-text-color"
+                                            : "card-background-color card-text-color"
+                                            }`}
+                                          style={{ cursor: "pointer" }}
+                                          onClick={() => setSize(data?.size)}
+                                        >
+                                          {data?.size} (${Number(data?.price).toFixed(2)})
                                         </div>
-                                      </div>
-                                    );
-                                  })}
+                                      );
+                                    })}
+
+                                </div>
+
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <p className="fs-3 fw-bold mt-5">CUSTOMIZE</p>
-                      <p className="mt-3 fs-6">
-                        Select any of the below to Deals.
-                      </p>
+
+                      {/* CUSTOMIZE */}
+
+                      <p className="fs-6 fw-bold mt-4 text-dark">CUSTOMIZE</p>
+                      <p className="mt-3 fs-6">Select any of the below to Deals.</p>
 
                       {specialPizzaConfig}
 
@@ -813,6 +784,7 @@ const EditSpecialOffer = () => {
                           toggleAccordion={toggleAccordion}
                         />
                       )}
+
                       {numberOfDips > 0 && (
                         <DipsConfig
                           Dips={Dips}
@@ -823,6 +795,7 @@ const EditSpecialOffer = () => {
                           toggleAccordion={toggleAccordion}
                         />
                       )}
+
                       {numberOfDrinks > 0 && (
                         <DrinksConfig
                           Drinks={Drinks}
@@ -834,22 +807,22 @@ const EditSpecialOffer = () => {
                       )}
                     </div>
 
-                    {/* right side */}
+                    {/* RIGHT SIDE SUMMARY */}
+
                     <div
                       className="right-side-div p-3 d-lg-block d-none"
                       style={{ position: "relative !important" }}
                     >
                       <div
-                        className={`p-3  right-side-internal-div card-background-color card-text-color ${isFixed ? "fixed" : ""
-                          }`}
+                        className={`p-3 right-side-internal-div-new card-background-color card-text-color ${isFixed ? "fixed" : ""
+                          } ${isTranslate ? "translate" : ""}`}
                         style={{
-                          transform: isTranslate
-                            ? `translateY(${translateYVal}px)`
-                            : "none",
+                          "--translate-y": isTranslate ? `${translateYVal}px` : "0px",
+                          position: "sticky",
                         }}
                       >
                         <div className="px-3 row">
-                          <div className="col-lg-6 p-3 rounded-3">
+                          <div className="col-lg-6 p-3">
                             <img
                               className="pizzaImageBorder"
                               src={
@@ -866,34 +839,30 @@ const EditSpecialOffer = () => {
                                 $ {price}
                               </p>
                               <div
-                                className="d-flex justify-content-center  justify-content-lg-start align-items-center mt-3"
+                                className="d-flex justify-content-center  justify-content-lg-start align-items-center mt-3 py-2"
                                 style={{ userSelect: "none" }}
                               >
                                 <button
                                   disabled={pizzaQuantity <= 1}
-                                  onClick={() =>
-                                    setPizzaQuantity((prev) => prev - 1)
-                                  }
+                                  onClick={() => setPizzaQuantity((prev) => prev - 1)}
                                   className="btn btn-secondary rounded-circle pizzaQtyButton"
                                 >
                                   <FaMinus className="pizzaQtyButtonSpan" />
                                 </button>
-                                <p className="lh-sm fs-4 fw-bold mx-2">
+                                <p className="lh-sm fs-4 fw-bold mx-3">
                                   {pizzaQuantity}
                                 </p>
                                 <button
                                   disabled={pizzaQuantity >= 10}
                                   className="btn btn-secondary rounded-circle pizzaQtyButton"
-                                  onClick={() =>
-                                    setPizzaQuantity((prev) => prev + 1)
-                                  }
+                                  onClick={() => setPizzaQuantity((prev) => prev + 1)}
                                 >
                                   <FaPlus className="pizzaQtyButtonSpan" />
                                 </button>
                               </div>
                               <div className="d-flex justify-content-center justify-content-lg-start">
                                 <button
-                                  onClick={() => handleAddToCart()}
+                                  onClick={handleAddToCart}
                                   className={`view-button px-3`}
                                 >
                                   UPDATE PIZZA
@@ -901,8 +870,9 @@ const EditSpecialOffer = () => {
                               </div>
                             </div>
                           </div>
+
                           <div className="scrollable-content">
-                            <div className="border-top pizza-card-border-color">
+                            <div className="border-top pizza-card-border-color mt-4">
                               <div className="row">
                                 <div className="col-12 p-2">
                                   <div className="d-flex flex-column py-2">
@@ -914,7 +884,7 @@ const EditSpecialOffer = () => {
                                             {numberOfDips - noOfFreeDips} / {numberOfDips}
                                           </span>
                                         </p>
-                                        <p className="fs-5 fw-bold">
+                                        <p className="fs-5 mb-2 fw-bold">
                                           Additional Dips:{" "}
                                           <span className="mx-2 text-danger">
                                             {noOfAdditionalDips}
@@ -941,6 +911,7 @@ const EditSpecialOffer = () => {
                                           },
                                           0,
                                         );
+                                        console.log("totalSelected", totalSelected);
 
                                         const freeUsed = Math.min(
                                           totalSelected,
@@ -974,8 +945,9 @@ const EditSpecialOffer = () => {
                                 </div>
                               </div>
                             </div>
+
                             {size && (
-                              <div className="border-top pizza-card-border-color mt-1 py-3">
+                              <div className="border-top pizza-card-border-color ">
                                 <div className="row">
                                   <div className="col-lg-12">
                                     {size && (
@@ -1016,12 +988,11 @@ const EditSpecialOffer = () => {
                                     return (
                                       <div>
                                         <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">
-                                          {`${el?.dipsName}(${el?.quantity
-                                            }) ($${dipsData?.find(
-                                              (data) =>
-                                                data?.dipsCode === el?.dipsCode,
-                                            )?.price * el?.quantity
-                                            })`}
+                                          {`${el?.dipsName}(${el?.quantity}) ($${dipsData?.find(
+                                            (data) =>
+                                              data?.dipsCode === el?.dipsCode,
+                                          )?.price * el?.quantity
+                                            })`}{" "}
                                           <span
                                             className="ms-2"
                                             onClick={() => handleRemoveDips(el)}
@@ -1053,6 +1024,7 @@ const EditSpecialOffer = () => {
                         </div>
                       </div>
                     </div>
+
                   </div>
                 </div>
               </section>
