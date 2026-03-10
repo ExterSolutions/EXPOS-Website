@@ -74,7 +74,7 @@ button:focus-visible {
 
 /* Custom Pill Selectors UI */
 .customization-category-label {
-  color: #fb8c00;
+  color: var(--primary);
   font-size: 0.95rem;
   font-weight: 500;
   margin-bottom: 0.75rem;
@@ -102,38 +102,38 @@ button:focus-visible {
 }
 
 .theme-pill-item:hover {
-  border-color: #fb8c00;
+  border-color: var(--primary);
   background-color: #fffaf0;
 }
 
 .theme-pill-item.active {
-  border-color: #fb8c00;
-  color: #fb8c00;
+  border-color: var(--primary);
+  color: var(--primary);
   border-width: 1.5px;
 }
 
 .theme-pill-item .price-label {
-  color: #fb8c00;
+  color: var(--primary);
   margin-left: 4px;
 }
 
 .theme-pill-item.active .price-label {
-  color: #fb8c00;
+  color: var(--primary);
 }
 
 .theme-pill-item:not(.active) .price-label {
-  color: #fb8c00;
+  color: var(--primary);
   /* Matching the image where price is also orange-ish or distinct */
 }
 
 /* Adjusting price label to look like the image ($0.00) */
 .price-tag {
-  color: #fb8c00;
+  color: var(--primary);
   font-weight: 400;
 }
 
 .theme-pill-item:not(.active) .price-tag {
-  color: #fb8c00;
+  color: var(--primary);
 }
 
 .topping-item {
@@ -143,7 +143,7 @@ button:focus-visible {
 }
 
 .customization-category-label {
-  color: #fb8c00;
+  color: var(--primary);
   font-weight: 600;
   font-size: 0.95rem;
   margin-bottom: 12px;
@@ -172,13 +172,13 @@ button:focus-visible {
 }
 
 .theme-pill-item:hover {
-  border-color: #fb8c00;
+  border-color: var(--primary);
 }
 
 .theme-pill-item.active {
-  border-color: #fb8c00;
-  box-shadow: 0 0 0 1px #fb8c00;
-  color: #fb8c00;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+  color: var(--primary);
 }
 
 .theme-pill-item span.price-tag {
@@ -187,7 +187,7 @@ button:focus-visible {
 }
 
 .theme-pill-item.active span.price-tag {
-  color: #fb8c00;
+  color: var(--primary);
 }
 
 .topping-header-bar {
@@ -221,7 +221,7 @@ button:focus-visible {
 }
 
 .dip-item-card.active {
-  border-color: #fb8c00;
+  border-color: var(--primary);
 }
 
 .dip-name {
@@ -262,8 +262,8 @@ button:focus-visible {
 }
 
 .quantity-btn-circle:hover:not(:disabled) {
-  border-color: #fb8c00 !important;
-  color: #fb8c00;
+  border-color: var(--primary) !important;
+  color: var(--primary);
 }
 
 .quantity-btn-circle:disabled {
@@ -290,15 +290,15 @@ button:focus-visible {
 }
 
 .topping-tab.active {
-  color: #fb8c00;
+  color: var(--primary);
   font-weight: 600;
-  border-bottom: 2px solid #fb8c00;
+  border-bottom: 2px solid var(--primary);
 }
 
 .topping-radio-circle {
   width: 18px;
   height: 18px;
-  border: 2px solid #fb8c00;
+  border: 2px solid var(--primary);
   border-radius: 50%;
   padding: 3px;
   display: inline-block;
@@ -309,7 +309,7 @@ button:focus-visible {
   display: block;
   width: 100%;
   height: 100%;
-  background-color: #fb8c00;
+  background-color: var(--primary);
   border-radius: 50%;
 }
 

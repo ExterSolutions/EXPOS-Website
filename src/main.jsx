@@ -1,7 +1,7 @@
 // src/main.jsx or src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom'; 
+import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './redux/store';
@@ -19,13 +19,13 @@ root.render(
     <SiteDataProvider>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-            <GlobalProvider>
-              <ThemeProvider>
-                <BrowserRouter>
-                  <App />
-                </BrowserRouter>
-              </ThemeProvider>
-            </GlobalProvider>
+          <GlobalProvider>
+            <ThemeProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </ThemeProvider>
+          </GlobalProvider>
         </PersistGate>
       </Provider>
     </SiteDataProvider>

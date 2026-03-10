@@ -355,3 +355,8 @@ export const getSiteData = async () => {
   const { data: response } = await http.get(`/feed/site`);
   return response;
 }
+
+export const applyCoupon = async () => {
+  const { data: response } = await http.get(`/coupon/list`);
+  return response;
+}

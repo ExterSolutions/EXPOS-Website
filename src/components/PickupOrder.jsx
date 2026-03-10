@@ -2,407 +2,290 @@ import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import swal from "sweetalert";
-import {GlobalContext} from "../context/GlobalContext";
+import { GlobalContext } from "../context/GlobalContext";
 import { useSocket } from "../context/SocketContext";
-import { getStoreLocation, orderPlace } from "../services";
-
-// Developer: Shreyas Mahamuni, Working Date: 23-12-2023
+import { applyCoupon, getStoreLocation, orderPlace } from "../services";
 
 function PickupOrder() {
     const socket = useSocket();
+    const navigate = useNavigate();
+    const user = useSelector((state) => state.user);
+    const globalctx = useContext(GlobalContext);
+
     const [loading, setLoading] = useState(false);
-    const [storeDetails, setStoreDetails] = useState();
+    const [storeDetails, setStoreDetails] = useState([]);
     const [isShowConfirmPickup, setIsShowConfirmPickup] = useState(false);
     const [selectedStore, setSelectedStore] = useState(null);
 
-    const navigate = useNavigate();
-
-    const user = useSelector((state) => state.user);
-    const globalctx = useContext(GlobalContext);
     const [cart, setCart] = globalctx.cart;
-    const [currentLatitude, setCurrentLatitude] = globalctx.currentLatitude;
-    const [currentLogitude, setCurrentLogitude] = globalctx.currentLogitude;
+    const [currentLatitude] = globalctx.currentLatitude;
+    const [currentLogitude] = globalctx.currentLogitude;
+    const [currentStoreCode] = globalctx.currentStoreCode;
+
     const [taxPercent, setTaxPercent] = useState(0);
     const [taxAmount, setTaxAmount] = useState(0);
     const [grand_total, setGrandTotal] = useState(0);
-    const [currentStoreCode, setCurrentStoreCode] = globalctx.currentStoreCode;
 
     const [busyLoader, setBusyLoader] = useState(false);
+    const [couponList, setCouponList] = useState([]);
+    const [couponCode, setCouponCode] = useState("");
 
-    // API - Get Store Location
+    // Changed to single object for "Single Coupon at a time" logic
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
+
     const getStoreDetails = async () => {
         setLoading(true);
-        await getStoreLocation({
-            "lat": currentLatitude ?? '',
-            "long": currentLogitude ?? ''
-        })
-            .then((res) => {
-                setLoading(false);
-                setStoreDetails(res.data);
-                if (currentStoreCode && res?.data?.length > 0) {
-                    const selectedStoreCode = res?.data?.find(
-                        (data) => data?.code === currentStoreCode
-                    );
-                    setSelectedStore(selectedStoreCode);
-                }
-            })
-            .catch((err) => {
-                setLoading(false);
-                if (err.response.status === 400 || err.response.status === 500) {
-                    toast.error(err.response.data.message);
-                }
+        try {
+            const res = await getStoreLocation({
+                lat: currentLatitude ?? '',
+                long: currentLogitude ?? ''
             });
-    };
-
-    const handleChooseStore = (data) => {
-        setLoading(true);
-        setTimeout(() => {
-            setSelectedStore(data);
-            setIsShowConfirmPickup(false);
+            setStoreDetails(res.data);
+            if (currentStoreCode && res?.data?.length > 0) {
+                const preSelected = res.data.find(d => d.code === currentStoreCode);
+                if (preSelected) setSelectedStore(preSelected);
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to fetch stores");
+        } finally {
             setLoading(false);
-        }, 500);
+        }
     };
 
-    const handleBackToStore = () => {
-        setLoading(true);
-        setIsShowConfirmPickup(false);
-        setLoading(false);
-    };
-
-   const handlePickupOrder = async () => {
-    setBusyLoader(true);
-    const baseUrl = window.location.origin;
-    const payload = {
-        customerCode: user?.data?.customerCode,
-        deliveryType: "pickup",
-        customerName: user?.data?.fullName,
-        mobileNumber: user?.data?.mobileNumber,
-        products: cart?.product,
-        subTotal: cart?.subtotal,
-        discountAmount: cart?.discountAmount,
-        taxPer: taxPercent,
-        taxAmount: taxAmount,
-        deliveryCharges: Number(0).toFixed(2),
-        extraDeliveryCharges: Number(0).toFixed(2),
-        grandTotal: grand_total,
-        storeCode: selectedStore?.code,
-        successUrl: `${baseUrl}/payment/success`,
-        cancelUrl: `${baseUrl}/payment/cancel`,
-    };
-    
-    try {
-        const response = await orderPlace(payload);
-        
-        // Check socket before emitting
-        if (socket) {
-            const socketOrderData = response.data;
-            socket.emit("order-place", socketOrderData);
+    const getCouponList = async () => {
+        try {
+            const res = await applyCoupon();
+            setCouponList(Array.isArray(res.data) ? res.data : [res.data]);
+        } catch (error) {
+            console.error("Coupon fetch error", error);
         }
-        
-        localStorage.setItem("OrderID", response.orderCode);
-        localStorage.setItem("sessionId", response.sessionId);
-        
-        if (response.paymentUrl) {
-            window.location.href = response.paymentUrl;
-        } else {
-            toast.error("Payment URL not available. Please try again.");
-            setBusyLoader(false);
-        }
-        setLoading(false);
-    } catch (error) {
-        setBusyLoader(false);
-        setLoading(false);
-        
-        // FIXED: Check if error.response exists before accessing properties
-        if (error.response) {
-            if (error.response.status === 400 || error.response.status === 500) {
-                if (error.response.data?.isStoreError === true) {
-                    swal({
-                        title: "Store has been closed.",
-                        text: `Unfortunately, placing an order is not possible at the moment. You can not place order right now.`,
-                        icon: "warning",
-                        buttons: "Ok",
-                        dangerMode: true,
-                    }).then(async (willOk) => {
-                        if (willOk) {
-                            navigate("/address-details");
-                        }
-                    });
-                } else {
-                    toast.error(error.response.data?.message || 'An error occurred');
-                }
-            } else {
-                // Handle other HTTP status codes
-                toast.error(`Error ${error.response.status}: ${error.response.data?.message || 'Unknown error'}`);
-            }
-        } else {
-   
-            console.error('Network error or no response:', error);
-            
-            if (error.message) {
-                if (error.message.includes('Network Error')) {
-                    toast.error('Network error. Please check your internet connection.');
-                } else if (error.message.includes('timeout')) {
-                    toast.error('Request timed out. Please try again.');
-                } else {
-                    toast.error(error.message);
-                }
-            } else {
-                toast.error('An unexpected error occurred. Please try again.');
-            }
-        }
-    }
-};
-
-
-
-
-    const setDefaultData = (selectedStoreData) => {
-        let tax_percent = Number(selectedStoreData?.province?.tax_percent).toFixed(2);
-        let tax_amount = Number(cart?.subtotal * tax_percent * 0.01).toFixed(2);
-        let cart_grand_amount = Number(cart?.grandtotal).toFixed(2);
-        let grand_Amount = Number(+cart_grand_amount + +tax_amount).toFixed(2);
-        setTaxAmount(tax_amount);
-        setGrandTotal(grand_Amount);
-        setTaxPercent(selectedStoreData?.province?.tax_percent);
     };
 
     useEffect(() => {
-        if (selectedStore) {
-            setDefaultData(selectedStore);
-        }
-    }, [selectedStore, isShowConfirmPickup]);
-
-    useEffect(() => {
-        setLoading(false);
-        window.scrollTo(0, 0);
         getStoreDetails();
+        getCouponList();
+        window.scrollTo(0, 0);
     }, []);
+
+    // Recalculate totals for SINGLE coupon
+    useEffect(() => {
+        const subtotal = Number(cart?.subtotal || 0);
+        let totalDiscount = 0;
+
+        if (appliedCoupon) {
+            if (appliedCoupon.discount_type === "percentage") {
+                totalDiscount = (subtotal * appliedCoupon.discount_value) / 100;
+            } else {
+                totalDiscount = Number(appliedCoupon.discount_value);
+            }
+        }
+
+        const tax_percent = Number(selectedStore?.province?.tax_percent || 0);
+        const discountedSubtotal = subtotal - discountAmount;
+        const tax_val = (discountedSubtotal * tax_percent * 0.01);
+
+        const finalDiscount = Math.min(totalDiscount, subtotal);
+        const finalTotal = (subtotal + tax_val) - finalDiscount;
+
+        setTaxPercent(tax_percent);
+        setTaxAmount(tax_val.toFixed(2));
+        setDiscountAmount(finalDiscount.toFixed(2));
+        setGrandTotal(finalTotal > 0 ? finalTotal.toFixed(2) : "0.00");
+    }, [selectedStore, appliedCoupon, cart, discountAmount]);
+
+    const handleApplyCoupon = () => {
+        if (!couponCode) return toast.error("Please enter coupon code");
+        const coupon = couponList.find(c => c.code.toLowerCase() === couponCode.toLowerCase());
+        if (!coupon) return toast.error("Invalid coupon code");
+        toggleCoupon(coupon);
+    };
+
+    const toggleCoupon = (coupon) => {
+        // If clicking the same one, remove it
+        if (appliedCoupon?.code === coupon.code) {
+            setAppliedCoupon(null);
+            setCouponCode("");
+            toast.info(`Coupon ${coupon.code} removed`);
+        } else {
+            // Min Order check
+            if (Number(cart?.subtotal || 0) < Number(coupon.min_order)) {
+                return toast.error(`Min order for ${coupon.code} is $${coupon.min_order}`);
+            }
+            // Apply as the ONLY coupon and update input field
+            setAppliedCoupon(coupon);
+            setCouponCode(coupon.code);
+            toast.success(`${coupon.code} applied!`);
+        }
+    };
+
+    const handlePickupOrder = async () => {
+        setBusyLoader(true);
+        const payload = {
+            customerCode: user?.data?.customerCode,
+            deliveryType: "pickup",
+            customerName: user?.data?.fullName,
+            mobileNumber: user?.data?.mobileNumber,
+            products: cart?.product,
+            subTotal: cart?.subtotal,
+            discountAmount: discountAmount,
+            appliedCoupons: appliedCoupon ? [appliedCoupon.code] : [],
+            taxPer: taxPercent,
+            taxAmount: taxAmount,
+            deliveryCharges: 0,
+            grandTotal: grand_total,
+            storeCode: selectedStore?.code,
+            successUrl: `${window.location.origin}/payment/success`,
+            cancelUrl: `${window.location.origin}/payment/cancel`,
+        };
+
+        try {
+            const response = await orderPlace(payload);
+            if (socket) socket.emit("order-place", response.data);
+            localStorage.setItem("OrderID", response.orderCode);
+            localStorage.setItem("sessionId", response.sessionId);
+
+            if (response.paymentUrl) {
+                window.location.href = response.paymentUrl;
+            } else {
+                toast.error("Payment URL not available.");
+                setBusyLoader(false);
+            }
+        } catch (error) {
+            setBusyLoader(false);
+            toast.error(error.response?.data?.message || "Order placement failed");
+        }
+    };
+
     return (
-        <>
-            {isShowConfirmPickup === false ? (
-                <div className="relative">
-                    <div className="row checkout_pg mb-3">
-                        <p className="subTitleColor mb-1">Store Location : </p>
-                        <p className="store-subheading mb-4">
-                            Choose store location and click on continue.
-                        </p>
-                    </div>
-                    <div className="row g-3 mb-3 justify-content-between">
-                        <div className="col-md-7 col-lg-7">
-                            {storeDetails
-                                ?.sort((a, b) => {
-                                    // Move the selected store to the top
-                                    if (selectedStore && a.code === selectedStore.code) return -1;
-                                    if (selectedStore && b.code === selectedStore.code) return 1;
-                                    return 0; // Maintain order for other stores
-                                })
-                                .map((data) => {
-                                    return (
-                                        <div className="col-12 p-0 pb-2" key={data.code}>
-                                            <div className="card mb-3 store_content shadow-sm">
-                                                <div
-                                                    className={`card-header py-2 text-start store_header ${selectedStore && data?.code === selectedStore.code
-                                                        ? "logo-primary-background-color"
-                                                        : ""
-                                                        }`}
-                                                    style={{
-                                                        border: "none",
-                                                        color: `${selectedStore && data?.code === selectedStore.code
-                                                            ? "white"
-                                                            : ""
-                                                            }`,
-                                                    }}
-                                                >
-                                                    {data.storeLocation}
-                                                </div>
-                                                <div className="card-body text-start">
-                                                    {data.storeAddress}
-                                                </div>
-                                                <div
-                                                    className="card-footer text-start bg-white"
-                                                    style={{ border: "none" }}
-                                                >
-                                                    <button
-                                                        className={`btn btn-sm chooseStoreBtn text-white px-3 mb-2 ${selectedStore && selectedStore?.code === data.code
-                                                            ? "logo-primary-background-color"
-                                                            : "bg-secondary"
-                                                            }`}
-                                                        onClick={() => {
-                                                            handleChooseStore(data);
-                                                        }}
-                                                    >
-                                                        {selectedStore && selectedStore?.code === data.code
-                                                            ? "Selected"
-                                                            : "Choose this store"}
-                                                    </button>
-                                                </div>
+        <div className="container py-4">
+            {!isShowConfirmPickup ? (
+                <div className="row">
+                    <div className="col-lg-8">
+                        {/* Store Selection */}
+                        <h5 className="fw-bold mb-3">Select Pickup Location</h5>
+                        <div className="row g-3 mb-4">
+                            {storeDetails?.map((data) => (
+                                <div className="col-12" key={data.code}>
+                                    <div className="card shadow-sm border-0 rounded-4"
+                                        style={{ border: selectedStore?.code === data.code ? '2px solid #0d6efd' : 'none' }}>
+                                        <div className="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 className="fw-bold mb-1">{data.storeLocation}</h6>
+                                                <p className="text-muted small mb-0">{data.storeAddress}</p>
                                             </div>
+                                            <button
+                                                className={`btn rounded-pill px-4 btn-sm ${selectedStore?.code === data.code ? 'btn-primary' : 'btn-outline-primary'}`}
+                                                onClick={() => setSelectedStore(data)}
+                                            >
+                                                {selectedStore?.code === data.code ? 'Selected' : 'Select'}
+                                            </button>
                                         </div>
-                                    );
-                                })}
-                        </div>
-                        <div className="col-md-5 col-lg-5 summary-unfixed-box">
-                            <div className="row">
-                                <div className="col-lg-12 col-md-12 col-sm-12 mb-2">
-                                    <div className="block-stl10 odr-summary mb-0">
-                                        <h3>Order Summary :</h3>
-                                        <ul className="list-unstyled">
-                                            <li>
-                                                <span className="ttl">Sub Total</span>{" "}
-                                                <span className="stts">
-                                                    $ {cart?.subtotal ? cart?.subtotal : (0.0).toFixed(2)}
-                                                </span>
-                                            </li>
-                                            {selectedStore && (
-                                                <li>
-                                                    <span className="ttl">
-                                                        Tax Amount ({taxPercent}%)
-                                                    </span>
-                                                    <span className="stts">$ {taxAmount}</span>
-                                                </li>
-                                            )}
-                                            <li className="d-none">
-                                                <span className="ttl">Convenience Charges (%)</span>{" "}
-                                                <span className="stts">
-                                                    ${" "}
-                                                    {cart?.convinenceCharges
-                                                        ? cart?.convinenceCharges
-                                                        : 0}
-                                                </span>
-                                            </li>
-                                            <li className="d-none">
-                                                <span className="ttl">Delivery Charges</span>{" "}
-                                                <span className="stts">
-                                                    $
-                                                    {cart?.deliveryCharges
-                                                        ? "$" + cart?.deliveryCharges
-                                                        : "$" + Number(0).toFixed(2)}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                        <div className="ttl-all" id="font-size">
-                                            <span className="ttlnm">Grand Total</span>
-                                            <span className="odr-stts total-font-size">
-                                                $
-                                                {selectedStore
-                                                    ? grand_total
-                                                    : cart?.grandtotal
-                                                        ? cart?.grandtotal
-                                                        : (0.0).toFixed(2)}
-                                            </span>
-                                        </div>
-                                        {selectedStore && (
-                                            <div className="mt-5 float-end">
-                                                <button
-                                                    className="btn btn-md regBtn"
-                                                    onClick={() => setIsShowConfirmPickup(true)}
-                                                >
-                                                    Place my order
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
-                            </div>
+                            ))}
                         </div>
+
+                        {/* Professional Offers Section */}
+                        <section className="mb-4">
+                            <div className="card border-0 shadow-sm rounded-4">
+                                <div className="card-body p-3">
+                                    <h6 className="fw-bold mb-3">Offers & Coupons</h6>
+
+                                    {/* Syncing Input Field */}
+                                    <div className="input-group mb-3 shadow-sm rounded-3 overflow-hidden border">
+                                        <input
+                                            type="text"
+                                            className="form-control border-0 p-2 ps-3"
+                                            placeholder="Enter coupon code"
+                                            style={{ fontSize: '0.9rem' }}
+                                            value={couponCode}
+                                            onChange={(e) => setCouponCode(e.target.value)}
+                                            disabled={appliedCoupon}
+                                        />
+                                        {appliedCoupon ? (
+                                            <button className="btn btn-danger px-4 fw-bold" style={{ fontSize: '0.85rem' }} onClick={() => { setAppliedCoupon(null); setCouponCode(""); }}>
+                                                Remove
+                                            </button>
+                                        ) : (
+                                            <button className="btn btn-success px-4 fw-bold" style={{ fontSize: '0.85rem' }} onClick={handleApplyCoupon}>
+                                                Apply
+                                            </button>
+                                        )}
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </section>
                     </div>
-                    <div className="summary-fixed-box">
-                        <h3>Order Summary :</h3>
-                        <div className="row">
-                            <div className="col-12 filled-bx">
-                                <span className="">Sub Total</span>
-                                <span className="">
-                                    ${cart?.subtotal ? cart?.subtotal : (0.0).toFixed(2)}
-                                </span>
-                            </div>
-                            {selectedStore && (
-                                <div className="col-12 filled-bx">
-                                    <span className="">Tax Amount({taxPercent}%)</span>
-                                    <span className="">${taxAmount}</span>
+
+                    {/* Order Summary */}
+                    <div className="col-lg-4">
+                        <div className="card border-0 shadow rounded-4 sticky-top" style={{ top: '20px' }}>
+                            <div className="card-body p-4">
+                                <h5 className="fw-bold mb-4">Order Summary</h5>
+                                <div className="d-flex justify-content-between mb-2">
+                                    <span>Subtotal</span>
+                                    <span>${Number(cart?.subtotal || 0).toFixed(2)}</span>
                                 </div>
-                            )}
-                            <div className="col-12 filled-bx">
-                                <strong className="text-grey">Grand Total</strong>
-                                <strong className="text-grey">
-                                    $
-                                    {selectedStore
-                                        ? grand_total
-                                        : cart?.grandtotal
-                                            ? cart?.grandtotal
-                                            : (0.0).toFixed(2)}
-                                </strong>
-                            </div>
-                            {selectedStore && (
-                                <div className="col-12 mt-1">
-                                    <button
-                                        className="btn btn-md w-100 regBtn"
-                                        onClick={() => setIsShowConfirmPickup(true)}
-                                    >
-                                        Place my order
-                                    </button>
+                                {appliedCoupon && (
+                                    <div className="d-flex justify-content-between mb-2 text-success fw-medium">
+                                        <span>Savings ({appliedCoupon.code})</span>
+                                        <span>-${discountAmount}</span>
+                                    </div>
+                                )}
+                                {selectedStore && (
+                                    <div className="d-flex justify-content-between mb-2 text-muted">
+                                        <span>Tax ({taxPercent}%)</span>
+                                        <span>+${taxAmount}</span>
+                                    </div>
+                                )}
+
+                                <hr />
+                                <div className="d-flex justify-content-between mb-4">
+                                    <span className="h5 fw-bold">Grand Total</span>
+                                    <span className="h5 fw-bold text-primary">${grand_total}</span>
                                 </div>
-                            )}
+
+                                <button
+                                    className="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm"
+                                    disabled={!selectedStore || Number(cart?.subtotal || 0) === 0}
+                                    onClick={() => setIsShowConfirmPickup(true)}
+                                >
+                                    Proceed to Checkout
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <>
-                    <div className="row checkout_pg">
-                        <p className="subTitleColor mb-4">Confirm & Place Order : </p>
-                    </div>
-                    <div className="row gx-4 mb-4">
-                        <div className="col-lg-6 row">
-                            <div className="col-12 pb-2">
-                                <p className="mb-3 customerTxt">
-                                    <strong className="mb-3 me-2">Selected Store : </strong>{" "}
-                                    <span className="mb-3">{selectedStore?.storeLocation}</span>
-                                </p>
-                                <p className="mb-3 customerTxt">
-                                    <strong className="mb-3 me-2">Customer Name : </strong>
-                                    <span className="mb-3">{user?.data?.fullName}</span>
-                                </p>
-                                <p className="mb-3 customerTxt">
-                                    <strong className="mb-3 me-2">Phone Number : </strong>
-                                    <span className="mb-3">{user?.data?.mobileNumber}</span>
-                                </p>
+                /* Review Step */
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
+                        <div className="card border-0 shadow-lg rounded-4 p-4 text-center">
+                            <h4 className="fw-bold mb-4">Review Your Order</h4>
+                            <div className="text-start bg-light p-3 rounded-3 mb-4">
+                                <p className="mb-2"><strong>Store:</strong> {selectedStore?.storeLocation}</p>
+                                <p className="mb-2"><strong>Name:</strong> {user?.data?.fullName}</p>
+                                <p className="mb-2"><strong>Applied Coupon:</strong> {appliedCoupon ? appliedCoupon.code : "None"}</p>
+                                <p className="mb-0"><strong>Final Price:</strong> ${grand_total}</p>
                             </div>
-                            <hr />
-                            <div className="col-12 pb-4">
-                                <strong className="mb-3 me-4">Payment Mode : </strong>
-                                <span className="mb-3 fw-bolder text-success">
-                                    Online Payment
-                                </span>
-                            </div>
-                            <hr />
-                            <div className="col-lg-4 col-md-5 col-4 text-start">
+                            <div className="d-flex gap-3">
+                                <button className="btn btn-light flex-grow-1 py-2" onClick={() => setIsShowConfirmPickup(false)}>Back</button>
                                 <button
-                                    className="btn btn-md btn-secondary"
-                                    onClick={handleBackToStore}
+                                    className="btn btn-success flex-grow-1 py-2 fw-bold"
+                                    onClick={handlePickupOrder}
+                                    disabled={busyLoader}
                                 >
-                                    Back
+                                    {busyLoader ? "Processing..." : "Confirm & Pay"}
                                 </button>
-                            </div>
-                            <div className="col-lg-8 col-md-7 col-8 text-end">
-                                {busyLoader ? (
-                                    <button className="btn btn-md regBtn" type="button">
-                                        Please wait <i class="fa fa-spinner fa-spin"></i>
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="btn btn-md regBtn"
-                                        onClick={handlePickupOrder}
-                                    >
-                                        Confirm & Place Order
-                                    </button>
-                                )}
                             </div>
                         </div>
                     </div>
-                </>
+                </div>
             )}
-        </>
+        </div>
     );
 }
 

@@ -10,7 +10,7 @@ const SpecialPizzaList = () => {
             <div style={{ position: "relative" }}>
                 <Header />
                 <Tabs />
-                <SpecialMenuList />
+                <SpecialMenuList zzzz/>
                 <Footer />
             </div>
         </>

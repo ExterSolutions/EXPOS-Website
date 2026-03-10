@@ -7,7 +7,7 @@ function ShowSpecialPizzaConfig({ count, pizzaState }) {
                 <div className='row'>
                     <div className="col-lg-12 ">
                         <div className="d-flex align-items-center  flex-wrap">
-                            <p className="fw-bold primary-orange-color mb-0 d-flex align-items-center flex-wrap">
+                            <p className="fw-bold text-primary mb-0 d-flex align-items-center flex-wrap">
                                 <span className='fs-5 me-2'>PIZZA - {count + 1}</span>
                                 <span className='fs-6 text-break'>({pizzaState[count]?.signaturePizza?.name || pizzaState[count]?.signaturePizza?.pizzaName || "Custom Pizza"})</span>
                             </p>
