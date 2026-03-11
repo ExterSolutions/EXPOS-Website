@@ -75,7 +75,7 @@ export default function StoreSelectModal({ onClose, required = false }) {
             // Different city → redirect to that city's site URL with encoded store
             const encoded = encodeStorePayload(storeDetail);
             const baseUrl = (cityGroup.site_url || '/').trim().replace(/\/$/, '');
-            window.location.href = `${'http://192.168.29.245:5173/'}/?d=${encoded}`;
+            window.location.href = `${baseUrl}/?d=${encoded}`;
         }
     };
 
