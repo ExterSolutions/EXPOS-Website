@@ -303,8 +303,6 @@ export default function StoreSelectModal({ onClose, required = false }) {
                     ))}
                 </div>
             </div>
-
-            {/* spinner keyframes */}
             <style>{`
                 @keyframes spin { to { transform: rotate(360deg); } }
             `}</style>
