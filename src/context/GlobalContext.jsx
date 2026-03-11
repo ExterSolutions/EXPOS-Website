@@ -1,59 +1,154 @@
 // src/context/GlobalContext.js
 import { createContext, useState } from "react";
 
-const DEFAULT_CITY = {
-  value: "Calgary",
-  label: "Calgary",
-  stores: [
-    {
-      code: "STR_5",
-      storeLocation: "Calgary",
-      latitude: "51.102619",
-      longitude: "-113.924528",
-      storeAddress: "5 Coral Springs Blvd NE Unit#11, Calgary, AB T3J 4J1",
-    },
-  ],
-};
-
-const DEFAULT_STORE = {
-  value: "STR_5",
-  label: "Calgary",
-};
-
 export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
-  const setDefaultCalgaryLocation = () => {
-    localStorage.setItem("currentCity", JSON.stringify(DEFAULT_CITY));
-    localStorage.setItem("currentStoreCode", DEFAULT_STORE.value);
-    localStorage.setItem("currentStore", JSON.stringify(DEFAULT_STORE));
-    return {
-      city: DEFAULT_CITY,
-      storeCode: DEFAULT_STORE.value,
-      store: DEFAULT_STORE,
-    };
-  };
 
-  // Check if we need to set defaults
-  const checkAndSetDefaults = () => {
+  // ── Restore from localStorage (no hardcoded defaults) ─────────────────────
+  const getStoredData = () => {
     const storedCity = localStorage.getItem("currentCity");
     const storedStoreCode = localStorage.getItem("currentStoreCode");
     const storedStore = localStorage.getItem("currentStore");
-
-    // If nothing is stored, set Calgary as default
-    if (!storedCity && !storedStoreCode && !storedStore) {
-      return setDefaultCalgaryLocation();
-    }
-
-    // Return existing data if available
     return {
       city: storedCity ? JSON.parse(storedCity) : null,
-      storeCode: storedStoreCode,
+      storeCode: storedStoreCode || null,
       store: storedStore ? JSON.parse(storedStore) : null,
     };
   };
 
-  const defaultData = checkAndSetDefaults();
+  // ── Read store data sent by the main domain ────────────────────────────────
+  // NEW  format : ?d=<Base64URL-encoded JSON>
+  //   payload keys: store_code, store_city, store_location, store_address
+  // LEGACY format: individual query params (backward compat)
+  const readStoreFromUrl = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+
+      // ── Base64URL encoded param (?d=...) ───────────────────────────────────
+      const encoded = params.get("d");
+      if (encoded) {
+        const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+        const json = decodeURIComponent(escape(atob(padded)));
+        const p = JSON.parse(json);
+
+        const storeDetail = {
+          code: p.store_code || "",
+          city: p.store_city || "",
+          storeLocation: p.store_location || p.store_city || "",
+          storeAddress: p.store_address || "",
+          pickupNumber: p.store_phone || "",
+          latitude: p.store_lat || "",
+          longitude: p.store_lng || "",
+        };
+
+        if (!storeDetail.code) return null;
+
+        const cityOption = {
+          value: storeDetail.city,
+          label: storeDetail.city,
+          stores: [{
+            code: storeDetail.code,
+            storeLocation: storeDetail.storeLocation,
+            latitude: storeDetail.latitude,
+            longitude: storeDetail.longitude,
+            storeAddress: storeDetail.storeAddress,
+          }],
+        };
+        const storeOption = {
+          value: storeDetail.code,
+          label: storeDetail.storeLocation || storeDetail.city,
+        };
+
+        localStorage.setItem("currentCity", JSON.stringify(cityOption));
+        localStorage.setItem("currentStoreCode", storeDetail.code);
+        localStorage.setItem("currentStore", JSON.stringify(storeOption));
+        localStorage.setItem("selectedStore", JSON.stringify(storeDetail));
+
+        return { city: cityOption, storeCode: storeDetail.code, store: storeOption, storeDetail };
+      }
+
+      // ── Legacy: individual query params ────────────────────────────────────
+      const code = params.get("store_code");
+      if (!code) return null;
+
+      const storeDetail = {
+        code,
+        city: params.get("store_city") || "",
+        storeLocation: params.get("store_location") || params.get("store_city") || "",
+        storeAddress: params.get("store_address") || "",
+        pickupNumber: params.get("store_phone") || "",
+        latitude: params.get("store_lat") || "",
+        longitude: params.get("store_lng") || "",
+      };
+
+      const cityOption = {
+        value: storeDetail.city,
+        label: storeDetail.city,
+        stores: [{
+          code: storeDetail.code,
+          storeLocation: storeDetail.storeLocation,
+          latitude: storeDetail.latitude,
+          longitude: storeDetail.longitude,
+          storeAddress: storeDetail.storeAddress,
+        }],
+      };
+      const storeOption = {
+        value: storeDetail.code,
+        label: storeDetail.storeLocation || storeDetail.city,
+      };
+
+      localStorage.setItem("currentCity", JSON.stringify(cityOption));
+      localStorage.setItem("currentStoreCode", storeDetail.code);
+      localStorage.setItem("currentStore", JSON.stringify(storeOption));
+      localStorage.setItem("selectedStore", JSON.stringify(storeDetail));
+
+      return { city: cityOption, storeCode: storeDetail.code, store: storeOption, storeDetail };
+    } catch (e) {
+      console.warn("[GlobalContext] Failed to parse store from URL:", e);
+      return null;
+    }
+  };
+
+  // Priority: URL params → localStorage → null
+  const urlData = readStoreFromUrl();
+  const storedData = urlData || getStoredData();
+
+  // ── selectedStore: full store detail object ────────────────────────────────
+  // Priority: URL params → localStorage["selectedStore"] → build from currentCity → null
+  const initSelectedStore = () => {
+    if (urlData?.storeDetail) return urlData.storeDetail;
+    try {
+      const saved = localStorage.getItem("selectedStore");
+      if (saved) return JSON.parse(saved);
+
+      // Build from currentCity + currentStoreCode if available
+      const storedCity = localStorage.getItem("currentCity");
+      const storedStoreCode = localStorage.getItem("currentStoreCode");
+      if (storedCity && storedStoreCode) {
+        const cityData = JSON.parse(storedCity);
+        const matchedStore =
+          (cityData.stores ?? []).find((s) => s.code === storedStoreCode) ||
+          cityData.stores?.[0];
+        if (matchedStore) {
+          return {
+            code: storedStoreCode,
+            city: cityData.value || cityData.label || "",
+            storeLocation: matchedStore.storeLocation || cityData.value || "",
+            storeAddress: matchedStore.storeAddress || "",
+            pickupNumber: matchedStore.pickup_number || "",
+            latitude: matchedStore.latitude || "",
+            longitude: matchedStore.longitude || "",
+          };
+        }
+      }
+
+      return null; // no hardcoded fallback
+    } catch {
+      return null;
+    }
+  };
 
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("token") ? true : false,
@@ -67,37 +162,24 @@ export const GlobalProvider = ({ children }) => {
     return storedCart ? JSON.parse(storedCart) : { product: [] };
   });
   const [currentStoreCode, setCurrentStoreCode] = useState(
-    defaultData.storeCode || localStorage.getItem("currentStoreCode"),
+    storedData.storeCode || null,
   );
   const [currentLatitude, setCurrentLatitude] = useState(
-    localStorage.getItem("currentLatitude"),
+    urlData?.storeDetail?.latitude || localStorage.getItem("currentLatitude") || null,
   );
   const [currentLogitude, setCurrentLogitude] = useState(
-    localStorage.getItem("currentLogitude"),
+    urlData?.storeDetail?.longitude || localStorage.getItem("currentLogitude") || null,
   );
-  const [currentCity, setCurrentCity] = useState(
-    defaultData.city ||
-      (() => {
-        const storedCity = localStorage.getItem("currentCity");
-        return storedCity ? JSON.parse(storedCity) : null;
-      })(),
-  );
-  const [currentStore, setCurrentStore] = useState(
-    defaultData.store ||
-      (() => {
-        const storedStore = localStorage.getItem("currentStore");
-        return storedStore ? JSON.parse(storedStore) : null;
-      })(),
-  );
+  const [currentCity, setCurrentCity] = useState(storedData.city || null);
+  const [currentStore, setCurrentStore] = useState(storedData.store || null);
+
+  const [selectedStore, setSelectedStore] = useState(initSelectedStore);
   const [scrollToSignature, setScrollToSignature] = useState(false);
   const [selectedType, setSelectedType] = useState(() => {
     const storedType = localStorage.getItem("selectedType");
-    if (storedType) {
-      return storedType;
-    } else {
-      localStorage.setItem("selectedType", "pickup");
-      return "pickup";
-    }
+    if (storedType) return storedType;
+    localStorage.setItem("selectedType", "pickup");
+    return "pickup";
   });
   const [payloadEdit, setPayloadEdit] = useState();
   const [showStorePopup, setShowStorePopup] = useState(false);
@@ -112,23 +194,52 @@ export const GlobalProvider = ({ children }) => {
   const [reset, setReset] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
-  // Function to manually set Calgary as location
-  const setCalgaryAsDefault = () => {
-    setCurrentCity(DEFAULT_CITY);
-    setCurrentStoreCode(DEFAULT_STORE.value);
-    setCurrentStore(DEFAULT_STORE);
-    localStorage.setItem("currentCity", JSON.stringify(DEFAULT_CITY));
-    localStorage.setItem("currentStoreCode", DEFAULT_STORE.value);
-    localStorage.setItem("currentStore", JSON.stringify(DEFAULT_STORE));
-  };
-
-  // Function to clear location and reset to Calgary
-  const resetToCalgary = () => {
-    setCalgaryAsDefault();
+  // Helper: clear all store/city data
+  const clearStoreSelection = () => {
+    setCurrentCity(null);
+    setCurrentStoreCode(null);
+    setCurrentStore(null);
+    setSelectedStore(null);
     setCurrentLatitude(null);
     setCurrentLogitude(null);
+    localStorage.removeItem("currentCity");
+    localStorage.removeItem("currentStoreCode");
+    localStorage.removeItem("currentStore");
+    localStorage.removeItem("selectedStore");
     localStorage.removeItem("currentLatitude");
     localStorage.removeItem("currentLogitude");
+  };
+
+  // Helper: update selectedStore and keep all related slices in sync
+  const updateSelectedStore = (storeDetail) => {
+    setSelectedStore(storeDetail);
+    localStorage.setItem("selectedStore", JSON.stringify(storeDetail));
+
+    if (storeDetail) {
+      const cityOption = {
+        value: storeDetail.city,
+        label: storeDetail.city,
+        stores: [{
+          code: storeDetail.code,
+          storeLocation: storeDetail.storeLocation,
+          latitude: storeDetail.latitude,
+          longitude: storeDetail.longitude,
+          storeAddress: storeDetail.storeAddress,
+        }],
+      };
+      const storeOption = {
+        value: storeDetail.code,
+        label: storeDetail.storeLocation || storeDetail.city,
+      };
+      setCurrentCity(cityOption);
+      setCurrentStoreCode(storeDetail.code);
+      setCurrentStore(storeOption);
+      setCurrentLatitude(storeDetail.latitude);
+      setCurrentLogitude(storeDetail.longitude);
+      localStorage.setItem("currentCity", JSON.stringify(cityOption));
+      localStorage.setItem("currentStoreCode", storeDetail.code);
+      localStorage.setItem("currentStore", JSON.stringify(storeOption));
+    }
   };
 
   const value = {
@@ -151,9 +262,10 @@ export const GlobalProvider = ({ children }) => {
     currentLatitude: [currentLatitude, setCurrentLatitude],
     currentLogitude: [currentLogitude, setCurrentLogitude],
     mobileMenu: [openMobileMenu, setOpenMobileMenu],
-    // Add helper functions
-    setCalgaryAsDefault,
-    resetToCalgary,
+    // ── Store detail ──────────────────────────────────────────────────────────
+    selectedStore: [selectedStore, setSelectedStore],
+    updateSelectedStore,
+    clearStoreSelection,
   };
 
   return (

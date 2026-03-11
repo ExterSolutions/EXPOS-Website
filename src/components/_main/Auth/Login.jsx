@@ -21,7 +21,7 @@ const ValidateSchema = Yup.object({
         .required("Phone Number is Required")
         .matches(
             canadianPhoneNumberRegExp,
-            "Invalid Canadian phone number format. Use (XXX) XXX-XXXX."
+            "Invalid Canadian phone number format"
         ),
     password: Yup.string()
         .required("Password is Required")

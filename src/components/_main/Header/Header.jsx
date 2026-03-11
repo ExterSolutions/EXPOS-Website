@@ -1,6 +1,6 @@
 // components/Header.js
 import { useContext } from 'react';
-import { FaBars, FaGlassCheers, FaPizzaSlice, FaSearch, FaTag, FaTimes, FaUserCircle } from 'react-icons/fa';
+import { FaBars, FaEdit, FaGlassCheers, FaMapMarkerAlt, FaPizzaSlice, FaSearch, FaTag, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { FaCartShopping } from "react-icons/fa6";
 import { GiPizzaSlice } from 'react-icons/gi';
 import { IoColorPalette } from 'react-icons/io5';
@@ -12,8 +12,8 @@ import { Link, useNavigate } from "react-router-dom";
 // import '../../../assets/styles/new/header/search-dropdown.css';
 // import '../../../assets/styles/ultimateheader.css';
 import { GlobalContext } from '../../../context/GlobalContext';
-// import DeliveryPickupModalPopup from '../DeliveryPickupModalPopup';
 import SearchDropdown from './SearchDropdown';
+import StoreSelectModal from '../StoreSelectModal';
 import { GiFullPizza } from "react-icons/gi";
 // Import custom hooks
 import { useStickyHeader } from './hooks/useStickyHeader';
@@ -38,6 +38,7 @@ const Header = () => {
     const [currentStore] = globalCtx.currentStore;
     const [cartSidebar, setCartSidebar] = globalCtx.sidebar;
     const [openMobileMenu, setOpenMobileMenu] = globalCtx.mobileMenu;
+    const [selectedStore] = globalCtx.selectedStore ?? [null];
 
     const { user } = useSelector((state) => state);
 
@@ -138,7 +139,18 @@ const Header = () => {
                     <button className='btn-search' aria-label="Search" onClick={handleMobileSearchOpen}>
                         <FaSearch size={20} className="text-secondary" />
                     </button>
+                    {/* Location icon — opens store select modal on mobile */}
+                    {selectedStore && (
+                        <button
+                            className='btn-search'
+                            aria-label="Change store"
+                            onClick={() => setShowStorePopup && setShowStorePopup(true)}
+                        >
+                            <FaMapMarkerAlt size={20} className="text-primary" />
+                        </button>
+                    )}
                 </div>
+
 
                 {/* Desktop Search - shown from md (tablet) and above */}
                 <div className='d-none d-md-block position-relative' ref={searchRef} style={{ width: "200px" }}>
@@ -201,7 +213,52 @@ const Header = () => {
                 </div>
 
                 {/* Right Side Actions */}
-                <div className="d-flex align-items-center justify-content-end my-2 my-md-0" style={{ width: "200px" }}>
+                <div className="d-flex align-items-center justify-content-end gap-2 my-2 my-md-0">
+                    {/* Store badge — desktop only */}
+                    {selectedStore && (
+                        <div
+                            className="d-none d-md-flex align-items-center gap-2 px-3 py-2"
+                            style={{
+                                border: '1.5px solid var(--primary, #E63946)',
+                                borderRadius: '14px',
+                                fontSize: '0.72rem',
+                                color: 'var(--primary, #E63946)',
+                                background: 'rgba(230,57,70,0.04)',
+                                minWidth: 0,
+                                maxWidth: 260,
+                            }}
+                        >
+                            <FaMapMarkerAlt size={13} className="flex-shrink-0" />
+
+                            {/* Text block: minWidth:0 is the key — without it, flex won't truncate */}
+                            <div style={{ flex: 1, minWidth: 0, lineHeight: 1.35 }}>
+                                <div className="fw-bold text-truncate">
+                                    {selectedStore.storeLocation || selectedStore.city}
+                                </div>
+                                {/* {selectedStore.city && selectedStore.city !== selectedStore.storeLocation && (
+                                    <div className="text-truncate" style={{ opacity: 0.7 }}>
+                                        {selectedStore.city}
+                                    </div>
+                                )} */}
+                                {selectedStore.storeAddress && (
+                                    <div className="text-truncate" style={{ opacity: 0.6 }}>
+                                        {selectedStore.storeAddress}
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowStorePopup && setShowStorePopup(true)}
+                                className="btn btn-sm p-1 flex-shrink-0"
+                                style={{ color: 'var(--primary, #E63946)', lineHeight: 1 }}
+                                title="Change store"
+                            >
+                                <FaEdit size={13} />
+                            </button>
+                        </div>
+                    )}
+
                     {
                         cart && cart?.product?.length <= 0 && (
                             <button
@@ -353,13 +410,13 @@ const Header = () => {
                     </div>
                 </div>
             </nav>
-            {/* 
+            {/* Store Change Modal */}
             {showStorePopup && (
-                <DeliveryPickupModalPopup
-                    show={showStorePopup}
-                    setShow={setShowStorePopup}
+                <StoreSelectModal
+                    onClose={() => setShowStorePopup(false)}
+                    required={!selectedStore}
                 />
-            )} */}
+            )}
         </header>
     );
 };
