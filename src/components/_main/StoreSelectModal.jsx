@@ -1,16 +1,9 @@
-// StoreSelectModal.jsx
-// Opens when the user clicks the ✏️ (edit) button in the Header.
-// • Shows the currently selected store at the top.
-// • Lists all stores from the API grouped city-by-city.
-// • Same-city store change → updates GlobalContext (stays on this site).
-// • Different-city store change → encodes payload as Base64URL and redirects to site_url.
 
 import { useContext, useEffect, useState } from 'react';
 import { FaCheckCircle, FaMapMarkerAlt, FaPhone, FaSpinner, FaTimes } from 'react-icons/fa';
 import { getStoreLocationByCity } from '../../services/index';
 import { GlobalContext } from '../../context/GlobalContext';
 
-// ── Base64URL encoder (mirrors the main-domain sender) ───────────────────────
 function encodeStorePayload(storeDetail) {
     const payload = {
         store_code: storeDetail.code,
@@ -36,7 +29,6 @@ export default function StoreSelectModal({ onClose, required = false }) {
     const [error, setError] = useState(null);
     const [hoveredCode, setHoveredCode] = useState(null);
 
-    // Current city (to decide same-city vs different-city)
     const currentCity = selectedStore?.city || '';
 
     useEffect(() => {
@@ -68,18 +60,15 @@ export default function StoreSelectModal({ onClose, required = false }) {
         };
 
         if (cityGroup.city === currentCity) {
-            // Same city → just update context, stay on this site
             updateSelectedStore(storeDetail);
             onClose();
         } else {
-            // Different city → redirect to that city's site URL with encoded store
             const encoded = encodeStorePayload(storeDetail);
             const baseUrl = (cityGroup.site_url || '/').trim().replace(/\/$/, '');
             window.location.href = `${baseUrl}/?d=${encoded}`;
         }
     };
 
-    // backdrop click: blocked when required (user must pick a store)
     const handleBackdropClick = (e) => {
         if (required) return;
         if (e.target === e.currentTarget) onClose();
@@ -222,18 +211,6 @@ export default function StoreSelectModal({ onClose, required = false }) {
                                 }}>
                                     {cityGroup.city}
                                 </span>
-                                {/* {cityGroup.city !== currentCity && (
-                                    <span style={{
-                                        fontSize: '0.65rem',
-                                        background: '#fff3e0',
-                                        color: '#e67700',
-                                        borderRadius: '20px',
-                                        padding: '1px 8px',
-                                        fontWeight: 600,
-                                    }}>
-                                        Redirects to another site
-                                    </span>
-                                )} */}
                             </div>
 
                             {/* Stores in this city */}
