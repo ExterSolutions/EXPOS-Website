@@ -1,11 +1,6 @@
-// src/context/GlobalContext.js
 import { createContext, useState } from "react";
-
 export const GlobalContext = createContext();
-
 export const GlobalProvider = ({ children }) => {
-
-  // ── Restore from localStorage (no hardcoded defaults) ─────────────────────
   const getStoredData = () => {
     const storedCity = localStorage.getItem("currentCity");
     const storedStoreCode = localStorage.getItem("currentStoreCode");
@@ -17,22 +12,15 @@ export const GlobalProvider = ({ children }) => {
     };
   };
 
-  // ── Read store data sent by the main domain ────────────────────────────────
-  // NEW  format : ?d=<Base64URL-encoded JSON>
-  //   payload keys: store_code, store_city, store_location, store_address
-  // LEGACY format: individual query params (backward compat)
   const readStoreFromUrl = () => {
     try {
       const params = new URLSearchParams(window.location.search);
-
-      // ── Base64URL encoded param (?d=...) ───────────────────────────────────
       const encoded = params.get("d");
       if (encoded) {
         const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
         const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
         const json = decodeURIComponent(escape(atob(padded)));
         const p = JSON.parse(json);
-
         const storeDetail = {
           code: p.store_code || "",
           city: p.store_city || "",
@@ -42,9 +30,7 @@ export const GlobalProvider = ({ children }) => {
           latitude: p.store_lat || "",
           longitude: p.store_lng || "",
         };
-
         if (!storeDetail.code) return null;
-
         const cityOption = {
           value: storeDetail.city,
           label: storeDetail.city,
@@ -60,7 +46,6 @@ export const GlobalProvider = ({ children }) => {
           value: storeDetail.code,
           label: storeDetail.storeLocation || storeDetail.city,
         };
-
         localStorage.setItem("currentCity", JSON.stringify(cityOption));
         localStorage.setItem("currentStoreCode", storeDetail.code);
         localStorage.setItem("currentStore", JSON.stringify(storeOption));
@@ -69,7 +54,6 @@ export const GlobalProvider = ({ children }) => {
         return { city: cityOption, storeCode: storeDetail.code, store: storeOption, storeDetail };
       }
 
-      // ── Legacy: individual query params ────────────────────────────────────
       const code = params.get("store_code");
       if (!code) return null;
 
@@ -111,12 +95,9 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  // Priority: URL params → localStorage → null
   const urlData = readStoreFromUrl();
   const storedData = urlData || getStoredData();
 
-  // ── selectedStore: full store detail object ────────────────────────────────
-  // Priority: URL params → localStorage["selectedStore"] → build from currentCity → null
   const initSelectedStore = () => {
     if (urlData?.storeDetail) return urlData.storeDetail;
     try {
@@ -144,7 +125,7 @@ export const GlobalProvider = ({ children }) => {
         }
       }
 
-      return null; // no hardcoded fallback
+      return null;
     } catch {
       return null;
     }

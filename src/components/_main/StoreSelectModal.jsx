@@ -23,7 +23,6 @@ export default function StoreSelectModal({ onClose, required = false }) {
     const globalCtx = useContext(GlobalContext);
     const [selectedStore] = globalCtx.selectedStore ?? [null];
     const { updateSelectedStore } = globalCtx;
-
     const [cityGroups, setCityGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
