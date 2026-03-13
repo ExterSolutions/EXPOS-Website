@@ -18,7 +18,7 @@ const Drink = ({ data, cartFn }) => {
   // let taxPer = Number(0).toFixed(2);
   // if (settings !== undefined) {
   //   settings?.map((data) => {
-  //     if (data?.settingCode === "STG_2" && data?.type === "percent") {
+  //     if (data?.shortCode === "tax_percentage" && data?.type === "percent") {
   //       taxPer = data?.settingValue;
   //     }
   //   });

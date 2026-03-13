@@ -165,7 +165,7 @@ function AddressDetails() {
             .then((res) => {
                 if (res) {
                     res.data.map((data) => {
-                        if (data?.settingCode === "STG_1" && data?.type === "amount") {
+                        if (data?.shortCode === "delivery_charges" && data?.type === "amount") {
                             setDeliveryCh(data?.settingValue);
                         }
                     });

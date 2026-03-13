@@ -85,7 +85,7 @@ const EditSpecialOffer = () => {
 
   // Premium Topping Count from settings
   const premiumToppingCount = Number(
-    settingsData?.find((s) => s.settingCode === "STG_7")?.settingValue || 1,
+    settingsData?.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue || 1,
   );
 
   // Memoized Dips Calculations

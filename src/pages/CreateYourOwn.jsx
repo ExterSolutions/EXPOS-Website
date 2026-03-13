@@ -91,16 +91,16 @@ function CreateYourOwn() {
     const [crustType, setCrustType] = useState({});
 
     const nonRegularToppingsTitle =
-        settings?.filter((item) => item.settingCode === "STG_5")[0].settingValue ??
+        settings?.filter((item) => item.shortCode === "non-regular-toppings")[0].settingValue ??
         "Count 2";
 
     const regularToppingsTitle =
-        settings?.filter((item) => item.settingCode === "STG_6")[0].settingValue ??
+        settings?.filter((item) => item.shortCode === "regular-toppings")[0].settingValue ??
         "Count 1";
 
     const premiumToppingCount =
         Number(
-            settings?.filter((item) => item.settingCode === "STG_7")[0].settingValue
+            settings?.filter((item) => item.shortCode === "non-regular-toppings-count")[0].settingValue
         ) ?? Number(1);
 
     // Helper Function

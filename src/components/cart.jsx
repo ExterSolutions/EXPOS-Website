@@ -42,10 +42,10 @@ export default class CartFunction {
                 });
                 if (settings !== undefined) {
                     settings?.map((data) => {
-                        if (data?.settingCode === "STG_4" && data?.type === "percent") {
+                        if (data?.shortCode === "convenience_charges" && data?.type === "percent") {
                             convinenceCharges = data?.settingValue;
                         }
-                        if (data?.settingCode === "STG_2" && data?.type === "percent") {
+                        if (data?.shortCode === "tax_percentage" && data?.type === "percent") {
                             taxPer = data?.settingValue;
                         }
                     });
@@ -101,13 +101,13 @@ export default class CartFunction {
                 });
                 if (settings !== undefined) {
                     settings?.map((data) => {
-                        if (data?.settingCode === "STG_4" && data?.type === "percent") {
+                        if (data?.shortCode === "convenience_charges" && data?.type === "percent") {
                             convinenceCharges = data?.settingValue;
                         }
-                        if (data?.settingCode === "STG_2" && data?.type === "percent") {
+                        if (data?.shortCode === "tax_percentage" && data?.type === "percent") {
                             taxPer = data?.settingValue;
                         }
-                        if (data?.settingCode === "STG_1" && data?.type === "amount") {
+                        if (data?.shortCode === "delivery_charges" && data?.type === "amount") {
                             deliveryCharges = data?.settingValue;
                         }
                     });

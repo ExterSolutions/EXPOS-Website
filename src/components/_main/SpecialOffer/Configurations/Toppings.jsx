@@ -20,13 +20,13 @@ function Toppings({
   const [Topping, setTopping] = useState("two");
 
   const nonRegularToppingsTitle =
-    settingsData?.find((s) => s.settingCode === "STG_5")?.settingValue ||
+    settingsData?.find((s) => s.shortCode === "non-regular-toppings")?.settingValue ||
     "Premium Toppings";
   const regularToppingsTitle =
-    settingsData?.find((s) => s.settingCode === "STG_6")?.settingValue ||
+    settingsData?.find((s) => s.shortCode === "regular-toppings")?.settingValue ||
     "Regular Toppings";
   const premiumToppingCount = Number(
-    settingsData?.find((s) => s.settingCode === "STG_7")?.settingValue || 1,
+    settingsData?.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue || 1,
   );
 
   // Toggle isIndianStyle Flag - TRUE OR FALSE

@@ -108,14 +108,14 @@ const Signature = () => {
         }
     };
     const nonRegularToppingsTitle =
-        settingsData.find((item) => item.settingCode === "STG_5")?.settingValue ??
+        settingsData.find((item) => item.shortCode === "non-regular-toppings")?.settingValue ??
         "Premium";
     const regularToppingsTitle =
-        settingsData.find((item) => item.settingCode === "STG_6")?.settingValue ??
+        settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
         "Regular";
     const premiumToppingCount =
         Number(
-            settingsData.find((item) => item.settingCode === "STG_7")?.settingValue
+            settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
         ) || 1;
     const toggleAccordion = (accordionName) => {
         setActiveAccordion(

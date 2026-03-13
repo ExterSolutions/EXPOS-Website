@@ -94,7 +94,7 @@ function SignatureMenu() {
 
     const premiumToppingCount =
         Number(
-            settingsData.find((item) => item.settingCode === "STG_7")?.settingValue
+            settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
         ) || 1;
 
     // Handle Crust

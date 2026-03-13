@@ -163,13 +163,13 @@ const SpecialOfferPage = () => {
         specialOfferData.cook = allIng.cook || [];
       const systemsettings = {
         premiumToppingsCount:
-          settingsData.find((s) => s.settingCode === "STG_7")?.settingValue ??
+          settingsData.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue ??
           1,
         premiumTopppingLabel:
-          settingsData.find((s) => s.settingCode === "STG_5")?.settingValue ??
+          settingsData.find((s) => s.shortCode === "non-regular-toppings")?.settingValue ??
           "Premium Toppings",
         regularToppingLabel:
-          settingsData.find((s) => s.settingCode === "STG_6")?.settingValue ??
+          settingsData.find((s) => s.shortCode === "regular-toppings")?.settingValue ??
           "Regular Toppings",
       };
       const signaturePizza =

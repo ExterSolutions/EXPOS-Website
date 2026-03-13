@@ -23,7 +23,7 @@ function DealsViewSelectionModal({
 }) {
     const { settings } = useContext(GlobalContext);
     const settingsData = settings?.[0];
-    const premiumToppingCount = Number(settingsData?.find(s => s.settingCode === 'STG_7')?.settingValue || 1);
+    const premiumToppingCount = Number(settingsData?.find(s => s.shortCode === 'non-regular-toppings-count')?.settingValue || 1);
 
     return (
         <Modal
