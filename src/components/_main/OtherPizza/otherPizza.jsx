@@ -5,11 +5,17 @@ import OtherModel from "./OtherModal";
 
 const hideCustomize = false;
 
-function OtherPizzas({ data, toppingsData, ingredients }) {
+function OtherPizzas({ data, toppingsData }) {
     const [show, setShow] = useState(false);
     const pizzaQuantityRef = useRef(null);
     const pizzaSizeRef = useRef(null);
+    const [ingredients, setIngredients] = useState(null);
     const navigate = useNavigate();
+
+    const getIngredients = async () => {
+        const res = await getAllIngredients();
+        setIngredients(res?.data);
+    };
 
     const handleClose = () => {
         setShow(false);
@@ -40,6 +46,10 @@ function OtherPizzas({ data, toppingsData, ingredients }) {
             e.stopPropagation();
         }
     };
+
+    useEffect(() => {
+        getIngredients();
+    }, []);
 
     useEffect(() => {
         if (pizzaSizeRef.current) {

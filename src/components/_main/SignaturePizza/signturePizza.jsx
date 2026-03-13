@@ -5,8 +5,9 @@ import SignatureModel from "./SignatureModal";
 
 const hideCustomize = false;
 
-function SignaturePizzas({ data, toppingsData, ingredients }) {
+function SignaturePizzas({ data, toppingsData }) {
     const [show, setShow] = useState(false);
+    const [ingredients, setIngredients] = useState(null);
     const pizzaQuantityRef = useRef(null);
     const pizzaSizeRef = useRef(null);
     const navigate = useNavigate();
@@ -19,6 +20,11 @@ function SignaturePizzas({ data, toppingsData, ingredients }) {
         if (pizzaQuantityRef.current) {
             pizzaQuantityRef.current.value = 1;
         }
+    };
+
+    const getIngredients = async () => {
+        const res = await getAllIngredients();
+        setIngredients(res?.data);
     };
 
     const handleSides = (e) => {
@@ -40,6 +46,10 @@ function SignaturePizzas({ data, toppingsData, ingredients }) {
             e.stopPropagation();
         }
     };
+
+    useEffect(() => {
+        getIngredients();
+    }, []);
 
     useEffect(() => {
         if (pizzaSizeRef.current) {

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getPopularItems, getAllIngredients } from "../../services";
+import { getPopularItems } from "../../services";
 import Pupuler from "./Pupuler";
 import LoadingLayout from "../../layouts/LoadingLayout";
 // import "../../assets/styles/menu-cards/signatures.css";
 
 function PopulerPizza({ toppingsData }) {
     const [popularData, setPopularData] = useState([]);
-    const [ingredients, setIngredients] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // In PopulerPizza.js
@@ -14,11 +13,7 @@ function PopulerPizza({ toppingsData }) {
         setLoading(true);
         try {
             const storeCode = localStorage.getItem('storeCode') || null;
-            const [res, ingRes] = await Promise.all([
-                getPopularItems(null, null, null, storeCode),
-                getAllIngredients()
-            ]);
-            setIngredients(ingRes?.data || []);
+            const res = await getPopularItems(null, null, null, storeCode);
             const rawPopularItems = res?.data?.popularItems;
             // Check if signature items exist in popularItems
             const signatureItems = rawPopularItems?.filter(item => item.productType === 'signature');
@@ -56,7 +51,7 @@ function PopulerPizza({ toppingsData }) {
                             {popularData.length > 0 ? (
                                 popularData.map((data) => (
                                     <div className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"popular-grid-card-" + data?.code}>
-                                        <Pupuler data={data} toppingsData={toppingsData} ingredients={ingredients} />
+                                        <Pupuler data={data} toppingsData={toppingsData} />
                                     </div>
                                 ))
                             ) : (
