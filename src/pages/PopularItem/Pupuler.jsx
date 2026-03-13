@@ -5,13 +5,12 @@ import { getAllIngredients } from "../../services";
 
 const hideCustomize = false;
 
-function Pupuler({ data, toppingsData }) {
+function Pupuler({ data, toppingsData, ingredients }) {
     const [show, setShow] = useState(false);
-    const [ingredients, setIngredients] = useState(null);
     const pizzaQuantityRef = useRef(null);
     const pizzaSizeRef = useRef(null);
     const navigate = useNavigate();
- 
+
 
     const handleClose = () => {
         setShow(false);
@@ -20,15 +19,6 @@ function Pupuler({ data, toppingsData }) {
         }
         if (pizzaQuantityRef.current) {
             pizzaQuantityRef.current.value = 1;
-        }
-    };
-
-    const getIngredients = async () => {
-        try {
-            const res = await getAllIngredients();
-            setIngredients(res?.data);
-        } catch (err) {
-            console.error("Error fetching ingredients:", err);
         }
     };
 
@@ -51,10 +41,6 @@ function Pupuler({ data, toppingsData }) {
             e.stopPropagation();
         }
     };
-
-    useEffect(() => {
-        getIngredients();
-    }, []);
 
     useEffect(() => {
         if (pizzaSizeRef.current) {

@@ -5,17 +5,11 @@ import OtherModel from "./OtherModal";
 
 const hideCustomize = false;
 
-function OtherPizzas({ data, toppingsData }) {
+function OtherPizzas({ data, toppingsData, ingredients }) {
     const [show, setShow] = useState(false);
     const pizzaQuantityRef = useRef(null);
     const pizzaSizeRef = useRef(null);
-    const [ingredients, setIngredients] = useState(null);
     const navigate = useNavigate();
-
-    const getIngredients = async () => {
-        const res = await getAllIngredients();
-        setIngredients(res?.data);
-    };
 
     const handleClose = () => {
         setShow(false);
@@ -48,10 +42,6 @@ function OtherPizzas({ data, toppingsData }) {
     };
 
     useEffect(() => {
-        getIngredients();
-    }, []);
-
-    useEffect(() => {
         if (pizzaSizeRef.current) {
             pizzaSizeRef.current.value = data?.pizza_prices.filter(price => price.price > 0)?.[0]?.shortcode;
         }
@@ -60,12 +50,12 @@ function OtherPizzas({ data, toppingsData }) {
     return (
         <>
             <div className="pizza-item" onClick={handleLinkClick}>
-              
 
-                   {data?.pizza_subtitle && (
-                        <span className="pizza-badge">
-                            {data.pizza_subtitle}
-                        </span>)}
+
+                {data?.pizza_subtitle && (
+                    <span className="pizza-badge">
+                        {data.pizza_subtitle}
+                    </span>)}
 
 
                 {/* Circular Image */}
@@ -80,7 +70,7 @@ function OtherPizzas({ data, toppingsData }) {
                 {/* Card Content */}
                 <div className="pizza-content">
                     <h5 className="pizza-name">{data?.pizza_name}</h5>
-               
+
                     <div className="product-description">
                         {data?.description || ""}
                     </div>

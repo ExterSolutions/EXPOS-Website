@@ -5,9 +5,8 @@ import SignatureModel from "./SignatureModal";
 
 const hideCustomize = false;
 
-function SignaturePizzas({ data, toppingsData }) {
+function SignaturePizzas({ data, toppingsData, ingredients }) {
     const [show, setShow] = useState(false);
-    const [ingredients, setIngredients] = useState(null);
     const pizzaQuantityRef = useRef(null);
     const pizzaSizeRef = useRef(null);
     const navigate = useNavigate();
@@ -20,11 +19,6 @@ function SignaturePizzas({ data, toppingsData }) {
         if (pizzaQuantityRef.current) {
             pizzaQuantityRef.current.value = 1;
         }
-    };
-
-    const getIngredients = async () => {
-        const res = await getAllIngredients();
-        setIngredients(res?.data);
     };
 
     const handleSides = (e) => {
@@ -48,10 +42,6 @@ function SignaturePizzas({ data, toppingsData }) {
     };
 
     useEffect(() => {
-        getIngredients();
-    }, []);
-
-    useEffect(() => {
         if (pizzaSizeRef.current) {
             pizzaSizeRef.current.value = data?.pizza_prices.filter(price => price.price > 0)?.[0]?.shortcode;
         }
@@ -62,7 +52,7 @@ function SignaturePizzas({ data, toppingsData }) {
             <div className="pizza-item" onClick={handleLinkClick}>
                 {/* Circular Image */}
                 <div className="pizza-image-container">
-                    
+
                     {data?.pizza_subtitle && (
                         <span className="pizza-badge">
                             {data.pizza_subtitle}
@@ -80,7 +70,7 @@ function SignaturePizzas({ data, toppingsData }) {
 
 
                     <h5 className="pizza-name">{data?.pizza_name}</h5>
-                  
+
 
                     <div className="product-description">
                         {data?.description || ""}
