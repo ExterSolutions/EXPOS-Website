@@ -20,7 +20,7 @@ export const useDynamicSEO = (data) => {
             el.setAttribute('content', value);
         };
 
-        const desc = `Order delicious pizzas from ${data.site_name}. Fresh ingredients in Calgary.`;
+        const desc = `Order delicious pizzas from ${data.site_name}.`;
         updateMeta('description', desc);
         updateMeta('og:title', data.site_name);
         updateMeta('og:description', desc);
