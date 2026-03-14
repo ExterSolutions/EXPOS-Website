@@ -4,19 +4,24 @@ import { FaCheckCircle, FaMapMarkerAlt, FaPhone, FaSpinner, FaTimes } from 'reac
 import { getStoreLocationByCity } from '../../services/index';
 import { GlobalContext } from '../../context/GlobalContext';
 
-function encodeStorePayload(storeDetail) {
-    const payload = {
-        store_code: storeDetail.code,
-        store_city: storeDetail.city,
-        store_location: storeDetail.storeLocation,
-        store_address: storeDetail.storeAddress,
-        store_phone: storeDetail.pickupNumber || '',
-        store_lat: storeDetail.latitude || '',
-        store_lng: storeDetail.longitude || '',
-    };
-    const json = JSON.stringify(payload);
-    const base64 = btoa(unescape(encodeURIComponent(json)));
-    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+function setStoreCookie(storeDetail) {
+    try {
+        const hostname = window.location.hostname;
+        const domain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
+        const json = JSON.stringify(storeDetail);
+
+        // Use same XOR obfuscation for cookie
+        const SECRET = "exter_store_pizza";
+        const scrambled = json.split('').map((char, i) =>
+            String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
+        ).join('');
+        const encoded = btoa(unescape(encodeURIComponent(scrambled)));
+
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+        document.cookie = `ext_store=${encoded}; domain=${domain}; path=/; expires=${expires}; SameSite=Lax`;
+    } catch (e) {
+        console.error("Failed to set store cookie:", e);
+    }
 }
 
 export default function StoreSelectModal({ onClose, required = false }) {
@@ -59,12 +64,13 @@ export default function StoreSelectModal({ onClose, required = false }) {
         };
 
         if (cityGroup.city === currentCity) {
+            setStoreCookie(storeDetail);
             updateSelectedStore(storeDetail);
             onClose();
         } else {
-            const encoded = encodeStorePayload(storeDetail);
+            setStoreCookie(storeDetail);
             const baseUrl = (cityGroup.site_url || '/').trim().replace(/\/$/, '');
-            window.location.href = `${baseUrl}/?d=${encoded}`;
+            window.location.href = baseUrl;
         }
     };
 
