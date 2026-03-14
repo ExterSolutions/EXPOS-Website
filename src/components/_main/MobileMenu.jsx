@@ -113,7 +113,7 @@ const MobileMenu = () => {
                     <ul>
                         <li className="nav-item">
                             <a
-                                href="https://chandigarhpizza.ca/"
+                                href="https://web.exter.ca/"
                                 className={`nav-link ${activeLink === 'home' ? 'active' : ''}`}
                                 onClick={(e) => {
                                     // Optional: if you want to update state before the page leaves
