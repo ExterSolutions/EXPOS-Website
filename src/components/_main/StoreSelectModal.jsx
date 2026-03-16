@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { FaCheckCircle, FaMapMarkerAlt, FaPhone, FaSpinner, FaTimes } from 'react-icons/fa';
 import { getStoreLocationByCity } from '../../services/index';
 import { GlobalContext } from '../../context/GlobalContext';
+import CartFunction from '../../components/cart';
 
 function setStoreCookie(storeDetail) {
     try {
@@ -27,6 +28,7 @@ function setStoreCookie(storeDetail) {
 export default function StoreSelectModal({ onClose, required = false }) {
     const globalCtx = useContext(GlobalContext);
     const [selectedStore] = globalCtx.selectedStore ?? [null];
+    const [, setCart] = globalCtx.cart ?? [null, null];
     const { updateSelectedStore } = globalCtx;
     const [cityGroups, setCityGroups] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -68,6 +70,10 @@ export default function StoreSelectModal({ onClose, required = false }) {
             updateSelectedStore(storeDetail);
             onClose();
         } else {
+            // Clear cart when changing to a different city
+            const cartFn = new CartFunction();
+            cartFn.clearCart(setCart);
+
             setStoreCookie(storeDetail);
             const baseUrl = (cityGroup.site_url || '/').trim().replace(/\/$/, '');
             window.location.href = baseUrl;

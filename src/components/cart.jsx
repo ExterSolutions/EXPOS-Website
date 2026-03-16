@@ -141,6 +141,8 @@ export default class CartFunction {
     }
     clearCart(setCart) {
         localStorage.removeItem("cart");
-        setCart();
+        if (setCart) {
+            setCart({ product: [] });
+        }
     }
 }
