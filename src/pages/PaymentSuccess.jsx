@@ -63,10 +63,7 @@ const PaymentSuccess = () => {
             setCurrentStoreCode(null);
             setCurrentStore(null);
             setShowStorePopup(true);
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
             localStorage.removeItem("cart");
-            localStorage.removeItem("selectedType");
             setCart();
             cartFn.createCart(setCart);
             localStorage.setItem('forceShowOrderMethodPopup', 'true');

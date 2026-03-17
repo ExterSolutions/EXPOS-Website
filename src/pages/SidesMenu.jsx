@@ -8,28 +8,42 @@ import CartFunction from "../components/cart";
 import LoadingLayout from "../layouts/LoadingLayout";
 import { getSidesTypeWise } from "../services";
 
-function SidesMenu({ searchQuery }) {
-    const [sidesData, setSideData] = useState();
+function SidesMenu({ searchQuery, searchCode }) {
+    const [sidesData, setSideData] = useState([]);
     const [loading, setLoading] = useState(true);
     const cartFn = new CartFunction();
 
-    const sides = async (searchQuery) => {
+    const fetchSides = async (query) => {
         setLoading(true);
-        await getSidesTypeWise(searchQuery)
-            .then((res) => {
-                setSideData(res.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error("ERROR From Sides Page API: ", err);
-            }).finally(() => {
-                setLoading(false);
-            });
+        try {
+            const res = await getSidesTypeWise(query);
+            // Some APIs return data directly, others wrap it
+            setSideData(res?.data || res || []);
+        } catch (err) {
+            console.error("ERROR From Sides Page API: ", err);
+            setSideData([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        sides(searchQuery);
+        fetchSides(searchQuery);
     }, [searchQuery]);
+
+    // Frontend filtering as a fallback/refinement
+    const filteredSides = searchCode || searchQuery
+        ? sidesData.map(category => {
+            const matchedItems = (category.sides || []).filter(item => {
+                if (searchCode) {
+                    return item.code === searchCode || item.sideCode === searchCode;
+                }
+                return item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                       item.sideName?.toLowerCase().includes(searchQuery.toLowerCase());
+            });
+            return matchedItems.length > 0 ? { ...category, sides: matchedItems } : null;
+        }).filter(Boolean)
+        : sidesData;
 
     if (loading) {
         return <LoadingLayout />;
@@ -37,15 +51,17 @@ function SidesMenu({ searchQuery }) {
 
     return (
         <>
-            {
-                sidesData?.map((data, index) => {
-                    return (
-                        <div key={`sides-index-${index}`}>
-                            <SideSlider data={data} cartFn={cartFn} />
-                        </div>
-                    );
-                })
-            }
+            {filteredSides.length > 0 ? (
+                filteredSides.map((data, index) => (
+                    <div key={`sides-index-${index}`}>
+                        <SideSlider data={data} cartFn={cartFn} />
+                    </div>
+                ))
+            ) : (
+                <div className="container text-center py-5">
+                    <p className="text-muted">No sides found matching your search.</p>
+                </div>
+            )}
         </>
     );
 }

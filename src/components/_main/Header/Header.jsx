@@ -64,6 +64,7 @@ const Header = () => {
         setSearchQuery,
         handleSearchChange,
         handleSearchSubmit,
+        handleClearSearch,
         handleMobileSearchOpen,
         handleMobileSearchClose,
         handleSearchItemClick
@@ -153,13 +154,13 @@ const Header = () => {
 
 
                 {/* Desktop Search - shown from md (tablet) and above */}
-                <div className='d-none d-md-block position-relative' ref={searchRef} style={{ width: "200px" }}>
+                <div className='d-none d-md-block position-relative' ref={searchRef} style={{ minWidth: "250px", maxWidth: "300px", flex: "1" }}>
                     <form onSubmit={handleSearchSubmit}>
                         <div className="search-box flex-grow-1 position-relative">
                             <div className="input-group shadow-sm rounded-pill">
                                 <input
                                     type="text"
-                                    className="form-control border-0 rounded-pill ps-3"
+                                    className="form-control border-0 rounded-pill ps-3 pe-4"
                                     placeholder="Search products..."
                                     value={searchQuery}
                                     onChange={handleSearchChange}
@@ -169,8 +170,17 @@ const Header = () => {
                                         }
                                     }}
                                 />
-                                <button type="submit" className="btn rounded-circle position-absolute end-0 top-0 bottom-0 me-2" aria-label="Search">
-                                    <FaSearch size={20} className='text-primary' />
+                                <button
+                                    type={searchQuery ? "button" : "submit"}
+                                    className="btn rounded-circle position-absolute end-0 top-0 bottom-0 me-2"
+                                    onClick={searchQuery ? handleClearSearch : undefined}
+                                    aria-label={searchQuery ? "Clear search" : "Search"}
+                                >
+                                    {searchQuery ? (
+                                        <FaTimes size={18} className="text-muted" />
+                                    ) : (
+                                        <FaSearch size={20} className='text-primary' />
+                                    )}
                                 </button>
                             </div>
 
@@ -312,19 +322,24 @@ const Header = () => {
                             <div className="input-group position-relative">
                                 <input
                                     type="text"
-                                    className="form-control rounded-pill"
+                                    className="form-control rounded-pill pe-4"
                                     placeholder="Search products..."
                                     value={searchQuery}
                                     onChange={handleSearchChange}
                                     autoFocus
                                 />
                                 <button
-                                    type="submit"
+                                    type={searchQuery ? "button" : "submit"}
                                     className="btn position-absolute end-0 top-0 bottom-0 me-2"
-                                    aria-label="Search"
-                                    style={{ color: colors.primary }} // Direct from theme
+                                    aria-label={searchQuery ? "Clear search" : "Search"}
+                                    onClick={searchQuery ? handleClearSearch : undefined}
+                                    style={{ color: searchQuery ? '#888' : (colors?.primary || 'var(--primary)') }}
                                 >
-                                    <FaSearch size={20} />
+                                    {searchQuery ? (
+                                        <FaTimes size={18} />
+                                    ) : (
+                                        <FaSearch size={20} />
+                                    )}
                                 </button>
                             </div>
                         </form>

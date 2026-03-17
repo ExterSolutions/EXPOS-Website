@@ -1,8 +1,23 @@
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Footer from "../../components/_main/Footer"
 import Header from "../../components/_main/Header/Header"
 import DipsMenu from "../DipsMenu"
 
 const Dips = () => {
+    const [searchParams] = useSearchParams();
+    const initialQuery = searchParams.get("search") || "";
+    const initialCode = searchParams.get("code") || "";
+    const [searchQuery, setSearchQuery] = useState(initialQuery);
+    const [selectedCode, setSelectedCode] = useState(initialCode);
+
+    useEffect(() => {
+        const q = searchParams.get("search") || "";
+        const c = searchParams.get("code") || "";
+        setSearchQuery(q);
+        setSelectedCode(c);
+    }, [searchParams]);
+
     return (
         <div style={{ position: "relative" }}>
             <Header />
@@ -13,7 +28,7 @@ const Dips = () => {
                     <div className="section-title">Dips</div>
                 </div>
             </div>
-            <DipsMenu />
+            <DipsMenu searchQuery={searchQuery} searchCode={selectedCode} />
             <Footer />
         </div>
     )

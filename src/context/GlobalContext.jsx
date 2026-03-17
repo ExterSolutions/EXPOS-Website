@@ -1,7 +1,9 @@
 import { createContext, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { LOGIN_SUCCESS } from "../redux/authProvider/actionType";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
+  const dispatch = useDispatch();
   const getCookieData = () => {
     try {
       const cookies = document.cookie.split("; ");
@@ -20,6 +22,25 @@ export const GlobalProvider = ({ children }) => {
       }
     } catch (e) {
       console.warn("[GlobalContext] Cookie parse error:", e);
+    }
+    return null;
+  };
+
+  const getAuthCookieData = () => {
+    try {
+      const cookies = document.cookie.split("; ");
+      const authCookie = cookies.find((row) => row.startsWith("ext_auth="));
+      if (authCookie) {
+        const base64 = authCookie.split("=")[1];
+        const scrambled = decodeURIComponent(escape(atob(base64)));
+        const SECRET = "exter_auth_pizza";
+        const json = scrambled.split("").map((char, i) =>
+          String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
+        ).join("");
+        return JSON.parse(json);
+      }
+    } catch (e) {
+      // console.warn("[GlobalContext] Auth cookie parse error:", e);
     }
     return null;
   };
@@ -66,13 +87,64 @@ export const GlobalProvider = ({ children }) => {
     return storedData.storeDetail;
   };
 
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.getItem("token") ? true : false,
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (localStorage.getItem("token")) return true;
+    const fromCookie = getAuthCookieData();
+    return fromCookie?.token ? true : false;
+  });
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
+    if (storedUser) return JSON.parse(storedUser);
+    const fromCookie = getAuthCookieData();
+    return fromCookie?.user || null;
   });
+
+  // 1. Restore auth state to localStorage from root-domain cookie (needed for subdomains)
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      const fromCookie = getAuthCookieData();
+      if (fromCookie?.token) {
+        localStorage.setItem("token", fromCookie.token);
+        if (fromCookie.user) {
+          localStorage.setItem("user", JSON.stringify(fromCookie.user));
+          // Sync to Redux as well
+          dispatch({
+            type: LOGIN_SUCCESS,
+            payload: fromCookie.user,
+            token: fromCookie.token,
+          });
+        }
+        if (!isAuthenticated) setIsAuthenticated(true);
+        if (!user && fromCookie.user) setUser(fromCookie.user);
+      }
+    }
+  }, [dispatch]);
+
+  // 2. Sync auth state to root-domain cookie for persistence across subdomains
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    const domain = hostname.endsWith("exter.ca") ? ".exter.ca" : hostname;
+
+    if (isAuthenticated && user && localStorage.getItem("token")) {
+      try {
+        const token = localStorage.getItem("token");
+        const authData = { token, user };
+        const json = JSON.stringify(authData);
+        const SECRET = "exter_auth_pizza";
+        const scrambled = json.split("").map((char, i) =>
+          String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
+        ).join("");
+        const encoded = btoa(unescape(encodeURIComponent(scrambled)));
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+        document.cookie = `ext_auth=${encoded}; domain=${domain}; path=/; expires=${expires}; SameSite=Lax`;
+      } catch (e) {
+        console.warn("[GlobalContext] Auth cookie sync error:", e);
+      }
+    } else if (isAuthenticated === false) {
+      // Explicit logout
+      document.cookie = `ext_auth=; domain=${domain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
+  }, [isAuthenticated, user]);
 
   // Sync GlobalContext with Redux state (which is restored by redux-persist on reload)
   const reduxAuth = useSelector((state) => state.user);

@@ -42,11 +42,10 @@ function ViewOrderProductDetails({ orderData }) {
                                             className="text-end orderSummaryText amount mx-1"
                                             key={order?.id}
                                         >
-                                            ${" "}
                                             {order?.productType === "special_pizza" ||
                                                 order?.productType === "custom_pizza" || order?.productType === "signature_pizza" || order?.productType === "other_pizza"
-                                                ? order?.pizzaPrice * order?.quantity
-                                                : order?.amount}
+                                                ? isNaN(order?.pizzaPrice * order?.quantity) ? "-" : "$ " + (order?.pizzaPrice * order?.quantity)
+                                                : isNaN(order?.amount) ? "-" : "$ " + order?.amount}
                                         </div>
                                     </div>
 
@@ -101,20 +100,18 @@ function ViewOrderProductDetails({ orderData }) {
                                         order?.config?.pizza?.map((data, index) => {
                                             return (
                                                 <>
-                                                    {/* Next Pizza */}
-                                                    {order?.productType === "special_pizza" &&
-                                                        index > 0 ? (
+                                                    {/* Pizza Name Header */}
+                                                    {order?.productType === "special_pizza" && (
                                                         <div className="w-auto d-flex justify-content-around productDetails">
                                                             <div className="products d-flex justify-content-start mx-1">
                                                                 <span className="subText fw-Bold">
-                                                                    <strong>Next Pizza</strong>
+                                                                    <strong>Pizza {index + 1}: {data?.signaturePizzaName}</strong>
                                                                 </span>
-                                                                <span className="subText mx-2"></span>
                                                             </div>
                                                             <div className="text-center qty mx-1"> </div>
                                                             <div className="text-end amount mx-1"></div>
                                                         </div>
-                                                    ) : null}
+                                                    )}
 
                                                     {/* Crust */}
                                                     {data?.crust &&
@@ -132,9 +129,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                                     {" "}
                                                                 </div>
                                                                 <div className="text-end amount mx-1">
-                                                                    {Number(data?.crust?.price) !== 0
-                                                                        ? "$ " + data?.crust?.price * order?.quantity
-                                                                        : ""}
+                                                                    {isNaN(Number(data?.crust?.price) * order?.quantity)
+                                                                        ? "-"
+                                                                        : Number(data?.crust?.price) !== 0
+                                                                            ? "$ " + data?.crust?.price * order?.quantity
+                                                                            : ""}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -155,9 +154,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                                     {" "}
                                                                 </div>
                                                                 <div className="text-end amount mx-1">
-                                                                    {Number(data?.crustType?.price) !== 0
-                                                                        ? "$ " + data?.crustType?.price * order?.quantity
-                                                                        : ""}
+                                                                    {isNaN(Number(data?.crustType?.price) * order?.quantity)
+                                                                        ? "-"
+                                                                        : Number(data?.crustType?.price) !== 0
+                                                                            ? "$ " + data?.crustType?.price * order?.quantity
+                                                                            : ""}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -178,9 +179,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                                     {" "}
                                                                 </div>
                                                                 <div className="text-end amount mx-1">
-                                                                    {Number(data?.cheese?.price) !== 0
-                                                                        ? "$ " + data?.cheese?.price * order?.quantity
-                                                                        : ""}
+                                                                    {isNaN(Number(data?.cheese?.price) * order?.quantity)
+                                                                        ? "-"
+                                                                        : Number(data?.cheese?.price) !== 0
+                                                                            ? "$ " + data?.cheese?.price * order?.quantity
+                                                                            : ""}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -202,9 +205,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                                     {" "}
                                                                 </div>
                                                                 <div className="text-end amount mx-1">
-                                                                    {Number(data?.specialBases?.price) !== 0
-                                                                        ? "$ " + data?.specialBases?.price * order?.quantity
-                                                                        : ""}
+                                                                    {isNaN(Number(data?.specialBases?.price) * order?.quantity)
+                                                                        ? "-"
+                                                                        : Number(data?.specialBases?.price) !== 0
+                                                                            ? "$ " + data?.specialBases?.price * order?.quantity
+                                                                            : ""}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -225,9 +230,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                                     {" "}
                                                                 </div>
                                                                 <div className="text-end amount mx-1">
-                                                                    {Number(data?.spicy?.price) !== 0
-                                                                        ? "$ " + data?.spicy?.price * order?.quantity
-                                                                        : ""}{" "}
+                                                                    {isNaN(Number(data?.spicy?.price) * order?.quantity)
+                                                                        ? "-"
+                                                                        : Number(data?.spicy?.price) !== 0
+                                                                            ? "$ " + data?.spicy?.price * order?.quantity
+                                                                            : ""}{" "}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -248,9 +255,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                                     {" "}
                                                                 </div>
                                                                 <div className="text-end amount mx-1">
-                                                                    {Number(data?.sauce?.price) !== 0
-                                                                        ? "$ " + data?.sauce?.price * order?.quantity
-                                                                        : ""}{" "}
+                                                                    {isNaN(Number(data?.sauce?.price) * order?.quantity)
+                                                                        ? "-"
+                                                                        : Number(data?.sauce?.price) !== 0
+                                                                            ? "$ " + data?.sauce?.price * order?.quantity
+                                                                            : ""}{" "}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -268,9 +277,11 @@ function ViewOrderProductDetails({ orderData }) {
                                                             </div>
                                                             <div className="text-center qty mx-1"> </div>
                                                             <div className="text-end amount mx-1">
-                                                                {Number(data?.cook?.price) !== 0
-                                                                    ? "$ " + data?.cook?.price * order?.quantity
-                                                                    : ""}
+                                                                {isNaN(Number(data?.cook?.price) * order?.quantity)
+                                                                    ? "-"
+                                                                    : Number(data?.cook?.price) !== 0
+                                                                        ? "$ " + data?.cook?.price * order?.quantity
+                                                                        : ""}
                                                             </div>
                                                         </div>
                                                     )}
@@ -327,7 +338,7 @@ function ViewOrderProductDetails({ orderData }) {
                                                     {data?.toppings?.freeToppings &&
                                                         data?.toppings?.freeToppings?.length > 0 && (
                                                             <>
-                                                                {data?.toppings?.isAllIndiansTps ===
+                                                                {data?.isAllIndiansTps ===
                                                                     true ? (
                                                                     <>
                                                                         <div className="w-auto d-flex justify-content-around productDetails">
@@ -357,66 +368,27 @@ function ViewOrderProductDetails({ orderData }) {
                                                                 )}
                                                             </>
                                                         )}
+                                                    {index < order?.config?.pizza?.length - 1 && (
+                                                        <hr
+                                                            className="m-0 p-0 my-2"
+                                                            style={{
+                                                                border: "none",
+                                                                borderTop: "1px dashed #ccc",
+                                                                opacity: "0.5",
+                                                            }}
+                                                        />
+                                                    )}
                                                 </>
                                             );
                                         })}
 
-                                    {order?.productType === "special_pizza" &&
-                                        order?.config?.pizza?.map((data, index) => {
-                                            return (
-                                                <>
-                                                    {/* Next Pizza */}
-
-                                                    <div className="w-auto d-flex justify-content-around productDetails">
-                                                        <div className="products d-flex justify-content-start mx-1">
-                                                            <span className="subText fw-Bold">
-                                                                <strong>Pizza {index + 1}: {data?.signaturePizza?.pizzaName}</strong>
-                                                            </span>
-                                                            <span className="subText mx-2"></span>
-                                                        </div>
-                                                        <div className="text-center qty mx-1"> </div>
-                                                        <div className="text-end amount mx-1"></div>
-                                                    </div>
-
-
-                                                    {data?.signaturePizza?.toppings &&
-                                                        data?.signaturePizza?.toppings?.length >
-                                                        0 && (
-                                                            <>
-                                                                <ToppingsDetailsForSpecial tpsDetails={data?.signaturePizza?.toppings} />
-                                                            </>
-                                                        )}
-
-                                                    {(
-                                                        (data?.signaturePizza?.freeToppings && data?.signaturePizza?.freeToppings.length > 0) ||
-                                                        data?.signaturePizza?.indianToppings
-                                                    ) && (
-                                                            <>
-                                                                {data?.signaturePizza?.indianToppings === true ? (
-                                                                    <div className="w-auto d-flex justify-content-around productDetails">
-                                                                        <div className="products d-flex justify-content-start mx-1">
-                                                                            <span className="subText">
-                                                                                <strong>Indian Style + Coriander</strong>
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="text-center qty mx-1"></div>
-                                                                        <div className="text-end amount mx-1"></div>
-                                                                    </div>
-                                                                ) : (
-                                                                    <ToppingsDetailsForSpecial
-                                                                        tpsDetails={data?.signaturePizza?.freeToppings}
-                                                                    />
-                                                                )}
-                                                            </>
-                                                        )}
-                                                </>
-                                            );
-                                        })
-                                    }
 
                                     {(order?.productType === "custom_pizza" ||
                                         order?.productType === "special_pizza") && (
                                             <>
+                                                {(order?.config?.sides?.length > 0 || order?.config?.dips?.length > 0 || order?.config?.drinks?.length > 0) && (
+                                                    <hr className="my-2" />
+                                                )}
                                                 {order?.config?.sides &&
                                                     order?.config?.sides.length > 0 && (
                                                         <>
@@ -440,12 +412,14 @@ function ViewOrderProductDetails({ orderData }) {
                                                                             </span>
                                                                         </div>
                                                                         <div className="text-center qty mx-1">
-                                                                            {data?.quantity * order?.quantity}
+                                                                            {isNaN(data?.quantity * order?.quantity) ? "-" : data?.quantity * order?.quantity}
                                                                         </div>
                                                                         <div className="text-end amount mx-1">
-                                                                            {Number(data?.totalPrice) !== 0
-                                                                                ? "$ " + data?.totalPrice * order?.quantity
-                                                                                : ""}
+                                                                            {isNaN(Number(data?.totalPrice) * order?.quantity)
+                                                                                ? "-"
+                                                                                : Number(data?.totalPrice) !== 0
+                                                                                    ? "$ " + data?.totalPrice * order?.quantity
+                                                                                    : ""}
                                                                         </div>
                                                                     </div>
                                                                 );
@@ -483,16 +457,18 @@ function ViewOrderProductDetails({ orderData }) {
                                                                             {order?.productType === 'special_pizza' ?
                                                                                 <>
                                                                                     {data?.paidQuantity > 0
-                                                                                        ? `(${data?.freeQuantity * order?.quantity} + ${data?.paidQuantity * order?.quantity})`
-                                                                                        : `${data?.freeQuantity * order?.quantity}`
+                                                                                        ? (isNaN(data?.freeQuantity * order?.quantity) || isNaN(data?.paidQuantity * order?.quantity)) ? "-" : `(${data?.freeQuantity * order?.quantity} + ${data?.paidQuantity * order?.quantity})`
+                                                                                        : isNaN(data?.freeQuantity * order?.quantity) ? "-" : `${data?.freeQuantity * order?.quantity}`
                                                                                     }
-                                                                                </> : data?.quantity
+                                                                                </> : isNaN(data?.quantity) ? "-" : data?.quantity
                                                                             }
                                                                         </div>
                                                                         <div className="text-end amount mx-1">
-                                                                            {Number(data?.totalPrice) !== 0
-                                                                                ? "$ " + data?.totalPrice * order?.quantity
-                                                                                : ""}
+                                                                            {isNaN(Number(data?.totalPrice) * order?.quantity)
+                                                                                ? "-"
+                                                                                : Number(data?.totalPrice) !== 0
+                                                                                    ? "$ " + data?.totalPrice * order?.quantity
+                                                                                    : ""}
                                                                         </div>
                                                                     </div>
                                                                 );
@@ -527,12 +503,14 @@ function ViewOrderProductDetails({ orderData }) {
                                                                             </span>
                                                                         </div>
                                                                         <div className="text-center qty mx-1">
-                                                                            {data?.quantity * order?.quantity}
+                                                                            {isNaN(data?.quantity * order?.quantity) ? "-" : data?.quantity * order?.quantity}
                                                                         </div>
                                                                         <div className="text-end amount mx-1">
-                                                                            {Number(data?.totalPrice) !== 0
-                                                                                ? "$ " + data?.totalPrice * order?.quantity
-                                                                                : ""}
+                                                                            {isNaN(Number(data?.totalPrice) * order?.quantity)
+                                                                                ? "-"
+                                                                                : Number(data?.totalPrice) !== 0
+                                                                                    ? "$ " + data?.totalPrice * order?.quantity
+                                                                                    : ""}
                                                                         </div>
                                                                     </div>
                                                                 );
@@ -573,9 +551,12 @@ function ViewOrderProductDetails({ orderData }) {
                                         )}
 
                                     <hr
-                                        className="m-0 p-0 my-1"
+                                        className="m-0 p-0 my-3"
                                         style={{
-                                            height: "1px !important",
+                                            border: "none",
+                                            height: "2px",
+                                            backgroundColor: "#002d5b",
+                                            opacity: "0.8",
                                         }}
                                     />
                                 </>
@@ -658,7 +639,6 @@ export const ToppingsDetailsForSpecial = ({ tpsDetails }) => {
                             </div>
                             <div className="text-center qty mx-1"> </div>
                             <div className="text-end amount mx-1">
-
                             </div>
                         </div>
                     </>
@@ -701,10 +681,12 @@ export const ToppingsDetails = ({ tpsDetails, count, orderQuantity }) => {
                             </div>
                             <div className="text-center qty mx-1"> </div>
                             <div className="text-end amount mx-1">
-                                {Number(data?.amount) !== undefined &&
-                                    Number(data?.amount) !== 0
-                                    ? "$ " + Number(data?.amount) * orderQuantity
-                                    : ""}
+                                {isNaN(Number(data?.amount) * orderQuantity)
+                                    ? "-"
+                                    : Number(data?.amount) !== undefined &&
+                                        Number(data?.amount) !== 0
+                                        ? "$ " + Number(data?.amount) * orderQuantity
+                                        : ""}
                             </div>
                         </div>
                     </>

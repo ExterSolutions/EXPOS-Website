@@ -13,6 +13,7 @@ const SearchDropdown = ({ results, onClose }) => {
     // Helper to get dynamic redirect path based on productType
     const getRedirectPath = (item) => {
         const type = item?.productType || '';
+        const searchParam = `?search=${encodeURIComponent(item.name)}&code=${item.code}`;
         let basePath;
         switch (type.toLowerCase()) {
             case 'signature':
@@ -22,13 +23,13 @@ const SearchDropdown = ({ results, onClose }) => {
                 basePath = `/otherpizza/${item?.code}`;
                 break;
             case 'dips':
-                basePath = '/dips';
+                basePath = `/dips${searchParam}`;
                 break;
             case 'drinks':
-                basePath = '/drinks';
+                basePath = `/drinks${searchParam}`;
                 break;
             case 'sides':
-                basePath = '/sides';
+                basePath = `/sides${searchParam}`;
                 break;
             default:
                 basePath = '/menu';
@@ -37,23 +38,25 @@ const SearchDropdown = ({ results, onClose }) => {
     };
 
     return (
-        <div className="search-dropdown">
+        <div className="search-dropdown shadow-lg rounded-3 overflow-hidden" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {results.map((item, index) => (
                 <Link
                     key={`${item.code}-${index}`}
                     to={getRedirectPath(item)}
-                    className="dropdown-item d-flex align-items-center"
-                    onClick={onClose}
+                    className="search-dropdown-item d-flex align-items-center p-3 text-decoration-none border-bottom"
+                    onClick={() => onClose(item)}
+                    style={{ transition: 'background-color 0.2s' }}
                 >
-                    <img
-                        src={item.image}
-                        alt={item.name}
-                        className="search-result-image me-2"
-                        style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
-                    />
-                    <div>
-                        <div className="fw-bold">{item.name}</div>
-                        <small className="text-muted">{item.productType}</small>
+                    <div className="search-item-image-wrapper me-3 flex-shrink-0" style={{ width: '50px', height: '50px' }}>
+                        <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-100 h-100 object-fit-cover rounded"
+                        />
+                    </div>
+                    <div className="search-item-content flex-grow-1 min-width-0">
+                        <div className="fw-bold text-dark text-truncate mb-0" style={{ fontSize: '0.95rem' }}>{item.name}</div>
+                        <small className="text-muted text-truncate d-block" style={{ fontSize: '0.8rem', textTransform: 'capitalize' }}>{item.productType}</small>
                     </div>
                 </Link>
             ))}

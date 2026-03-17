@@ -8,7 +8,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import { getDips } from "../services";
 
-function DipsMenu() {
+function DipsMenu({ searchQuery, searchCode }) {
     const [dipsData, setDipsData] = useState([]);
     const [reset, setReset] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -53,6 +53,16 @@ function DipsMenu() {
         dips();
     }, [dips]); // Depend on memoized dips
 
+    const filteredDips = searchCode || searchQuery
+        ? dipsData.filter(item => {
+            if (searchCode) {
+                return item.code === searchCode || item.dipsCode === searchCode;
+            }
+            return item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                   item.dips_name?.toLowerCase().includes(searchQuery.toLowerCase());
+        })
+        : dipsData;
+
     // Only render if data is loaded; avoid partial renders
     if (loading) {
         return <LoadingLayout />;
@@ -62,15 +72,13 @@ function DipsMenu() {
         <div className="section" id="dipsmenucard">
             <div className="container" style={{ marginBottom: "40px" }}>
                 <div className="row g-3 signature-grid">
-                    {dipsData.length > 0 ? (
-                        dipsData.map((data, index) => (
+                    {filteredDips.length > 0 ? (
+                        filteredDips.map((data, index) => (
                             <div
                                 className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3"
                                 key={`dip-grid-card-${data?.code || data?.dipsCode || index}`}
                             >
                                 <Dips
-                                    // REMOVE this key prop - it's causing the conflict
-                                    // key={data.dipsCode}
                                     data={data}
                                     cartFn={cartFn}
                                     reset={reset}
@@ -79,7 +87,7 @@ function DipsMenu() {
                             </div>
                         ))
                     ) : (
-                        <p className="text-center col-12">No dips available.</p>
+                        <p className="text-center col-12">No dips found.</p>
                     )}
                 </div>
             </div>

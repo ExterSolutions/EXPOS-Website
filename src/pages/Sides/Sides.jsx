@@ -1,23 +1,21 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
-// import Tabs from "../../components/Tabs/Tabs";
 import SidesMenu from "../SidesMenu";
-import debounce from "lodash.debounce";
 
 const Sides = () => {
+    const [searchParams] = useSearchParams();
     const [searchQuery, setSearchQuery] = useState("");
-    const [debouncedQuery, setDebounceSearch] = useState("");
+    const [selectedCode, setSelectedCode] = useState("");
 
-    const debouncedSearch = useCallback(
-        debounce((value) => setDebounceSearch(value), 500),
-        []
-    );
-
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-        debouncedSearch(e.target.value);
-    };
+    // Sync state with URL search params (essential for navigation within same page)
+    useEffect(() => {
+        const q = searchParams.get("search") || searchParams.get("q") || "";
+        const c = searchParams.get("code") || "";
+        setSearchQuery(q);
+        setSelectedCode(c);
+    }, [searchParams]);
 
     return (
         <div style={{ position: "relative" }}>
@@ -30,7 +28,7 @@ const Sides = () => {
                 </div>
             </div>
             <div className="mb-4">
-                <SidesMenu searchQuery={debouncedQuery} />
+                <SidesMenu searchQuery={searchQuery} searchCode={selectedCode} />
             </div>
             <Footer />
         </div>

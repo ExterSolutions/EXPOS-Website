@@ -1,9 +1,23 @@
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
-// import Tabs from "../../components/Tabs/Tabs";
 import DrinkMenu from "../DrinkMenu";
 
 const Drinks = () => {
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get("search") || "";
+  const initialCode = searchParams.get("code") || "";
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [selectedCode, setSelectedCode] = useState(initialCode);
+
+  useEffect(() => {
+    const q = searchParams.get("search") || "";
+    const c = searchParams.get("code") || "";
+    setSearchQuery(q);
+    setSelectedCode(c);
+  }, [searchParams]);
+
   return (
     <>
       <div style={{ position: "relative" }}>
@@ -15,7 +29,7 @@ const Drinks = () => {
             <div className="section-title">Drinks</div>
           </div>
         </div>
-        <DrinkMenu />
+        <DrinkMenu searchQuery={searchQuery} searchCode={selectedCode} />
         <Footer />
       </div>
     </>
