@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const getCookieData = () => {
@@ -72,7 +73,39 @@ export const GlobalProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+
+  // Sync GlobalContext with Redux state (which is restored by redux-persist on reload)
+  const reduxAuth = useSelector((state) => state.user);
+  useEffect(() => {
+    if (reduxAuth && reduxAuth.token) {
+      if (!isAuthenticated) setIsAuthenticated(true);
+      if (reduxAuth.data && !user) setUser(reduxAuth.data);
+    }
+  }, [reduxAuth, isAuthenticated, user]);
   const [cart, setCart] = useState(() => {
+    // Cross-subdomain cart clearing logic:
+    // If the city in the global cookie differs from the city last used on this subdomain,
+    // it means the user just switched cities. Clear any stale cart.
+    try {
+      const cookieData = getCookieData();
+      const cookieCity = cookieData?.city;
+
+      // Compare with the city this specific subdomain remembers
+      const storedCityRaw = localStorage.getItem("currentCity");
+      let lastSubdomainCity = null;
+      if (storedCityRaw) {
+        lastSubdomainCity = JSON.parse(storedCityRaw)?.value || JSON.parse(storedCityRaw)?.city;
+      }
+
+      if (cookieCity && lastSubdomainCity && cookieCity !== lastSubdomainCity) {
+        localStorage.removeItem("cart");
+        // console.log("[GlobalContext] City mismatch detected between global cookie and subdomain storage. Cart cleared.");
+        return { product: [] };
+      }
+    } catch (e) {
+      // console.warn("[GlobalContext] Cart sync check error:", e);
+    }
+
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : { product: [] };
   });
@@ -143,7 +176,7 @@ export const GlobalProvider = ({ children }) => {
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
 
         // XOR Obfuscation
-        const SECRET = "exter_pizza_2024";
+        const SECRET = "exter_store_pizza";
         const json = JSON.stringify(storeDetail);
         const scrambled = json.split('').map((char, i) =>
           String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
