@@ -14,7 +14,7 @@ export const SpicySelector = ({ data, Spicy, handleSpicy }) => {
                     ) : (
                         <i className="bi bi-plus-circle" />
                     )}
-                    <div className="">{`${data?.spicy} ($ ${data?.price})`}</div>
+                    <div className="">{`${data?.spicy}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
                 </div>
             </div>
         </div>

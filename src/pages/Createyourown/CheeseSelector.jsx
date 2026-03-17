@@ -13,7 +13,7 @@ export const CheeseSelector = ({ data, Cheese, handleCheese }) => {
                     ) : (
                         <i className="bi bi-plus-circle" />
                     )}
-                    <div>{`${data?.cheeseName} ($ ${data?.price})`}</div>
+                    <div>{`${data?.cheeseName}${data?.price !== null ? ` ($ ${data?.price})` : ''}`}</div>
                 </div>
             </div>
         </div>

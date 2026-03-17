@@ -10,7 +10,7 @@ export const SauceSelector = ({ data, Sauce, handleSauce }) => {
                     ) : (
                         <i className="bi bi-plus-circle" />
                     )}
-                    <div className="">{`${data?.sauce} ($ ${data?.price})`}</div>
+                    <div className="">{`${data?.sauce}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
                 </div>
 
             </div>

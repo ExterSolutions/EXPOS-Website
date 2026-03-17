@@ -12,7 +12,7 @@ export const CrustTypeSelector = ({ data, CrustType, handleCrustType }) => {
                 ) : (
                     <i className="bi bi-plus-circle" />
                 )}
-                <div className="">{`${data?.crustType} ($ ${data?.price})`}</div>
+                <div className="">{`${data?.crustType}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
             </div>
 
         </div>

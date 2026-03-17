@@ -11,7 +11,7 @@ export const SpecialBasesSelector = ({ data, SpecialBases, handleSpecialBases })
                     ) : (
                         <i className="bi bi-plus-circle" />
                     )}
-                    <div className="">{`${data?.specialbaseName} ($ ${data?.price})`}</div>
+                    <div className="">{`${data?.specialbaseName}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
                 </div>
             </div>
         </div>

@@ -866,7 +866,7 @@ const EditSignature = () => {
                                                                                     />
                                                                                 </div>
                                                                                 <div className="d-block">
-                                                                                    {data?.size} (${data?.price})
+                                                                                    {data?.size}{data?.price !== null ? ` ($${data?.price})` : ""}
                                                                                 </div>
 
 
@@ -1376,144 +1376,80 @@ const EditSignature = () => {
                                                         <div className="border-top pizza-card-border-color ">
                                                             <div className="row">
                                                                 <div className="col-lg-6">
-                                                                    {size && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Size: {size} ($
-                                                                            {
-                                                                                pizzaSizeArr?.find(
-                                                                                    (el) => el?.size === size
-                                                                                )?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
-                                                                    {CrustType && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Crust Type:{" "}
-                                                                            {
-                                                                                Ingredients?.crustType?.filter(
-                                                                                    (top) =>
-                                                                                        top?.crustTypeCode === CrustType
-                                                                                )[0]?.crustType
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.crustType?.filter(
-                                                                                    (top) =>
-                                                                                        top?.crustTypeCode === CrustType
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
-                                                                    {Spicy && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Spicy:{" "}
-                                                                            {
-                                                                                Ingredients?.spices?.filter(
-                                                                                    (top) => top?.spicyCode === Spicy
-                                                                                )[0]?.spicy
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.spices?.filter(
-                                                                                    (top) => top?.spicyCode === Spicy
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
-                                                                    {Sauce && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Sauce:{" "}
-                                                                            {
-                                                                                Ingredients?.sauce?.filter(
-                                                                                    (top) => top?.sauceCode === Sauce
-                                                                                )[0]?.sauce
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.sauce?.filter(
-                                                                                    (top) => top?.sauceCode === Sauce
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
+                                                                        {(() => {
+                                                                            const sizeObj = pizzaSizeArr?.find(el => el?.size === size);
+                                                                            return size && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Size: {size} 
+                                                                                    {sizeObj?.price !== null && ` ($${sizeObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                        {(() => {
+                                                                            const ctObj = Ingredients?.crustType?.find(top => top?.crustTypeCode === CrustType);
+                                                                            return CrustType && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Crust Type: {ctObj?.crustType} 
+                                                                                    {ctObj?.price !== null && ` ($${ctObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                        {(() => {
+                                                                            const spicyObj = Ingredients?.spices?.find(top => top?.spicyCode === Spicy);
+                                                                            return Spicy && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Spicy: {spicyObj?.spicy} 
+                                                                                    {spicyObj?.price !== null && ` ($${spicyObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                        {(() => {
+                                                                            const sauceObj = Ingredients?.sauce?.find(top => top?.sauceCode === Sauce);
+                                                                            return Sauce && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Sauce: {sauceObj?.sauce} 
+                                                                                    {sauceObj?.price !== null && ` ($${sauceObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
                                                                 </div>
                                                                 <div className="col-lg-6">
-                                                                    {Crust && (
-                                                                        <div className=" fs-6 mt-2 mt-lg-0">
-                                                                            <GoDotFill /> Crust:{" "}
-                                                                            {
-                                                                                Ingredients?.crust?.filter(
-                                                                                    (top) => top?.crustCode === Crust
-                                                                                )[0]?.crustName
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.crust?.filter(
-                                                                                    (top) => top?.crustCode === Crust
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
-                                                                    {Cheese && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Cheese:{" "}
-                                                                            {
-                                                                                Ingredients?.cheese?.filter(
-                                                                                    (top) => top?.cheeseCode === Cheese
-                                                                                )[0]?.cheeseName
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.cheese?.filter(
-                                                                                    (top) => top?.cheeseCode === Cheese
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
-                                                                    {Cook && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Cook:{" "}
-                                                                            {
-                                                                                Ingredients?.cook?.filter(
-                                                                                    (top) => top?.cookCode === Cook
-                                                                                )[0]?.cook
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.cook?.filter(
-                                                                                    (top) => top?.cookCode === Cook
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
-                                                                    {SpecialBases && (
-                                                                        <div className=" fs-6 mt-2">
-                                                                            <GoDotFill /> Special Base:{" "}
-                                                                            {
-                                                                                Ingredients?.specialbases?.filter(
-                                                                                    (top) =>
-                                                                                        top?.specialbaseCode ===
-                                                                                        SpecialBases
-                                                                                )[0]?.specialbaseName
-                                                                            }{" "}
-                                                                            ($
-                                                                            {
-                                                                                Ingredients?.specialbases?.filter(
-                                                                                    (top) =>
-                                                                                        top?.specialbaseCode ===
-                                                                                        SpecialBases
-                                                                                )[0]?.price
-                                                                            }
-                                                                            )
-                                                                        </div>
-                                                                    )}
+                                                                        {(() => {
+                                                                            const crustObj = Ingredients?.crust?.find(top => top?.crustCode === Crust);
+                                                                            return Crust && (
+                                                                                <div className=" fs-6 mt-2 mt-lg-0">
+                                                                                    <GoDotFill /> Crust: {crustObj?.crustName} 
+                                                                                    {crustObj?.price !== null && ` ($${crustObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                        {(() => {
+                                                                            const cheeseObj = Ingredients?.cheese?.find(top => top?.cheeseCode === Cheese);
+                                                                            return Cheese && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Cheese: {cheeseObj?.cheeseName} 
+                                                                                    {cheeseObj?.price !== null && ` ($${cheeseObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                        {(() => {
+                                                                            const cookObj = Ingredients?.cook?.find(top => top?.cookCode === Cook);
+                                                                            return Cook && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Cook: {cookObj?.cook} 
+                                                                                    {cookObj?.price !== null && ` ($${cookObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
+                                                                        {(() => {
+                                                                            const sbObj = Ingredients?.specialbases?.find(top => top?.specialbaseCode === SpecialBases);
+                                                                            return SpecialBases && (
+                                                                                <div className=" fs-6 mt-2">
+                                                                                    <GoDotFill /> Special Base: {sbObj?.specialbaseName} 
+                                                                                    {sbObj?.price !== null && ` ($${sbObj?.price})`}
+                                                                                </div>
+                                                                            );
+                                                                        })()}
                                                                 </div>
                                                             </div>
                                                         </div>

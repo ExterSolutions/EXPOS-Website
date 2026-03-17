@@ -41,7 +41,7 @@ export const FreeToppingSelector = ({ data, ToppingsFree, handleTopping, handleS
                     <span className="fw-semibold">
                         {`${data?.toppingsName}`}
                     </span>
-                    <span>(${data?.price})</span>
+                    {data?.price !== null && <span>(${data?.price})</span>}
                 </div>
             </div>
             <div className="row">

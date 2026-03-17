@@ -10,7 +10,7 @@ export const CookSelector = ({ data, Cook, handleCook }) => {
                     ) : (
                         <i className="bi bi-plus-circle" />
                     )}
-                    <div className="">{`${data?.cook} ($ ${data?.price})`}</div>
+                    <div className="">{`${data?.cook}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
                 </div>
             </div>
         </div>

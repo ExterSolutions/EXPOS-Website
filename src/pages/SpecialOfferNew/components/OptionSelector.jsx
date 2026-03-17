@@ -69,9 +69,11 @@ const OptionSelector = ({
                                 style={{ minWidth: "100px" }}
                             >
                                 <span>{opt[config.nameKey]}</span>
-                                <span className="ms-1">
-                                    (${price.toFixed(2)})
-                                </span>
+                                {opt.price !== null && (
+                                    <span className="ms-1">
+                                        (${price.toFixed(2)})
+                                    </span>
+                                )}
                             </div>
                         </div>
                     );

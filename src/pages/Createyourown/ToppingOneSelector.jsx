@@ -49,7 +49,9 @@ export const ToppingOneSelector = ({ data, ToppingsOne, DefaultToppingsOne, hand
                     <span className="fw-semibold">
                         {`${data?.toppingsName}`}
                     </span>
-                    <span>(${DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price})</span>
+                    {(DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price) !== null && (
+                        <span>(${DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price})</span>
+                    )}
                 </div>
             </div>
             <div className="row">
