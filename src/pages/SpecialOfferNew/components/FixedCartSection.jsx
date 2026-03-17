@@ -11,7 +11,7 @@ const FixedCartSection = ({ ...props }) => {
     } = props;
 
     return (
-        <div className="fixed-cart-bottom-section d-block d-md-none">
+        <div className="fixed-cart-bottom-section d-block d-lg-none">
             <div className="row gx-3 justify-content-between align-items-center">
                 <div className="col-5 responsive-card-text-color">
                     <FaChevronLeft size={20} />

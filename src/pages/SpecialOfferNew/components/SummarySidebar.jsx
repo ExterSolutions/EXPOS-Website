@@ -1,6 +1,6 @@
 import React from "react";
 import fallbackImage from "../../../assets/images/default-pizza.jpg";
-import { FaMinus, FaPlus } from "react-icons/fa";
+import { FaEye, FaMinus, FaPlus } from "react-icons/fa";
 
 const SummarySidebar = ({ ...props }) => {
     const {
@@ -15,6 +15,7 @@ const SummarySidebar = ({ ...props }) => {
         quantity,
         setQuantity,
         isEditMode = false,
+        handleOpenSummaryPopup
     } = props;
 
     const buttonText = isEditMode ? "Update Cart" : "Add to Cart";
@@ -64,13 +65,22 @@ const SummarySidebar = ({ ...props }) => {
                                 </button>
                             </div>
                             {/* Action Button */}
-                            <button
-                                type="button"
-                                className="view-button px-3"
-                                onClick={onAddToCart}
-                            >
-                                {buttonText}
-                            </button>
+                            <div className="d-flex gap-2">
+                                <button
+                                    type="button"
+                                    className="view-button px-3"
+                                    onClick={onAddToCart}
+                                >
+                                    {buttonText}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleOpenSummaryPopup}
+                                    className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold"
+                                >
+                                    <FaEye />
+                                </button>
+                            </div>
                         </div>
                     </div>
 

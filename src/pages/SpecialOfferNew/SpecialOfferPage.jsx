@@ -412,8 +412,8 @@ const SpecialOfferPage = () => {
       <div className="nav-margin"></div>
       <div className="container py-4">
         <div className="row">
-          {/* MOBILE SUMMARY */}
-          <div className="col-12 d-md-none mb-4">
+          {/* MOBILE & TABLET SUMMARY (Visible up to 1023px) */}
+          <div className="col-12 d-lg-none mb-4">
             <SummaryTop
               offerData={offerData}
               onAddToCart={handleAddToCart}
@@ -426,7 +426,7 @@ const SpecialOfferPage = () => {
 
           {/* LEFT SIDE */}
           <div className="col-lg-6 col-12">
-            <h5 className="fw-bold d-none d-md-block mb-3">{offerData.name}</h5>
+            <h5 className="fw-bold d-none d-lg-block mb-3">{offerData.name}</h5>
 
             {/* SIZE SELECTOR */}
             <SizeSelector
@@ -477,7 +477,7 @@ const SpecialOfferPage = () => {
             />
           </div>
 
-          {/* DESKTOP SUMMARY */}
+          {/* DESKTOP SUMMARY (Visible from 1024px) */}
           <div className="col-lg-5 col-12 d-none d-lg-block">
             <SummarySidebar
               selectedSize={selectedSize}
@@ -491,6 +491,7 @@ const SpecialOfferPage = () => {
               quantity={quantity}
               setQuantity={setQuantity}
               isEditMode={false}
+              handleOpenSummaryPopup={toggleSummaryModal}
             />
           </div>
 
@@ -507,7 +508,7 @@ const SpecialOfferPage = () => {
 
       <Footer />
 
-      {/* <SummaryModal
+      <SummaryModal
         modalState={showSummaryPopup}
         totalPrice={totalPrice}
         selectedSize={selectedSize}
@@ -517,7 +518,7 @@ const SpecialOfferPage = () => {
         selectedDips={selectedDips}
         selectedDrink={selectedDrink}
         toggleSummaryModal={toggleSummaryModal}
-      /> */}
+      />
     </div>
   );
 };

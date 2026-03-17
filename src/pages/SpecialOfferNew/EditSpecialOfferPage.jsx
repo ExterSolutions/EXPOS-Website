@@ -361,9 +361,10 @@ const EditSpecialOfferPage = () => {
         </div>
 
         <div className="row">
-          {/* MOBILE SUMMARY */}
-          <div className="col-12 d-md-none mb-4">
+          {/* MOBILE & TABLET SUMMARY (Visible up to 1023px) */}
+          <div className="col-12 d-lg-none mb-4">
             <SummaryTop
+              offerData={offerData}
               pizzaSelections={pizzaSelections}
               onAddToCart={handleUpdateCart}
               totalPrice={totalPrice}
@@ -375,8 +376,8 @@ const EditSpecialOfferPage = () => {
           </div>
 
           {/* LEFT SIDE */}
-          <div className="col-lg-6 col-md-7 col-12">
-            <h5 className="fw-bold mb-3">{offerData.name}</h5>
+          <div className="col-lg-6 col-md-12 col-12">
+            <h5 className="fw-bold d-none d-lg-block mb-3">{offerData.name}</h5>
 
             {/* SIZE SELECTOR */}
             <SizeSelector
@@ -426,7 +427,7 @@ const EditSpecialOfferPage = () => {
             />
           </div>
 
-          {/* DESKTOP SUMMARY */}
+          {/* DESKTOP SUMMARY (Visible from 1024px) */}
           <div className="col-lg-5 col-md-5 d-none d-lg-block">
             <SummarySidebar
               selectedSize={selectedSize}
@@ -440,6 +441,7 @@ const EditSpecialOfferPage = () => {
               quantity={quantity}
               setQuantity={setQuantity}
               isEditMode={true}
+              handleOpenSummaryPopup={toggleSummaryModal}
             />
           </div>
 
