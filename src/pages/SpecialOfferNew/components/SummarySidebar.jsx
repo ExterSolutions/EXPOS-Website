@@ -65,7 +65,7 @@ const SummarySidebar = ({ ...props }) => {
                                 </button>
                             </div>
                             {/* Action Button */}
-                            <div className="d-flex gap-2">
+                            <div className="d-flex">
                                 <button
                                     type="button"
                                     className="view-button px-3"
@@ -73,13 +73,13 @@ const SummarySidebar = ({ ...props }) => {
                                 >
                                     {buttonText}
                                 </button>
-                                <button
+                                {/* <button
                                     type="button"
                                     onClick={handleOpenSummaryPopup}
                                     className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold"
                                 >
                                     <FaEye />
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     </div>
