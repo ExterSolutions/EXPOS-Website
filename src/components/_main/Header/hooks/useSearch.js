@@ -6,10 +6,10 @@ export const useSearch = () => {
     const navigate = useNavigate();
     const location = useLocation();
     
-    // Get initial query from URL (supports both ?q= and ?search=)
+    // Get initial query from URL or navigation state
     const getInitialQuery = () => {
         const params = new URLSearchParams(location.search);
-        return params.get('q') || params.get('search') || '';
+        return params.get('q') || params.get('search') || location.state?.q || '';
     };
 
     // Search state
@@ -83,11 +83,42 @@ export const useSearch = () => {
         setSearchQuery(e.target.value);
     };
 
-    // Handle search submit
+    // Handle search submit - Navigate to first result's detail page if available
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        if (searchQuery.trim()) {
-            navigate(`/search-results?q=${encodeURIComponent(searchQuery.trim())}`);
+        if (searchQuery.trim() && searchResults.length > 0) {
+            const item = searchResults[0];
+            const type = item?.productType || '';
+            const searchParam = `?search=${encodeURIComponent(item.name)}&code=${item.code}`;
+            let basePath;
+
+            switch (type.toLowerCase()) {
+                case 'signature':
+                    basePath = `/signaturepizza/${item?.code}`;
+                    break;
+                case 'other':
+                    basePath = `/otherpizza/${item?.code}`;
+                    break;
+                case 'dips':
+                    basePath = `/dips${searchParam}`;
+                    break;
+                case 'drinks':
+                    basePath = `/drinks${searchParam}`;
+                    break;
+                case 'sides':
+                    basePath = `/sides${searchParam}`;
+                    break;
+                default:
+                    basePath = '/menu';
+            }
+
+            navigate(basePath, { state: { q: searchQuery.trim() } });
+            setShowSearchDropdown(false);
+            setShowMobileSearch(false);
+        } else if (searchQuery.trim()) {
+            navigate(`/search-results?q=${encodeURIComponent(searchQuery.trim())}`, {
+                state: { results: searchResults, q: searchQuery.trim() }
+            });
             setShowSearchDropdown(false);
             setShowMobileSearch(false);
         }

@@ -49,7 +49,7 @@ function MyAccount() {
                     dispatch({ type: LOGOUT, payload: null });
                     setTimeout(() => {
                         setIsAuthenticated(false);
-                        setUser({});
+                        setUser(null);
                         navigate("/");
                     }, 500);
                 } else {

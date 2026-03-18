@@ -12,23 +12,33 @@ const SearchResult = () => {
     const [menuData, setMenuData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [apiResults, setApiResults] = useState([]);
+
     useEffect(() => {
-        const fetchMenuData = async () => {
+        const fetchAllData = async () => {
             try {
                 setIsLoading(true);
                
-                const response = await http.get('/menu'); 
-                setMenuData(response.data.data || response.data || []);
+                // Fetch menu for detail mapping
+                const menuResponse = await http.get('/menu'); 
+                setMenuData(menuResponse.data.data || menuResponse.data || []);
+
+                // If no results passed in state (like on refresh), fetch them now
+                if (!results || results.length === 0) {
+                    const searchRes = await searchProducts(query);
+                    setApiResults(searchRes.data || []);
+                }
             } catch (err) {
-                console.error('Error fetching menu data:', err);
-                // Optionally set error state
+                console.error('Error fetching search data:', err);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchMenuData();
-    }, []);
+        fetchAllData();
+    }, [query, results]);
+
+    const finalResults = results.length > 0 ? results : apiResults;
 
     const handleViewDetails = (product) => {
         // Find the full product details from menu data using code or id
@@ -51,8 +61,8 @@ const SearchResult = () => {
         );
     }
 
-    // If no results from state, fallback to empty (or fetch based on query if needed)
-    if (!results || results.length === 0) {
+    // If no results from state or API
+    if (!finalResults || finalResults.length === 0) {
         return (
             <div className="search-results-page">
                 <div className="container">
@@ -67,7 +77,7 @@ const SearchResult = () => {
     }
 
     // Merge search results with menu data for richer display (e.g., add slugs, prices)
-    const enrichedResults = results.map(result => {
+    const enrichedResults = finalResults.map(result => {
         const menuItem = menuData?.find(item => item.code === result.code || item.id === result.id);
         return { ...result, ...menuItem }; // Merge to get slug, etc.
     }).filter(Boolean); // Filter out any null/undefined after merge

@@ -329,7 +329,7 @@ function OtherModel({
                                     .map((price) => {
                                         return (
                                             <option value={price.shortcode} key={price.shortcode}>
-                                                {price.size} - $ {price.price}
+                                                {price.size} {price?.price && parseFloat(price?.price) > 0 ? `- $${price.price}` : ""}
                                             </option>
                                         );
                                     })}
@@ -347,7 +347,7 @@ function OtherModel({
                                 {ing?.crust?.map((el) => {
                                     return (
                                         <option value={el?.crustCode} key={el?.crustCode}>
-                                            {el?.crustName} ${el?.price}
+                                            {el?.crustName} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}
@@ -364,8 +364,7 @@ function OtherModel({
                                 {ing?.crustType?.map((el) => {
                                     return (
                                         <option value={el?.crustTypeCode} key={el?.crustTypeCode}>
-                                            {el?.crustType}
-                                            {"  "}${el?.price}
+                                            {el?.crustType} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}
@@ -383,8 +382,7 @@ function OtherModel({
                                 {ing?.cheese?.map((el) => {
                                     return (
                                         <option value={el?.cheeseCode} key={el?.cheeseCode}>
-                                            {el?.cheeseName}
-                                            {"  "}${el?.price}
+                                            {el?.cheeseName} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}
@@ -404,8 +402,7 @@ function OtherModel({
                                             value={el?.specialbaseCode}
                                             key={el?.specialbaseCode}
                                         >
-                                            {el?.specialbaseName}
-                                            {"  "}${el?.price}
+                                            {el?.specialbaseName} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}
@@ -423,8 +420,7 @@ function OtherModel({
                                 {ing?.spices?.map((el) => {
                                     return (
                                         <option value={el?.spicyCode} key={el?.spicyCode}>
-                                            {el?.spicy}
-                                            {"  "}${el?.price}
+                                            {el?.spicy} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}
@@ -441,8 +437,7 @@ function OtherModel({
                                 {ing?.sauce?.map((el) => {
                                     return (
                                         <option value={el?.sauceCode} key={el?.sauceCode}>
-                                            {el?.sauce}
-                                            {"  "}${el?.price}
+                                            {el?.sauce} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}
@@ -460,8 +455,7 @@ function OtherModel({
                                 {ing?.cook?.map((el) => {
                                     return (
                                         <option value={el?.cookCode} key={el?.cookCode}>
-                                            {el?.cook}
-                                            {"  "}${el?.price}
+                                            {el?.cook} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     );
                                 })}

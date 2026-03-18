@@ -327,7 +327,7 @@ function SignatureModel({
                                     ?.filter((price) => parseFloat(price.price) > 0)
                                     ?.map((el) => (
                                         <option value={el?.shortcode} key={el?.shortcode}>
-                                            {el.size} ${el?.price}
+                                            {el.size} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                         </option>
                                     ))}
                             </select>
@@ -343,7 +343,7 @@ function SignatureModel({
                             >
                                 {ing?.crust?.map((el) => (
                                     <option value={el?.crustCode} key={el?.crustCode}>
-                                        {el?.crustName} ${el?.price}
+                                        {el?.crustName} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
@@ -358,7 +358,7 @@ function SignatureModel({
                             >
                                 {ing?.crustType?.map((el) => (
                                     <option value={el?.crustTypeCode} key={el?.crustTypeCode}>
-                                        {el?.crustType} ${el?.price}
+                                        {el?.crustType} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
@@ -374,7 +374,7 @@ function SignatureModel({
                             >
                                 {ing?.cheese?.map((el) => (
                                     <option value={el?.cheeseCode} key={el?.cheeseCode}>
-                                        {el?.cheeseName} ${el?.price}
+                                        {el?.cheeseName} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
@@ -392,7 +392,7 @@ function SignatureModel({
                                         value={el?.specialbaseCode}
                                         key={el?.specialbaseCode}
                                     >
-                                        {el?.specialbaseName} ${el?.price}
+                                        {el?.specialbaseName} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
@@ -408,7 +408,7 @@ function SignatureModel({
                             >
                                 {ing?.spices?.map((el) => (
                                     <option value={el?.spicyCode} key={el?.spicyCode}>
-                                        {el?.spicy} ${el?.price}
+                                        {el?.spicy} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
@@ -423,7 +423,7 @@ function SignatureModel({
                             >
                                 {ing?.sauce?.map((el) => (
                                     <option value={el?.sauceCode} key={el?.sauceCode}>
-                                        {el?.sauce} ${el?.price}
+                                        {el?.sauce} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
@@ -439,7 +439,7 @@ function SignatureModel({
                             >
                                 {ing?.cook?.map((el) => (
                                     <option value={el?.cookCode} key={el?.cookCode}>
-                                        {el?.cook} ${el?.price}
+                                        {el?.cook} {el?.price && parseFloat(el?.price) > 0 ? `$${el?.price}` : ""}
                                     </option>
                                 ))}
                             </select>
