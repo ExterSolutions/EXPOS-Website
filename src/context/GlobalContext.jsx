@@ -229,10 +229,13 @@ export const GlobalProvider = ({ children }) => {
     localStorage.removeItem("currentLatitude");
     localStorage.removeItem("currentLogitude");
 
-    // Clear root-domain cookie
     const hostname = window.location.hostname;
-    const domain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
-    document.cookie = `ext_store=; domain=${domain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    // Clear root-domain cookie if exists
+    if (hostname.endsWith('exter.ca')) {
+        document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
+    // Clear isolated domain cookie
+    document.cookie = `ext_store=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
   };
 
   // Helper: update selectedStore and keep all related slices in sync
@@ -240,11 +243,10 @@ export const GlobalProvider = ({ children }) => {
     setSelectedStore(storeDetail);
     localStorage.setItem("selectedStore", JSON.stringify(storeDetail));
 
-    // Sync to root-domain cookie for cross-subdomain persistence
+    // Sync to cookie, but isolate to current subdomain
     if (storeDetail) {
       try {
         const hostname = window.location.hostname;
-        const domain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
 
         // XOR Obfuscation
@@ -255,7 +257,13 @@ export const GlobalProvider = ({ children }) => {
         ).join('');
         const encoded = btoa(unescape(encodeURIComponent(scrambled)));
 
-        document.cookie = `ext_store=${encoded}; domain=${domain}; path=/; expires=${expires}; SameSite=Lax`;
+        // Clear root domain cookie to prevent cross-subdomain bleeding
+        if (hostname.endsWith('exter.ca')) {
+            document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        }
+
+        // Set subdomain-specific cookie (no generic domain=... ensures exact match)
+        document.cookie = `ext_store=${encoded}; path=/; expires=${expires}; SameSite=Lax`;
       } catch (e) {
         console.warn("[GlobalContext] Failed to sync store cookie:", e);
       }

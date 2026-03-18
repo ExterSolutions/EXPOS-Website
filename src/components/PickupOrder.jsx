@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { GlobalContext } from "../context/GlobalContext";
 import { useSocket } from "../context/SocketContext";
-import { applyCoupon, getStoreLocation, orderPlace } from "../services";
+import { applyCoupon, getStoreLocationByCity, orderPlace } from "../services";
 
 function PickupOrder() {
     const socket = useSocket();
@@ -21,6 +21,7 @@ function PickupOrder() {
     const [currentLatitude] = globalctx.currentLatitude;
     const [currentLogitude] = globalctx.currentLogitude;
     const [currentStoreCode] = globalctx.currentStoreCode;
+    const [currentCity] = globalctx.currentCity || [null];
 
     const [taxPercent, setTaxPercent] = useState(0);
     const [taxAmount, setTaxAmount] = useState(0);
@@ -37,13 +38,32 @@ function PickupOrder() {
     const getStoreDetails = async () => {
         setLoading(true);
         try {
-            const res = await getStoreLocation({
-                lat: currentLatitude ?? '',
-                long: currentLogitude ?? ''
-            });
-            setStoreDetails(res.data);
-            if (currentStoreCode && res?.data?.length > 0) {
-                const preSelected = res.data.find(d => d.code === currentStoreCode);
+            const res = await getStoreLocationByCity();
+            const groups = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+            
+            let filteredStores = [];
+            
+            // Find the city group based on current context
+            if (currentStoreCode) {
+                const myCityGroup = groups.find(g => 
+                    g.storeLocations.some(s => s.code === currentStoreCode)
+                );
+                if (myCityGroup) {
+                    filteredStores = myCityGroup.storeLocations;
+                }
+            } else if (currentCity?.value) {
+                const myCityGroup = groups.find(g => g.city === currentCity?.value);
+                if (myCityGroup) {
+                    filteredStores = myCityGroup.storeLocations;
+                }
+            } else {
+                 filteredStores = groups.flatMap(g => g.storeLocations);
+            }
+
+            setStoreDetails(filteredStores);
+
+            if (currentStoreCode && filteredStores?.length > 0) {
+                const preSelected = filteredStores.find(d => d.code === currentStoreCode);
                 if (preSelected) setSelectedStore(preSelected);
             }
         } catch (err) {
