@@ -336,3 +336,7 @@ button:focus-visible {
   margin-left: 12px;
   font-weight: 500;
 }
+
+.swal-footer {
+  text-align: center;
+}

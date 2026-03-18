@@ -32,7 +32,9 @@ http.interceptors.request.use(
         };
       } else if (method === "post" || method === "put" || method === "patch") {
         // Merge into request body
-        if (config.data && typeof config.data === "object") {
+        if (config.data instanceof FormData) {
+          config.data.append("cityCode", CITY_CODE);
+        } else if (config.data && typeof config.data === "object") {
           config.data = { ...config.data, cityCode: CITY_CODE };
         } else if (!config.data) {
           config.data = { cityCode: CITY_CODE };

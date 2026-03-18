@@ -33,7 +33,7 @@ function ProfileUpdate() {
         lastName: user?.lastName,
         mobileNumber: user?.mobileNumber,
         email: user?.email,
-        customerCode: user?.customerCode,
+        customerCode: user?.code || user?.customerCode,
     };
 
     const handleFileChange = (event) => {
@@ -216,7 +216,7 @@ function ProfileUpdate() {
                         )}
                     </div>
                 </div>
-                <div className="w-100 text-start mb-3 mt-4">
+                <div className="w-100 text-center mb-3 mt-4">
                     <button
                         className="py-2 fw-bold btn btn-md profileUpdateBtn"
                         type="submit"
