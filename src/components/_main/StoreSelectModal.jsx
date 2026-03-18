@@ -8,7 +8,6 @@ import CartFunction from '../../components/cart';
 function setStoreCookie(storeDetail) {
     try {
         const hostname = window.location.hostname;
-        const domain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
         const json = JSON.stringify(storeDetail);
 
         // Use same XOR obfuscation for cookie
@@ -19,7 +18,14 @@ function setStoreCookie(storeDetail) {
         const encoded = btoa(unescape(encodeURIComponent(scrambled)));
 
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
-        document.cookie = `ext_store=${encoded}; domain=${domain}; path=/; expires=${expires}; SameSite=Lax`;
+
+        // Clear root domain cookie to ensure no cross-subdomain bleeding occurs
+        if (hostname.endsWith('exter.ca')) {
+            document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        }
+        
+        // Exact match subdomain cookie
+        document.cookie = `ext_store=${encoded}; path=/; expires=${expires}; SameSite=Lax`;
     } catch (e) {
         console.error("Failed to set store cookie:", e);
     }
