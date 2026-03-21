@@ -711,13 +711,13 @@ function AddressDetails() {
                                         </li>
 
                                         {/* Tax Amount - Only if > 0 */}
-                                        {apiPricing?.taxAmount && Number(apiPricing.taxAmount) > 0 && (
+                                        {(apiPricing?.taxAmount || cart?.taxAmount) && Number(apiPricing?.taxAmount || cart?.taxAmount) > 0 && (
                                             <li>
                                                 <span className="ttl">
-                                                    Tax Amount ({apiPricing?.taxPer || 0}%)
+                                                    Tax Amount ({apiPricing?.taxPer || cart?.taxPer || 0}%)
                                                 </span>
                                                 <span className="stts">
-                                                    $ {Number(apiPricing.taxAmount).toFixed(2)}
+                                                    $ {Number(apiPricing?.taxAmount || cart?.taxAmount).toFixed(2)}
                                                 </span>
                                             </li>
                                         )}
@@ -733,21 +733,21 @@ function AddressDetails() {
                                         )}
 
                                         {/* Convenience Charges - Only if > 0 */}
-                                        {apiPricing?.convinenceCharges && Number(apiPricing.convinenceCharges) > 0 && (
+                                        {(apiPricing?.convinenceCharges || cart?.convinenceCharges) && Number(apiPricing?.convinenceCharges || cart?.convinenceCharges) > 0 && (
                                             <li>
-                                                <span className="ttl">Convenience Charges</span>
+                                                <span className="ttl">Convenience Fee</span>
                                                 <span className="stts">
-                                                    $ {Number(apiPricing.convinenceCharges).toFixed(2)}
+                                                    $ {Number(apiPricing?.convinenceCharges || cart?.convinenceCharges).toFixed(2)}
                                                 </span>
                                             </li>
                                         )}
 
                                         {/* Delivery Charges - Only if > 0 */}
-                                        {apiPricing?.deliveryCharges && Number(apiPricing.deliveryCharges) > 0 && (
+                                        {(apiPricing?.deliveryCharges || cart?.deliveryCharges) && Number(apiPricing?.deliveryCharges || cart?.deliveryCharges) > 0 && (
                                             <li>
                                                 <span className="ttl">Delivery Charges</span>
                                                 <span className="stts">
-                                                    $ {Number(apiPricing.deliveryCharges).toFixed(2)}
+                                                    $ {Number(apiPricing?.deliveryCharges || cart?.deliveryCharges).toFixed(2)}
                                                 </span>
                                             </li>
                                         )}

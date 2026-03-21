@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { LOGIN_SUCCESS } from "../redux/authProvider/actionType";
+import CartFunction from "../components/cart";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -228,6 +229,14 @@ export const GlobalProvider = ({ children }) => {
   });
   const [reset, setReset] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
+
+  // Recalculate cart totals whenever store or settings change
+  useEffect(() => {
+    if (selectedStore && cart?.product?.length > 0) {
+      const cartFn = new CartFunction();
+      cartFn.updateCartTotals(cart, setCart, settings, selectedStore);
+    }
+  }, [selectedStore, settings]);
 
   // Helper: clear all store/city data
   const clearStoreSelection = () => {

@@ -14,6 +14,7 @@ function SpecialOfferList() {
     const [loading, setLoading] = useState(true);
     const [specialOfferData, setSpecialOfferData] = useState([]);
 
+
     const isLimitedOfferActive = (offer) => {
         if (offer.limitedOffer === 1) {
             const currentDate = new Date();

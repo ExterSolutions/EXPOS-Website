@@ -109,6 +109,12 @@ const Other = () => {
     const regularToppingsTitle =
         settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
         "Regular";
+    const indianStyleToppingsTitle =
+        settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+        "Indian Style";
+    const otherPizzaTitle =
+        settingsData.find((item) => item.shortCode === "otherpizza")?.settingValue ??
+        "Other Pizza";
     const premiumToppingCount =
         Number(
             settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -653,6 +659,7 @@ const Other = () => {
                                     <div className="mainContainer primary-text-color">
                                         {/* left side */}
                                         <div className=" p-3">
+                                            <p className="fs-5 mb-0 text-secondary">{otherPizzaTitle}</p>
                                             <p className="fs-1 fw-bold text-primary">{name}</p>
                                             <p className="mt-3 mb-3 fs-6 text-secondary">{pizzaSubtitle}</p>
                                             <div
@@ -683,6 +690,11 @@ const Other = () => {
                                                             >
                                                                 <p className=" fw-bold text-start my-1 pizzaPriceSm">
                                                                     $ {price}
+                                                                    <small className="lh-1">
+                                                                        * {indianStyleToppingsTitle} = (
+                                                                        {indianStyleToppingsTitle} +
+                                                                        Coriander )
+                                                                    </small>
                                                                 </p>
                                                                 <div
                                                                     className="d-flex justify-content-start align-items-center my-1"
@@ -1074,7 +1086,7 @@ const Other = () => {
                                                                             }`}
                                                                         onClick={() => setTopping("free")}
                                                                     >
-                                                                        Indian Style
+                                                                        {indianStyleToppingsTitle}
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex flex-wrap gap-2">
@@ -1209,7 +1221,7 @@ const Other = () => {
 
                                                                 {/* Section 3: Indian Style */}
                                                                 <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
-                                                                    Indian Style
+                                                                    {indianStyleToppingsTitle}
                                                                 </div>
                                                                 <div className="d-flex flex-wrap gap-2">
                                                                     {Ingredients?.toppings?.freeToppings?.map((data, index) => (
@@ -1452,7 +1464,7 @@ const Other = () => {
                                                                         <>
                                                                             {/* Display a single button for Indian Style Toppings */}
                                                                             <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                                Indian Style + Coriander
+                                                                                 {indianStyleToppingsTitle} + Coriander
                                                                                 <span
                                                                                     className="ms-2"
                                                                                     onClick={

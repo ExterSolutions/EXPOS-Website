@@ -82,11 +82,12 @@ const EditSpecialOffer = () => {
   //
   const [viewSelection, setViewSelection] = useState(false);
   const [settingsData, setSettingsData] = useState([]);
-
-  // Premium Topping Count from settings
   const premiumToppingCount = Number(
     settingsData?.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue || 1,
   );
+  const specialOfferTitle =
+    settingsData.find((item) => item.shortCode === "specialoffer")?.settingValue ??
+    "Special Offer";
 
   // Memoized Dips Calculations
   const { calcDipsArr, noOfAdditionalDips, noOfFreeDips } = useMemo(() => {
@@ -126,15 +127,17 @@ const EditSpecialOffer = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const settingResponse = await settingApi();
-      setSettingsData(settingResponse?.data);
-      const [toppingsResponse, dipsResponse, allIngredientsResponse] = await Promise.all([
+      const [toppingsResponse, dipsResponse, allIngredientsResponse, settingsResponse] = await Promise.all([
         getToppings(),
         getDips(),
         getAllIngredients(),
+        settingApi(),
       ]);
       setToppingsData(toppingsResponse?.data || []);
       setDipsData(dipsResponse?.data || []);
+      const settingsData = settingsResponse?.data || [];
+      setSettings(settingsData);
+      setSettingsData(settingsData);
       console.log('allIngredientsResponse', allIngredientsResponse)
       const ing = allIngredientsResponse?.data || allIngredientsResponse;
       setAllIngredients(ing);
@@ -542,12 +545,12 @@ const EditSpecialOffer = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerWidth <= 767) return;
-      const scrollY = window.scrollY;
       const rightSideDiv = document.querySelector(".right-side-internal-div");
       const footer = document.querySelector(".main-footer");
 
       if (!rightSideDiv || !footer) return;
 
+      const scrollY = window.scrollY;
       const rightDivTopOffset =
         rightSideDiv.getBoundingClientRect().top + scrollY;
       const rightDivBottomOffset =
@@ -628,7 +631,7 @@ const EditSpecialOffer = () => {
 
                     {/* LEFT SIDE */}
                     <div className="p-3">
-
+                      <p className="fs-5 mb-0 text-secondary">{specialOfferTitle}</p>
                       <p className="fw-bold fs-5 text-dark">{name}</p>
 
                       <p

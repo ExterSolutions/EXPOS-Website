@@ -124,6 +124,14 @@ const EditSignature = () => {
         settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
         "Regular";
 
+    const indianStyleToppingsTitle =
+        settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+        "Indian Style";
+
+    const signaturePizzaTitle =
+        settingsData.find((item) => item.shortCode === "signaturepizza")?.settingValue ??
+        "Signature Pizza";
+
     const premiumToppingCount =
         Number(
             settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -734,6 +742,7 @@ const EditSignature = () => {
                                 <div className="mainContainer primary-text-color">
                                     {/* left side */}
                                     <div className="p-3">
+                                        <p className="fs-5 mb-0 text-secondary">{signaturePizzaTitle}</p>
                                         <p className="fs-1 fw-bold text-primary">{name}</p>
                                         <p className="mt-3 mb-3 fs-6">{pizzaSubtitle}</p>
 
@@ -1462,7 +1471,7 @@ const EditSignature = () => {
                                                                     <>
                                                                         {/* Display a single button for Indian Style Toppings */}
                                                                         <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                            Indian Style + Coriander
+                                                                            {indianStyleToppingsTitle} + Coriander
                                                                             <span
                                                                                 className="ms-2"
                                                                                 onClick={handleRemoveIsIndiansToppings}

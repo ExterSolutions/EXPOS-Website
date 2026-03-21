@@ -125,6 +125,14 @@ const CreatePizza = () => {
     settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
     "Regular";
 
+  const indianStyleToppingsTitle =
+    settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+    "Indian Style";
+
+  const createYourOwnTitle =
+    settingsData.find((item) => item.shortCode === "create-your-own")?.settingValue ??
+    "Create Your Own";
+
   const premiumToppingCount =
     Number(
       settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -693,7 +701,7 @@ const CreatePizza = () => {
                       Home
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Create Your Own
+                      {createYourOwnTitle}
                     </li>
                   </ol>
                 </nav>
@@ -702,7 +710,7 @@ const CreatePizza = () => {
                 <div className="mainContainer primary-text-color">
                   {/* left side */}
                   <div className=" p-3">
-                    <p className="fs-1 fw-bold text-primary">CREATE YOUR OWN PIZZA</p>
+                    <p className="fs-1 fw-bold text-primary">{createYourOwnTitle.toUpperCase()}</p>
                     <p className="mt-3 mb-3 fs-6 text-secondary">
                       Your perfect slice, your way!
                     </p>
@@ -1133,7 +1141,7 @@ const CreatePizza = () => {
                                     }`}
                                     onClick={() => setTopping("free")}
                                   >
-                                    Indian Style
+                                    {indianStyleToppingsTitle}
                                   </div>
                                 </div>
                                 {Topping === "two" &&
@@ -1261,7 +1269,7 @@ const CreatePizza = () => {
                                 {/* Group 3: Indian Style */}
                                 <div>
                                   <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
-                                    Indian Style
+                                    {indianStyleToppingsTitle}
                                   </div>
                                   <div className="d-flex flex-wrap gap-2">
                                     {Ingredients?.toppings?.freeToppings?.map((data, index) => (

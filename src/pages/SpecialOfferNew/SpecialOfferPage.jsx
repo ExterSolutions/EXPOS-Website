@@ -58,6 +58,10 @@ const SpecialOfferPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [allSignaturePizzas, setAllSignaturePizzas] = useState([]);
+  const [settingsData, setSettingsData] = useState([]);
+  const specialOfferTitle =
+    settingsData.find((item) => item.shortCode === "specialoffer")?.settingValue ??
+    "Special Offer";
 
   useEffect(() => {
     fetchOfferDetailsWithSettings();
@@ -117,6 +121,7 @@ const SpecialOfferPage = () => {
       }
 
       const settingsData = settingsResponse.data;
+      setSettingsData(settingsData);
       const toppingsData = toppingsResponse.data.toppings;
       const dipsData = dipsResponse.data;
       const fetchedSignaturePizzas = Array.isArray(signaturePizzasResponse)
@@ -171,6 +176,9 @@ const SpecialOfferPage = () => {
         regularToppingLabel:
           settingsData.find((s) => s.shortCode === "regular-toppings")?.settingValue ??
           "Regular Toppings",
+        indianStyleToppingsLabel:
+          settingsData.find((s) => s.shortCode === "indian-style-toppings")?.settingValue ??
+          "Indian Style",
       };
       const signaturePizza =
         specialOfferData?.signaturePizzas?.length > 0
@@ -426,6 +434,7 @@ const SpecialOfferPage = () => {
 
           {/* LEFT SIDE */}
           <div className="col-lg-6 col-12">
+            <p className="fs-5 mb-0 text-secondary">{specialOfferTitle}</p>
             <h5 className="fw-bold d-none d-lg-block mb-3">{offerData.name}</h5>
 
             {/* SIZE SELECTOR */}

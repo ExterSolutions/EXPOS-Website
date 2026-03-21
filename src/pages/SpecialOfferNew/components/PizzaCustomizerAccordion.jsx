@@ -222,9 +222,9 @@ const PizzaCustomizerAccordion = ({
         { id: "toppings", label: "Toppings" },
     ];
     const ToppingsTabs = [
-        { id: "countAsTwo", label: "Premium" },
-        { id: "countAsOne", label: "Regular" },
-        { id: "free", label: "Indian Style" },
+        { id: "countAsTwo", label: settings?.premiumTopppingLabel ?? "Premium" },
+        { id: "countAsOne", label: settings?.regularToppingLabel ?? "Regular" },
+        { id: "free", label: settings?.indianStyleToppingsLabel ?? "Indian Style" },
     ];
 
     /* ---------- Render ---------- */
@@ -414,7 +414,7 @@ const PizzaCustomizerAccordion = ({
                                                     {activeToppingsTab === "free" && (
                                                         <ToppingsSelector
                                                             key={`indian-${signatureCode}`}
-                                                            title="Indian Style"
+                                                            title={settings.indianStyleToppingsLabel}
                                                             options={toppings.freeToppings ?? []}
                                                             defaultOptions={signatureDetails.topping_as_free ?? []}
                                                             selected={

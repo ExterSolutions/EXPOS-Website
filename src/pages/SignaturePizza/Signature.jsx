@@ -113,6 +113,12 @@ const Signature = () => {
     const regularToppingsTitle =
         settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
         "Regular";
+    const indianStyleToppingsTitle =
+        settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+        "Indian Style";
+    const signaturePizzaTitle =
+        settingsData.find((item) => item.shortCode === "signaturepizza")?.settingValue ??
+        "Signature Pizza";
     const premiumToppingCount =
         Number(
             settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -670,6 +676,7 @@ const Signature = () => {
                                     <div className="mainContainer primary-text-color">
                                         {/* left side */}
                                         <div className=" p-3">
+                                            <p className="fs-5 mb-0 text-secondary">{signaturePizzaTitle}</p>
                                             <p className="fs-1 fw-bold text-primary">{name}</p>
                                             <p className="mt-3 mb-3 fs-6 text-secondary">{pizzaSubtitle}</p>
                                             <div
@@ -1094,7 +1101,7 @@ const Signature = () => {
                                                                             }`}
                                                                         onClick={() => setTopping("free")}
                                                                     >
-                                                                        Indian Style
+                                                                        {indianStyleToppingsTitle}
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex flex-wrap gap-2">

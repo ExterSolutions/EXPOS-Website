@@ -89,7 +89,7 @@ function CheckoutPage() {
                                             role="tab"
                                             aria-controls="nav-profile"
                                             aria-selected="false"
-                                            onClick={() => setSelectedType("pickup")}
+                                            onClick={() => setSelectedType("delivery")}
                                         >
                                             Delivery
                                         </button> */}

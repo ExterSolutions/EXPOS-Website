@@ -4,9 +4,8 @@ import SpecialOffer from "../SpecialOffer";
 import Footer from "../../components/_main/Footer";
 import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
-import { getSpecialOffersWithToppingsList } from "../../services";
+import { getSpecialOffersWithToppingsList, settingApi } from "../../services";
 import { toast } from "react-toastify";
-
 /**
  * SpecialOfferWithToppingsList
  * ----------------------------
@@ -23,6 +22,10 @@ function SpecialOfferWithToppingsList() {
     const currentStoreCode = globalCtx.currentStoreCode[0];
 
     const [loading, setLoading] = useState(true);
+    const [settingsData, setSettingsData] = useState([]);
+    const specialOffersWithToppingsTitle =
+        settingsData.find((item) => item.shortCode === "special-offers-with-toppings")?.settingValue ??
+        "Special Pizza + Toppings";
     const [specialOfferData, setSpecialOfferData] = useState([]);
 
     const isLimitedOfferActive = (offer) => {
@@ -35,16 +38,19 @@ function SpecialOfferWithToppingsList() {
         return true;
     };
 
-    const fetchSpecialOffersWithToppings = async () => {
+    const fetchData = async () => {
         try {
-            // Calls GET /special-offers-with-toppings?storeCode=...
-            const res = await getSpecialOffersWithToppingsList(currentStoreCode);
+            const [res, settingRes] = await Promise.all([
+                getSpecialOffersWithToppingsList(currentStoreCode),
+                settingApi()
+            ]);
             if (res?.data && res?.data?.length > 0) {
                 const activeOffers = res.data.filter(isLimitedOfferActive);
                 setSpecialOfferData(activeOffers);
             } else {
                 setSpecialOfferData([]);
             }
+            setSettingsData(settingRes?.data);
         } catch (err) {
             toast.error("Error fetching Special Pizza with Toppings.");
             console.error(err);
@@ -54,7 +60,7 @@ function SpecialOfferWithToppingsList() {
     };
 
     useEffect(() => {
-        fetchSpecialOffersWithToppings();
+        fetchData();
     }, [currentStoreCode]);
 
     if (loading) return <LoadingLayout />;
@@ -65,7 +71,7 @@ function SpecialOfferWithToppingsList() {
             <div className="nav-margin"></div>
             <div className="d-flex align-items-center justify-content-between innder-page-header">
                 <div className="flex-grow-1 section-header">
-                    <span className="category-subtitle">Build It Your Way</span>
+                    <span className="category-subtitle">{specialOffersWithToppingsTitle}</span>
                     <div className="section-title">Special Pizza + Toppings</div>
                 </div>
             </div>

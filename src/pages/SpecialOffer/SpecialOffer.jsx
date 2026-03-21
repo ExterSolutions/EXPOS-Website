@@ -90,8 +90,10 @@ function SpecialOffer() {
   const premiumToppingCount = Number(
     settingsData?.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue || 1,
   );
-  console.log("settingsData", settingsData);
-  //
+  const specialOfferTitle =
+    settingsData.find((item) => item.shortCode === "specialoffer")?.settingValue ??
+    "Special Offer";
+
   // Memoized Dips Calculations
   const { calcDipsArr, noOfAdditionalDips, noOfFreeDips } = useMemo(() => {
     let calcDipsArr = [];
@@ -129,21 +131,17 @@ function SpecialOffer() {
   // Get all ingredients data initially and maintain initial states
   const fetchData = async () => {
     try {
-      const [
-        toppingsResponse,
-        dipsResponse,
-        settingResponse,
-        allIngredientsResponse,
-      ] = await Promise.all([
+      const [toppingsResponse, dipsResponse, allIngredientsResponse, settingsResponse] = await Promise.all([
         getToppings(),
         getDips(),
-        settingApi(),
         getAllIngredients(),
+        settingApi(),
       ]);
-      setSettingsData(settingResponse?.data);
-      setSettings(settingResponse?.data);
       setToppingsData(toppingsResponse?.data || []);
       setDipsData(dipsResponse?.data || []);
+      const settingsData = settingsResponse?.data || [];
+      setSettingsData(settingsData);
+      setSettings(settingsData);
       const ing = allIngredientsResponse?.data || allIngredientsResponse;
       setAllIngredients(ing);
       return { ing, dips: dipsResponse?.data || [], toppings: toppingsResponse?.data || [] };
@@ -689,6 +687,7 @@ function SpecialOffer() {
             <div className="mainContainer primary-text-color">
               {/* left side */}
               <div className=" p-3">
+                <p className="fs-5 mb-0 text-secondary">{specialOfferTitle}</p>
                 <p className="fw-bold fs-5 text-dark">{name}</p>
                 <p
                   className={`mt-3 mb-3 fs-6 ${specialOfferDealType === "pickupdeal"

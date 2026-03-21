@@ -14,8 +14,8 @@ function Toppings({
   toggleAccordion,
   noofToppings,
 }) {
-  const { settings } = useContext(GlobalContext);
-  const settingsData = settings?.[0];
+  const globalCtx = useContext(GlobalContext);
+  const [settingsData] = globalCtx.settings;
 
   const [Topping, setTopping] = useState("two");
 
@@ -25,6 +25,10 @@ function Toppings({
   const regularToppingsTitle =
     settingsData?.find((s) => s.shortCode === "regular-toppings")?.settingValue ||
     "Regular Toppings";
+  const indianStyleToppingsTitle =
+    settingsData?.find((s) => s.shortCode === "indian-style-toppings")?.settingValue ||
+    "Indian Style";
+
   const premiumToppingCount = Number(
     settingsData?.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue || 1,
   );
@@ -108,7 +112,7 @@ function Toppings({
             className={`topping-tab flex-grow-1 ${Topping === "free" ? "active" : ""}`}
             onClick={() => setTopping("free")}
           >
-            Indian Style
+            {indianStyleToppingsTitle}
           </div>
         </div>
 
