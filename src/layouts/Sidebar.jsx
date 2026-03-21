@@ -41,13 +41,16 @@ const Sidebar = () => {
   const selectedTypeContext = globalCtx.selectedType || ["pickup", () => {}];
 
   const [cart, setCart] = cartContext;
-  console.log("cart123", cart);
   const [showSidebar, setShowSidebar] = sidebarContext;
   const [payloadEdit, setPayloadEdit] = productEditContext;
   const [isAuthenticated, setIsAuthenticated] = authContext;
   const [selectedType, setSelectedType] = selectedTypeContext;
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (cart?.product?.length > 0) {
       setShowSidebar(false);
       if (isAuthenticated && user !== null) {

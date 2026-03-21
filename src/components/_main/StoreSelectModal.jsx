@@ -64,6 +64,7 @@ export default function StoreSelectModal({ onClose, required = false }) {
         const storeDetail = {
             code: apiStore.code,
             city: cityGroup.city,
+            cityCode: cityGroup.cityCode,
             storeLocation: apiStore.storeLocation,
             storeAddress: apiStore.storeAddress,
             pickupNumber: apiStore.pickup_number || '',

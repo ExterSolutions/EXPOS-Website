@@ -20421,3 +20421,36 @@ category-info {
   min-width: 20px;
   text-align: center
 }
+/* Store Selection Card - Custom Branding */
+.store-selection-card {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: 2px solid transparent !important;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.store-selection-card:hover {
+    border-color: var(--primary) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px);
+}
+
+.store-selection-card.selected-card {
+    border-color: var(--primary) !important;
+    box-shadow: 0 4px 12px rgba(35, 134, 41, 0.12) !important;
+}
+
+.store-selection-card .btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.store-selection-card .btn-outline-primary {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.store-selection-card .btn-outline-primary:hover {
+    background-color: var(--primary) !important;
+    color: #fff !important;
+}

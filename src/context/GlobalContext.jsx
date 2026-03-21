@@ -9,7 +9,7 @@ export const GlobalProvider = ({ children }) => {
       const cookies = document.cookie.split("; ");
       const storeCookie = cookies.find((row) => row.startsWith("ext_store="));
       if (storeCookie) {
-        const base64 = storeCookie.split("=")[1];
+        const base64 = storeCookie.substring("ext_store=".length);
         const scrambled = decodeURIComponent(escape(atob(base64)));
 
         // De-scramble using XOR and same secret key
@@ -31,7 +31,7 @@ export const GlobalProvider = ({ children }) => {
       const cookies = document.cookie.split("; ");
       const authCookie = cookies.find((row) => row.startsWith("ext_auth="));
       if (authCookie) {
-        const base64 = authCookie.split("=")[1];
+        const base64 = authCookie.substring("ext_auth=".length);
         const scrambled = decodeURIComponent(escape(atob(base64)));
         const SECRET = "exter_auth_pizza";
         const json = scrambled.split("").map((char, i) =>
@@ -169,9 +169,24 @@ export const GlobalProvider = ({ children }) => {
         lastSubdomainCity = JSON.parse(storedCityRaw)?.value || JSON.parse(storedCityRaw)?.city;
       }
 
-      if (cookieCity && lastSubdomainCity && cookieCity !== lastSubdomainCity) {
+      if (cookieCity && lastSubdomainCity && cookieCity.trim().toLowerCase() !== lastSubdomainCity.trim().toLowerCase()) {
         localStorage.removeItem("cart");
-        // console.log("[GlobalContext] City mismatch detected between global cookie and subdomain storage. Cart cleared.");
+        // console.log(`[GlobalContext] City mismatch: Cookie(${cookieCity}) vs Local(${lastSubdomainCity}). Cart cleared.`);
+        
+        // Update localStorage to match cookie so we don't clear again on next reload
+        const newCityOption = {
+          value: cookieData.city,
+          label: cookieData.city,
+          stores: [{
+            code: cookieData.code,
+            storeLocation: cookieData.storeLocation,
+            latitude: cookieData.latitude,
+            longitude: cookieData.longitude,
+            storeAddress: cookieData.storeAddress,
+          }],
+        };
+        localStorage.setItem("currentCity", JSON.stringify(newCityOption));
+        localStorage.setItem("currentStoreCode", cookieData.code);
         return { product: [] };
       }
     } catch (e) {

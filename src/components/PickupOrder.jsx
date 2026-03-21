@@ -40,24 +40,24 @@ function PickupOrder() {
         try {
             const res = await getStoreLocationByCity();
             const groups = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
-            
+
             let filteredStores = [];
-            
+
             // Find the city group based on current context
             if (currentStoreCode) {
-                const myCityGroup = groups.find(g => 
+                const myCityGroup = groups.find(g =>
                     g.storeLocations.some(s => s.code === currentStoreCode)
                 );
                 if (myCityGroup) {
-                    filteredStores = myCityGroup.storeLocations;
+                    filteredStores = myCityGroup.storeLocations.map(s => ({ ...s, cityCode: myCityGroup.cityCode }));
                 }
             } else if (currentCity?.value) {
                 const myCityGroup = groups.find(g => g.city === currentCity?.value);
                 if (myCityGroup) {
-                    filteredStores = myCityGroup.storeLocations;
+                    filteredStores = myCityGroup.storeLocations.map(s => ({ ...s, cityCode: myCityGroup.cityCode }));
                 }
             } else {
-                 filteredStores = groups.flatMap(g => g.storeLocations);
+                filteredStores = groups.flatMap(g => g.storeLocations.map(s => ({ ...s, cityCode: g.cityCode })));
             }
 
             setStoreDetails(filteredStores);
@@ -147,16 +147,22 @@ function PickupOrder() {
             customerName: user?.data?.fullName,
             mobileNumber: user?.data?.mobileNumber,
             products: cart?.product,
+            cityCode: selectedStore?.cityCode || "",
+            discount_code: appliedCoupon?.code,
             subTotal: cart?.subtotal,
-            discountAmount: discountAmount,
-            appliedCoupons: appliedCoupon ? [appliedCoupon.code] : [],
-            taxPer: taxPercent,
-            taxAmount: taxAmount,
-            deliveryCharges: 0,
+            extraDeliveryCharges: 0,
             grandTotal: grand_total,
-            storeCode: selectedStore?.code,
-            successUrl: `${window.location.origin}/payment/success`,
-            cancelUrl: `${window.location.origin}/payment/cancel`,
+            storeCode: selectedStore?.code
+            // subTotal: cart?.subtotal,
+            // discountAmount: discountAmount,
+            // appliedCoupons: appliedCoupon ? [appliedCoupon.code] : [],
+            // taxPer: taxPercent,
+            // taxAmount: taxAmount,
+            // deliveryCharges: 0,
+            // grandTotal: grand_total,
+            // storeCode: selectedStore?.code,
+            // successUrl: `${window.location.origin}/payment/success`,
+            // cancelUrl: `${window.location.origin}/payment/cancel`,
         };
 
         try {
@@ -187,8 +193,8 @@ function PickupOrder() {
                         <div className="row g-3 mb-4">
                             {storeDetails?.map((data) => (
                                 <div className="col-12" key={data.code}>
-                                    <div className="card shadow-sm border-0 rounded-4"
-                                        style={{ border: selectedStore?.code === data.code ? '2px solid #0d6efd' : 'none' }}>
+                                    <div className={`card shadow-sm rounded-4 store-selection-card ${selectedStore?.code === data.code ? 'selected-card' : ''}`}
+                                        onClick={() => setSelectedStore(data)}>
                                         <div className="card-body d-flex justify-content-between align-items-center">
                                             <div>
                                                 <h6 className="fw-bold mb-1">{data.storeLocation}</h6>
@@ -196,7 +202,6 @@ function PickupOrder() {
                                             </div>
                                             <button
                                                 className={`btn rounded-pill px-4 btn-sm ${selectedStore?.code === data.code ? 'btn-primary' : 'btn-outline-primary'}`}
-                                                onClick={() => setSelectedStore(data)}
                                             >
                                                 {selectedStore?.code === data.code ? 'Selected' : 'Select'}
                                             </button>
@@ -228,7 +233,7 @@ function PickupOrder() {
                                                 Remove
                                             </button>
                                         ) : (
-                                            <button className="btn btn-success px-4 fw-bold" style={{ fontSize: '0.85rem' }} onClick={handleApplyCoupon}>
+                                            <button className="btn btn-primary px-4 fw-bold" style={{ fontSize: '0.85rem', backgroundColor: 'var(--primary)', borderColor: 'var(--primary)' }} onClick={handleApplyCoupon}>
                                                 Apply
                                             </button>
                                         )}
