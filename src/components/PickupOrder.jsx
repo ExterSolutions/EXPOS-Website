@@ -189,17 +189,19 @@ function PickupOrder() {
                                 <div className="col-12" key={data.code}>
                                     <div className="card shadow-sm border-0 rounded-4"
                                         style={{ border: selectedStore?.code === data.code ? '2px solid #0d6efd' : 'none' }}>
-                                        <div className="card-body d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 className="fw-bold mb-1">{data.storeLocation}</h6>
-                                                <p className="text-muted small mb-0">{data.storeAddress}</p>
+                                        <div className="card-body">
+                                            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                                                <div>
+                                                    <h6 className="fw-bold mb-1">{data.storeLocation}</h6>
+                                                    <p className="text-muted small mb-0">{data.storeAddress}</p>
+                                                </div>
+                                                <button
+                                                    className={`btn rounded-pill px-4 btn-sm w-100 w-sm-auto mt-2 mt-sm-0 ${selectedStore?.code === data.code ? 'btn-primary' : 'btn-outline-primary'}`}
+                                                    onClick={() => setSelectedStore(data)}
+                                                >
+                                                    {selectedStore?.code === data.code ? 'Selected ✓' : 'Select'}
+                                                </button>
                                             </div>
-                                            <button
-                                                className={`btn rounded-pill px-4 btn-sm ${selectedStore?.code === data.code ? 'btn-primary' : 'btn-outline-primary'}`}
-                                                onClick={() => setSelectedStore(data)}
-                                            >
-                                                {selectedStore?.code === data.code ? 'Selected' : 'Select'}
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -241,7 +243,7 @@ function PickupOrder() {
                     </div>
 
                     {/* Order Summary */}
-                    <div className="col-lg-4">
+                    <div className="col-lg-4 order-first order-lg-last">
                         <div className="card border-0 shadow rounded-4 sticky-top" style={{ top: '20px' }}>
                             <div className="card-body p-4">
                                 <h5 className="fw-bold mb-4">Order Summary</h5>

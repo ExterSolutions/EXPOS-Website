@@ -345,7 +345,7 @@ function ViewOrderProductDetails({ orderData }) {
                                                                             <div className="products d-flex justify-content-start mx-1">
                                                                                 <span className="subText">
                                                                                     <strong>
-                                                                                        Indian Style + Coriander
+                                                                                        Indian Toppings + Coriander
                                                                                     </strong>
                                                                                 </span>
                                                                             </div>

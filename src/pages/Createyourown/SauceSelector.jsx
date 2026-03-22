@@ -1,19 +1,15 @@
 
-
 export const SauceSelector = ({ data, Sauce, handleSauce }) => {
+    const isSelected = Sauce === data?.sauceCode;
     return (
-        <div className={`theme-border ${Sauce === data?.sauceCode ? 'active' : ''}`} onClick={() => handleSauce(data?.sauceCode)}>
-            <div className="d-flex justify-content-between align-items-center" >
-                <div className="d-flex align-items-center gap-2">
-                    {Sauce === data?.sauceCode ? (
-                        <i className="bi bi-check-circle-fill" />
-                    ) : (
-                        <i className="bi bi-plus-circle" />
-                    )}
-                    <div className="">{`${data?.sauce}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
-                </div>
-
-            </div>
-        </div>
-    )
+        <button
+            type="button"
+            className={`cust-pill-btn ${isSelected ? 'cust-pill-btn--active' : ''}`}
+            onClick={() => handleSauce(data?.sauceCode)}
+        >
+            {isSelected && <i className="bi bi-check2 me-1" />}
+            {data?.sauce}
+            {data?.price !== null && data?.price != 0 && <span className="cust-pill-price"> +${data?.price}</span>}
+        </button>
+    );
 }

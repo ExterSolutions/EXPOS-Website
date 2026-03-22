@@ -108,7 +108,7 @@ function Toppings({
             className={`topping-tab flex-grow-1 ${Topping === "free" ? "active" : ""}`}
             onClick={() => setTopping("free")}
           >
-            Indian Style
+            Indian Toppings
           </div>
         </div>
 

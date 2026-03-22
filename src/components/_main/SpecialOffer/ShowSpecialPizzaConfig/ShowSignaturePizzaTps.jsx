@@ -14,7 +14,7 @@ function ShowSignaturePizzaTps({ toppings }) {
                             })
                         }
                         {toppings?.indianToppings ? <>
-                            <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">Indian Style + Coriander <span className="ms-1"></span></button>
+                            <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">Indian Toppings + Coriander <span className="ms-1"></span></button>
                         </> : <>
                             {
                                 toppings?.freeToppings &&

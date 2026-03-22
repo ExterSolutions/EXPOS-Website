@@ -95,7 +95,7 @@ const MobileMenu = () => {
             )}
 
             {/* Sidebar */}
-            <aside className={`mobile-menu ${openMobileMenu ? 'open' : ''}`}>
+            <aside className={`mobile-menu ${openMobileMenu ? 'open' : ''}`} style={{ paddingBottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}>
                 <div className="sidebar-header">
                     <div className="logo-container">
                         {/* Add your logo here if needed */}

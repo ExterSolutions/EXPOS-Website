@@ -1,59 +1,60 @@
 import { useState } from "react";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io"
+import { FaCheck, FaPlus } from "react-icons/fa";
+
+// Placement options with color codes
+const PLACEMENTS = [
+    { value: "whole",     label: "Whole",  color: "#2d7a2d" },
+    { value: "lefthalf",  label: "Left",   color: "#1a6bbf" },
+    { value: "righthalf", label: "Right",  color: "#c06000" },
+    { value: "1/4",       label: "¼",      color: "#8b3cba" },
+];
 
 export const FreeToppingSelector = ({ data, ToppingsFree, handleTopping, handleSizeChange }) => {
     const [pizzaSize, setpizzaSize] = useState("whole");
+    const isSelected = ToppingsFree.some(obj => obj?.code === data?.toppingsCode);
+    const currentSize = ToppingsFree?.find(el => el?.code === data?.toppingsCode)?.size || pizzaSize;
 
     const handleChange = (d) => {
-        setpizzaSize(d)
-        if (ToppingsFree.some(obj => obj?.code === data?.toppingsCode)) {
-            let payload = {
-                code: data?.toppingsCode,
-                name: data?.toppingsName,
-                price: data?.price,
-                type: "free",
-                size: d
-            }
-            handleSizeChange(payload);
+        setpizzaSize(d);
+        if (isSelected) {
+            handleSizeChange({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "free", size: d });
         }
-
-    }
-
+    };
 
     return (
-
-        <div
-            key={`${data?.toppingsName}-${data?.toppingsCode}`}
-            className={`theme-border ${ToppingsFree.some(obj => obj?.code === data?.toppingsCode) ? 'active' : ''}`}
-            onClick={(e) => {
-                if (e.target.tagName !== "SELECT" && e.target.tagName !== "OPTION") {
+        <div className={`cust-topping-row ${isSelected ? "cust-topping-row--active" : ""}`}>
+            {/* Main row: checkbox + name + price */}
+            <div
+                className="cust-topping-row__info"
+                onClick={() =>
                     handleTopping({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "free", size: pizzaSize })
                 }
-            }}
-        >
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center gap-2">
-                    {ToppingsFree.some(obj => obj?.code === data?.toppingsCode) ? (
-                        <i className="bi bi-check-circle-fill" />
-                    ) : (
-                        <i className="bi bi-plus-circle" />
-                    )}
-                    <span className="fw-semibold">
-                        {`${data?.toppingsName}`}
-                    </span>
-                    {data?.price !== null && <span>(${data?.price})</span>}
-                </div>
+            >
+                <span className={`cust-topping-check ${isSelected ? "cust-topping-check--on" : ""}`}>
+                    {isSelected ? <FaCheck size={11} /> : <FaPlus size={11} />}
+                </span>
+                <span className="cust-topping-name">{data?.toppingsName}</span>
+                {data?.price !== null && data?.price != 0 && (
+                    <span className="cust-topping-price">+${data?.price}</span>
+                )}
             </div>
-            <div className="row">
-                <div className="mt-2 col-12">
-                    <select className="form-select form-select-sm" value={ToppingsFree?.find((el) => el?.code === data?.toppingsCode)?.size || pizzaSize} onChange={(e) => handleChange(e.target.value)}>
-                        <option value={"whole"}>Whole</option>
-                        <option value={"righthalf"}>Right Half</option>
-                        <option value={"lefthalf"}>Left Half</option>
-                        <option value={"1/4"}>1/4</option>
-                    </select>
+
+            {/* Placement pills — only shown when selected */}
+            {isSelected && (
+                <div className="cust-placement-pills">
+                    {PLACEMENTS.map((pl) => (
+                        <button
+                            key={pl.value}
+                            type="button"
+                            className={`cust-placement-pill ${currentSize === pl.value ? "cust-placement-pill--active" : ""}`}
+                            style={{ "--pill-color": pl.color }}
+                            onClick={(e) => { e.stopPropagation(); handleChange(pl.value); }}
+                        >
+                            {pl.label}
+                        </button>
+                    ))}
                 </div>
-            </div>
+            )}
         </div>
-    )
-}
+    );
+};

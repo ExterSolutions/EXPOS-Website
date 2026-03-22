@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Header from '../components/_main/Header/Header';
+import SEOHead from '../components/_main/SEOHead';
 import Footer from '../components/_main/Footer';
 import MenuContent from '../components/Menu/MenuContent';
 import LoadingLayout from '../layouts/LoadingLayout';
@@ -49,6 +50,10 @@ function Menu() {
 
     return (
         <div className="menu-page-wrapper">
+            <SEOHead
+              title="Our Full Menu | Exter Pizza"
+              description="Browse the complete Exter Pizza menu — signature pizzas, special offers, build-your-own, sides, dips, and drinks. Order online for delivery or pickup."
+            />
             <Header />
             <main style={{ flex: 1 }}>
                 {/* <div className="new-block primary-background-color" id="create-your-own-new"> 

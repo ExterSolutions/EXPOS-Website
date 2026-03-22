@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import 'swiper/css';
-import { A11y } from 'swiper/modules';
+import 'swiper/css/autoplay';
+import 'swiper/css/pagination';
+import { A11y, Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import createPizza from "../../assets/images/download/new/cat/Thumbails/Createyourown-1.png";
 import Deals from "../../assets/images/download/new/cat/Thumbails/Deals-1.png";
@@ -8,7 +10,6 @@ import Sides from "../../assets/images/download/new/cat/Thumbails/Sides-nw.png";
 import SignaturePizza from "../../assets/images/download/new/cat/Thumbails/SignaturePizza-1.png";
 import dips from "../../assets/images/download/new/cat/Thumbails/dips-nw.png";
 import drinks from "../../assets/images/download/new/cat/Thumbails/drinks-nw.png";
-// import '../../assets/styles/new/homepage/category/CategoryPizza.css';
 import { useTheme } from '../../context/ThemeContext';
 
 const CategoryPizza = () => {
@@ -42,18 +43,28 @@ const CategoryPizza = () => {
                 </div>
             </div>
             <div className="category-container">
-
                 <Swiper
                     slidesPerView={2}
-                    spaceBetween={10}
-                    breakpoints={{
-                        0: { slidesPerView: 2, spaceBetween: 10 },
-                        480: { slidesPerView: 2, spaceBetween: 10 },
-                        640: { slidesPerView: 3, spaceBetween: 10 },
-                        768: { slidesPerView: 4, spaceBetween: 10 },
-                        1024: { slidesPerView: 6, spaceBetween: 10 },
+                    spaceBetween={12}
+                    loop={true}
+                    autoplay={{
+                        delay: 2800,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
                     }}
-                    modules={[A11y]}
+                    pagination={{
+                        clickable: true,
+                        dynamicBullets: true,
+                    }}
+                    breakpoints={{
+                        0: { slidesPerView: 2.3, spaceBetween: 10 },
+                        480: { slidesPerView: 2.5, spaceBetween: 10 },
+                        640: { slidesPerView: 3, spaceBetween: 12 },
+                        768: { slidesPerView: 4, spaceBetween: 14 },
+                        1024: { slidesPerView: 6, spaceBetween: 14 },
+                    }}
+                    modules={[A11y, Autoplay, Pagination]}
+                    className="category-swiper"
                 >
                     {
                         categories.map((cat, index) => (

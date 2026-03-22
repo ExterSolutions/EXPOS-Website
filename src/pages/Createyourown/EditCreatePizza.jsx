@@ -1301,7 +1301,7 @@ const EditCreatePizza = () => {
                                   }`}
                                   onClick={() => setTopping("free")}
                                 >
-                                  Indian Style
+                                  Indian Toppings
                                 </div>
                               </div>
                               {Topping === "one" &&
@@ -1425,10 +1425,10 @@ const EditCreatePizza = () => {
                                   </div>
                                 </div>
 
-                                {/* Section 3: Indian Style */}
+                                {/* Section 3: Indian Toppings */}
                                 <div>
                                   <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
-                                    Indian Style
+                                    Indian Toppings
                                   </div>
                                   <div className="d-flex flex-wrap gap-2">
                                     {Ingredients?.toppings?.freeToppings?.map((data, index) => (
@@ -1810,9 +1810,9 @@ const EditCreatePizza = () => {
                               <div className="mt-3 d-flex flex-wrap gap-2">
                                 {isIndiansToppings ? (
                                   <>
-                                    {/* Display a single button for Indian Style Toppings */}
+                                    {/* Display a single button for Indian Toppings Toppings */}
                                     <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                      Indian Style + Coriander
+                                      Indian Toppings + Coriander
                                       <span
                                         className="ms-2"
                                         onClick={handleRemoveIsIndiansToppings}

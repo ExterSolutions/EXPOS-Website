@@ -509,7 +509,7 @@ function SpecialOffer() {
       ct.product.push(payload);
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
-      navigate("/");
+      navigate("/addtocart");
     }
   };
 
@@ -777,66 +777,27 @@ function SpecialOffer() {
                 </div>
 
                 {/* size */}
-                <div className="mt-3">
-                  <div className="accordion" id="accordion-size">
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="accordion-size">
+                {/* SIZE — pill buttons matching Signature Pizza screen */}
+                <div className="mt-3 mb-3">
+                  <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>SELECT SIZE</p>
+                  <div className="size-pill-scroll">
+                    {pizzaSizeArr
+                      ?.filter((p) => parseFloat(p.price) > 0)
+                      ?.map((data, index) => (
                         <button
-                          className={`fw-bold fs-6 accordion-button ${activeAccordion === "size" ? "" : "collapsed"
-                            }`}
+                          key={index}
                           type="button"
-                          onClick={() => toggleAccordion("size")}
-                          aria-expanded={
-                            activeAccordion === "size" ? "true" : "false"
-                          }
-                          aria-controls="collapseSize"
+                          className={`size-pill ${size === data.size ? "size-pill--active" : ""}`}
+                          onClick={() => setSize(data.size)}
                         >
-                          SELECT SIZE
-                          {/* {activeAccordion === "size" ? <FaChevronUp className="ms-auto" /> : <FaChevronDown className="ms-auto" />} */}
+                          {data.size}
+                          <span style={{ display: "block", fontSize: "0.72rem", opacity: 0.8 }}>${Number(data.price ?? 0).toFixed(2)}</span>
                         </button>
-                      </h2>
-                      <div
-                        id="collapseSize"
-                        className={`accordion-collapse collapse ${activeAccordion === "size" ? "show" : ""
-                          }`}
-                        aria-labelledby="accordion-size"
-                        data-bs-parent="#accordion-size"
-                        style={{ overflow: "hidden" }}
-                      >
-                        <div className="accordion-body primary-background-color">
-                          <div className="size-grid">
-                            {pizzaSizeArr
-                              ?.filter((price) => parseFloat(price.price) > 0)
-                              ?.map((data, index) => {
-                                const active = size === data?.size;
-
-                                return (
-                                  <div
-                                    key={`size-${index}`}
-                                    className={`py-2 px-3 rounded-3 ${active
-                                      ? "selected-card-background-color selected-card-text-color"
-                                      : "card-background-color card-text-color"
-                                      }`}
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => setSize(data?.size)}
-                                  >
-                                    <div className="d-block">
-                                      {data?.size} ($
-                                      {Number(data?.price ?? 0).toFixed(2)})
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      ))}
                   </div>
                 </div>
 
                 <p className="fs-6 fw-bold mt-4 text-dark">CUSTOMIZE</p>
-
-                <p className="mt-3 fs-6">Select any of the below to Deals.</p>
 
                 {specialPizzaConfig}
 

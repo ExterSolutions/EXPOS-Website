@@ -29,6 +29,8 @@ import { SpicySelector } from "../Createyourown/SpicySelector";
 import { ToppingOneSelector } from "../Createyourown/ToppingOneSelector";
 import { ToppingTwoSelector } from "../Createyourown/ToppingTwoSelector";
 import SignatureViewSelectionModal from "./SignatureViewSelectionModal";
+import ToppingSheet from "../../components/_main/ToppingSheet";
+import OptionSheet from "../../components/_main/OptionSheet";
 const Signature = () => {
     // navigate
     const navigate = useNavigate();
@@ -76,6 +78,11 @@ const Signature = () => {
     const [translateYVal, setTranslateYVal] = useState(null);
     //
     const [viewSelection, setViewSelection] = useState(false);
+    // Topping bottom sheet state
+    const [toppingSheetOpen, setToppingSheetOpen] = useState(false);
+    const [toppingSheetTab, setToppingSheetTab] = useState("two");
+    // OptionSheet state (dough / cheese / spicy / sauce / cook)
+    const [openSheet, setOpenSheet] = useState(null);
     // Healper Function
     const cartFn = new CartFunction();
     // get all ingredients data initially and maintaining initial states
@@ -107,12 +114,8 @@ const Signature = () => {
             }
         }
     };
-    const nonRegularToppingsTitle =
-        settingsData.find((item) => item.shortCode === "non-regular-toppings")?.settingValue ??
-        "Premium";
-    const regularToppingsTitle =
-        settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
-        "Regular";
+    const nonRegularToppingsTitle = "Premium Toppings";
+    const regularToppingsTitle = "Regular Toppings";
     const premiumToppingCount =
         Number(
             settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -482,18 +485,13 @@ const Signature = () => {
         };
 
         if (payload) {
-            // FIX: Add null check for cart
             let ct = JSON.parse(localStorage.getItem("cart")) || { product: [] };
-
-            // Ensure ct.product exists
-            if (!ct.product) {
-                ct.product = [];
-            }
-
+            if (!ct.product) ct.product = [];
             ct.product.push(payload);
             const cartProduct = ct.product;
             cartFn.addCart(cartProduct, setCart, false, settings);
-            navigate("/");
+            toast.success("🛒 Added to cart! Review your order.");
+            navigate("/addtocart");
         }
     };
 
@@ -648,6 +646,37 @@ const Signature = () => {
     //     };
     // }, [isFixed, isTranslate, translateYVal, activeAccordion]);
 
+    // ─── OptionSheet helpers ───────────────────────────────────
+    const TriggerBtn = ({ icon, label, value, sheetKey }) => (
+        <button
+            type="button"
+            className="topping-trigger-btn"
+            onClick={() => setOpenSheet(sheetKey)}
+        >
+            <span className="topping-trigger-btn__icon">{icon}</span>
+            <span className="topping-trigger-btn__label">{label}</span>
+            {value && <span className="topping-trigger-btn__value">{value}</span>}
+            <span className="topping-trigger-btn__chevron">›</span>
+        </button>
+    );
+
+    const crustOpts      = Ingredients?.crust?.map(c => ({ id: c.crustCode, label: c.crustName, price: Number(c.price) })) || [];
+    const crustTypeOpts  = Ingredients?.crustType?.map(c => ({ id: c.crustTypeCode, label: c.crustType, price: Number(c.price) })) || [];
+    const cheeseOpts     = Ingredients?.cheese?.map(c => ({ id: c.cheeseCode, label: c.cheeseName, price: Number(c.price) })) || [];
+    const spicyOpts      = Ingredients?.spices?.map(c => ({ id: c.spicyCode, label: c.spicy, price: Number(c.price) })) || [];
+    const sauceOpts      = Ingredients?.sauce?.map(c => ({ id: c.sauceCode, label: c.sauce, price: Number(c.price) })) || [];
+    const cookOpts       = Ingredients?.cook?.map(c => ({ id: c.cookCode, label: c.cook, price: Number(c.price) })) || [];
+    const specialBaseOpts = Ingredients?.specialbases?.map(c => ({ id: c.specialbaseCode, label: c.specialbaseName, price: Number(c.price) })) || [];
+
+    const getLabel  = (arr, key, valKey) => arr?.find(x => x[key] === valKey);
+    const crustLabel       = getLabel(Ingredients?.crust,        'crustCode',       Crust)?.crustName       || 'Select';
+    const crustTypeLabel   = getLabel(Ingredients?.crustType,    'crustTypeCode',   CrustType)?.crustType   || 'Select';
+    const cheeseLabel      = getLabel(Ingredients?.cheese,       'cheeseCode',      Cheese)?.cheeseName     || 'Select';
+    const spicyLabel       = getLabel(Ingredients?.spices,       'spicyCode',       Spicy)?.spicy           || 'Select';
+    const sauceLabel       = getLabel(Ingredients?.sauce,        'sauceCode',       Sauce)?.sauce           || 'Select';
+    const cookLabel        = getLabel(Ingredients?.cook,         'cookCode',        Cook)?.cook             || 'Select';
+    const specialBaseLabel = getLabel(Ingredients?.specialbases, 'specialbaseCode', SpecialBases)?.specialbaseName || 'Select';
+
     return (
         <>
             {loading ? (
@@ -658,390 +687,78 @@ const Signature = () => {
                 <div>
                     <Header />
                     <div className="nav-margin"></div>
-                    {/* <div className="d-flex align-items-center justify-content-between innder-page-header">
-                        <div className="flex-grow-1 section-header">
-                            <span className="category-subtitle"></span>
-                        </div>
-                    </div> */}
+                    {/* OptionSheet Modals */}
+                    <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={crustOpts} selected={Crust} onSelect={(id) => setCrust(id)} />
+                    <OptionSheet isOpen={openSheet === 'crustType'} onClose={() => setOpenSheet(null)} title="Choose Crust Type" options={crustTypeOpts} selected={CrustType} onSelect={(id) => setCrustType(id)} />
+                    <OptionSheet isOpen={openSheet === 'cheese'} onClose={() => setOpenSheet(null)} title="Choose Cheese" options={cheeseOpts} selected={Cheese} onSelect={(id) => setCheese(id)} />
+                    <OptionSheet isOpen={openSheet === 'spicy'} onClose={() => setOpenSheet(null)} title="Choose Spicy Level" options={spicyOpts} selected={Spicy} onSelect={(id) => setSpicy(id)} />
+                    <OptionSheet isOpen={openSheet === 'sauce'} onClose={() => setOpenSheet(null)} title="Choose Sauce" options={sauceOpts} selected={Sauce} onSelect={(id) => setSauce(id)} />
+                    <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={cookOpts} selected={Cook} onSelect={(id) => setCook(id)} />
+                    {specialBaseOpts.length > 0 && <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={specialBaseOpts} selected={SpecialBases} onSelect={(id) => setSpecialBases(id)} />}
                     {getSignatureData ? (
                         <div className="new-block" id="create-your-own-new">
                             <section className="special-offers-sec new-block primary-background-color">
                                 <div className="container">
                                     <div className="mainContainer primary-text-color">
                                         {/* left side */}
-                                        <div className=" p-3">
-                                            <p className="fs-1 fw-bold text-primary">{name}</p>
-                                            <p className="mt-3 mb-3 fs-6 text-secondary">{pizzaSubtitle}</p>
-                                            <div
-                                                className="right-side-div p-0 w-100 d-lg-none d-block"
-                                                style={{ position: "relative !important" }}
-                                            >
-                                                <div
-                                                    className={`p-3 card-background-color card-text-color ${isFixed ? "fixed" : ""
-                                                        }`}
-                                                    style={{
-                                                        transform: isTranslate
-                                                            ? `translateY(${translateYVal}px)`
-                                                            : "none",
-                                                    }}
-                                                >
-                                                    <div className="row justify-content-start align-content-center p-0 m-0">
-                                                        <div className="col-auto p-0 m-0 rounded-3 text-center">
-                                                            <img
-                                                                className="pizzaImageBorderSM"
-                                                                src={
-                                                                    getSignatureData?.pizza_image || pizzaimage
-                                                                }
-                                                                alt="Pizza icon"
-                                                            />
+                                        <div className="p-3">
+                                            {/* Hero Header */}
+                                            <div className="d-flex align-items-center gap-3 mb-3">
+                                                <img
+                                                    className="cust-hero-img d-none d-sm-block"
+                                                    src={getSignatureData?.pizza_image || pizzaimage}
+                                                    alt={name}
+                                                />
+                                                <div>
+                                                    <p className="fs-2 fw-bold text-primary mb-1">{name}</p>
+                                                    <p className="mb-0 text-secondary" style={{ fontSize: '0.95rem' }}>{pizzaSubtitle}</p>
+                                                    {/* Desktop Add to Cart controls */}
+                                                    <div className="d-none d-lg-flex align-items-center gap-3 mt-3">
+                                                        <div className="d-flex align-items-center gap-2">
+                                                            <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)}
+                                                                className="btn btn-secondary rounded-circle" style={{ width: 34, height: 34, padding: 0 }} aria-label="Decrease"><FaMinus /></button>
+                                                            <span className="fw-bold fs-5">{pizzaQuantity}</span>
+                                                            <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)}
+                                                                className="btn btn-secondary rounded-circle" style={{ width: 34, height: 34, padding: 0 }} aria-label="Increase"><FaPlus /></button>
                                                         </div>
-                                                        <div className="col-7 p-0 m-0">
-                                                            <div
-                                                                className="d-flex flex-column justify-content-center "
-                                                                style={{ padding: "0px 10px" }}
-                                                            >
-                                                                <p className=" fw-bold text-start my-1 pizzaPriceSm">
-                                                                    $ {price}
-                                                                </p>
-                                                                <div
-                                                                    className="d-flex justify-content-start align-items-center my-1"
-                                                                    style={{ userSelect: "none" }}
-                                                                >
-                                                                    <button
-                                                                        disabled={pizzaQuantity <= 1}
-                                                                        onClick={() =>
-                                                                            setPizzaQuantity((prev) => prev - 1)
-                                                                        }
-                                                                        className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
-                                                                        aria-label="Decrease Quantity"
-                                                                    >
-                                                                        <FaMinus className="pizzaQtyButtonSpanSm fs-6" />
-                                                                    </button>
-                                                                    <div className=" fs-5 fw-bold mx-2">
-                                                                        {pizzaQuantity}
-                                                                    </div>
-                                                                    <button
-                                                                        disabled={pizzaQuantity >= 10}
-                                                                        onClick={() =>
-                                                                            setPizzaQuantity((prev) => prev + 1)
-                                                                        }
-                                                                        className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
-                                                                        aria-label="Increase Quantity"
-                                                                    >
-                                                                        <FaPlus className="pizzaQtyButtonSpanSm fs-6" />
-                                                                    </button>
-                                                                </div>
-                                                                <div className="d-flex flex-row justify-content-start">
-                                                                    <div className="d-flex me-2 justify-content-start py-2">
-                                                                        <button
-                                                                            onClick={handleAddToCart}
-                                                                            className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
-                                                                        >
-                                                                            Add to Cart
-                                                                        </button>
-                                                                    </div>
-                                                                    <div className="d-flex justify-content-start py-2">
-                                                                        <button
-                                                                            onClick={() => setViewSelection(true)}
-                                                                            className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
-                                                                        >
-                                                                            <FaEye />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        <span className="fw-bold fs-5">${price}</span>
+                                                        <button onClick={handleAddToCart} className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold px-4">Add to Cart</button>
+                                                        <button onClick={() => setViewSelection(true)} className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold"><FaEye /></button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* size */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample1">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingOne">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "size" ? "" : "collapsed"
-                                                                    }`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("size")}
-                                                                aria-expanded={
-                                                                    activeAccordion === "size" ? "true" : "false"
-                                                                }
-                                                                aria-controls="collapseOne"
-                                                            >
-                                                                SELECT SIZE
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseOne"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "size" ? "show" : ""
-                                                                }`}
-                                                            aria-labelledby="headingOne"
-                                                            data-bs-parent="#accordionExample1"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
 
-                                                                <div className="size-grid">
-                                                                    {pizzaSizeArr?.map((data, index) => {
-                                                                        return (
-                                                                            <div
-                                                                                className={` p-3 rounded-3 ${size === data?.size
-                                                                                    ? "selected-card-background-color selected-card-text-color"
-                                                                                    : "card-background-color card-text-color"
-                                                                                    }`}
-                                                                                style={{ cursor: "pointer" }}
-                                                                                onClick={() => setSize(data?.size)}
-                                                                            >
-                                                                                <div className="">
-                                                                                    <div className="d-block">
-                                                                                        <input
-                                                                                            type="radio"
-                                                                                            className="form-check-input d-none"
-                                                                                            checked={size === data?.size}
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className="d-block">
-                                                                                        {data?.size}{data?.price !== null ? ` ($${data?.price})` : ""}
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                            {/* size */}
+                                            {/* SIZE — horizontal pills */}
+                                            <div className="mt-1 mb-3">
+                                                <p className="fw-bold text-uppercase mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>Select Size</p>
+                                                <div className="size-pill-scroll">
+                                                    {pizzaSizeArr?.map((data, index) => (
+                                                        <button
+                                                            key={index}
+                                                            className={`size-pill ${size === data?.size ? 'size-pill--active' : ''}`}
+                                                            onClick={() => setSize(data?.size)}
+                                                        >
+                                                            <span className="size-pill__label">{data?.size}</span>
+                                                            {data?.price !== null && (
+                                                                <span className="size-pill__price">${data?.price}</span>
+                                                            )}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
-                                            <p className="fs-3 fw-bold mt-5 text-primary">CUSTOMIZE</p>
-                                            <p className="mt-3 fs-6 text-secondary">
-                                                Select any of the below to create your own pizza.
-                                            </p>
-                                            {/* dough */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample4">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingFour">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "dough" ? "" : "collapsed"
-                                                                    }`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("dough")}
-                                                                aria-expanded={
-                                                                    activeAccordion === "dough" ? "true" : "false"
-                                                                }
-                                                                aria-controls="collapseFour"
-                                                            >
-                                                                DOUGH
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseFour"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "dough" ? "show" : ""
-                                                                }`}
-                                                            aria-labelledby="headingFour"
-                                                            data-bs-parent="#accordionExample4"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
-                                                                <DoughSelector
-                                                                    Ingredients={Ingredients}
-                                                                    Crust={Crust}
-                                                                    setCrust={setCrust}
-                                                                    CrustType={CrustType}
-                                                                    setCrustType={setCrustType}
-                                                                    Cook={Cook}
-                                                                    setCook={setCook}
-                                                                    SpecialBases={SpecialBases}
-                                                                    setSpecialBases={setSpecialBases}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* cheese */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample4">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingFour">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "cheese"
-                                                                    ? ""
-                                                                    : "collapsed"
-                                                                    }`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("cheese")}
-                                                                aria-expanded={
-                                                                    activeAccordion === "cheese"
-                                                                        ? "true"
-                                                                        : "false"
-                                                                }
-                                                                aria-controls="collapseFour"
-                                                            >
-                                                                CHEESE
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseFour"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "cheese" ? "show" : ""
-                                                                }`}
-                                                            aria-labelledby="headingFour"
-                                                            data-bs-parent="#accordionExample4"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
-                                                                <div className="d-flex flex-wrap flex-row gap-2">
-                                                                    {Ingredients?.cheese?.map((data, index) => {
-                                                                        return (
-                                                                            <CheeseSelector
-                                                                                data={data}
-                                                                                Cheese={Cheese}
-                                                                                handleCheese={(payload) =>
-                                                                                    setCheese(payload)
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* spicy */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample6">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingSix">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "spicy" ? "" : "collapsed"
-                                                                    }`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("spicy")}
-                                                                aria-expanded={
-                                                                    activeAccordion === "spicy" ? "true" : "false"
-                                                                }
-                                                                aria-controls="collapseSix"
-                                                            >
-                                                                SPICY
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseSix"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "spicy" ? "show" : ""
-                                                                }`}
-                                                            aria-labelledby="headingSix"
-                                                            data-bs-parent="#accordionExample6"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
-                                                                <div className="d-flex flex-wrap flex-row gap-2">
-                                                                    {Ingredients?.spices?.map((data, index) => {
-                                                                        return (
-                                                                            <SpicySelector
-                                                                                data={data}
-                                                                                Spicy={Spicy}
-                                                                                handleSpicy={(payload) =>
-                                                                                    setSpicy(payload)
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* sauce */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample7">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingSeven">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "sauce" ? "" : "collapsed"
-                                                                    }`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("sauce")}
-                                                                aria-expanded={
-                                                                    activeAccordion === "sauce" ? "true" : "false"
-                                                                }
-                                                                aria-controls="collapseSeven"
-                                                            >
-                                                                SAUCE
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseSeven"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "sauce" ? "show" : ""
-                                                                }`}
-                                                            aria-labelledby="headingSeven"
-                                                            data-bs-parent="#accordionExample7"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
-                                                                <div className="d-flex flex-wrap flex-row gap-2">
-                                                                    {Ingredients?.sauce?.map((data, index) => {
-                                                                        return (
-                                                                            <SauceSelector
-                                                                                data={data}
-                                                                                Sauce={Sauce}
-                                                                                handleSauce={(payload) =>
-                                                                                    setSauce(payload)
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* cook */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample7">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingSeven">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "cook" ? "" : "collapsed"
-                                                                    }`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("cook")}
-                                                                aria-expanded={
-                                                                    activeAccordion === "cook" ? "true" : "false"
-                                                                }
-                                                                aria-controls="collapseSeven"
-                                                            >
-                                                                COOK
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseSeven"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "cook" ? "show" : ""
-                                                                }`}
-                                                            aria-labelledby="headingSeven"
-                                                            data-bs-parent="#accordionExample7"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
-                                                                <div className="d-flex flex-wrap flex-row gap-2">
-                                                                    {Ingredients?.cook?.map((data, index) => {
-                                                                        return (
-                                                                            <CookSelector
-                                                                                data={data}
-                                                                                Cook={Cook}
-                                                                                handleCook={(payload) => setCook(payload)}
-                                                                            />
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <p className="fw-bold text-uppercase mb-2 mt-4" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>CUSTOMIZE YOUR PIZZA</p>
+                                            {/* Trigger buttons — same style as Other Pizza / Create Your Own */}
+                                            <div className="d-flex flex-column gap-2 mb-2">
+                                                <TriggerBtn icon="🍞" label="Dough"       value={crustLabel}       sheetKey="dough" />
+                                                <TriggerBtn icon="🔥" label="Crust Type"  value={crustTypeLabel}   sheetKey="crustType" />
+                                                <TriggerBtn icon="🧀" label="Cheese"      value={cheeseLabel}      sheetKey="cheese" />
+                                                <TriggerBtn icon="🌶️" label="Spicy"       value={spicyLabel}       sheetKey="spicy" />
+                                                <TriggerBtn icon="🍅" label="Sauce"       value={sauceLabel}       sheetKey="sauce" />
+                                                <TriggerBtn icon="👨‍🍳" label="Cook Style"  value={cookLabel}        sheetKey="cook" />
+                                                {specialBaseOpts.length > 0 && (
+                                                    <TriggerBtn icon="🍕" label="Special Base" value={specialBaseLabel} sheetKey="specialBase" />
+                                                )}
                                             </div>
                                             {/* toppings */}
                                             {/* <div className="mt-3">
@@ -1094,7 +811,7 @@ const Signature = () => {
                                                                             }`}
                                                                         onClick={() => setTopping("free")}
                                                                     >
-                                                                        Indian Style
+                                                                        Indian Toppings
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex flex-wrap gap-2">
@@ -1168,81 +885,53 @@ const Signature = () => {
                                                     </div>
                                                 </div>
                                             </div> */}
-                                            {/* toppings */}
-                                            <div className="mt-3">
-                                                <div className="accordion" id="accordionExample9">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="headingNine">
-                                                            <button
-                                                                className={`fw-bold fs-6 accordion-button ${activeAccordion === "toppings" ? "" : "collapsed"}`}
-                                                                type="button"
-                                                                onClick={() => toggleAccordion("toppings")}
-                                                                aria-expanded={activeAccordion === "toppings" ? "true" : "false"}
-                                                                aria-controls="collapseNine"
-                                                            >
-                                                                TOPPINGS
-                                                            </button>
-                                                        </h2>
-                                                        <div
-                                                            id="collapseNine"
-                                                            className={`accordion-collapse collapse ${activeAccordion === "toppings" ? "show" : ""}`}
-                                                            aria-labelledby="headingNine"
-                                                            data-bs-parent="#accordionExample9"
-                                                            style={{ overflow: "hidden" }}
-                                                        >
-                                                            <div className="accordion-body primary-background-color">
-                                                                <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
-                                                                    {nonRegularToppingsTitle}
-                                                                </div>
-                                                                <div className="d-flex flex-wrap gap-2 mb-4">
-                                                                    {Ingredients?.toppings?.countAsTwo?.map((data, index) => (
-                                                                        <ToppingTwoSelector
-                                                                            key={index}
-                                                                            data={data}
-                                                                            ToppingsTwo={ToppingsTwo}
-                                                                            DefaultToppingsTwo={DefaultToppingsTwo}
-                                                                            handleTopping={(payload) => handleToppingsTwo(payload)}
-                                                                            handleSizeChange={(payload) => handleSizeChange(payload)}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-
-                                                                <div className="pb-2 mb-2 m-0 text-secondary">
-                                                                    {regularToppingsTitle}
-                                                                </div>
-                                                                <div className="d-flex flex-wrap gap-2 mb-4">
-                                                                    {Ingredients?.toppings?.countAsOne?.map((data, index) => (
-                                                                        <ToppingOneSelector
-                                                                            key={index}
-                                                                            data={data}
-                                                                            ToppingsOne={ToppingsOne}
-                                                                            DefaultToppingsOne={DefaultToppingsOne}
-                                                                            handleTopping={(payload) => handleToppingOne(payload)}
-                                                                            handleSizeChange={(payload) => handleSizeChange(payload)}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-
-                                                                <div className="pb-2 mb-2 m-0 text-secondary">
-                                                                    Indian Style
-                                                                </div>
-                                                                <div className="d-flex flex-wrap gap-2">
-                                                                    {Ingredients?.toppings?.freeToppings?.map((data, index) => (
-                                                                        <FreeToppingSelector
-                                                                            key={index}
-                                                                            data={data}
-                                                                            ToppingsFree={ToppingsFree}
-                                                                            handleTopping={(payload) => handleFreeToppings(payload)}
-                                                                            handleSizeChange={(payload) => handleSizeChange(payload)}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
+                                            {/* TOPPINGS — bottom sheet trigger */}
+                                            <div className="mt-3 mb-4">
+                                                <button
+                                                    className="topping-trigger-btn"
+                                                    onClick={() => setToppingSheetOpen(true)}
+                                                >
+                                                    <span className="topping-trigger-btn__icon">🍕</span>
+                                                    <span className="topping-trigger-btn__label">Choose Toppings</span>
+                                                    {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
+                                                        <span className="topping-trigger-btn__count">
+                                                            {ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length} selected
+                                                        </span>
+                                                    )}
+                                                    <span className="topping-trigger-btn__arrow">›</span>
+                                                </button>
+                                                {/* Selected toppings summary */}
+                                                {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
+                                                    <div className="selected-toppings-pills">
+                                                        {[...ToppingsTwo, ...ToppingsOne, ...ToppingsFree].map((t, i) => (
+                                                            <span key={i} className="selected-topping-pill">{t.name}</span>
+                                                        ))}
                                                     </div>
-                                                </div>
+                                                )}
                                             </div>
+
+                                            {/* Topping Sheet */}
+                                            <ToppingSheet
+                                                isOpen={toppingSheetOpen}
+                                                onClose={() => setToppingSheetOpen(false)}
+                                                activeTab={toppingSheetTab}
+                                                setActiveTab={setToppingSheetTab}
+                                                Ingredients={Ingredients}
+                                                ToppingsTwo={ToppingsTwo}
+                                                ToppingsOne={ToppingsOne}
+                                                ToppingsFree={ToppingsFree}
+                                                handleToppingsTwo={handleToppingsTwo}
+                                                handleToppingOne={handleToppingOne}
+                                                handleFreeToppings={handleFreeToppings}
+                                                handleSizeChange={handleSizeChange}
+                                                ToppingTwoSelector={ToppingTwoSelector}
+                                                ToppingOneSelector={ToppingOneSelector}
+                                                FreeToppingSelector={FreeToppingSelector}
+                                                DefaultToppingsTwo={DefaultToppingsTwo}
+                                                DefaultToppingsOne={DefaultToppingsOne}
+                                                nonRegularTitle={nonRegularToppingsTitle}
+                                                regularTitle={regularToppingsTitle}
+                                            />
                                         </div>
                                         {/* right side */}
                                         <div
@@ -1401,9 +1090,9 @@ const Signature = () => {
                                                                 <div className="mt-3 d-flex flex-wrap gap-2">
                                                                     {isIndiansToppings ? (
                                                                         <>
-                                                                            {/* Display a single button for Indian Style Toppings */}
+                                                                            {/* Display a single button for Indian Toppings Toppings */}
                                                                             <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                                Indian Style + Coriander
+                                                                                Indian Toppings + Coriander
                                                                                 <span
                                                                                     className="ms-2 d-none"
                                                                                     onClick={
@@ -1487,6 +1176,37 @@ const Signature = () => {
                         isIndiansToppings={isIndiansToppings}
                         handleRemoveIsIndiansToppings={handleRemoveIsIndiansToppings}
                     />
+
+                    {/* Mobile Sticky Bottom Add-to-Cart Bar */}
+                    <div className="cust-mobile-sticky d-lg-none">
+                        <div className="cust-mobile-sticky__price">
+                            <div className="cust-mobile-sticky__label">Total</div>
+                            <div className="cust-mobile-sticky__amount">${price}</div>
+                        </div>
+                        <div className="cust-mobile-sticky__qty">
+                            <button
+                                className="cust-mobile-sticky__qty-btn"
+                                disabled={pizzaQuantity <= 1}
+                                onClick={() => setPizzaQuantity(p => p - 1)}
+                                aria-label="Decrease Quantity"
+                            >
+                                <FaMinus size={12} />
+                            </button>
+                            <span className="cust-mobile-sticky__qty-num">{pizzaQuantity}</span>
+                            <button
+                                className="cust-mobile-sticky__qty-btn"
+                                disabled={pizzaQuantity >= 10}
+                                onClick={() => setPizzaQuantity(p => p + 1)}
+                                aria-label="Increase Quantity"
+                            >
+                                <FaPlus size={12} />
+                            </button>
+                        </div>
+                        <button className="cust-mobile-sticky__add" onClick={handleAddToCart}>
+                            Add to Cart
+                        </button>
+                    </div>
+
                 </div >
             )}
             <Footer />

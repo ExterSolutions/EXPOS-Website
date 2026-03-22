@@ -18,13 +18,13 @@ import {
 import { calculateOfferPrice } from "../../utils/priceUtils";
 import DipsSelector from "./components/DipsSelector";
 import DrinkSelector from "./components/DrinkSelector";
-import FixedCartSection from "./components/FixedCartSection";
 import PizzaCustomizerAccordion from "./components/PizzaCustomizerAccordion";
 import SideSelector from "./components/SideSelector";
 import SizeSelector from "./components/SizeSelector";
 import SummaryModal from "./components/SummaryModal";
 import SummarySidebar from "./components/SummarySidebar";
 import SummaryTop from "./components/SummaryTop";
+import { FaMinus, FaPlus } from "react-icons/fa";
 
 const SpecialOfferPage = () => {
   const { sid } = useParams();
@@ -47,7 +47,6 @@ const SpecialOfferPage = () => {
   const [toppings, setToppings] = useState(null);
   const [dips, setDips] = useState(null);
   const [offerData, setOfferData] = useState(null);
-  console.log("offerData", offerData);
   const [pricings, setPricings] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [pizzaSelections, setPizzaSelections] = useState([]);
@@ -58,6 +57,7 @@ const SpecialOfferPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [allSignaturePizzas, setAllSignaturePizzas] = useState([]);
+  const [activePizzaIndex, setActivePizzaIndex] = useState(0);
 
   useEffect(() => {
     fetchOfferDetailsWithSettings();
@@ -377,7 +377,7 @@ const SpecialOfferPage = () => {
       ct.product.push(payload);
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
-      navigate("/menu");
+      navigate("/addtocart");
     }
   };
 
@@ -410,19 +410,44 @@ const SpecialOfferPage = () => {
     <div>
       <Header />
       <div className="nav-margin"></div>
-      <div className="container py-4">
+      <div className="container py-2">
         <div className="row">
-          {/* MOBILE & TABLET SUMMARY (Visible up to 1023px) */}
-          <div className="col-12 d-lg-none mb-4">
-            <SummaryTop
-              offerData={offerData}
-              onAddToCart={handleAddToCart}
-              totalPrice={totalPrice}
-              quantity={quantity}
-              setQuantity={setQuantity}
-              handleOpenSummaryPopup={toggleSummaryModal}
-            />
+          {/* Slim Offer Hero Strip (replaces old SummaryTop on mobile) */}
+          <div className="col-12 d-lg-none mb-3">
+            <div className="offer-hero-strip">
+              <div className="offer-hero-strip__name">{offerData.name}</div>
+              <div className="offer-hero-strip__price">${totalPrice}</div>
+            </div>
           </div>
+
+          {/* Pizza Step Indicator (mobile) */}
+          {parseInt(noofPizzas) > 1 && (
+            <div className="col-12 d-lg-none mb-3">
+              <div className="deal-step-indicator">
+                {[...Array(parseInt(noofPizzas))].map((_, i) => {
+                  const done = !!pizzaSelections[i]?.signaturePizzaCode;
+                  const active = activePizzaIndex === i;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`deal-step-dot ${
+                        active ? 'deal-step-dot--active' : done ? 'deal-step-dot--done' : ''
+                      }`}
+                      data-index={i + 1}
+                      onClick={() => setActivePizzaIndex(i)}
+                      aria-label={`Pizza ${i + 1}`}
+                    >
+                      {done && !active ? <i className="bi bi-check2" /> : null}
+                    </button>
+                  );
+                })}
+                <div className="deal-step-label">
+                  Pizza {activePizzaIndex + 1} of {noofPizzas}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* LEFT SIDE */}
           <div className="col-lg-6 col-12">
@@ -435,15 +460,17 @@ const SpecialOfferPage = () => {
               onSelectSize={setSelectedSize}
             />
 
-            <h6 className="mt-4 fw-bold">CUSTOMIZE</h6>
-            <p className="text-muted">
-              Select any and customize as you like from our special pizzas.
-            </p>
+            <h6 className="mt-3 mb-1 fw-bold" style={{ letterSpacing: '0.06em', fontSize: '0.8rem', color: '#888' }}>CUSTOMIZE YOUR PIZZAS</h6>
 
             {[...Array(parseInt(noofPizzas))].map((_, index) => (
               <PizzaCustomizerAccordion
                 key={`pizza-${index}`}
                 index={index}
+                totalPizzas={parseInt(noofPizzas)}
+                isActive={activePizzaIndex === index}
+                onSetActive={setActivePizzaIndex}
+                onNext={() => setActivePizzaIndex(prev => Math.min(prev + 1, parseInt(noofPizzas) - 1))}
+                onBack={() => setActivePizzaIndex(prev => Math.max(prev - 1, 0))}
                 settings={confSettings}
                 toppings={toppings}
                 offerData={offerData}
@@ -477,7 +504,7 @@ const SpecialOfferPage = () => {
             />
           </div>
 
-          {/* DESKTOP SUMMARY (Visible from 1024px) */}
+          {/* DESKTOP SUMMARY */}
           <div className="col-lg-5 col-12 d-none d-lg-block">
             <SummarySidebar
               selectedSize={selectedSize}
@@ -499,12 +526,35 @@ const SpecialOfferPage = () => {
         </div>
       </div>
 
-      <FixedCartSection
-        onAddToCart={handleAddToCart}
-        totalPrice={totalPrice}
-        quantity={quantity}
-        section={"Add to Cart"}
-      />
+      {/* Mobile Sticky Bottom Add-to-Cart Bar */}
+      <div className="cust-mobile-sticky d-lg-none">
+        <div className="cust-mobile-sticky__price">
+          <div className="cust-mobile-sticky__label">Total</div>
+          <div className="cust-mobile-sticky__amount">${(parseFloat(totalPrice) * quantity).toFixed(2)}</div>
+        </div>
+        <div className="cust-mobile-sticky__qty">
+          <button
+            className="cust-mobile-sticky__qty-btn"
+            disabled={quantity <= 1}
+            onClick={() => setQuantity(q => Math.max(1, q - 1))}
+            aria-label="Decrease Quantity"
+          >
+            <FaMinus size={12} />
+          </button>
+          <span className="cust-mobile-sticky__qty-num">{quantity}</span>
+          <button
+            className="cust-mobile-sticky__qty-btn"
+            disabled={quantity >= 10}
+            onClick={() => setQuantity(q => Math.min(10, q + 1))}
+            aria-label="Increase Quantity"
+          >
+            <FaPlus size={12} />
+          </button>
+        </div>
+        <button className="cust-mobile-sticky__add" onClick={handleAddToCart}>
+          Add to Cart
+        </button>
+      </div>
 
       <Footer />
 

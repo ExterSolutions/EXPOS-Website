@@ -1,20 +1,15 @@
 
-
 export const CrustTypeSelector = ({ data, CrustType, handleCrustType }) => {
+    const isSelected = CrustType === data?.crustTypeCode;
     return (
-        <div
-            className={`theme-border ${CrustType === data?.crustTypeCode ? 'active' : ''}`}
+        <button
+            type="button"
+            className={`cust-pill-btn ${isSelected ? 'cust-pill-btn--active' : ''}`}
             onClick={() => handleCrustType(data?.crustTypeCode)}
         >
-            <div className="d-flex align-items-center gap-2">
-                {CrustType === data?.crustTypeCode ? (
-                    <i className="bi bi-check-circle-fill" />
-                ) : (
-                    <i className="bi bi-plus-circle" />
-                )}
-                <div className="">{`${data?.crustType}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
-            </div>
-
-        </div>
-    )
+            {isSelected && <i className="bi bi-check2 me-1" />}
+            {data?.crustType}
+            {data?.price !== null && data?.price != 0 && <span className="cust-pill-price"> +${data?.price}</span>}
+        </button>
+    );
 }

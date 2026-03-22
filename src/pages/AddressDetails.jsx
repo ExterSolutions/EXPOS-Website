@@ -634,7 +634,7 @@ function AddressDetails() {
                                         </div>
 
                                         {/* Postal Code */}
-                                        <div className="col-lg-2 col-md-3 col-sm-12">
+                                        <div className="col-lg-4 col-md-3 col-sm-12">
                                             <label className="form-label">
                                                 Postal Code <small className="text-danger">*</small>
                                             </label>
@@ -692,7 +692,7 @@ function AddressDetails() {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-5 col-lg-5 col-md-5 col-sm-12 px-2 summary-unfixed-box">
+                    <div className="col-xl-5 col-lg-5 col-md-5 col-sm-12 px-2 summary-unfixed-box order-first order-md-last">
                         <div className="row">
                             <div className="col-lg-12 col-md-12 col-sm-12 mb-2">
                                 <div className="block-stl10 odr-summary mb-0">
