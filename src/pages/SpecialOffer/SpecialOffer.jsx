@@ -712,11 +712,17 @@ function SpecialOffer() {
                   >
                     <div className="row justify-content-start align-content-center p-0 m-0">
                       <div className="col-auto p-0 m-0 rounded-3 text-center">
-                        <img
-                          className="pizzaImageBorderSM"
-                          src={specialOfferData?.image || pizzaimage}
-                          alt="Pizza icon"
-                        />
+                        {specialOfferData?.image ? (
+                          <img
+                            className="pizzaImageBorderSM"
+                            src={specialOfferData.image}
+                            alt="Pizza icon"
+                          />
+                        ) : (
+                          <div className="pizzaImageBorderSM placeholder-glow d-inline-block" style={{ width: "115px", height: "115px" }}>
+                            <span className="placeholder w-100 h-100 rounded-3" style={{ backgroundColor: "#e0e0e0" }}></span>
+                          </div>
+                        )}
                       </div>
                       <div className="col-7 p-0 m-0">
                         <div className="d-flex flex-column justify-content-center">
@@ -883,15 +889,18 @@ function SpecialOffer() {
                 >
                   <div className="px-3 row">
                     <div className="col-lg-6 p-3">
-                      <img
-                        className="pizzaImageBorder"
-                        src={
-                          specialOfferData?.image
-                            ? specialOfferData?.image
-                            : pizzaimage
-                        }
-                        alt="pizza-icon"
-                      />
+                      {specialOfferData?.image ? (
+                        <img
+                          className="pizzaImageBorder w-100"
+                          src={specialOfferData.image}
+                          alt="pizza-icon"
+                          style={{ objectFit: "cover", aspectRatio: "1/1" }}
+                        />
+                      ) : (
+                        <div className="pizzaImageBorder placeholder-glow w-100 d-block" style={{ aspectRatio: "1/1" }}>
+                          <span className="placeholder w-100 h-100 rounded-3" style={{ backgroundColor: "#e0e0e0" }}></span>
+                        </div>
+                      )}
                     </div>
                     <div className="col-lg-6 p-4">
                       <div className="d-flex flex-column py-4">
