@@ -4,20 +4,34 @@ import Tabs from "../../components/Tabs/Tabs";
 import { useEffect, useState } from "react";
 import { getToppings } from "../../services";
 import SignaturePizza from "../SignaturePizza";
+import { GlobalContext } from "../../context/GlobalContext";
+import { useContext } from "react";
+import { settingApi } from "../../services";
 // import "../../assets/styles/new/homepage/pizza/specialoffer.css";
 
 const SignaturePizzaList = () => {
   const [toppingsData, setToppingsData] = useState(null);
-  const toppings = async () => {
+  const [settingsData, setSettingsData] = useState([]);
+  const { settings } = useContext(GlobalContext);
+
+  const signaturePizzaTitle =
+    settingsData.find((item) => item.shortCode === "signaturepizza")?.settingValue ??
+    "Signature Pizza";
+
+  const fetchData = async () => {
     try {
-      const res = await getToppings();
-      setToppingsData(res?.data);
+      const [toppingsRes, settingRes] = await Promise.all([
+        getToppings(),
+        settingApi()
+      ]);
+      setToppingsData(toppingsRes?.data);
+      setSettingsData(settingRes?.data);
     } catch (err) {
-      throw err;
+      console.error(err);
     }
   };
   useEffect(() => {
-    toppings();
+    fetchData();
   }, []);
   return (
     <>
@@ -26,7 +40,7 @@ const SignaturePizzaList = () => {
         <div className="nav-margin"></div>
         <div className="d-flex align-items-center justify-content-between innder-page-header">
           <div className="flex-grow-1 section-header">
-            <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
+            <span className="category-subtitle">{signaturePizzaTitle}</span>
             <div className="section-title">Choose Our Delicious Item</div>
           </div>
         </div>

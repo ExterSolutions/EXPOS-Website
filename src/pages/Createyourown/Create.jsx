@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
-import OptionSheet from "../../components/_main/OptionSheet";
-import SEOHead from "../../components/_main/SEOHead";
 import CartFunction from "../../components/cart";
 import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
@@ -21,7 +19,6 @@ import { SauceSelector } from "./SauceSelector";
 import { SpicySelector } from "./SpicySelector";
 import { ToppingOneSelector } from "./ToppingOneSelector";
 import { ToppingTwoSelector } from "./ToppingTwoSelector";
-import ToppingSheet from "../../components/_main/ToppingSheet";
 
 import { FaEye } from "react-icons/fa6";
 import CustomizePizzaImg from "../../assets/images/customizePizza.jpg";
@@ -76,11 +73,6 @@ const CreatePizza = () => {
   //
   const [viewSelection, setViewSelection] = useState(false);
   const [settingsData, setSettingsData] = useState([]);
-  // Topping sheet state
-  const [toppingSheetOpen, setToppingSheetOpen] = useState(false);
-  const [toppingSheetTab, setToppingSheetTab] = useState("two");
-  // Option sheet state (Dough, Cheese, Spicy, Sauce, Cook, Sides, Drinks, Dips)
-  const [openSheet, setOpenSheet] = useState(null);
 
   // Healper Function
   const cartFn = new CartFunction();
@@ -125,9 +117,21 @@ const CreatePizza = () => {
     }
   };
 
-  const nonRegularToppingsTitle = "Premium Toppings";
+  const nonRegularToppingsTitle =
+    settingsData.find((item) => item.shortCode === "non-regular-toppings")?.settingValue ??
+    "Premium";
 
-  const regularToppingsTitle = "Regular Toppings";
+  const regularToppingsTitle =
+    settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
+    "Regular";
+
+  const indianStyleToppingsTitle =
+    settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+    "Indian Style";
+
+  const createYourOwnTitle =
+    settingsData.find((item) => item.shortCode === "create-your-own")?.settingValue ??
+    "Create Your Own";
 
   const premiumToppingCount =
     Number(
@@ -494,13 +498,11 @@ const CreatePizza = () => {
     };
 
     if (payload) {
-      let ct = JSON.parse(localStorage.getItem("cart")) || { product: [] };
-      if (!ct.product) ct.product = [];
+      let ct = JSON.parse(localStorage.getItem("cart"));
       ct.product.push(payload);
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
-      toast.success("🛒 Added to cart! Review your order.");
-      navigate("/addtocart");
+      navigate("/");
     }
   };
 
@@ -684,10 +686,6 @@ const CreatePizza = () => {
         </>
       ) : (
         <div className="">
-          <SEOHead
-            title="Build Your Own Pizza | Pizza"
-            description="Create your perfect pizza from scratch. Choose your dough, cheese, spicy level, sauce, cook style, and toppings. Order online for delivery or pickup."
-          />
           <Header />
           <div className="nav-margin"></div>
 
@@ -703,7 +701,7 @@ const CreatePizza = () => {
                       Home
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Create Your Own
+                      {createYourOwnTitle}
                     </li>
                   </ol>
                 </nav>
@@ -711,214 +709,730 @@ const CreatePizza = () => {
               <div className="container">
                 <div className="mainContainer primary-text-color">
                   {/* left side */}
-                  <div className="p-3">
-                    {/* Hero Header */}
-                    <div className="d-flex align-items-center gap-3 mb-3">
-                      <img
-                        className="cust-hero-img d-none d-sm-block"
-                        src={CustomizePizzaImg}
-                        alt="Create Your Own Pizza"
-                      />
-                      <div>
-                        <p className="fs-2 fw-bold text-primary mb-1">CREATE YOUR OWN PIZZA</p>
-                        <p className="mb-0 text-secondary" style={{ fontSize: '0.95rem' }}>Your perfect slice, your way!</p>
-                        {/* Desktop Add to Cart controls */}
-                        <div className="d-none d-lg-flex align-items-center gap-3 mt-3">
-                          <div className="d-flex align-items-center gap-2">
-                            <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)}
-                              className="btn btn-secondary rounded-circle" style={{ width: 34, height: 34, padding: 0 }} aria-label="Decrease"><FaMinus /></button>
-                            <span className="fw-bold fs-5">{pizzaQuantity}</span>
-                            <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)}
-                              className="btn btn-secondary rounded-circle" style={{ width: 34, height: 34, padding: 0 }} aria-label="Increase"><FaPlus /></button>
-                          </div>
-                          <span className="fw-bold fs-5">${price}</span>
-                          <button onClick={handleAddToCart} className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold px-4">Add to Cart</button>
-                          <button onClick={() => setViewSelection(true)} className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold"><FaEye /></button>
-                        </div>
-                      </div>
-                    </div>
+                  <div className=" p-3">
+                    <p className="fs-1 fw-bold text-primary">{createYourOwnTitle.toUpperCase()}</p>
+                    <p className="mt-3 mb-3 fs-6 text-secondary">
+                      Your perfect slice, your way!
+                    </p>
 
-                    {/* SIZE — horizontal pills */}
-                    <div className="mt-1 mb-3">
-                      <p className="fw-bold text-uppercase mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>Select Size</p>
-                      <div className="size-pill-scroll">
-                        {pizzaSizeArr?.map((data, index) => (
-                          <button
-                            key={index}
-                            className={`size-pill ${size === data?.size ? 'size-pill--active' : ''}`}
-                            onClick={() => setSize(data?.size)}
-                          >
-                            <span className="size-pill__label">{data?.size}</span>
-                            {data?.price !== null && (
-                              <span className="size-pill__price">${data?.price}</span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    {/* ── OptionSheet Modals ── */}
-                    <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={(Ingredients?.crust || []).map(c => ({ id: c.crustCode, label: c.crustName, price: Number(c.price) }))} selected={Crust} onSelect={setCrust} />
-                    <OptionSheet isOpen={openSheet === 'cheese'} onClose={() => setOpenSheet(null)} title="Choose Cheese" options={(Ingredients?.cheese || []).map(c => ({ id: c.cheeseCode, label: c.cheeseName, price: Number(c.price) }))} selected={Cheese} onSelect={setCheese} />
-                    <OptionSheet isOpen={openSheet === 'spicy'} onClose={() => setOpenSheet(null)} title="Choose Spicy Level" options={(Ingredients?.spices || []).map(c => ({ id: c.spicyCode, label: c.spicy, price: Number(c.price) }))} selected={Spicy} onSelect={setSpicy} />
-                    <OptionSheet isOpen={openSheet === 'sauce'} onClose={() => setOpenSheet(null)} title="Choose Sauce" options={(Ingredients?.sauce || []).map(c => ({ id: c.sauceCode, label: c.sauce, price: Number(c.price) }))} selected={Sauce} onSelect={setSauce} />
-                    <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={(Ingredients?.cook || []).map(c => ({ id: c.cookCode, label: c.cook, price: Number(c.price) }))} selected={Cook} onSelect={setCook} />
-
-                    {/* Sides sheet */}
-                    {openSheet === 'sides' && (
-                      <>
-                        <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                        <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
-                          <div className="topping-sheet__handle" />
-                          <div className="topping-sheet__header">
-                            <p className="topping-sheet__title">Add Sides</p>
-                            <button className="topping-sheet__close" onClick={() => setOpenSheet(null)} aria-label="Close"><IoMdClose size={20} /></button>
-                          </div>
-                          <div className="topping-sheet__body">
-                            {sidesIngredients?.map((data, index) => (
-                              <SidesSelector key={index} Sides={Sides} data={data} handleSides={handleSides} handleSideSizeChange={handleSideSizeChange} />
-                            ))}
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Drinks sheet */}
-                    {openSheet === 'drinks' && (
-                      <>
-                        <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                        <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
-                          <div className="topping-sheet__handle" />
-                          <div className="topping-sheet__header">
-                            <p className="topping-sheet__title">Add Drinks</p>
-                            <button className="topping-sheet__close" onClick={() => setOpenSheet(null)} aria-label="Close"><IoMdClose size={20} /></button>
-                          </div>
-                          <div className="topping-sheet__body">
-                            {Ingredients?.softdrinks?.map((data, index) => (
-                              <DrinkSelector key={index} Drinks={Drinks} data={data} handleDrink={handleDrinks} handleDrinkQuantity={handleDrinkQuantity} />
-                            ))}
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Dips sheet */}
-                    {openSheet === 'dips' && (
-                      <>
-                        <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                        <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
-                          <div className="topping-sheet__handle" />
-                          <div className="topping-sheet__header">
-                            <p className="topping-sheet__title">Add Dips</p>
-                            <button className="topping-sheet__close" onClick={() => setOpenSheet(null)} aria-label="Close"><IoMdClose size={20} /></button>
-                          </div>
-                          <div className="topping-sheet__body">
-                            {Ingredients?.dips?.map((data, index) => (
-                              <DipsSelector key={index} Dips={Dips} data={data} handleDips={handleDips} handleDipsQuantity={handleDipsQuantity} />
-                            ))}
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    <h6 className="offer-section-label mb-2 mt-1">CUSTOMIZE YOUR PIZZA</h6>
-                    <div className="d-flex flex-column gap-2 mb-3">
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('dough')}>
-                        <span className="topping-trigger-btn__icon">🫓</span>
-                        <span className="topping-trigger-btn__label">Dough</span>
-                        <span className="topping-trigger-btn__value">{(Ingredients?.crust || []).find(c => c.crustCode === Crust)?.crustName || 'Select'}</span>
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('cheese')}>
-                        <span className="topping-trigger-btn__icon">🧀</span>
-                        <span className="topping-trigger-btn__label">Cheese</span>
-                        <span className="topping-trigger-btn__value">{(Ingredients?.cheese || []).find(c => c.cheeseCode === Cheese)?.cheeseName || 'Select'}</span>
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('spicy')}>
-                        <span className="topping-trigger-btn__icon">🌶️</span>
-                        <span className="topping-trigger-btn__label">Spicy</span>
-                        <span className="topping-trigger-btn__value">{(Ingredients?.spices || []).find(c => c.spicyCode === Spicy)?.spicy || 'Select'}</span>
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('sauce')}>
-                        <span className="topping-trigger-btn__icon">🍅</span>
-                        <span className="topping-trigger-btn__label">Sauce</span>
-                        <span className="topping-trigger-btn__value">{(Ingredients?.sauce || []).find(c => c.sauceCode === Sauce)?.sauce || 'Select'}</span>
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('cook')}>
-                        <span className="topping-trigger-btn__icon">🔥</span>
-                        <span className="topping-trigger-btn__label">Cook</span>
-                        <span className="topping-trigger-btn__value">{(Ingredients?.cook || []).find(c => c.cookCode === Cook)?.cook || 'Select'}</span>
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                    </div>
-
-
-                    <div className="mt-3 mb-4">
-                      <button
-                        className="topping-trigger-btn"
-                        onClick={() => setToppingSheetOpen(true)}
+                    <div
+                      className="right-side-div p-0 w-100 d-lg-none d-block"
+                      style={{ position: "relative !important" }}
+                    >
+                      <div
+                        className={`p-3 card-background-color card-text-color ${isFixed ? "fixed" : ""
+                          }`}
+                        style={{
+                          transform: isTranslate
+                            ? `translateY(${translateYVal}px)`
+                            : "none",
+                        }}
                       >
-                        <span className="topping-trigger-btn__icon">🍕</span>
-                        <span className="topping-trigger-btn__label">Choose Toppings</span>
-                        {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
-                          <span className="topping-trigger-btn__count">
-                            {ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length} selected
-                          </span>
-                        )}
-                        <span className="topping-trigger-btn__arrow">›</span>
-                      </button>
-                      {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
-                        <div className="selected-toppings-pills">
-                          {[...ToppingsTwo, ...ToppingsOne, ...ToppingsFree].map((t, i) => (
-                            <span key={i} className="selected-topping-pill">{t.name}</span>
-                          ))}
+                        <div className="row justify-content-start align-content-center p-0 m-0">
+                          <div className="col-auto p-0 m-0 rounded-3 text-center">
+                            <img
+                              className="pizzaImageBorderSM"
+                              src={CustomizePizzaImg}
+                              alt="Pizza icon"
+                            />
+                          </div>
+                          <div className="col-7 p-0 m-0">
+                            <div
+                              className="d-flex flex-column justify-content-center "
+                              style={{ padding: "0px 10px" }}
+                            >
+                              <p className="lh-sm fw-bold text-start my-1 pizzaPriceSm">
+                                $ {price}
+                              </p>
+                              <div
+                                className="d-flex justify-content-start align-items-center my-1"
+                                style={{ userSelect: "none" }}
+                              >
+                                <button
+                                  disabled={pizzaQuantity <= 1}
+                                  onClick={() =>
+                                    setPizzaQuantity((prev) => prev - 1)
+                                  }
+                                  className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
+                                  aria-label="Decrease Quantity"
+                                >
+                                  <FaMinus className="pizzaQtyButtonSpanSm fs-6" />
+                                </button>
+                                <div className="lh-sm fs-5 fw-bold mx-2">
+                                  {pizzaQuantity}
+                                </div>
+                                <button
+                                  disabled={pizzaQuantity >= 10}
+                                  onClick={() =>
+                                    setPizzaQuantity((prev) => prev + 1)
+                                  }
+                                  className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
+                                  aria-label="Increase Quantity"
+                                >
+                                  <FaPlus className="pizzaQtyButtonSpanSm fs-6" />
+                                </button>
+                              </div>
+                              <div className="d-flex flex-row justify-content-start">
+                                <div className="d-flex me-2 justify-content-start py-2">
+                                  <button
+                                    onClick={handleAddToCart}
+                                    className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
+                                  >
+                                    Add to Cart
+                                  </button>
+                                </div>
+                                <div className="d-flex justify-content-start py-2">
+                                  <button
+                                    onClick={() => setViewSelection(true)}
+                                    className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
+                                  >
+                                    <FaEye />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
 
-                    <ToppingSheet
-                      isOpen={toppingSheetOpen}
-                      onClose={() => setToppingSheetOpen(false)}
-                      activeTab={toppingSheetTab}
-                      setActiveTab={setToppingSheetTab}
-                      Ingredients={Ingredients}
-                      ToppingsTwo={ToppingsTwo}
-                      ToppingsOne={ToppingsOne}
-                      ToppingsFree={ToppingsFree}
-                      handleToppingsTwo={handleToppingsTwo}
-                      handleToppingOne={handleToppingOne}
-                      handleFreeToppings={handleFreeToppings}
-                      handleSizeChange={handleSizeChange}
-                      ToppingTwoSelector={ToppingTwoSelector}
-                      ToppingOneSelector={ToppingOneSelector}
-                      FreeToppingSelector={FreeToppingSelector}
-                      nonRegularTitle={nonRegularToppingsTitle}
-                      regularTitle={regularToppingsTitle}
-                    />
+                    {/* size */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample1">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingOne">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "size" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("size")}
+                              aria-expanded={
+                                activeAccordion === "size" ? "true" : "false"
+                              }
+                              aria-controls="collapseOne"
+                            >
+                              SELECT SIZE
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseOne"
+                            className={`accordion-collapse collapse ${activeAccordion === "size" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingOne"
+                            data-bs-parent="#accordionExample1"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="size-grid">
+                                {pizzaSizeArr?.map((data, index) => {
+                                  return (
+                                    <div
+                                      className={` p-3 rounded-3 ${size === data?.size
+                                        ? "selected-card-background-color selected-card-text-color"
+                                        : "card-background-color card-text-color"
+                                        }`}
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() => setSize(data?.size)}
+                                    >
+                                      <div className="">
+                                        <div className="d-block">
+                                          <input
+                                            type="radio"
+                                            className="form-check-input d-none"
+                                            checked={size === data?.size}
+                                          />
+                                        </div>
+                                        <div className="d-block">
+                                          {data?.size} (${data?.price})
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="fs-3 fw-bold mt-5 text-primary">CUSTOMIZE</p>
+                    <p className="mt-3 fs-6 text-secondary">
+                      Select any of the below to create your own pizza.
+                    </p>
 
-                    {/* ── Sides / Drinks / Dips trigger buttons ── */}
-                    <h6 className="offer-section-label mb-2 mt-3">ADD-ONS</h6>
-                    <div className="d-flex flex-column gap-2 mb-3">
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('sides')}>
-                        <span className="topping-trigger-btn__icon">🥗</span>
-                        <span className="topping-trigger-btn__label">Sides</span>
-                        {Sides?.length > 0 && <span className="topping-trigger-btn__value">{Sides.length} selected</span>}
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('drinks')}>
-                        <span className="topping-trigger-btn__icon">🥤</span>
-                        <span className="topping-trigger-btn__label">Drinks</span>
-                        {Drinks?.length > 0 && <span className="topping-trigger-btn__value">{Drinks.length} selected</span>}
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
-                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('dips')}>
-                        <span className="topping-trigger-btn__icon">🍶</span>
-                        <span className="topping-trigger-btn__label">Dips</span>
-                        {Dips?.length > 0 && <span className="topping-trigger-btn__value">{Dips.length} selected</span>}
-                        <span className="topping-trigger-btn__chevron">›</span>
-                      </button>
+                    {/* dough */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample4">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingFour">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "dough" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("dough")}
+                              aria-expanded={
+                                activeAccordion === "dough" ? "true" : "false"
+                              }
+                              aria-controls="collapseFour"
+                            >
+                              DOUGH
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseFour"
+                            className={`accordion-collapse collapse ${activeAccordion === "dough" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingFour"
+                            data-bs-parent="#accordionExample4"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <DoughSelector
+                                Ingredients={Ingredients}
+                                Crust={Crust}
+                                setCrust={setCrust}
+                                CrustType={CrustType}
+                                setCrustType={setCrustType}
+                                SpecialBases={SpecialBases}
+                                setSpecialBases={setSpecialBases}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* cheese */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample4">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingFour">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "cheese" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("cheese")}
+                              aria-expanded={
+                                activeAccordion === "cheese" ? "true" : "false"
+                              }
+                              aria-controls="collapseFour"
+                            >
+                              CHEESE
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseFour"
+                            className={`accordion-collapse collapse ${activeAccordion === "cheese" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingFour"
+                            data-bs-parent="#accordionExample4"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="d-flex flex-column gap-3">
+                                {Ingredients?.cheese?.map((data, index) => {
+                                  return (
+                                    <CheeseSelector
+                                      data={data}
+                                      Cheese={Cheese}
+                                      handleCheese={(payload) =>
+                                        setCheese(payload)
+                                      }
+                                    />
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* spicy */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample6">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingSix">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "spicy" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("spicy")}
+                              aria-expanded={
+                                activeAccordion === "spicy" ? "true" : "false"
+                              }
+                              aria-controls="collapseSix"
+                            >
+                              SPICY
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseSix"
+                            className={`accordion-collapse collapse ${activeAccordion === "spicy" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingSix"
+                            data-bs-parent="#accordionExample6"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="d-flex flex-column gap-3">
+                                {Ingredients?.spices?.map((data, index) => {
+                                  return (
+                                    <SpicySelector
+                                      data={data}
+                                      Spicy={Spicy}
+                                      handleSpicy={(payload) =>
+                                        setSpicy(payload)
+                                      }
+                                    />
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* sauce */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample7">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingSeven">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "sauce" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("sauce")}
+                              aria-expanded={
+                                activeAccordion === "sauce" ? "true" : "false"
+                              }
+                              aria-controls="collapseSeven"
+                            >
+                              SAUCE
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseSeven"
+                            className={`accordion-collapse collapse ${activeAccordion === "sauce" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingSeven"
+                            data-bs-parent="#accordionExample7"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="d-flex flex-column gap-3">
+                                {Ingredients?.sauce?.map((data, index) => {
+                                  return (
+                                    <SauceSelector
+                                      data={data}
+                                      Sauce={Sauce}
+                                      handleSauce={(payload) =>
+                                        setSauce(payload)
+                                      }
+                                    />
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* cook */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample7">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingSeven">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "cook" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("cook")}
+                              aria-expanded={
+                                activeAccordion === "cook" ? "true" : "false"
+                              }
+                              aria-controls="collapseSeven"
+                            >
+                              COOK
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseSeven"
+                            className={`accordion-collapse collapse ${activeAccordion === "cook" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingSeven"
+                            data-bs-parent="#accordionExample7"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="d-flex flex-column gap-3">
+                                {Ingredients?.cook?.map((data, index) => {
+                                  return (
+                                    <CookSelector
+                                      data={data}
+                                      Cook={Cook}
+                                      handleCook={(payload) => setCook(payload)}
+                                    />
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* toppings */}
+                    {/* <div className="mt-3">
+                      <div className="accordion" id="accordionExample9">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingNine">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${
+                                activeAccordion === "toppings"
+                                  ? ""
+                                  : "collapsed"
+                              }`}
+                              type="button"
+                              onClick={() => toggleAccordion("toppings")}
+                              aria-expanded={
+                                activeAccordion === "toppings"
+                                  ? "true"
+                                  : "false"
+                              }
+                              aria-controls="collapseNine"
+                            >
+                              TOPPINGS
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseNine"
+                            className={`accordion-collapse collapse ${
+                              activeAccordion === "toppings" ? "show" : ""
+                            }`}
+                            aria-labelledby="headingNine"
+                            data-bs-parent="#accordionExample9"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="d-flex flex-column gap-3">
+                                <div className="pb-2 mb-2 d-flex justify-content-between row">
+                                  <div
+                                    className={`cursor-pointer col-4 py-2 lh-sm text-center card-text-color ${
+                                      Topping === "two" ? "tab-border" : ""
+                                    }`}
+                                    onClick={() => setTopping("two")}
+                                  >
+                                    {nonRegularToppingsTitle}
+                                  </div>
+                                  <div
+                                    className={`cursor-pointer col-4 py-2 lh-sm text-center card-text-color ${
+                                      Topping === "one" ? "tab-border" : ""
+                                    }`}
+                                    onClick={() => setTopping("one")}
+                                  >
+                                    {regularToppingsTitle}
+                                  </div>
+                                  <div
+                                    className={`cursor-pointer col-4 py-2 lh-sm text-center card-text-color ${
+                                      Topping === "free" ? "tab-border" : ""
+                                    }`}
+                                    onClick={() => setTopping("free")}
+                                  >
+                                    {indianStyleToppingsTitle}
+                                  </div>
+                                </div>
+                                {Topping === "two" &&
+                                  Ingredients?.toppings?.countAsTwo?.map(
+                                    (data, index) => {
+                                      return (
+                                        <ToppingTwoSelector
+                                          key={index}
+                                          data={data}
+                                          ToppingsTwo={ToppingsTwo}
+                                          handleTopping={(payload) =>
+                                            handleToppingsTwo(payload)
+                                          }
+                                          handleSizeChange={(payload) =>
+                                            handleSizeChange(payload)
+                                          }
+                                        />
+                                      );
+                                    }
+                                  )}
+                                {Topping === "one" &&
+                                  Ingredients?.toppings?.countAsOne?.map(
+                                    (data, index) => {
+                                      return (
+                                        <ToppingOneSelector
+                                          key={index}
+                                          data={data}
+                                          ToppingsOne={ToppingsOne}
+                                          handleTopping={(payload) =>
+                                            handleToppingOne(payload)
+                                          }
+                                          handleSizeChange={(payload) =>
+                                            handleSizeChange(payload)
+                                          }
+                                        />
+                                      );
+                                    }
+                                  )}
+                                {Topping === "free" &&
+                                  Ingredients?.toppings?.freeToppings?.map(
+                                    (data, index) => {
+                                      return (
+                                        <FreeToppingSelector
+                                          key={index}
+                                          data={data}
+                                          ToppingsFree={ToppingsFree}
+                                          handleTopping={(payload) =>
+                                            handleFreeToppings(payload)
+                                          }
+                                          handleSizeChange={(payload) =>
+                                            handleSizeChange(payload)
+                                          }
+                                        />
+                                      );
+                                    }
+                                  )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample9">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingNine">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "toppings" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("toppings")}
+                              aria-expanded={activeAccordion === "toppings" ? "true" : "false"}
+                              aria-controls="collapseNine"
+                            >
+                              TOPPINGS
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseNine"
+                            className={`accordion-collapse collapse ${activeAccordion === "toppings" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingNine"
+                            data-bs-parent="#accordionExample9"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              <div className="d-flex flex-column gap-4">
+
+                                {/* Group 1: Non-Regular Toppings */}
+                                <div>
+                                  <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
+                                    {nonRegularToppingsTitle}
+                                  </div>
+                                  <div className="d-flex flex-wrap gap-2">
+                                    {Ingredients?.toppings?.countAsTwo?.map((data, index) => (
+                                      <ToppingTwoSelector
+                                        key={index}
+                                        data={data}
+                                        ToppingsTwo={ToppingsTwo}
+                                        handleTopping={(payload) => handleToppingsTwo(payload)}
+                                        handleSizeChange={(payload) => handleSizeChange(payload)}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Group 2: Regular Toppings */}
+                                <div>
+                                  <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
+                                    {regularToppingsTitle}
+                                  </div>
+                                  <div className="d-flex flex-wrap gap-2">
+                                    {Ingredients?.toppings?.countAsOne?.map((data, index) => (
+                                      <ToppingOneSelector
+                                        key={index}
+                                        data={data}
+                                        ToppingsOne={ToppingsOne}
+                                        handleTopping={(payload) => handleToppingOne(payload)}
+                                        handleSizeChange={(payload) => handleSizeChange(payload)}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Group 3: Indian Style */}
+                                <div>
+                                  <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
+                                    {indianStyleToppingsTitle}
+                                  </div>
+                                  <div className="d-flex flex-wrap gap-2">
+                                    {Ingredients?.toppings?.freeToppings?.map((data, index) => (
+                                      <FreeToppingSelector
+                                        key={index}
+                                        data={data}
+                                        ToppingsFree={ToppingsFree}
+                                        handleTopping={(payload) => handleFreeToppings(payload)}
+                                        handleSizeChange={(payload) => handleSizeChange(payload)}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* sides */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample10">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingTen">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "sides" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("sides")}
+                              aria-expanded={
+                                activeAccordion === "sides" ? "true" : "false"
+                              }
+                              aria-controls="collapseTen"
+                            >
+                              SIDES
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseTen"
+                            className={`accordion-collapse collapse ${activeAccordion === "sides" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingTen"
+                            data-bs-parent="#accordionExample10"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              {sidesIngredients?.map((data, index) => {
+                                return (
+                                  <SidesSelector
+                                    key={index}
+                                    Sides={Sides}
+                                    data={data}
+                                    handleSides={(payload) =>
+                                      handleSides(payload)
+                                    }
+                                    handleSideSizeChange={(payload) =>
+                                      handleSideSizeChange(payload)
+                                    }
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* drinks */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample10">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingTen">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "drinks" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("drinks")}
+                              aria-expanded={
+                                activeAccordion === "drinks" ? "true" : "false"
+                              }
+                              aria-controls="collapseTen"
+                            >
+                              DRINKS
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseTen"
+                            className={`accordion-collapse collapse ${activeAccordion === "drinks" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingTen"
+                            data-bs-parent="#accordionExample10"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              {Ingredients?.softdrinks?.map((data, index) => {
+                                return (
+                                  <DrinkSelector
+                                    key={index}
+                                    Drinks={Drinks}
+                                    data={data}
+                                    handleDrink={(payload) =>
+                                      handleDrinks(payload)
+                                    }
+                                    handleDrinkQuantity={(payload) =>
+                                      handleDrinkQuantity(payload)
+                                    }
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* dips */}
+                    <div className="mt-3">
+                      <div className="accordion" id="accordionExample11">
+                        <div className="accordion-item">
+                          <h2 className="accordion-header" id="headingEleven">
+                            <button
+                              className={`fw-bold fs-6 accordion-button ${activeAccordion === "dips" ? "" : "collapsed"
+                                }`}
+                              type="button"
+                              onClick={() => toggleAccordion("dips")}
+                              aria-expanded={
+                                activeAccordion === "dips" ? "true" : "false"
+                              }
+                              aria-controls="collapseEleven"
+                            >
+                              DIPS
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseEleven"
+                            className={`accordion-collapse collapse ${activeAccordion === "dips" ? "show" : ""
+                              }`}
+                            aria-labelledby="headingEleven"
+                            data-bs-parent="#accordionExample11"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="accordion-body primary-background-color">
+                              {Ingredients?.dips?.map((data, index) => {
+                                return (
+                                  <DipsSelector
+                                    key={index}
+                                    Dips={Dips}
+                                    data={data}
+                                    handleDips={(payload) =>
+                                      handleDips(payload)
+                                    }
+                                    handleDipsQuantity={(payload) =>
+                                      handleDipsQuantity(payload)
+                                    }
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -1139,9 +1653,9 @@ const CreatePizza = () => {
                               <div className="mt-3 d-flex flex-wrap gap-2">
                                 {isIndiansToppings ? (
                                   <>
-                                    {/* Display a single button for Indian Toppings Toppings */}
+                                    {/* Display a single button for Indian Style Toppings */}
                                     <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                      Indian Toppings + Coriander
+                                      Indian Style + Coriander
                                       <span
                                         className="ms-2"
                                         onClick={handleRemoveIsIndiansToppings}
@@ -1295,37 +1809,6 @@ const CreatePizza = () => {
             Sides={Sides}
             handleRemoveSides={handleRemoveSides}
           />
-
-          {/* Mobile Sticky Bottom Add-to-Cart Bar */}
-          <div className="cust-mobile-sticky d-lg-none">
-            <div className="cust-mobile-sticky__price">
-              <div className="cust-mobile-sticky__label">Total</div>
-              <div className="cust-mobile-sticky__amount">${price}</div>
-            </div>
-            <div className="cust-mobile-sticky__qty">
-              <button
-                className="cust-mobile-sticky__qty-btn"
-                disabled={pizzaQuantity <= 1}
-                onClick={() => setPizzaQuantity(p => p - 1)}
-                aria-label="Decrease Quantity"
-              >
-                <FaMinus size={12} />
-              </button>
-              <span className="cust-mobile-sticky__qty-num">{pizzaQuantity}</span>
-              <button
-                className="cust-mobile-sticky__qty-btn"
-                disabled={pizzaQuantity >= 10}
-                onClick={() => setPizzaQuantity(p => p + 1)}
-                aria-label="Increase Quantity"
-              >
-                <FaPlus size={12} />
-              </button>
-            </div>
-            <button className="cust-mobile-sticky__add" onClick={handleAddToCart}>
-              Add to Cart
-            </button>
-          </div>
-
         </div>
       )}
     </>

@@ -3,21 +3,35 @@ import Header from "../../components/_main/Header/Header";
 import { useEffect, useState } from "react";
 import { getToppings } from "../../services";
 import OtherPizza from "../OtherPizza";
+import { GlobalContext } from "../../context/GlobalContext";
+import { useContext } from "react";
+import { settingApi } from "../../services";
 
 const OtherPizzaList = () => {
     const [toppingsData, setToppingsData] = useState(null);
 
-    const toppings = async () => {
+    const [settingsData, setSettingsData] = useState([]);
+    const { settings } = useContext(GlobalContext);
+
+    const otherPizzaTitle =
+        settingsData.find((item) => item.shortCode === "otherpizza")?.settingValue ??
+        "Other Pizza";
+
+    const fetchData = async () => {
         try {
-            const res = await getToppings();
-            setToppingsData(res?.data);
+            const [toppingsRes, settingRes] = await Promise.all([
+                getToppings(),
+                settingApi()
+            ]);
+            setToppingsData(toppingsRes?.data);
+            setSettingsData(settingRes?.data);
         } catch (err) {
-            throw err;
+            console.error(err);
         }
     };
 
     useEffect(() => {
-        toppings();
+        fetchData();
     }, []);
 
     return (
@@ -27,7 +41,7 @@ const OtherPizzaList = () => {
                 <div className="nav-margin"></div>
                 <div className="d-flex align-items-center justify-content-between innder-page-header">
                     <div className="flex-grow-1 section-header">
-                        <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
+                        <span className="category-subtitle">{otherPizzaTitle}</span>
                         <div className="section-title">Most Popular Pizzas</div>
                     </div>
                 </div>

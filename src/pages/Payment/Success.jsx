@@ -26,7 +26,7 @@ function Success() {
 
     useEffect(() => {
         localStorage.removeItem("cart");
-        setCart();
+        setCart({ product: [] });
     }, [placeOrderData]);
 
     useEffect(() => {

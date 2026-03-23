@@ -1,15 +1,19 @@
 
+
 export const SpecialBasesSelector = ({ data, SpecialBases, handleSpecialBases }) => {
-    const isSelected = SpecialBases === data?.specialbaseCode;
     return (
-        <button
-            type="button"
-            className={`cust-pill-btn ${isSelected ? 'cust-pill-btn--active' : ''}`}
-            onClick={() => handleSpecialBases(isSelected ? '' : data?.specialbaseCode)}
-        >
-            {isSelected && <i className="bi bi-check2 me-1" />}
-            {data?.specialbaseName}
-            {data?.price !== null && data?.price != 0 && <span className="cust-pill-price"> +${data?.price}</span>}
-        </button>
-    );
+        // changes
+        <div className={`theme-border ${SpecialBases === data?.specialbaseCode ? 'active' : ''}`} onClick={() => handleSpecialBases(SpecialBases === data?.specialbaseCode ? '' : data?.specialbaseCode)}>
+            <div className="d-flex justify-content-between align-items-center" >
+                <div className="d-flex align-items-center gap-2">
+                    {SpecialBases === data?.specialbaseCode ? (
+                        <i className="bi bi-check-circle-fill" />
+                    ) : (
+                        <i className="bi bi-plus-circle" />
+                    )}
+                    <div className="">{`${data?.specialbaseName}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
+                </div>
+            </div>
+        </div>
+    )
 }

@@ -73,75 +73,112 @@ function MyOrders({ reset }) {
     ];
 
     // Handle
-    const fetchData = async (page, isClear) => {
-
+    // Handle
+    const fetchData = async (page, isClear = false, customPerPage = perPage) => {
         setLoading(true);
-        let payload;
-        if (isClear === true) {
-            payload = {
-                fromDate: "",
-                toDate: "",
-                transactionId: "",
-                customerCode: user?.customerCode,
-                page: page,
-            };
-        } else {
-            payload = {
-                fromDate: fromDate ? fromDate : "",
-                toDate: toDate ? toDate : "",
-                transactionId: transactionId,
-                customerCode: user?.customerCode,
-                page: page,
-            };
-        }
-        await getOrderList(payload)
-            .then((response) => {
-                setData(response.data);
-                setTotalRows(response.totalCount);
-                setPerPage(response.perPage);
-                setCurrentPage(response.currentPage);
-            })
-            .catch((err) => {
-                console.error("No Data Found", err);
-            }).finally(() => {
-                setLoading(false);
-            });
+        const custCode = user?.data?.customerCode || user?.customerCode;
 
+        let payload = {
+            fromDate: isClear ? "" : (fromDate || ""),
+            toDate: isClear ? "" : (toDate || ""),
+            transactionId: isClear ? "" : transactionId,
+            customerCode: custCode,
+            page: page,
+            perPage: customPerPage, // Many backends use perPage
+            limit: customPerPage,   // Some backends use limit
+            per_page: customPerPage, // Others use per_page
+            pageSize: customPerPage,
+            page_size: customPerPage,
+            size: customPerPage
+        };
+
+        try {
+            // Initial fetch to see what the backend honors
+            let reqPayload = { ...payload };
+            let firstResponse = await getOrderList(reqPayload);
+            let totalCount = firstResponse.totalCount || 0;
+            // Determine the true limit the backend gave us (e.g. 10)
+            let actualBackendLimit = firstResponse.perPage || (firstResponse.data && firstResponse.data.length) || 10;
+            if (actualBackendLimit === 0) actualBackendLimit = 10;
+
+            // If backend already gave us enough, or there are no more records anyway, just return
+            if (actualBackendLimit >= customPerPage || totalCount <= actualBackendLimit) {
+                setData(firstResponse.data || []);
+                setTotalRows(totalCount);
+                setPerPage(customPerPage);
+                setCurrentPage(page);
+                setLoading(false);
+                return;
+            }
+
+            // --- VIRTUAL PAGING ---
+            // If user wants page=1 (size 15) and backend gives size 10:
+            // We need items 0 to 14. Which means backend page 1 (items 0-9) and backend page 2 (items 10-19)
+            const startIdx = (page - 1) * customPerPage;
+            const endIdx = startIdx + customPerPage;
+
+            const startBackendPage = Math.floor(startIdx / actualBackendLimit) + 1;
+            const endBackendPage = Math.floor((endIdx - 1) / actualBackendLimit) + 1;
+
+            let allAggregatedData = [];
+
+            for (let p = startBackendPage; p <= endBackendPage; p++) {
+                let currentRes;
+                if (p === page) {
+                    // We already fetched the UI 'page' which coincidentally might have been this backend page 
+                    // (Note: works best if UI page == Backend page, but fetching it again if not matching is fine)
+                    currentRes = firstResponse;
+                } else {
+                    let subsequentPayload = { ...payload, page: p };
+                    currentRes = await getOrderList(subsequentPayload);
+                }
+
+                if (currentRes.data) {
+                    allAggregatedData = allAggregatedData.concat(currentRes.data);
+                }
+
+                // Stop early if hit the end of available backend records
+                if (!currentRes.data || currentRes.data.length < actualBackendLimit) {
+                    break;
+                }
+            }
+
+            // Slice out exactly the portion requested by the UI
+            // calculate the starting index of the aggregated data array relative to the overall dataset
+            const aggregatedStartIdx = (startBackendPage - 1) * actualBackendLimit;
+            // relative offset to start taking items for the UI
+            const localStart = startIdx - aggregatedStartIdx;
+            
+            const slicedData = allAggregatedData.slice(localStart, localStart + customPerPage);
+
+            setData(slicedData);
+            setTotalRows(totalCount);
+            setPerPage(customPerPage);
+            setCurrentPage(page);
+
+        } catch (err) {
+            console.error("No Data Found", err);
+        } finally {
+            setLoading(false);
+        }
     };
+
     const handlePageChange = (page) => {
-        fetchData(page, false);
+        fetchData(page, false, perPage);
     };
 
     const handlePerRowsChange = async (newPerPage, page) => {
-        setLoading(true);
-        const payload = {
-            fromDate: fromDate ? fromDate : "",
-            toDate: toDate ? toDate : "",
-            transactionId: transactionId,
-            customerCode: user?.customerCode,
-            page: page,
-        };
-        await getOrderList(payload)
-            .then((response) => {
-                setData(response.data);
-                setTotalRows(response.totalCount);
-                setPerPage(response.perPage);
-                setCurrentPage(response.currentPage);
-            })
-            .catch((err) => {
-                toast.error("No Data Found", err);
-            }).finally(() => {
-                setLoading(false);
-            });
+        setPerPage(newPerPage);
+        fetchData(page, false, newPerPage);
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
         if (fromDate === "" && toDate === "") {
-            fetchData(1, false);
+            fetchData(1, false, perPage);
         } else {
             if (fromDate <= toDate) {
-                fetchData(1);
+                fetchData(1, false, perPage);
             } else {
                 toast.error("From Date cannot be greater than To Date.");
             }
@@ -152,7 +189,7 @@ function MyOrders({ reset }) {
         setFromDate("");
         setToDate("");
         setTransactionId("");
-        fetchData(1, true);
+        fetchData(1, true, perPage);
     };
 
     useEffect(() => {
@@ -240,6 +277,7 @@ function MyOrders({ reset }) {
                                 pagination
                                 paginationServer
                                 paginationTotalRows={totalRows}
+                                paginationPerPage={perPage}
                                 onChangeRowsPerPage={handlePerRowsChange}
                                 onChangePage={handlePageChange}
                             />

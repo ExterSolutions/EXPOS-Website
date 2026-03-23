@@ -1,7 +1,6 @@
 // src/pages/Home.jsx - UPDATED VERSION
 import React, { useContext, useEffect, useState, Suspense, lazy } from "react";
 import Header from "../components/_main/Header/Header";
-import SEOHead from "../components/_main/SEOHead";
 import Footer from "../components/_main/Footer";
 import { useLocation } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
@@ -110,7 +109,7 @@ const Home = () => {
             if (error.response?.status === 400 || error.response?.status === 500) {
                 toast.error(error.response.data.message || 'An error occurred while fetching data.');
             } else {
-                toast.error('An unexpected error occurred.');
+                // toast.error('An unexpected error occurred.');
             }
         } finally {
             setLoading(false);
@@ -142,26 +141,23 @@ const Home = () => {
 
     return (
         <div>
-            <SEOHead
-              title="Exter Pizza - Order Fresh Pizza Online | Delivery &amp; Pickup"
-              description="Order fresh, handcrafted pizza online from Exter Pizza. Choose from signature pizzas, build your own, special deals, and more. Fast delivery and pickup available."
-              canonical="https://www.exter.ca/"
-            />
             <Header />
             <div className="inner-nav"></div>
+            {/* <Suspense fallback={<LoadingLayout />}>
+                <HeroSliderNew sliderData={sliderDataNew} />
+            </Suspense> */}
             <div className="container-fluid container-lg px-0">
                 <CategoryPizza />
-                {/* Offer Cards hidden — big image banners replaced by card carousels */}
-                {/* <OfferCards offers={offerCards} /> */}
-                <PizzaCarousel sectionSubTitle={`🔥 Craving Something Delicious?`} sectionTitle={`Top Deals`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
-                <PizzaCarousel sectionSubTitle={`Chef's Selection`} sectionTitle={`Special + Toppings`} pizzas={specialPizzaWithToppings} type="special" redirectBase={'/special-offers-with-toppings'} />
-                <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Signature Pizzas`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} />
-                <PizzaCarousel sectionSubTitle={`Fan Favourites`} sectionTitle={`Other Pizzas`} pizzas={otherPizzaList} type="other" redirectBase={'/otherpizza'} />
-                <PizzaCarousel sectionSubTitle={`Our Customers Love These`} sectionTitle={`Best Sellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} showBestSelling={true} />
+                <OfferCards offers={offerCards} />
+                <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
+                <PizzaCarousel sectionSubTitle={`Craving Something Delicious?`} sectionTitle={`Explore Our Top Deals+toppings`} pizzas={specialPizzaWithToppings} type="special" redirectBase={'/special-offers-with-toppings'} />
+                <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Our Delicious Items`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} />
+                <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Our Customers Top Picks`} pizzas={otherPizzaList} type="other" redirectBase={'/otherpizza'} />
+                <PizzaCarousel sectionSubTitle={`Select your Flavour`} sectionTitle={`Try Our Bestsellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} />
             </div>
             <div className="container-fluid px-0">
                 {/* <DownloadSection /> */}
-                <Footer showOnMobile />
+                <Footer />
             </div>
         </div>
     );

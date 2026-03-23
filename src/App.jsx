@@ -6,15 +6,12 @@ import "./assets/styles/style.css";
 
 import "react-toastify/dist/ReactToastify.css";
 import AllRoutes from "./routes/AllRoutes";
-import BottomNav from "./components/_main/BottomNav";
 
 
 function App() {
     return (
         <div id="wrapper">
             <AllRoutes />
-            {/* Mobile Bottom Navigation Bar */}
-            <BottomNav />
             {/* Toast */}
             <ToastContainer hideProgressBar={false} position="top-right" />
         </div>

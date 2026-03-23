@@ -63,11 +63,11 @@ function CheckoutPage() {
                                         className="nav nav-tabs w-100"
                                         id="nav-tab"
                                         role="tablist"
-                                        style={{ border: "none", display: 'flex' }}
+                                        style={{ border: "none" }}
                                     >
 
                                         <button
-                                            className={`nav-link py-3 px-md-5 px-3 flex-grow-1 text-center fw-semibold ${selectedType === 'pickup' ? 'active' : ''}`}
+                                            className={`nav-link py-md-2 py-1 px-md-5 px-3 ${selectedType === 'pickup' ? 'active' : ''}`}
                                             id="nav-home-tab"
                                             data-bs-toggle="tab"
                                             data-bs-target="#nav-home"
@@ -89,7 +89,7 @@ function CheckoutPage() {
                                             role="tab"
                                             aria-controls="nav-profile"
                                             aria-selected="false"
-                                            onClick={() => setSelectedType("pickup")}
+                                            onClick={() => setSelectedType("delivery")}
                                         >
                                             Delivery
                                         </button> */}
