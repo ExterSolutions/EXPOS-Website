@@ -1,21 +1,21 @@
 // config/theme.js
 export const theme = {
     primary: {
-        main: '#238629',
-        light: '#d3ffd6ff',
-        dark: '#004705ff',
+        main: '#e52c2c',
+        light: '#FFA6A6',
+        dark: '#980404',
         contrast: '#FFFFFF'
     },
     subprimary: {
-        main: '#238629',
-        light: '#d3ffd6ff',
-        dark: '#004705ff',
+        main: '#e52c2c',
+        light: '#FFA6A6',
+        dark: '#980404',
         contrast: '#FFFFFF'
     },
     secondary: {
-        main: '#238629',
-        light: '#d3ffd6ff',
-        dark: '#004705ff',
+        main: '#e52c2c',
+        light: '#FFA6A6',
+        dark: '#980404',
         contrast: '#FFFFFF'
     }
 };
@@ -26,7 +26,6 @@ export const colors = {
     primary: theme.primary.main,
     'primary-light': theme.primary.light,
     'primary-dark': theme.primary.dark,
-
 
     subprimary: theme.subprimary.main,
     'subprimary-light': theme.subprimary.light,
@@ -39,4 +38,12 @@ export const colors = {
 
 
 
-{/*e52c2c = Chandigarh  theme //panjabtheme =f16724 // /singhtheme=ef4507*/ }
+{
+    /*
+    Chandigarh theme = e52c2c,
+    Panjabpizza theme = f16724 
+    Singhflames theme = ef4507
+    Exter theme = 238629,d3ffd6ff,004705ff
+    */
+
+}
