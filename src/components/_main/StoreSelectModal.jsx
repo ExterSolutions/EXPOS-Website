@@ -5,29 +5,39 @@ import { getStoreLocationByCity } from '../../services/index';
 import { GlobalContext } from '../../context/GlobalContext';
 import CartFunction from '../../components/cart';
 
-function setStoreCookie(storeDetail) {
+function setLocalStoreCookie(storeDetail) {
     try {
-        const hostname = window.location.hostname;
         const json = JSON.stringify(storeDetail);
-
-        // Use same XOR obfuscation for cookie
         const SECRET = "exter_store_pizza";
         const scrambled = json.split('').map((char, i) =>
             String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
         ).join('');
         const encoded = btoa(unescape(encodeURIComponent(scrambled)));
-
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
 
-        // Clear root domain cookie to ensure no cross-subdomain bleeding occurs
-        if (hostname.endsWith('exter.ca')) {
-            document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-        }
-        
-        // Exact match subdomain cookie
+        // NO domain=... means it's restricted to THIS subdomain (preventing leakage)
         document.cookie = `ext_store=${encoded}; path=/; expires=${expires}; SameSite=Lax`;
     } catch (e) {
-        console.error("Failed to set store cookie:", e);
+        console.error("Failed to set local store cookie:", e);
+    }
+}
+
+function setTransferStoreCookie(storeDetail) {
+    try {
+        const hostname = window.location.hostname;
+        const json = JSON.stringify(storeDetail);
+        const SECRET = "exter_store_pizza";
+        const scrambled = json.split('').map((char, i) =>
+            String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
+        ).join('');
+        const encoded = btoa(unescape(encodeURIComponent(scrambled)));
+        const expires = new Date(Date.now() + 60 * 1000).toUTCString(); // VERY short expiry (1 min)
+        const domain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
+
+        // Set on root domain for the redirect HANDOVER
+        document.cookie = `ext_store_transfer=${encoded}; domain=${domain}; path=/; expires=${expires}; SameSite=Lax`;
+    } catch (e) {
+        console.error("Failed to set transfer store cookie:", e);
     }
 }
 
@@ -73,16 +83,16 @@ export default function StoreSelectModal({ onClose, required = false }) {
             province: apiStore.province, // Pass province for tax calculation
         };
 
-        if (cityGroup.city === currentCity) {
-            setStoreCookie(storeDetail);
-            updateSelectedStore(storeDetail);
+        const currentCityName = currentCity?.value || currentCity?.city || '';
+
+        if (cityGroup.city === currentCityName) {
+            setLocalStoreCookie(storeDetail); // Update cookie for THIS subdomain
+            globalCtx.updateSelectedStore(storeDetail);
             onClose();
         } else {
-            // Clear cart when changing to a different city
-            const cartFn = new CartFunction();
-            cartFn.clearCart(setCart);
+            // CROSS-SITE REDIRECT: Different city/subdomain
+            setTransferStoreCookie(storeDetail); // Root domain for HANDOVER ONLY
 
-            setStoreCookie(storeDetail);
             const baseUrl = (cityGroup.site_url || '/').trim().replace(/\/$/, '');
             window.location.href = baseUrl;
         }

@@ -34,7 +34,6 @@ import SignaturePizzaList from "../pages/SignaturePizza/SignaturePizza.jsx";
 import EditSpecialOffer from "../pages/SpecialOffer/EditSpecialOffer.jsx";
 import SpecialOffer from "../pages/SpecialOffer/SpecialOffer.jsx";
 import SpecialOfferList from "../pages/SpecialOffer/SpecialOfferList.jsx";
-import Stores from "../pages/Stores.jsx";
 import TermsCondtions from "../pages/TermsCondtions.jsx";
 import SpecialOfferPage from "../pages/SpecialOfferNew/SpecialOfferPage.jsx";
 import EditSpecialOfferPage from "../pages/SpecialOfferNew/EditSpecialOfferPage.jsx";
@@ -57,11 +56,7 @@ const AllRoutes = () => {
             <Sidebar />
             <Routes>
                 <Route index path="/" element={<Home />} />
-                {/* <Route path="/stores" element={<Stores />} /> */}
-                {/* <Route path="/about-us" element={<AboutUs />} /> */}
-                {/* <Route path="/contact-us" element={<ContactUs />} /> */}
                 <Route path="/menu" element={<Menu />} />
-                {/* <Route path="/franchise" element={<Franchise />} /> */}
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/terms-conditions" element={<TermsCondtions />} />

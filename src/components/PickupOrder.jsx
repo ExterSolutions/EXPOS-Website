@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { GlobalContext } from "../context/GlobalContext";
+import CartFunction from "./cart";
 import { useSocket } from "../context/SocketContext";
 import { applyCoupon, getStoreLocationByCity, orderPlace, settingApi } from "../services";
 
@@ -197,6 +198,10 @@ function PickupOrder() {
             if (socket) socket.emit("order-place", response.data);
             localStorage.setItem("OrderID", response.orderCode);
             localStorage.setItem("sessionId", response.sessionId);
+
+            // Clear the cart immediately since the order is now placed backend
+            const cartFn = new CartFunction();
+            cartFn.clearCart(setCart);
 
             if (response.paymentUrl) {
                 window.location.href = response.paymentUrl;

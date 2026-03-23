@@ -8,17 +8,34 @@ export const GlobalProvider = ({ children }) => {
   const getCookieData = () => {
     try {
       const cookies = document.cookie.split("; ");
-      const storeCookie = cookies.find((row) => row.startsWith("ext_store="));
-      if (storeCookie) {
-        const base64 = storeCookie.substring("ext_store=".length);
-        const scrambled = decodeURIComponent(escape(atob(base64)));
+      const hostname = window.location.hostname;
+      const rootDomain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
 
-        // De-scramble using XOR and same secret key
+      // 1. Check for Transfer Cookie (Root Domain - set during redirects)
+      const transferPair = cookies.find((row) => row.startsWith("ext_store_transfer="));
+      if (transferPair) {
+        const base64 = transferPair.substring("ext_store_transfer=".length);
+        const scrambled = decodeURIComponent(escape(atob(base64)));
         const SECRET = "exter_store_pizza";
         const json = scrambled.split('').map((char, i) =>
           String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
         ).join('');
+        
+        // CONSUME: Delete from root domain so it doesn't affect other tabs on next refresh
+        document.cookie = `ext_store_transfer=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        
+        return JSON.parse(json);
+      }
 
+      // 2. Fallback to Local Cookie (Subdomain Specific)
+      const localPair = cookies.find((row) => row.startsWith("ext_store="));
+      if (localPair) {
+        const base64 = localPair.substring("ext_store=".length);
+        const scrambled = decodeURIComponent(escape(atob(base64)));
+        const SECRET = "exter_store_pizza";
+        const json = scrambled.split('').map((char, i) =>
+          String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
+        ).join('');
         return JSON.parse(json);
       }
     } catch (e) {
@@ -254,11 +271,13 @@ export const GlobalProvider = ({ children }) => {
     localStorage.removeItem("currentLogitude");
 
     const hostname = window.location.hostname;
-    // Clear root-domain cookie if exists
-    if (hostname.endsWith('exter.ca')) {
-        document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-    }
-    // Clear isolated domain cookie
+    const rootDomain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
+
+    // Clear root-domain transfer cookie
+    document.cookie = `ext_store_transfer=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    // Clear root-domain store cookie if any legacy ones exist
+    document.cookie = `ext_store=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    // Clear local subdomain store cookie
     document.cookie = `ext_store=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
   };
 
@@ -270,7 +289,6 @@ export const GlobalProvider = ({ children }) => {
     // Sync to cookie, but isolate to current subdomain
     if (storeDetail) {
       try {
-        const hostname = window.location.hostname;
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
 
         // XOR Obfuscation
@@ -281,12 +299,8 @@ export const GlobalProvider = ({ children }) => {
         ).join('');
         const encoded = btoa(unescape(encodeURIComponent(scrambled)));
 
-        // Clear root domain cookie to prevent cross-subdomain bleeding
-        if (hostname.endsWith('exter.ca')) {
-            document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-        }
-
-        // Set subdomain-specific cookie (no generic domain=... ensures exact match)
+        // Set LOCAL subdomain cookie (no generic domain=... ensures exact match)
+        // This prevents Calgary selection from appearing on Brampton subdomain
         document.cookie = `ext_store=${encoded}; path=/; expires=${expires}; SameSite=Lax`;
       } catch (e) {
         console.warn("[GlobalContext] Failed to sync store cookie:", e);

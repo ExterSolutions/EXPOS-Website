@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import swal from "sweetalert";
 import * as Yup from "yup";
 import { GlobalContext } from "../context/GlobalContext";
+import CartFunction from "../components/cart";
 import { useSocket } from "../context/SocketContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import {
@@ -395,6 +396,10 @@ function AddressDetails() {
             };
 
             const orderResponse = await orderPlace(orderPayload);
+
+            // Clear the cart immediately since the order is placed backend
+            const cartFn = new CartFunction();
+            cartFn.clearCart(setCart);
 
             // Emit socket event
             const socketOrderData = orderResponse.data;
