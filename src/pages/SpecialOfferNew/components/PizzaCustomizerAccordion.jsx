@@ -1,12 +1,218 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import SignaturePizzaSelector from "./SignaturePizzaSelector";
-import OptionSelector from "./OptionSelector";
+import OptionSheet from "../../../components/_main/OptionSheet";
 import { fetchSignaturePizzaDefaults } from "../../../services";
-import ToppingAccordion from "./ToppingAccordion";
 import ToppingsSelector from "./ToppingsSelector";
 
+// ─── Option config (maps optionKey → code/name field names) ─────────────────
+const OPTION_CONFIG = {
+    crust:        { codeKey: "crustCode",        nameKey: "crustName" },
+    crustType:    { codeKey: "crustTypeCode",    nameKey: "crustType" },
+    cheese:       { codeKey: "cheeseCode",       nameKey: "cheeseName" },
+    specialBases: { codeKey: "specialbaseCode",  nameKey: "specialbaseName" },
+    spicy:        { codeKey: "spicyCode",        nameKey: "spicy" },
+    sauce:        { codeKey: "sauceCode",        nameKey: "sauce" },
+    cook:         { codeKey: "cookCode",         nameKey: "cook" },
+};
+
+// ─── Convert backend option to { id, label, price } used by OptionSheet ─────
+function normalizeOptions(arr = [], optionkey) {
+    const config = OPTION_CONFIG[optionkey];
+    if (!config || !arr?.length) return [];
+    return arr.map((opt) => ({
+        id:    opt[config.codeKey] ?? opt.code ?? "",
+        label: opt[config.nameKey] ?? opt.name ?? "",
+        price: Number(opt.price || 0),
+    }));
+}
+
+// ─── Get selected id from a pizzaSelections field ────────────────────────────
+function getSelectedId(selected, optionkey) {
+    const config = OPTION_CONFIG[optionkey];
+    if (!config || !selected) return null;
+    return selected[config.codeKey] ?? null;
+}
+function getSelectedLabel(selected, optionkey) {
+    const config = OPTION_CONFIG[optionkey];
+    if (!config || !selected) return null;
+    return selected[config.nameKey] ?? null;
+}
+
+// ─── Trigger button (matches style.css .topping-trigger-btn) ─────────────────
+function TriggerBtn({ icon, label, value, onClick }) {
+    return (
+        <button className="topping-trigger-btn" onClick={onClick} type="button">
+            <span className="topping-trigger-btn__icon">{icon}</span>
+            <span className="topping-trigger-btn__label">{label}</span>
+            {value && <span className="topping-trigger-btn__count">{value}</span>}
+            <span className="topping-trigger-btn__arrow">›</span>
+        </button>
+    );
+}
+
+// ─── Toppings count badge helper ─────────────────────────────────────────────
+function toppingCountLabel(pizzaSelections) {
+    const c2 = pizzaSelections?.toppings?.countAsTwoToppings?.length || 0;
+    const c1 = pizzaSelections?.toppings?.countAsOneToppings?.length || 0;
+    const cf = pizzaSelections?.toppings?.freeToppings?.length || 0;
+    const total = c2 + c1 + cf;
+    return total > 0 ? `${total} selected` : null;
+}
+function allToppingNames(pizzaSelections) {
+    return [
+        ...(pizzaSelections?.toppings?.countAsTwoToppings || []),
+        ...(pizzaSelections?.toppings?.countAsOneToppings || []),
+        ...(pizzaSelections?.toppings?.freeToppings || []),
+    ].map((t) => t.toppingsName || t.name || "");
+}
+
+// ─── Inner topping adapters for ToppingSheet ────────────────────────────────
+// ToppingSheet expects ToppingTwoSelector / ToppingOneSelector / FreeToppingSelector
+// as React classes that receive (data, ToppingsTwo, handleTopping, handleSizeChange).
+// ToppingsSelector in SpecialOfferNew already has its own API, so we wire them differently.
+// We'll use ToppingSheet's own internal rendering — which calls these class props.
+// Instead of faking adapters, we'll build a simpler inline topping popup using ToppingsSelector.
+
+const TOPPINGS_TABS = [
+    { id: "countAsTwo",  label: "Premium Toppings"  },
+    { id: "countAsOne",  label: "Regular Toppings"  },
+    { id: "free",        label: "Indian Toppings" },
+];
+
+function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelections, settings, onUpdateCustomization, index }) {
+    const [activeTab, setActiveTab] = useState("countAsTwo");
+
+    const handleToppingsChange = (type, list) => {
+        const current = pizzaSelections?.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] };
+        const updated = { ...current, [type]: list };
+        onUpdateCustomization(index, "toppings", updated);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <>
+            {/* Backdrop */}
+            <div className="topping-sheet-backdrop" onClick={onClose} aria-hidden="true" />
+
+            {/* Sheet */}
+            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true" aria-label="Choose Toppings">
+                <div className="topping-sheet__handle" />
+
+                {/* Header */}
+                <div className="topping-sheet__header">
+                    <div>
+                        <p className="topping-sheet__title">Choose Toppings</p>
+                        {toppingCountLabel(pizzaSelections) && (
+                            <p className="topping-sheet__subtitle">{toppingCountLabel(pizzaSelections)}</p>
+                        )}
+                    </div>
+                    <button className="topping-sheet__close" onClick={onClose} aria-label="Close">✕</button>
+                </div>
+
+                {/* Tabs */}
+                <div className="topping-sheet__tabs">
+                    {TOPPINGS_TABS.map((tab) => {
+                        const count =
+                            tab.id === "countAsTwo" ? (pizzaSelections?.toppings?.countAsTwoToppings?.length || 0) :
+                            tab.id === "countAsOne" ? (pizzaSelections?.toppings?.countAsOneToppings?.length || 0) :
+                            (pizzaSelections?.toppings?.freeToppings?.length || 0);
+                        return (
+                            <button
+                                key={tab.id}
+                                className={`topping-sheet__tab ${activeTab === tab.id ? "topping-sheet__tab--active" : ""}`}
+                                onClick={() => setActiveTab(tab.id)}
+                                type="button"
+                            >
+                                {tab.label}
+                                {count > 0 && (
+                                    <span
+                                        className="topping-sheet__tab-badge"
+                                        style={{
+                                            marginLeft: '6px',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            minWidth: '20px',
+                                            height: '20px',
+                                            padding: '0 5px',
+                                            borderRadius: '10px',
+                                            background: 'rgba(255,255,255,0.35)',
+                                            fontSize: '0.72rem',
+                                            fontWeight: '700',
+                                            lineHeight: '1',
+                                            flexShrink: 0,
+                                        }}
+                                    >{count}</span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Body */}
+                <div className="topping-sheet__body">
+                    {activeTab === "countAsTwo" && (
+                        <ToppingsSelector
+                            key={`premium-${index}`}
+                            title={settings?.premiumTopppingLabel || "Premium"}
+                            options={toppings?.countAsTwo ?? []}
+                            defaultOptions={[]}
+                            selected={pizzaSelections?.toppings?.countAsTwoToppings ?? []}
+                            onChange={(list) => handleToppingsChange("countAsTwoToppings", list)}
+                            toppingCount={offerData?.premiumToppingsCount || 1}
+                            isIndianStyle={false}
+                        />
+                    )}
+                    {activeTab === "countAsOne" && (
+                        <ToppingsSelector
+                            key={`regular-${index}`}
+                            title={settings?.regularToppingLabel || "Regular"}
+                            options={toppings?.countAsOne ?? []}
+                            defaultOptions={[]}
+                            selected={pizzaSelections?.toppings?.countAsOneToppings ?? []}
+                            onChange={(list) => handleToppingsChange("countAsOneToppings", list)}
+                            toppingCount={1}
+                            isIndianStyle={false}
+                        />
+                    )}
+                    {activeTab === "free" && (
+                        <ToppingsSelector
+                            key={`indian-${index}`}
+                            title="Indian Toppings"
+                            options={toppings?.freeToppings ?? []}
+                            defaultOptions={[]}
+                            selected={pizzaSelections?.toppings?.freeToppings ?? []}
+                            onChange={(list) => {
+                                const totalFree = toppings?.freeToppings?.length || 0;
+                                const isAllSelected = list.length === totalFree;
+                                const current = pizzaSelections?.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] };
+                                onUpdateCustomization(index, "toppings", { ...current, freeToppings: list });
+                                onUpdateCustomization(index, "isAllIndiansTps", isAllSelected);
+                            }}
+                            toppingCount={1}
+                            isIndianStyle={true}
+                        />
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className="topping-sheet__footer">
+                    <button className="topping-sheet__done" onClick={onClose} type="button">Done</button>
+                </div>
+            </div>
+        </>
+    );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 const PizzaCustomizerAccordion = ({
     index,
+    totalPizzas,
+    isActive,
+    onSetActive,
+    onNext,
+    onBack,
     settings,
     toppings,
     offerData,
@@ -15,28 +221,32 @@ const PizzaCustomizerAccordion = ({
     onUpdateCustomization,
     isEditMode = false,
 }) => {
-    console.log('offerData', offerData)
     const hasPreselectedFreeToppingsRef = useRef(false);
     const hasHydratedEditRef = useRef(false);
-    const accordionId = `pizzaAccordion-${index}`;
-    const headerId = `pizzaHeader-${index}`;
-    const collapseId = `pizzaCollapse-${index}`;
+    const cardRef = useRef(null);
 
-    const [isOpen, setIsOpen] = useState(true);
     const [signatureCode, setSignatureCode] = useState(pizzaSelections?.signaturePizzaCode || null);
     const [loading, setLoading] = useState(false);
     const [signatureDetails, setSignatureDetails] = useState(null);
-    const [activeTab, setActiveTab] = useState("basics");
-    const [activeToppingsTab, setActiveToppingsTab] = useState("countAsTwo");
 
-    /* ---------- Initialize signature code from pizzaSelections (for edit mode) ---------- */
+    // Sheet open states — one per category
+    const [openSheet, setOpenSheet] = useState(null); // 'cheese'|'crust'|'crustType'|'specialBases'|'sauce'|'spicy'|'cook'|'toppings'|null
+
+    // Scroll into view when becoming active
+    useEffect(() => {
+        if (isActive && cardRef.current) {
+            setTimeout(() => {
+                cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }, [isActive]);
+
     useEffect(() => {
         if (pizzaSelections?.signaturePizzaCode && !signatureCode) {
             setSignatureCode(pizzaSelections.signaturePizzaCode);
         }
     }, [pizzaSelections?.signaturePizzaCode]);
 
-    /* ---------- Handlers ---------- */
     const makeOptionHandler = useCallback(
         (field) => (opt) => {
             onUpdateCustomization(index, field, opt);
@@ -44,37 +254,12 @@ const PizzaCustomizerAccordion = ({
         [index, onUpdateCustomization]
     );
 
-    const handleToggleAccordion = (e) => {
-        e.preventDefault();
-        setIsOpen((prev) => !prev);
-    };
-
-    // ✅ Centralized toppings update handler
-    const handleToppingsChange = (type, list) => {
-        const currentToppings = pizzaSelections?.toppings || {
-            countAsTwoToppings: [],
-            countAsOneToppings: [],
-            freeToppings: [],
-        };
-
-        const updatedToppings = {
-            ...currentToppings,
-            [type]: list,
-        };
-
-        onUpdateCustomization(index, "toppings", updatedToppings);
-    };
-
     const preselectFreeToppingsIfNeeded = () => {
-        if (isEditMode) return; // ❌ NEVER in edit mode
+        if (isEditMode) return;
         if (hasPreselectedFreeToppingsRef.current) return;
         if (!toppings?.freeToppings?.length) return;
-
-        const alreadySelected =
-            pizzaSelections?.toppings?.freeToppings?.length > 0;
-
+        const alreadySelected = pizzaSelections?.toppings?.freeToppings?.length > 0;
         if (alreadySelected) return;
-
         const allFree = toppings.freeToppings.map((opt) => ({
             toppingsCode: opt.toppingsCode || opt.code,
             toppingsName: opt.toppingsName ?? opt.name ?? "Topping",
@@ -83,14 +268,11 @@ const PizzaCustomizerAccordion = ({
             pizzaIndex: index,
             amount: "0.00",
         }));
-
         hasPreselectedFreeToppingsRef.current = true;
-
         onUpdateCustomization(index, "toppings", {
             ...pizzaSelections.toppings,
             freeToppings: allFree,
         });
-
         onUpdateCustomization(index, "isAllIndiansTps", true);
     };
 
@@ -101,21 +283,11 @@ const PizzaCustomizerAccordion = ({
         if (selectedPizza) {
             onUpdateCustomization(index, "signaturePizzaCode", selectedPizza.code || selectedPizza.sideCode || selectedPizza.id);
             onUpdateCustomization(index, "signaturePizzaName", selectedPizza.pizza_name || selectedPizza.pizzaName || selectedPizza.name || selectedPizza.sideName || "");
-            // ✅ CRITICAL: Reset toppings when signature pizza changes
-            onUpdateCustomization(index, "toppings", {
-                countAsTwoToppings: [],
-                countAsOneToppings: [],
-                freeToppings: [],
-            });
+            onUpdateCustomization(index, "toppings", { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] });
         } else {
-            // If cleared (user chose "-- Select Pizza --")
             onUpdateCustomization(index, "signaturePizzaCode", null);
             onUpdateCustomization(index, "signaturePizzaName", null);
-            onUpdateCustomization(index, "toppings", {
-                countAsTwoToppings: [],
-                countAsOneToppings: [],
-                freeToppings: [],
-            });
+            onUpdateCustomization(index, "toppings", { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] });
         }
     };
 
@@ -124,27 +296,13 @@ const PizzaCustomizerAccordion = ({
             setLoading(true);
             const response = await fetchSignaturePizzaDefaults(signatureCode);
             const details = response.data;
-
-            const normalizeDefault = (item, priceKey = "price") => {
+            const normalizeDefault = (item) => {
                 if (!item) return null;
-                return {
-                    ...item,
-                    [priceKey]: 0,
-                };
+                return { ...item, price: 0 };
             };
-
-            const findByCode = (key, list, code) =>
-                list?.find((i) => i[key] === code) || null;
-
-            const signatureMatchesCart =
-                isEditMode &&
-                pizzaSelections?.signaturePizzaCode === signatureCode;
-
-            if (
-                isEditMode &&
-                signatureMatchesCart &&
-                !hasHydratedEditRef.current
-            ) {
+            const findByCode = (key, list, code) => list?.find((i) => i[key] === code) || null;
+            const signatureMatchesCart = isEditMode && pizzaSelections?.signaturePizzaCode === signatureCode;
+            if (isEditMode && signatureMatchesCart && !hasHydratedEditRef.current) {
                 hasHydratedEditRef.current = true;
                 setSignatureDetails(details);
                 preselectFreeToppingsIfNeeded();
@@ -158,47 +316,13 @@ const PizzaCustomizerAccordion = ({
                 return;
             }
             if (!isEditMode) {
-
-                const cheese = normalizeDefault(
-                    findByCode("cheeseCode", offerData.cheese, details.cheese?.code)
-                );
-
-                const crust = normalizeDefault(
-                    findByCode("crustCode", offerData.crust, details.crust?.code)
-                );
-
-                const crustType = normalizeDefault(
-                    findByCode("crustTypeCode", offerData.crustType, details.crust_type?.code)
-                );
-
-                const specialBases = normalizeDefault(
-                    findByCode(
-                        "specialbaseCode",
-                        offerData.specialbases,
-                        details.special_base?.code
-                    )
-                );
-
-                const sauce = normalizeDefault(
-                    findByCode("sauceCode", offerData.sauce, details.sauce?.code)
-                );
-
-                const spicy = normalizeDefault(
-                    findByCode("spicyCode", offerData.spices, details.spices?.code)
-                );
-
-                const cook = normalizeDefault(
-                    findByCode("cookCode", offerData.cook, details.cook?.code)
-                );
-                // Update customization with defaults
-                onUpdateCustomization(index, "cheese", cheese);
-                onUpdateCustomization(index, "crust", crust);
-                onUpdateCustomization(index, "crustType", crustType);
-                onUpdateCustomization(index, "specialBases", specialBases);
-                onUpdateCustomization(index, "sauce", sauce);
-                onUpdateCustomization(index, "spicy", spicy);
-                onUpdateCustomization(index, "cook", cook);
-                // store fetched defaults
+                onUpdateCustomization(index, "cheese", normalizeDefault(findByCode("cheeseCode", offerData.cheese, details.cheese?.code)));
+                onUpdateCustomization(index, "crust", normalizeDefault(findByCode("crustCode", offerData.crust, details.crust?.code)));
+                onUpdateCustomization(index, "crustType", normalizeDefault(findByCode("crustTypeCode", offerData.crustType, details.crust_type?.code)));
+                onUpdateCustomization(index, "specialBases", normalizeDefault(findByCode("specialbaseCode", offerData.specialbases, details.special_base?.code)));
+                onUpdateCustomization(index, "sauce", normalizeDefault(findByCode("sauceCode", offerData.sauce, details.sauce?.code)));
+                onUpdateCustomization(index, "spicy", normalizeDefault(findByCode("spicyCode", offerData.spices, details.spices?.code)));
+                onUpdateCustomization(index, "cook", normalizeDefault(findByCode("cookCode", offerData.cook, details.cook?.code)));
                 setSignatureDetails(details);
                 preselectFreeToppingsIfNeeded();
             }
@@ -209,247 +333,279 @@ const PizzaCustomizerAccordion = ({
         }
     };
 
-    /* ---------- Fetch Signature Defaults ---------- */
     useEffect(() => {
         if (!signatureCode) return;
         fetchSignatureDetails();
     }, [signatureCode]);
 
-    const TABS = [
-        { id: "basics", label: "Basics" },
-        { id: "bases", label: "Special Base" },
-        { id: "preferences", label: "Preferences" },
-        { id: "toppings", label: "Toppings" },
-    ];
-    const ToppingsTabs = [
-        { id: "countAsTwo", label: settings?.premiumTopppingLabel ?? "Premium" },
-        { id: "countAsOne", label: settings?.regularToppingLabel ?? "Regular" },
-        { id: "free", label: settings?.indianStyleToppingsLabel ?? "Indian Style" },
-    ];
+    const isDone = !!pizzaSelections?.signaturePizzaCode;
 
-    /* ---------- Render ---------- */
+    // OptionSheet handler factory — wraps OptionSelector's API
+    const makeSheetHandler = useCallback((optionkey, field) => (id) => {
+        const config = OPTION_CONFIG[optionkey];
+        if (!config) return;
+        const arr = optionkey === "spicy" ? (offerData?.spices || []) :
+                    optionkey === "specialBases" ? (offerData?.specialbases || []) :
+                    (offerData?.[optionkey] || []);
+        const opt = arr.find((o) => o[config.codeKey] === id);
+        if (!opt) return;
+        onUpdateCustomization(index, field, { [config.codeKey]: opt[config.codeKey], [config.nameKey]: opt[config.nameKey], price: opt.price || 0 });
+    }, [index, onUpdateCustomization, offerData]);
+
     return (
-        <div className="accordion mb-3" id={accordionId}>
-            <div className="accordion-item">
-                <h2 className="accordion-header" id={headerId}>
-                    <button
-                        className={`accordion-button fw-bold ${isOpen ? "text-white" : "collapsed text-dark"
-                            }`} 
-                        type="button"
-                        aria-expanded={isOpen ? "true" : "false"}
-                        aria-controls={collapseId}
-                        onClick={handleToggleAccordion}
-                    >
-                        PIZZA - {index + 1}
-                    </button>
-                </h2>
+        <div
+            ref={cardRef}
+            className={`deal-pizza-card ${isActive ? 'deal-pizza-card--active' : ''} ${isDone && !isActive ? 'deal-pizza-card--done' : ''} mb-3`}
+            onClick={() => !isActive && onSetActive(index)}
+            role="button"
+            style={{ cursor: isActive ? 'default' : 'pointer' }}
+        >
+            {/* Card Header */}
+            <div className="deal-pizza-card__header">
+                <div className="deal-pizza-card__num">
+                    {isDone && !isActive
+                        ? <i className="bi bi-check2" style={{ color: '#fff', fontSize: '1rem' }} />
+                        : <span>{index + 1}</span>
+                    }
+                </div>
+                <div className="deal-pizza-card__title">
+                    <div className="fw-bold" style={{ fontSize: '0.95rem' }}>
+                        Pizza {index + 1}
+                        {pizzaSelections?.signaturePizzaName && (
+                            <span className="deal-pizza-card__selected-name"> — {pizzaSelections.signaturePizzaName}</span>
+                        )}
+                    </div>
+                    {!isActive && (
+                        <div style={{ fontSize: '0.78rem', color: isDone ? '#4CAF50' : '#888', marginTop: 2 }}>
+                            {isDone ? '✓ Configured  — tap to edit' : 'Tap to configure'}
+                        </div>
+                    )}
+                </div>
+                {!isActive && (
+                    <i className="bi bi-chevron-down" style={{ color: '#888', flexShrink: 0 }} />
+                )}
+            </div>
 
-                <div
-                    id={collapseId}
-                    className={`accordion-collapse collapse ${isOpen ? "show" : ""}`}
-                    aria-labelledby={headerId}
-                    data-bs-parent={`#${accordionId}`}
-                >
-                    <div className="accordion-body p-2 p-md-3">
-                        {/* Signature Pizza Selector */}
-                        <SignaturePizzaSelector
-                            signaturePizzas={signaturePizzas}
-                            selectedCode={signatureCode}
-                            onChange={(code) => handleSignaturePizzaChange(code)}
-                        />
+            {/* Card Body — only visible when active */}
+            {isActive && (
+                <div className="deal-pizza-card__body">
+                    <SignaturePizzaSelector
+                        signaturePizzas={signaturePizzas}
+                        selectedCode={signatureCode}
+                        onChange={(code) => handleSignaturePizzaChange(code)}
+                    />
 
-                        {loading ? (
-                            <div className="text-muted p-3 text-center">
-                                Loading customisations...
-                            </div>
-                        ) : (
-                            signatureDetails && (
-                                <div className="mt-3">
-                                    {/* Tabs Header */}
-                                    <div
-                                        className="d-flex overflow-auto scrollbar-hide border-bottom px-2 py-1"
-                                        style={{
-                                            scrollbarWidth: 'none',
-                                            msOverflowStyle: 'none',
-                                        }}
+                    {loading ? (
+                        <div className="text-muted p-3 text-center">Loading customisations...</div>
+                    ) : (
+                        signatureDetails && (
+                            <div className="mt-3">
+                                <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>Customize Your Pizza</p>
+
+                                {/* ── Crust (Dough) ── */}
+                                {offerData?.crust?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="🫓"
+                                            label="Dough"
+                                            value={getSelectedLabel(pizzaSelections?.crust, "crust")}
+                                            onClick={() => setOpenSheet("crust")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "crust"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Dough"
+                                            options={normalizeOptions(offerData.crust, "crust")}
+                                            selected={getSelectedId(pizzaSelections?.crust, "crust")}
+                                            onSelect={makeSheetHandler("crust", "crust")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Crust Type ── */}
+                                {offerData?.crustType?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="⭕"
+                                            label="Crust Type"
+                                            value={getSelectedLabel(pizzaSelections?.crustType, "crustType")}
+                                            onClick={() => setOpenSheet("crustType")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "crustType"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Crust Type"
+                                            options={normalizeOptions(offerData.crustType, "crustType")}
+                                            selected={getSelectedId(pizzaSelections?.crustType, "crustType")}
+                                            onSelect={makeSheetHandler("crustType", "crustType")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Special Base ── */}
+                                {offerData?.specialbases?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="🍕"
+                                            label="Special Base"
+                                            value={getSelectedLabel(pizzaSelections?.specialBases, "specialBases")}
+                                            onClick={() => setOpenSheet("specialBases")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "specialBases"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Special Base"
+                                            options={normalizeOptions(offerData.specialbases, "specialBases")}
+                                            selected={getSelectedId(pizzaSelections?.specialBases, "specialBases")}
+                                            onSelect={makeSheetHandler("specialBases", "specialBases")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Cheese ── */}
+                                {offerData?.cheese?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="🧀"
+                                            label="Cheese"
+                                            value={getSelectedLabel(pizzaSelections?.cheese, "cheese")}
+                                            onClick={() => setOpenSheet("cheese")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "cheese"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Cheese"
+                                            options={normalizeOptions(offerData.cheese, "cheese")}
+                                            selected={getSelectedId(pizzaSelections?.cheese, "cheese")}
+                                            onSelect={makeSheetHandler("cheese", "cheese")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Spicy ── */}
+                                {offerData?.spices?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="🌶️"
+                                            label="Spicy"
+                                            value={getSelectedLabel(pizzaSelections?.spicy, "spicy")}
+                                            onClick={() => setOpenSheet("spicy")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "spicy"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Spice Level"
+                                            options={normalizeOptions(offerData.spices, "spicy")}
+                                            selected={getSelectedId(pizzaSelections?.spicy, "spicy")}
+                                            onSelect={makeSheetHandler("spicy", "spicy")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Sauce ── */}
+                                {offerData?.sauce?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="🥫"
+                                            label="Sauce"
+                                            value={getSelectedLabel(pizzaSelections?.sauce, "sauce")}
+                                            onClick={() => setOpenSheet("sauce")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "sauce"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Sauce"
+                                            options={normalizeOptions(offerData.sauce, "sauce")}
+                                            selected={getSelectedId(pizzaSelections?.sauce, "sauce")}
+                                            onSelect={makeSheetHandler("sauce", "sauce")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Cook ── */}
+                                {offerData?.cook?.length > 0 && (
+                                    <div className="mb-2">
+                                        <TriggerBtn
+                                            icon="🔥"
+                                            label="Cook"
+                                            value={getSelectedLabel(pizzaSelections?.cook, "cook")}
+                                            onClick={() => setOpenSheet("cook")}
+                                        />
+                                        <OptionSheet
+                                            isOpen={openSheet === "cook"}
+                                            onClose={() => setOpenSheet(null)}
+                                            title="Choose Cook Style"
+                                            options={normalizeOptions(offerData.cook, "cook")}
+                                            selected={getSelectedId(pizzaSelections?.cook, "cook")}
+                                            onSelect={makeSheetHandler("cook", "cook")}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ── Toppings ── */}
+                                <div className="mb-2">
+                                    <button
+                                        className="topping-trigger-btn"
+                                        onClick={() => setOpenSheet("toppings")}
+                                        type="button"
                                     >
-                                        {TABS.map((tab) => (
-                                            <div
-                                                key={tab.id}
-                                                className={`px-3 py-1 fw-semibold text-nowrap cursor-pointer transition-all ${activeTab === tab.id
-                                                    ? "border-bottom border-3 border-dark text-dark"
-                                                    : "text-secondary"}`}
-                                                role="button"
-                                                onClick={() => setActiveTab(tab.id)}
-                                            >
-                                                {tab.label}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Tab Content */}
-                                    <div className="py-2">
-                                        {activeTab === "basics" && (
-                                            <>
-                                                <OptionSelector
-                                                    optionkey="cheese"
-                                                    title="Cheese"
-                                                    options={offerData.cheese}
-                                                    defaultOption={signatureDetails.cheese}
-                                                    selectedOption={pizzaSelections?.cheese}
-                                                    onSelect={makeOptionHandler("cheese")}
-                                                />
-
-                                                <OptionSelector
-                                                    optionkey="crust"
-                                                    title="Crust"
-                                                    options={offerData.crust}
-                                                    defaultOption={signatureDetails.crust}
-                                                    selectedOption={pizzaSelections?.crust}
-                                                    onSelect={makeOptionHandler("crust")}
-                                                />
-
-                                                <OptionSelector
-                                                    optionkey="crustType"
-                                                    title="Crust Type"
-                                                    options={offerData.crustType}
-                                                    defaultOption={signatureDetails.crust_type}
-                                                    selectedOption={pizzaSelections?.crustType}
-                                                    onSelect={makeOptionHandler("crustType")}
-                                                />
-                                            </>
+                                        <span className="topping-trigger-btn__icon">🥗</span>
+                                        <span className="topping-trigger-btn__label">Choose Toppings</span>
+                                        {toppingCountLabel(pizzaSelections) && (
+                                            <span className="topping-trigger-btn__count">{toppingCountLabel(pizzaSelections)}</span>
                                         )}
-
-                                        {activeTab === "bases" && (
-                                            <OptionSelector
-                                                optionkey="specialBases"
-                                                title="Special Base"
-                                                options={offerData.specialbases}
-                                                defaultOption={signatureDetails.special_base}
-                                                selectedOption={pizzaSelections?.specialBases}
-                                                onSelect={makeOptionHandler("specialBases")}
-                                            />
-                                        )}
-
-                                        {activeTab === "preferences" && (
-                                            <>
-                                                <OptionSelector
-                                                    optionkey="cook"
-                                                    title="Cook Level"
-                                                    options={offerData.cook}
-                                                    defaultOption={signatureDetails.cook}
-                                                    selectedOption={pizzaSelections?.cook}
-                                                    onSelect={makeOptionHandler("cook")}
-                                                />
-
-                                                <OptionSelector
-                                                    optionkey="sauce"
-                                                    title="Sauce"
-                                                    options={offerData.sauce}
-                                                    defaultOption={signatureDetails.sauce}
-                                                    selectedOption={pizzaSelections?.sauce}
-                                                    onSelect={makeOptionHandler("sauce")}
-                                                />
-
-                                                <OptionSelector
-                                                    optionkey="spicy"
-                                                    title="Spicy Level"
-                                                    options={offerData.spices}
-                                                    defaultOption={signatureDetails.spices}
-                                                    selectedOption={pizzaSelections?.spicy}
-                                                    onSelect={makeOptionHandler("spicy")}
-                                                />
-                                            </>
-                                        )}
-
-                                        {activeTab === "toppings" && (
-
-                                            <><div className="d-flex overflow-auto border-bottom mb-3">
-                                                {ToppingsTabs.map((tab) => (
-                                                    <div
-                                                        key={tab.id}
-                                                        className={`px-2 py-1 small fw-semibold text-nowrap cursor-pointer ${activeToppingsTab === tab.id
-                                                            ? "border-bottom border-2 border-primary text-primary"
-                                                            : "text-muted"
-                                                            }`}
-                                                        role="button"
-                                                        onClick={() => setActiveToppingsTab(tab.id)}
-                                                    >
-                                                        {tab.label}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                                <div>
-                                                    {activeToppingsTab === "countAsTwo" && (
-                                                        <ToppingsSelector
-                                                            key={`premium-${signatureCode}`}
-                                                            title={settings.premiumTopppingLabel}
-                                                            options={toppings.countAsTwo ?? []}
-                                                            defaultOptions={signatureDetails.topping_as_2 ?? []}
-                                                            selected={
-                                                                pizzaSelections?.toppings?.countAsTwoToppings ?? []
-                                                            }
-                                                            onChange={(list) =>
-                                                                handleToppingsChange("countAsTwoToppings", list)
-                                                            }
-                                                            toppingCount={offerData.premiumToppingsCount}
-                                                            isIndianStyle={false}
-                                                        />
-                                                    )}
-                                                    {activeToppingsTab === "countAsOne" && (
-                                                        <ToppingsSelector
-                                                            key={`regular-${signatureCode}`}
-                                                            title={settings.regularToppingLabel}
-                                                            options={toppings.countAsOne ?? []}
-                                                            defaultOptions={signatureDetails.topping_as_1 ?? []}
-                                                            selected={
-                                                                pizzaSelections?.toppings?.countAsOneToppings ?? []
-                                                            }
-                                                            onChange={(list) =>
-                                                                handleToppingsChange("countAsOneToppings", list)
-                                                            }
-                                                            toppingCount={1}
-                                                            isIndianStyle={false}
-                                                        />)}
-                                                    {activeToppingsTab === "free" && (
-                                                        <ToppingsSelector
-                                                            key={`indian-${signatureCode}`}
-                                                            title={settings.indianStyleToppingsLabel}
-                                                            options={toppings.freeToppings ?? []}
-                                                            defaultOptions={signatureDetails.topping_as_free ?? []}
-                                                            selected={
-                                                                pizzaSelections?.toppings?.freeToppings ?? []
-                                                            }
-                                                            onChange={(list) => {
-                                                                const totalFree = toppings.freeToppings.length;
-                                                                const isAllSelected = list.length === totalFree;
-
-                                                                onUpdateCustomization(index, "toppings", {
-                                                                    ...pizzaSelections.toppings,
-                                                                    freeToppings: list,
-                                                                });
-
-                                                                onUpdateCustomization(
-                                                                    index,
-                                                                    "isAllIndiansTps",
-                                                                    isAllSelected
-                                                                );
-                                                            }}
-                                                            toppingCount={1}
-                                                            isIndianStyle={true}
-                                                        />
-                                                    )}
-                                                </div>
-
-                                            </>
-                                        )}
-                                    </div>
+                                        <span className="topping-trigger-btn__arrow">›</span>
+                                    </button>
+                                    {allToppingNames(pizzaSelections).length > 0 && (
+                                        <div className="selected-toppings-pills mt-1">
+                                            {allToppingNames(pizzaSelections).map((n, i) => (
+                                                <span key={i} className="selected-topping-pill">{n}</span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                            )
+
+                                <ToppingSheetWrapper
+                                    isOpen={openSheet === "toppings"}
+                                    onClose={() => setOpenSheet(null)}
+                                    toppings={toppings}
+                                    offerData={offerData}
+                                    pizzaSelections={pizzaSelections}
+                                    settings={settings}
+                                    onUpdateCustomization={onUpdateCustomization}
+                                    index={index}
+                                />
+                            </div>
+                        )
+                    )}
+
+                    {/* Navigation Buttons */}
+                    <div className="deal-pizza-nav">
+                        {index > 0 && (
+                            <button
+                                type="button"
+                                className="deal-pizza-nav__back"
+                                onClick={(e) => { e.stopPropagation(); onBack(); }}
+                            >
+                                <i className="bi bi-arrow-left me-1" /> Pizza {index}
+                            </button>
+                        )}
+                        {index < totalPizzas - 1 ? (
+                            <button
+                                type="button"
+                                className="deal-pizza-nav__next ms-auto"
+                                onClick={(e) => { e.stopPropagation(); onNext(); }}
+                            >
+                                Pizza {index + 2} <i className="bi bi-arrow-right ms-1" />
+                            </button>
+                        ) : (
+                            <span className="deal-pizza-nav__done ms-auto">
+                                <i className="bi bi-check2-circle me-1" />All pizzas configured!
+                            </span>
                         )}
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
