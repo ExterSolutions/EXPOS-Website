@@ -315,6 +315,13 @@ function AddressDetails() {
 
     // Handle store selection
     const handleStoreChange = (selectedOption) => {
+        const fullStore = currentCity?.stores?.find(s => s.code === selectedOption.value);
+        if (fullStore) {
+            // Update the global selectedStore (full object) to trigger recalculation in GlobalContext
+            globalctx.selectedStore[1](fullStore);
+            localStorage.setItem('selectedStore', JSON.stringify(fullStore));
+        }
+
         setCurrentStoreCode(selectedOption.value)
         setCurrentStore(selectedOption)
         localStorage.setItem('currentStoreCode', selectedOption.value)
@@ -431,7 +438,7 @@ function AddressDetails() {
                 }
             } else {
                 console.error("Unexpected error:", error);
-                toast.error("An unexpected error occurred.");
+                // toast.error("An unexpected error occurred.");
             }
         }
     };

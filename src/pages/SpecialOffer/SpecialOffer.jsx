@@ -152,7 +152,7 @@ function SpecialOffer() {
           "An error occurred while fetching data.",
         );
       } else {
-        toast.error("An unexpected error occurred.");
+        // toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -397,7 +397,7 @@ function SpecialOffer() {
           "An error occurred while fetching Deals.",
         );
       } else {
-        toast.error("An unexpected error occurred.");
+        // toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);

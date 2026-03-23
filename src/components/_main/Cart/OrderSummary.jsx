@@ -23,7 +23,7 @@ function OrderSummary({ cart }) {
         </div>
       )}
 
-      {taxAmount > 0 && (
+      {(taxAmount > 0 || Number(cart?.taxPer || 0) > 0) && (
         <div className="d-flex justify-content-between primaryWhiteColor small mb-1">
           <span>Tax ({cart?.taxPer || 0}%):</span>
           <span>${taxAmount.toFixed(2)}</span>

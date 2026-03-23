@@ -221,7 +221,14 @@ function PickupOrder() {
                             {storeDetails?.map((data) => (
                                 <div className="col-12" key={data.code}>
                                     <div className={`card shadow-sm rounded-4 store-selection-card ${selectedStore?.code === data.code ? 'selected-card' : ''}`}
-                                        onClick={() => setSelectedStore(data)}>
+                                        onClick={() => {
+                                            setSelectedStore(data);
+                                            // Update global context to trigger cart recalculation (tax etc)
+                                            if (globalctx.selectedStore) {
+                                                globalctx.selectedStore[1](data);
+                                                localStorage.setItem('selectedStore', JSON.stringify(data));
+                                            }
+                                        }}>
                                         <div className="card-body d-flex justify-content-between align-items-center">
                                             <div>
                                                 <h6 className="fw-bold mb-1">{data.storeLocation}</h6>

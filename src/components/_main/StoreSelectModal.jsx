@@ -70,6 +70,7 @@ export default function StoreSelectModal({ onClose, required = false }) {
             pickupNumber: apiStore.pickup_number || '',
             latitude: apiStore.latitude || '',
             longitude: apiStore.longitude || '',
+            province: apiStore.province, // Pass province for tax calculation
         };
 
         if (cityGroup.city === currentCity) {

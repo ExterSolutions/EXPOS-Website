@@ -73,10 +73,14 @@ export default class CartFunction {
                 // Get tax percentage from selected store if available
                 if (store?.province?.tax_percent) {
                     taxPer = Number(store.province.tax_percent);
+                } else if (store?.province?.tax_percentage) {
+                    taxPer = Number(store.province.tax_percentage);
+                } else if (store?.tax_percent) {
+                    taxPer = Number(store.tax_percent);
                 } else if (settings !== undefined) {
                     // Fallback to settings if no store-specific tax
                     settings?.map((data) => {
-                        if (data?.shortCode === "tax_percentage" && data?.type === "percent") {
+                        if ((data?.shortCode === "tax_percentage" || data?.shortCode === "tax_percent") && data?.type === "percent") {
                             taxPer = Number(data?.settingValue);
                         }
                     });
@@ -158,9 +162,13 @@ export default class CartFunction {
                 // Get tax percentage from selected store if available
                 if (store?.province?.tax_percent) {
                     taxPer = Number(store.province.tax_percent);
+                } else if (store?.province?.tax_percentage) {
+                    taxPer = Number(store.province.tax_percentage);
+                } else if (store?.tax_percent) {
+                    taxPer = Number(store.tax_percent);
                 } else if (settings !== undefined) {
                     settings?.map((data) => {
-                        if (data?.shortCode === "tax_percentage" && data?.type === "percent") {
+                        if ((data?.shortCode === "tax_percentage" || data?.shortCode === "tax_percent") && data?.type === "percent") {
                             taxPer = Number(data?.settingValue);
                         }
                     });

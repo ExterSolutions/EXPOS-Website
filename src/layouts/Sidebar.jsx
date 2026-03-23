@@ -130,7 +130,7 @@ const Sidebar = () => {
             "An error occurred while fetching Deals.",
         );
       } else {
-        toast.error("An unexpected error occurred.");
+        // toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
