@@ -14,6 +14,7 @@ export const GlobalProvider = ({ children }) => {
       // 1. Check for Transfer Cookie (Root Domain - set during redirects)
       const transferPair = cookies.find((row) => row.startsWith("ext_store_transfer="));
       if (transferPair) {
+        const rawValue = transferPair.split("=")[1];
         const base64 = transferPair.substring("ext_store_transfer=".length);
         const scrambled = decodeURIComponent(escape(atob(base64)));
         const SECRET = "exter_store_pizza";
@@ -23,6 +24,10 @@ export const GlobalProvider = ({ children }) => {
         
         // CONSUME: Delete from root domain so it doesn't affect other tabs on next refresh
         document.cookie = `ext_store_transfer=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        
+        // PERSIST: Save it to the local subdomain cookie immediately so subsequent reloads work!
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+        document.cookie = `ext_store=${rawValue}; path=/; expires=${expires}; SameSite=Lax`;
         
         return JSON.parse(json);
       }
