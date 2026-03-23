@@ -260,6 +260,22 @@ export const GlobalProvider = ({ children }) => {
     }
   }, [selectedStore, settings]);
 
+  // FIX FOR STALE LOCALSTORAGE: Aggressively sync the state out to localStorage
+  // This ensures that legacy components invoking cartFn.addCart without passing selectedStore 
+  // will correctly fall back to a perfectly synced localStorage representation.
+  useEffect(() => {
+    if (selectedStore && selectedStore !== null) {
+      localStorage.setItem("selectedStore", JSON.stringify(selectedStore));
+      if (selectedStore.code) {
+        localStorage.setItem("currentStoreCode", selectedStore.code);
+        localStorage.setItem("currentStore", JSON.stringify({
+          value: selectedStore.code,
+          label: selectedStore.storeLocation || selectedStore.city
+        }));
+      }
+    }
+  }, [selectedStore]);
+
   // Helper: clear all store/city data
   const clearStoreSelection = () => {
     setCurrentCity(null);
