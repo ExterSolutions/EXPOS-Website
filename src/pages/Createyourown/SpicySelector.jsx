@@ -1,15 +1,22 @@
 
+
 export const SpicySelector = ({ data, Spicy, handleSpicy }) => {
     const isSelected = Spicy === data?.spicyCode;
     return (
-        <button
-            type="button"
-            className={`cust-pill-btn ${isSelected ? 'cust-pill-btn--active' : ''}`}
+        <div
+            className={`theme-border ${isSelected ? "active" : ""}`}
             onClick={() => handleSpicy(data?.spicyCode)}
         >
-            {isSelected && <i className="bi bi-check2 me-1" />}
-            {data?.spicy}
-            {data?.price !== null && data?.price != 0 && <span className="cust-pill-price"> +${data?.price}</span>}
-        </button>
-    );
+            <div className="d-flex justify-content-between align-items-center" >
+                <div className="d-flex align-items-center gap-2">
+                    {Spicy === data?.spicyCode ? (
+                        <i className="bi bi-check-circle-fill" />
+                    ) : (
+                        <i className="bi bi-plus-circle" />
+                    )}
+                    <div className="">{`${data?.spicy}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
+                </div>
+            </div>
+        </div>
+    )
 }

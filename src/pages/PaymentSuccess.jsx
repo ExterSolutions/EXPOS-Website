@@ -60,13 +60,9 @@ const PaymentSuccess = () => {
         setTimeout(() => {
             localStorage.removeItem('OrderID');
             localStorage.removeItem('sessionId');
-            setCurrentStoreCode(null);
-            setCurrentStore(null);
-            setShowStorePopup(true);
             localStorage.removeItem("cart");
-            setCart();
+            setCart({ product: [] });
             cartFn.createCart(setCart);
-            localStorage.setItem('forceShowOrderMethodPopup', 'true');
             setPaymentStatus('success');
             setLoading(false);
         }, 1500);

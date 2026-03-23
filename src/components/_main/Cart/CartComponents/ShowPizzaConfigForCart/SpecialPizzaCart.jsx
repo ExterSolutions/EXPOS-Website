@@ -69,7 +69,7 @@ function SpecialPizzaCart({ data, index }) {
                     )}
                     {data?.toppings?.freeToppings?.length > 0 && (
                         <div className="">
-                            <span>- Indian Toppings : </span>
+                            <span>- Indian Style : </span>
                             {data?.toppings?.freeToppings?.map((t, idx) => (
                                 <span key={idx} className="mx-1">
                                     {t?.toppingsName},

@@ -90,8 +90,10 @@ function SpecialOffer() {
   const premiumToppingCount = Number(
     settingsData?.find((s) => s.shortCode === "non-regular-toppings-count")?.settingValue || 1,
   );
-  console.log("settingsData", settingsData);
-  //
+  const specialOfferTitle =
+    settingsData.find((item) => item.shortCode === "specialoffer")?.settingValue ??
+    "Special Offer";
+
   // Memoized Dips Calculations
   const { calcDipsArr, noOfAdditionalDips, noOfFreeDips } = useMemo(() => {
     let calcDipsArr = [];
@@ -129,21 +131,17 @@ function SpecialOffer() {
   // Get all ingredients data initially and maintain initial states
   const fetchData = async () => {
     try {
-      const [
-        toppingsResponse,
-        dipsResponse,
-        settingResponse,
-        allIngredientsResponse,
-      ] = await Promise.all([
+      const [toppingsResponse, dipsResponse, allIngredientsResponse, settingsResponse] = await Promise.all([
         getToppings(),
         getDips(),
-        settingApi(),
         getAllIngredients(),
+        settingApi(),
       ]);
-      setSettingsData(settingResponse?.data);
-      setSettings(settingResponse?.data);
       setToppingsData(toppingsResponse?.data || []);
       setDipsData(dipsResponse?.data || []);
+      const settingsData = settingsResponse?.data || [];
+      setSettingsData(settingsData);
+      setSettings(settingsData);
       const ing = allIngredientsResponse?.data || allIngredientsResponse;
       setAllIngredients(ing);
       return { ing, dips: dipsResponse?.data || [], toppings: toppingsResponse?.data || [] };
@@ -154,7 +152,7 @@ function SpecialOffer() {
           "An error occurred while fetching data.",
         );
       } else {
-        toast.error("An unexpected error occurred.");
+        // toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -399,7 +397,7 @@ function SpecialOffer() {
           "An error occurred while fetching Deals.",
         );
       } else {
-        toast.error("An unexpected error occurred.");
+        // toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -509,7 +507,7 @@ function SpecialOffer() {
       ct.product.push(payload);
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
-      navigate("/addtocart");
+      navigate("/");
     }
   };
 
@@ -689,6 +687,7 @@ function SpecialOffer() {
             <div className="mainContainer primary-text-color">
               {/* left side */}
               <div className=" p-3">
+                <p className="fs-5 mb-0 text-secondary">{specialOfferTitle}</p>
                 <p className="fw-bold fs-5 text-dark">{name}</p>
                 <p
                   className={`mt-3 mb-3 fs-6 ${specialOfferDealType === "pickupdeal"
@@ -713,11 +712,17 @@ function SpecialOffer() {
                   >
                     <div className="row justify-content-start align-content-center p-0 m-0">
                       <div className="col-auto p-0 m-0 rounded-3 text-center">
-                        <img
-                          className="pizzaImageBorderSM"
-                          src={specialOfferData?.image || pizzaimage}
-                          alt="Pizza icon"
-                        />
+                        {specialOfferData?.image ? (
+                          <img
+                            className="pizzaImageBorderSM"
+                            src={specialOfferData.image}
+                            alt="Pizza icon"
+                          />
+                        ) : (
+                          <div className="pizzaImageBorderSM placeholder-glow d-inline-block" style={{ width: "115px", height: "115px" }}>
+                            <span className="placeholder w-100 h-100 rounded-3" style={{ backgroundColor: "#e0e0e0" }}></span>
+                          </div>
+                        )}
                       </div>
                       <div className="col-7 p-0 m-0">
                         <div className="d-flex flex-column justify-content-center">
@@ -777,27 +782,66 @@ function SpecialOffer() {
                 </div>
 
                 {/* size */}
-                {/* SIZE — pill buttons matching Signature Pizza screen */}
-                <div className="mt-3 mb-3">
-                  <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>SELECT SIZE</p>
-                  <div className="size-pill-scroll">
-                    {pizzaSizeArr
-                      ?.filter((p) => parseFloat(p.price) > 0)
-                      ?.map((data, index) => (
+                <div className="mt-3">
+                  <div className="accordion" id="accordion-size">
+                    <div className="accordion-item">
+                      <h2 className="accordion-header" id="accordion-size">
                         <button
-                          key={index}
+                          className={`fw-bold fs-6 accordion-button ${activeAccordion === "size" ? "" : "collapsed"
+                            }`}
                           type="button"
-                          className={`size-pill ${size === data.size ? "size-pill--active" : ""}`}
-                          onClick={() => setSize(data.size)}
+                          onClick={() => toggleAccordion("size")}
+                          aria-expanded={
+                            activeAccordion === "size" ? "true" : "false"
+                          }
+                          aria-controls="collapseSize"
                         >
-                          {data.size}
-                          <span style={{ display: "block", fontSize: "0.72rem", opacity: 0.8 }}>${Number(data.price ?? 0).toFixed(2)}</span>
+                          SELECT SIZE
+                          {/* {activeAccordion === "size" ? <FaChevronUp className="ms-auto" /> : <FaChevronDown className="ms-auto" />} */}
                         </button>
-                      ))}
+                      </h2>
+                      <div
+                        id="collapseSize"
+                        className={`accordion-collapse collapse ${activeAccordion === "size" ? "show" : ""
+                          }`}
+                        aria-labelledby="accordion-size"
+                        data-bs-parent="#accordion-size"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <div className="accordion-body primary-background-color">
+                          <div className="size-grid">
+                            {pizzaSizeArr
+                              ?.filter((price) => parseFloat(price.price) > 0)
+                              ?.map((data, index) => {
+                                const active = size === data?.size;
+
+                                return (
+                                  <div
+                                    key={`size-${index}`}
+                                    className={`py-2 px-3 rounded-3 ${active
+                                      ? "selected-card-background-color selected-card-text-color"
+                                      : "card-background-color card-text-color"
+                                      }`}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => setSize(data?.size)}
+                                  >
+                                    <div className="d-block">
+                                      {data?.size} ($
+                                      {Number(data?.price ?? 0).toFixed(2)})
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <p className="fs-6 fw-bold mt-4 text-dark">CUSTOMIZE</p>
+
+                <p className="mt-3 fs-6">Select any of the below to Deals.</p>
 
                 {specialPizzaConfig}
 
@@ -845,15 +889,18 @@ function SpecialOffer() {
                 >
                   <div className="px-3 row">
                     <div className="col-lg-6 p-3">
-                      <img
-                        className="pizzaImageBorder"
-                        src={
-                          specialOfferData?.image
-                            ? specialOfferData?.image
-                            : pizzaimage
-                        }
-                        alt="pizza-icon"
-                      />
+                      {specialOfferData?.image ? (
+                        <img
+                          className="pizzaImageBorder w-100"
+                          src={specialOfferData.image}
+                          alt="pizza-icon"
+                          style={{ objectFit: "cover", aspectRatio: "1/1" }}
+                        />
+                      ) : (
+                        <div className="pizzaImageBorder placeholder-glow w-100 d-block" style={{ aspectRatio: "1/1" }}>
+                          <span className="placeholder w-100 h-100 rounded-3" style={{ backgroundColor: "#e0e0e0" }}></span>
+                        </div>
+                      )}
                     </div>
                     <div className="col-lg-6 p-4">
                       <div className="d-flex flex-column py-4">

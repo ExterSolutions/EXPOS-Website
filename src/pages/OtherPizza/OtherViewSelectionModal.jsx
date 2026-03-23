@@ -60,9 +60,9 @@ function OtherViewSelectionModal({
                                     <div className="mt-3 d-flex flex-wrap gap-2">
                                         {isIndiansToppings ? (
                                             <>
-                                                {/* Display a single button for Indian Toppings Toppings */}
+                                                {/* Display a single button for Indian Style Toppings */}
                                                 <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                    Indian Toppings + Coriander
+                                                    Indian Style + Coriander
                                                     <span
                                                         className="ms-2"
                                                         onClick={handleRemoveIsIndiansToppings}

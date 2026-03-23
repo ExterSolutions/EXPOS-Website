@@ -3,8 +3,9 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { GlobalContext } from "../context/GlobalContext";
+import CartFunction from "./cart";
 import { useSocket } from "../context/SocketContext";
-import { applyCoupon, getStoreLocationByCity, orderPlace } from "../services";
+import { applyCoupon, getStoreLocationByCity, orderPlace, settingApi } from "../services";
 
 function PickupOrder() {
     const socket = useSocket();
@@ -22,9 +23,11 @@ function PickupOrder() {
     const [currentLogitude] = globalctx.currentLogitude;
     const [currentStoreCode] = globalctx.currentStoreCode;
     const [currentCity] = globalctx.currentCity || [null];
-
+    const [selectedType] = globalctx.selectedType;
     const [taxPercent, setTaxPercent] = useState(0);
     const [taxAmount, setTaxAmount] = useState(0);
+    const [convinencePer, setConvinencePer] = useState(0);
+    const [convinenceAmt, setConvinenceAmt] = useState(0);
     const [grand_total, setGrandTotal] = useState(0);
 
     const [busyLoader, setBusyLoader] = useState(false);
@@ -40,24 +43,24 @@ function PickupOrder() {
         try {
             const res = await getStoreLocationByCity();
             const groups = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
-            
+
             let filteredStores = [];
-            
+
             // Find the city group based on current context
             if (currentStoreCode) {
-                const myCityGroup = groups.find(g => 
+                const myCityGroup = groups.find(g =>
                     g.storeLocations.some(s => s.code === currentStoreCode)
                 );
                 if (myCityGroup) {
-                    filteredStores = myCityGroup.storeLocations;
+                    filteredStores = myCityGroup.storeLocations.map(s => ({ ...s, cityCode: myCityGroup.cityCode }));
                 }
             } else if (currentCity?.value) {
                 const myCityGroup = groups.find(g => g.city === currentCity?.value);
                 if (myCityGroup) {
-                    filteredStores = myCityGroup.storeLocations;
+                    filteredStores = myCityGroup.storeLocations.map(s => ({ ...s, cityCode: myCityGroup.cityCode }));
                 }
             } else {
-                 filteredStores = groups.flatMap(g => g.storeLocations);
+                filteredStores = groups.flatMap(g => g.storeLocations.map(s => ({ ...s, cityCode: g.cityCode })));
             }
 
             setStoreDetails(filteredStores);
@@ -82,9 +85,21 @@ function PickupOrder() {
         }
     };
 
+    const getSettings = async () => {
+        try {
+            const res = await settingApi();
+            if (res?.data) {
+                globalctx.settings[1](res.data);
+            }
+        } catch (error) {
+            console.error("Settings fetch error", error);
+        }
+    };
+
     useEffect(() => {
         getStoreDetails();
         getCouponList();
+        getSettings();
         window.scrollTo(0, 0);
     }, []);
 
@@ -101,18 +116,25 @@ function PickupOrder() {
             }
         }
 
+        // Convenience charges from settings
+        const settingsData = globalctx.settings[0] || [];
+        const conv_per = Number(settingsData.find(s => s.shortCode === "convenience_charges")?.settingValue || 0);
+
         const tax_percent = Number(selectedStore?.province?.tax_percent || 0);
-        const discountedSubtotal = subtotal - discountAmount;
+        const discountedSubtotal = subtotal - totalDiscount;
         const tax_val = (discountedSubtotal * tax_percent * 0.01);
+        const conv_val = (discountedSubtotal * conv_per * 0.01);
 
         const finalDiscount = Math.min(totalDiscount, subtotal);
-        const finalTotal = (subtotal + tax_val) - finalDiscount;
+        const finalTotal = (subtotal + tax_val + conv_val) - finalDiscount;
 
         setTaxPercent(tax_percent);
         setTaxAmount(tax_val.toFixed(2));
+        setConvinencePer(conv_per);
+        setConvinenceAmt(conv_val.toFixed(2));
         setDiscountAmount(finalDiscount.toFixed(2));
         setGrandTotal(finalTotal > 0 ? finalTotal.toFixed(2) : "0.00");
-    }, [selectedStore, appliedCoupon, cart, discountAmount]);
+    }, [selectedStore, appliedCoupon, cart, globalctx.settings]);
 
     const handleApplyCoupon = () => {
         if (!couponCode) return toast.error("Please enter coupon code");
@@ -143,20 +165,32 @@ function PickupOrder() {
         setBusyLoader(true);
         const payload = {
             customerCode: user?.data?.customerCode,
-            deliveryType: "pickup",
+            deliveryType: selectedType,
             customerName: user?.data?.fullName,
             mobileNumber: user?.data?.mobileNumber,
             products: cart?.product,
+            cityCode: selectedStore?.cityCode || "",
+            discount_code: appliedCoupon?.code,
+            storeCode: selectedStore?.code,
             subTotal: cart?.subtotal,
             discountAmount: discountAmount,
-            appliedCoupons: appliedCoupon ? [appliedCoupon.code] : [],
             taxPer: taxPercent,
             taxAmount: taxAmount,
+            convinencePer: convinencePer,
+            convinenceCharges: convinenceAmt,
             deliveryCharges: 0,
+            extraDeliveryCharges: 0,
             grandTotal: grand_total,
-            storeCode: selectedStore?.code,
-            successUrl: `${window.location.origin}/payment/success`,
-            cancelUrl: `${window.location.origin}/payment/cancel`,
+            // subTotal: cart?.subtotal,
+            // discountAmount: discountAmount,
+            // appliedCoupons: appliedCoupon ? [appliedCoupon.code] : [],
+            // taxPer: taxPercent,
+            // taxAmount: taxAmount,
+            // deliveryCharges: 0,
+            // grandTotal: grand_total,
+            // storeCode: selectedStore?.code,
+            // successUrl: `${window.location.origin}/payment/success`,
+            // cancelUrl: `${window.location.origin}/payment/cancel`,
         };
 
         try {
@@ -164,6 +198,10 @@ function PickupOrder() {
             if (socket) socket.emit("order-place", response.data);
             localStorage.setItem("OrderID", response.orderCode);
             localStorage.setItem("sessionId", response.sessionId);
+
+            // Clear the cart immediately since the order is now placed backend
+            const cartFn = new CartFunction();
+            cartFn.clearCart(setCart);
 
             if (response.paymentUrl) {
                 window.location.href = response.paymentUrl;
@@ -187,21 +225,25 @@ function PickupOrder() {
                         <div className="row g-3 mb-4">
                             {storeDetails?.map((data) => (
                                 <div className="col-12" key={data.code}>
-                                    <div className="card shadow-sm border-0 rounded-4"
-                                        style={{ border: selectedStore?.code === data.code ? '2px solid #0d6efd' : 'none' }}>
-                                        <div className="card-body">
-                                            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                                                <div>
-                                                    <h6 className="fw-bold mb-1">{data.storeLocation}</h6>
-                                                    <p className="text-muted small mb-0">{data.storeAddress}</p>
-                                                </div>
-                                                <button
-                                                    className={`btn rounded-pill px-4 btn-sm w-100 w-sm-auto mt-2 mt-sm-0 ${selectedStore?.code === data.code ? 'btn-primary' : 'btn-outline-primary'}`}
-                                                    onClick={() => setSelectedStore(data)}
-                                                >
-                                                    {selectedStore?.code === data.code ? 'Selected ✓' : 'Select'}
-                                                </button>
+                                    <div className={`card shadow-sm rounded-4 store-selection-card ${selectedStore?.code === data.code ? 'selected-card' : ''}`}
+                                        onClick={() => {
+                                            setSelectedStore(data);
+                                            // Update global context to trigger cart recalculation (tax etc)
+                                            if (globalctx.selectedStore) {
+                                                globalctx.selectedStore[1](data);
+                                                localStorage.setItem('selectedStore', JSON.stringify(data));
+                                            }
+                                        }}>
+                                        <div className="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 className="fw-bold mb-1">{data.storeLocation}</h6>
+                                                <p className="text-muted small mb-0">{data.storeAddress}</p>
                                             </div>
+                                            <button
+                                                className={`btn rounded-pill px-4 btn-sm ${selectedStore?.code === data.code ? 'btn-primary' : 'btn-outline-primary'}`}
+                                            >
+                                                {selectedStore?.code === data.code ? 'Selected' : 'Select'}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -220,30 +262,28 @@ function PickupOrder() {
                                             type="text"
                                             className="form-control border-0 p-2 ps-3"
                                             placeholder="Enter coupon code"
-                                            style={{ fontSize: '0.9rem' }}
+                                            style={{ fontSize: '0.9rem', borderRadius: '0' }}
                                             value={couponCode}
                                             onChange={(e) => setCouponCode(e.target.value)}
                                             disabled={appliedCoupon}
                                         />
                                         {appliedCoupon ? (
-                                            <button className="btn btn-danger px-4 fw-bold" style={{ fontSize: '0.85rem' }} onClick={() => { setAppliedCoupon(null); setCouponCode(""); }}>
+                                            <button className="btn btn-danger px-4 fw-bold" style={{ fontSize: '0.85rem', borderRadius: '0' }} onClick={() => { setAppliedCoupon(null); setCouponCode(""); }}>
                                                 Remove
                                             </button>
                                         ) : (
-                                            <button className="btn btn-success px-4 fw-bold" style={{ fontSize: '0.85rem' }} onClick={handleApplyCoupon}>
+                                            <button className="btn btn-primary px-4 fw-bold" style={{ fontSize: '0.85rem', backgroundColor: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: '0' }} onClick={handleApplyCoupon}>
                                                 Apply
                                             </button>
                                         )}
                                     </div>
-
-
                                 </div>
                             </div>
                         </section>
                     </div>
 
                     {/* Order Summary */}
-                    <div className="col-lg-4 order-first order-lg-last">
+                    <div className="col-lg-4">
                         <div className="card border-0 shadow rounded-4 sticky-top" style={{ top: '20px' }}>
                             <div className="card-body p-4">
                                 <h5 className="fw-bold mb-4">Order Summary</h5>
@@ -261,6 +301,12 @@ function PickupOrder() {
                                     <div className="d-flex justify-content-between mb-2 text-muted">
                                         <span>Tax ({taxPercent}%)</span>
                                         <span>+${taxAmount}</span>
+                                    </div>
+                                )}
+                                {convinencePer > 0 && (
+                                    <div className="d-flex justify-content-between mb-2 text-muted">
+                                        <span>Convenience Fee ({convinencePer}%)</span>
+                                        <span>+${convinenceAmt}</span>
                                     </div>
                                 )}
 

@@ -85,6 +85,14 @@ const EditCreatePizza = () => {
     settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
     "Regular";
 
+  const indianStyleToppingsTitle =
+    settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+    "Indian Style";
+
+  const createYourOwnTitle =
+    settingsData.find((item) => item.shortCode === "create-your-own")?.settingValue ??
+    "Create Your Own";
+
   const premiumToppingCount =
     Number(
       settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -855,7 +863,7 @@ const EditCreatePizza = () => {
                       Home
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Create Your Own
+                      {createYourOwnTitle}
                     </li>
                   </ol>
                 </nav>
@@ -864,7 +872,7 @@ const EditCreatePizza = () => {
                 <div className="mainContainer primary-text-color">
                   {/* left side */}
                   <div className=" p-3">
-                    <p className="fs-1 fw-bold text-primary">CREATE YOUR OWN PIZZA</p>
+                    <p className="fs-1 fw-bold text-primary">{createYourOwnTitle.toUpperCase()}</p>
                     <p className="mt-3 mb-3 fs-6 text-secondary">
                       Your perfect slice, your way!
                     </p>
@@ -1301,7 +1309,7 @@ const EditCreatePizza = () => {
                                   }`}
                                   onClick={() => setTopping("free")}
                                 >
-                                  Indian Toppings
+                                  Indian Style
                                 </div>
                               </div>
                               {Topping === "one" &&
@@ -1425,10 +1433,10 @@ const EditCreatePizza = () => {
                                   </div>
                                 </div>
 
-                                {/* Section 3: Indian Toppings */}
+                                {/* Section 3: Indian Style */}
                                 <div>
                                   <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
-                                    Indian Toppings
+                                    {indianStyleToppingsTitle}
                                   </div>
                                   <div className="d-flex flex-wrap gap-2">
                                     {Ingredients?.toppings?.freeToppings?.map((data, index) => (
@@ -1810,9 +1818,9 @@ const EditCreatePizza = () => {
                               <div className="mt-3 d-flex flex-wrap gap-2">
                                 {isIndiansToppings ? (
                                   <>
-                                    {/* Display a single button for Indian Toppings Toppings */}
+                                    {/* Display a single button for Indian Style Toppings */}
                                     <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                      Indian Toppings + Coriander
+                                      Indian Style + Coriander
                                       <span
                                         className="ms-2"
                                         onClick={handleRemoveIsIndiansToppings}

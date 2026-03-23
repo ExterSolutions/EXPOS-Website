@@ -8,7 +8,7 @@ import { MdRestaurantMenu } from 'react-icons/md';
 import { PiHamburgerFill } from 'react-icons/pi';
 import { SiCoffeescript } from 'react-icons/si';
 import { useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import '../../../assets/styles/new/header/search-dropdown.css';
 // import '../../../assets/styles/ultimateheader.css';
 import { GlobalContext } from '../../../context/GlobalContext';
@@ -70,15 +70,7 @@ const Header = () => {
         handleSearchItemClick
     } = useSearch();
     const { showStorePopup, setShowStorePopup } = useStorePopup();
-    const location = useLocation();
     const { handleOrderNowClick } = useOrderNow();
-
-    // Hide 'Order Now' when user is already on a product/customisation page
-    const HIDE_ORDER_NOW_PATHS = [
-        '/signaturepizza', '/specialoffer', '/otherpizza',
-        '/sides', '/dips', '/drinks', '/create-your-own',
-    ];
-    const hideOrderNow = HIDE_ORDER_NOW_PATHS.some(p => location.pathname.startsWith(p));
 
     const circleMenuItems = [
         { id: "specialoffer", name: "Special Deals", icon: <FaTag className="w-4 h-4" /> },
@@ -104,7 +96,7 @@ const Header = () => {
     return (
         <header className="header shadow-sm">
 
-            <div className="top-bar d-none d-md-flex">
+            <div className="top-bar">
                 <div className="">
                     <a href={`mailto:${siteData.contact_email}`} className="top-link">
                         <i className="bi bi-envelope-fill me-1"></i> {siteData.contact_email}
@@ -278,7 +270,7 @@ const Header = () => {
                     )}
 
                     {
-                        !hideOrderNow && cart && cart?.product?.length <= 0 && (
+                        cart && cart?.product?.length <= 0 && (
                             <button
                                 type='button'
                                 onClick={handleOrderNowClick}
@@ -295,9 +287,8 @@ const Header = () => {
 
                     <button
                         type='button'
-                        onClick={() => navigate('/addtocart')}
+                        onClick={handleCartBarToggle}
                         className="btn fw-semibold d-flex position-relative"
-                        aria-label="View Cart"
                     >
                         <span className="position-absolute top-0 start-100 translate-middle cart-count">
                             {cart?.product.length ? cart?.product.length > 9 ? "9+" : cart?.product.length : (0)}

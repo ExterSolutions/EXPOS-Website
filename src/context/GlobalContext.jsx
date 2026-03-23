@@ -1,23 +1,46 @@
 import { createContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { LOGIN_SUCCESS } from "../redux/authProvider/actionType";
+import CartFunction from "../components/cart";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const dispatch = useDispatch();
   const getCookieData = () => {
     try {
       const cookies = document.cookie.split("; ");
-      const storeCookie = cookies.find((row) => row.startsWith("ext_store="));
-      if (storeCookie) {
-        const base64 = storeCookie.split("=")[1];
-        const scrambled = decodeURIComponent(escape(atob(base64)));
+      const hostname = window.location.hostname;
+      const rootDomain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
 
-        // De-scramble using XOR and same secret key
+      // 1. Check for Transfer Cookie (Root Domain - set during redirects)
+      const transferPair = cookies.find((row) => row.startsWith("ext_store_transfer="));
+      if (transferPair) {
+        const rawValue = transferPair.split("=")[1];
+        const base64 = transferPair.substring("ext_store_transfer=".length);
+        const scrambled = decodeURIComponent(escape(atob(base64)));
         const SECRET = "exter_store_pizza";
         const json = scrambled.split('').map((char, i) =>
           String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
         ).join('');
+        
+        // CONSUME: Delete from root domain so it doesn't affect other tabs on next refresh
+        document.cookie = `ext_store_transfer=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        
+        // PERSIST: Save it to the local subdomain cookie immediately so subsequent reloads work!
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+        document.cookie = `ext_store=${rawValue}; path=/; expires=${expires}; SameSite=Lax`;
+        
+        return JSON.parse(json);
+      }
 
+      // 2. Fallback to Local Cookie (Subdomain Specific)
+      const localPair = cookies.find((row) => row.startsWith("ext_store="));
+      if (localPair) {
+        const base64 = localPair.substring("ext_store=".length);
+        const scrambled = decodeURIComponent(escape(atob(base64)));
+        const SECRET = "exter_store_pizza";
+        const json = scrambled.split('').map((char, i) =>
+          String.fromCharCode(char.charCodeAt(0) ^ SECRET.charCodeAt(i % SECRET.length))
+        ).join('');
         return JSON.parse(json);
       }
     } catch (e) {
@@ -31,7 +54,7 @@ export const GlobalProvider = ({ children }) => {
       const cookies = document.cookie.split("; ");
       const authCookie = cookies.find((row) => row.startsWith("ext_auth="));
       if (authCookie) {
-        const base64 = authCookie.split("=")[1];
+        const base64 = authCookie.substring("ext_auth=".length);
         const scrambled = decodeURIComponent(escape(atob(base64)));
         const SECRET = "exter_auth_pizza";
         const json = scrambled.split("").map((char, i) =>
@@ -169,9 +192,24 @@ export const GlobalProvider = ({ children }) => {
         lastSubdomainCity = JSON.parse(storedCityRaw)?.value || JSON.parse(storedCityRaw)?.city;
       }
 
-      if (cookieCity && lastSubdomainCity && cookieCity !== lastSubdomainCity) {
+      if (cookieCity && lastSubdomainCity && cookieCity.trim().toLowerCase() !== lastSubdomainCity.trim().toLowerCase()) {
         localStorage.removeItem("cart");
-        // console.log("[GlobalContext] City mismatch detected between global cookie and subdomain storage. Cart cleared.");
+        // console.log(`[GlobalContext] City mismatch: Cookie(${cookieCity}) vs Local(${lastSubdomainCity}). Cart cleared.`);
+        
+        // Update localStorage to match cookie so we don't clear again on next reload
+        const newCityOption = {
+          value: cookieData.city,
+          label: cookieData.city,
+          stores: [{
+            code: cookieData.code,
+            storeLocation: cookieData.storeLocation,
+            latitude: cookieData.latitude,
+            longitude: cookieData.longitude,
+            storeAddress: cookieData.storeAddress,
+          }],
+        };
+        localStorage.setItem("currentCity", JSON.stringify(newCityOption));
+        localStorage.setItem("currentStoreCode", cookieData.code);
         return { product: [] };
       }
     } catch (e) {
@@ -214,6 +252,30 @@ export const GlobalProvider = ({ children }) => {
   const [reset, setReset] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
+  // Recalculate cart totals whenever store or settings change
+  useEffect(() => {
+    if (selectedStore && cart?.product?.length > 0) {
+      const cartFn = new CartFunction();
+      cartFn.updateCartTotals(cart, setCart, settings, selectedStore);
+    }
+  }, [selectedStore, settings]);
+
+  // FIX FOR STALE LOCALSTORAGE: Aggressively sync the state out to localStorage
+  // This ensures that legacy components invoking cartFn.addCart without passing selectedStore 
+  // will correctly fall back to a perfectly synced localStorage representation.
+  useEffect(() => {
+    if (selectedStore && selectedStore !== null) {
+      localStorage.setItem("selectedStore", JSON.stringify(selectedStore));
+      if (selectedStore.code) {
+        localStorage.setItem("currentStoreCode", selectedStore.code);
+        localStorage.setItem("currentStore", JSON.stringify({
+          value: selectedStore.code,
+          label: selectedStore.storeLocation || selectedStore.city
+        }));
+      }
+    }
+  }, [selectedStore]);
+
   // Helper: clear all store/city data
   const clearStoreSelection = () => {
     setCurrentCity(null);
@@ -230,11 +292,13 @@ export const GlobalProvider = ({ children }) => {
     localStorage.removeItem("currentLogitude");
 
     const hostname = window.location.hostname;
-    // Clear root-domain cookie if exists
-    if (hostname.endsWith('exter.ca')) {
-        document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-    }
-    // Clear isolated domain cookie
+    const rootDomain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
+
+    // Clear root-domain transfer cookie
+    document.cookie = `ext_store_transfer=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    // Clear root-domain store cookie if any legacy ones exist
+    document.cookie = `ext_store=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    // Clear local subdomain store cookie
     document.cookie = `ext_store=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
   };
 
@@ -246,7 +310,6 @@ export const GlobalProvider = ({ children }) => {
     // Sync to cookie, but isolate to current subdomain
     if (storeDetail) {
       try {
-        const hostname = window.location.hostname;
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
 
         // XOR Obfuscation
@@ -257,12 +320,8 @@ export const GlobalProvider = ({ children }) => {
         ).join('');
         const encoded = btoa(unescape(encodeURIComponent(scrambled)));
 
-        // Clear root domain cookie to prevent cross-subdomain bleeding
-        if (hostname.endsWith('exter.ca')) {
-            document.cookie = `ext_store=; domain=.exter.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-        }
-
-        // Set subdomain-specific cookie (no generic domain=... ensures exact match)
+        // Set LOCAL subdomain cookie (no generic domain=... ensures exact match)
+        // This prevents Calgary selection from appearing on Brampton subdomain
         document.cookie = `ext_store=${encoded}; path=/; expires=${expires}; SameSite=Lax`;
       } catch (e) {
         console.warn("[GlobalContext] Failed to sync store cookie:", e);

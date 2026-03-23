@@ -69,7 +69,7 @@ function Cart() {
             ) : (
                 <>
                     {cart?.product?.length > 0 ? (
-                        <section className="new-block mb-3 BgsecondaryBlackColor" style={{ paddingBottom: '90px' }}>
+                        <section className="new-block mb-3 BgsecondaryBlackColor">
                             <div className="nav-margin"></div>
                             <div className="container-fluid px-lg-4 px-md-4 px-sm-2">
                                 <div className="row gx-4">
@@ -164,25 +164,6 @@ function Cart() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            {/* Mobile Sticky Checkout Bar */}
-                            <div className="mobile-sticky-cart-bar d-md-none">
-                                <div className="d-flex align-items-center justify-content-between px-3 py-2">
-                                    <div>
-                                        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)' }}>Grand Total</div>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>
-                                            ${cart?.grandtotal ? cart.grandtotal : (0.0).toFixed(2)}
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="btn fw-bold px-4 py-2"
-                                        style={{ backgroundColor: '#fff', color: 'var(--primary)', borderRadius: '12px', fontSize: '1rem' }}
-                                        onClick={handleCheckout}
-                                    >
-                                        Checkout →
-                                    </button>
                                 </div>
                             </div>
                         </section>

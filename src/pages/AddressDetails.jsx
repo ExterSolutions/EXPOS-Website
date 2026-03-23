@@ -7,7 +7,8 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import swal from "sweetalert";
 import * as Yup from "yup";
-import {GlobalContext} from "../context/GlobalContext";
+import { GlobalContext } from "../context/GlobalContext";
+import CartFunction from "../components/cart";
 import { useSocket } from "../context/SocketContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import {
@@ -172,13 +173,13 @@ function AddressDetails() {
                 }
             })
             .catch((err) => {
-              
+
             });
     };
 
     // START TIMER FUNCTION
     const startTimer = () => {
-        setTimer(180); 
+        setTimer(180);
         setTimerActive(true);
 
         timerInterval.current = setInterval(() => {
@@ -315,6 +316,13 @@ function AddressDetails() {
 
     // Handle store selection
     const handleStoreChange = (selectedOption) => {
+        const fullStore = currentCity?.stores?.find(s => s.code === selectedOption.value);
+        if (fullStore) {
+            // Update the global selectedStore (full object) to trigger recalculation in GlobalContext
+            globalctx.selectedStore[1](fullStore);
+            localStorage.setItem('selectedStore', JSON.stringify(fullStore));
+        }
+
         setCurrentStoreCode(selectedOption.value)
         setCurrentStore(selectedOption)
         localStorage.setItem('currentStoreCode', selectedOption.value)
@@ -341,7 +349,7 @@ function AddressDetails() {
             //     zipcode: cleanPostalCode,
             //     storeCode: currentStoreCode
             // });
-            
+
             // if (!storeResponse?.deliverable) {
             //     setLoading(false);
             //     return handleUndeliverable(
@@ -352,7 +360,7 @@ function AddressDetails() {
 
             // const deliveryResponse = await deliverable(payload);
             // if (!deliveryResponse?.deliverable) {
-                // setLoading(false);
+            // setLoading(false);
             //     return handleUndeliverable(
             //         "Postal Code is Undeliverable",
             //         "Postal code cannot be delivered. Please change the postal code and try again"
@@ -379,7 +387,7 @@ function AddressDetails() {
                 subTotal: cart?.subtotal,
                 discountAmount: cart?.discountAmount,
                 //taxPer: deliveryResponse?.taxRates?.tax_percent || 0,
-               // taxAmount: Number((cart?.subtotal || 0) * (deliveryResponse?.taxRates?.tax_percent || 0) * 0.01).toFixed(2),
+                // taxAmount: Number((cart?.subtotal || 0) * (deliveryResponse?.taxRates?.tax_percent || 0) * 0.01).toFixed(2),
                 deliveryCharges: deliveryCh || 0.0,
                 extraDeliveryCharges: cart?.extraDeliveryCharges || 0,
                 grandTotal: Number(cart?.grandtotal || 0).toFixed(2),
@@ -388,6 +396,10 @@ function AddressDetails() {
             };
 
             const orderResponse = await orderPlace(orderPayload);
+
+            // Clear the cart immediately since the order is placed backend
+            const cartFn = new CartFunction();
+            cartFn.clearCart(setCart);
 
             // Emit socket event
             const socketOrderData = orderResponse.data;
@@ -431,7 +443,7 @@ function AddressDetails() {
                 }
             } else {
                 console.error("Unexpected error:", error);
-                toast.error("An unexpected error occurred.");
+                // toast.error("An unexpected error occurred.");
             }
         }
     };
@@ -634,7 +646,7 @@ function AddressDetails() {
                                         </div>
 
                                         {/* Postal Code */}
-                                        <div className="col-lg-4 col-md-3 col-sm-12">
+                                        <div className="col-lg-2 col-md-3 col-sm-12">
                                             <label className="form-label">
                                                 Postal Code <small className="text-danger">*</small>
                                             </label>
@@ -692,7 +704,7 @@ function AddressDetails() {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-5 col-lg-5 col-md-5 col-sm-12 px-2 summary-unfixed-box order-first order-md-last">
+                    <div className="col-xl-5 col-lg-5 col-md-5 col-sm-12 px-2 summary-unfixed-box">
                         <div className="row">
                             <div className="col-lg-12 col-md-12 col-sm-12 mb-2">
                                 <div className="block-stl10 odr-summary mb-0">
@@ -702,22 +714,22 @@ function AddressDetails() {
                                         <li>
                                             <span className="ttl">Sub Total</span>
                                             <span className="stts">
-                                                $ {apiPricing?.subTotal 
-                                                    ? Number(apiPricing.subTotal).toFixed(2) 
-                                                    : cart?.subtotal 
-                                                    ? cart.subtotal 
-                                                    : (0.0).toFixed(2)}
+                                                $ {apiPricing?.subTotal
+                                                    ? Number(apiPricing.subTotal).toFixed(2)
+                                                    : cart?.subtotal
+                                                        ? cart.subtotal
+                                                        : (0.0).toFixed(2)}
                                             </span>
                                         </li>
 
                                         {/* Tax Amount - Only if > 0 */}
-                                        {apiPricing?.taxAmount && Number(apiPricing.taxAmount) > 0 && (
+                                        {(apiPricing?.taxAmount || cart?.taxAmount) && Number(apiPricing?.taxAmount || cart?.taxAmount) > 0 && (
                                             <li>
                                                 <span className="ttl">
-                                                    Tax Amount ({apiPricing?.taxPer || 0}%)
+                                                    Tax Amount ({apiPricing?.taxPer || cart?.taxPer || 0}%)
                                                 </span>
                                                 <span className="stts">
-                                                    $ {Number(apiPricing.taxAmount).toFixed(2)}
+                                                    $ {Number(apiPricing?.taxAmount || cart?.taxAmount).toFixed(2)}
                                                 </span>
                                             </li>
                                         )}
@@ -733,21 +745,21 @@ function AddressDetails() {
                                         )}
 
                                         {/* Convenience Charges - Only if > 0 */}
-                                        {apiPricing?.convinenceCharges && Number(apiPricing.convinenceCharges) > 0 && (
+                                        {(apiPricing?.convinenceCharges || cart?.convinenceCharges) && Number(apiPricing?.convinenceCharges || cart?.convinenceCharges) > 0 && (
                                             <li>
-                                                <span className="ttl">Convenience Charges</span>
+                                                <span className="ttl">Convenience Fee</span>
                                                 <span className="stts">
-                                                    $ {Number(apiPricing.convinenceCharges).toFixed(2)}
+                                                    $ {Number(apiPricing?.convinenceCharges || cart?.convinenceCharges).toFixed(2)}
                                                 </span>
                                             </li>
                                         )}
 
                                         {/* Delivery Charges - Only if > 0 */}
-                                        {apiPricing?.deliveryCharges && Number(apiPricing.deliveryCharges) > 0 && (
+                                        {(apiPricing?.deliveryCharges || cart?.deliveryCharges) && Number(apiPricing?.deliveryCharges || cart?.deliveryCharges) > 0 && (
                                             <li>
                                                 <span className="ttl">Delivery Charges</span>
                                                 <span className="stts">
-                                                    $ {Number(apiPricing.deliveryCharges).toFixed(2)}
+                                                    $ {Number(apiPricing?.deliveryCharges || cart?.deliveryCharges).toFixed(2)}
                                                 </span>
                                             </li>
                                         )}
@@ -765,11 +777,11 @@ function AddressDetails() {
                                     <div className="ttl-all" id="font-size" >
                                         <span className="ttlnm">Grand Total</span>
                                         <span className="odr-stts total-font-size" >
-                                            $ {apiPricing?.grandTotal 
-                                                ? Number(apiPricing.grandTotal).toFixed(2) 
-                                                : cart?.grandtotal 
-                                                ? Number(cart.grandtotal).toFixed(2) 
-                                                : (0.0).toFixed(2)}
+                                            $ {apiPricing?.grandTotal
+                                                ? Number(apiPricing.grandTotal).toFixed(2)
+                                                : cart?.grandtotal
+                                                    ? Number(cart.grandtotal).toFixed(2)
+                                                    : (0.0).toFixed(2)}
                                         </span>
                                     </div>
                                     {readOnly && showOrderButtons && (
@@ -813,11 +825,11 @@ function AddressDetails() {
                     <div className="col-12 filled-bx">
                         <span className="">Sub Total</span>
                         <span className="">
-                            $ {apiPricing?.subTotal 
-                                ? Number(apiPricing.subTotal).toFixed(2) 
-                                : cart?.subtotal 
-                                ? cart.subtotal 
-                                : (0.0).toFixed(2)}
+                            $ {apiPricing?.subTotal
+                                ? Number(apiPricing.subTotal).toFixed(2)
+                                : cart?.subtotal
+                                    ? cart.subtotal
+                                    : (0.0).toFixed(2)}
                         </span>
                     </div>
 
@@ -877,11 +889,11 @@ function AddressDetails() {
                     <div className="col-12 filled-bx">
                         <strong className="text-grey">Grand Total</strong>
                         <strong className="text-grey">
-                            $ {apiPricing?.grandTotal 
-                                ? Number(apiPricing.grandTotal).toFixed(2) 
-                                : cart?.grandtotal 
-                                ? Number(cart.grandtotal).toFixed(2) 
-                                : (0.0).toFixed(2)}
+                            $ {apiPricing?.grandTotal
+                                ? Number(apiPricing.grandTotal).toFixed(2)
+                                : cart?.grandtotal
+                                    ? Number(cart.grandtotal).toFixed(2)
+                                    : (0.0).toFixed(2)}
                         </strong>
                     </div>
 

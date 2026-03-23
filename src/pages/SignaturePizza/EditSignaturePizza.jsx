@@ -124,6 +124,14 @@ const EditSignature = () => {
         settingsData.find((item) => item.shortCode === "regular-toppings")?.settingValue ??
         "Regular";
 
+    const indianStyleToppingsTitle =
+        settingsData.find((item) => item.shortCode === "indian-style-toppings")?.settingValue ??
+        "Indian Style";
+
+    const signaturePizzaTitle =
+        settingsData.find((item) => item.shortCode === "signaturepizza")?.settingValue ??
+        "Signature Pizza";
+
     const premiumToppingCount =
         Number(
             settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
@@ -734,6 +742,7 @@ const EditSignature = () => {
                                 <div className="mainContainer primary-text-color">
                                     {/* left side */}
                                     <div className="p-3">
+                                        <p className="fs-5 mb-0 text-secondary">{signaturePizzaTitle}</p>
                                         <p className="fs-1 fw-bold text-primary">{name}</p>
                                         <p className="mt-3 mb-3 fs-6">{pizzaSubtitle}</p>
 
@@ -1150,7 +1159,7 @@ const EditSignature = () => {
                                                                         }`}
                                                                     onClick={() => setTopping("free")}
                                                                 >
-                                                                    Indian Toppings
+                                                                    Indian Style
                                                                 </div>
                                                             </div>
                                                             <div className="d-flex flex-wrap gap-2">
@@ -1278,9 +1287,9 @@ const EditSignature = () => {
                                                                 ))}
                                                             </div>
 
-                                                            {/* SECTION 3: Indian Toppings */}
+                                                            {/* SECTION 3: Indian Style */}
                                                             <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
-                                                                Indian Toppings
+                                                                Indian Style
                                                             </div>
                                                             <div className="d-flex flex-wrap gap-2">
                                                                 {Ingredients?.toppings?.freeToppings?.map((data, index) => (
@@ -1460,9 +1469,9 @@ const EditSignature = () => {
                                                             <div className="mt-3 d-flex flex-wrap gap-2">
                                                                 {isIndiansToppings ? (
                                                                     <>
-                                                                        {/* Display a single button for Indian Toppings Toppings */}
+                                                                        {/* Display a single button for Indian Style Toppings */}
                                                                         <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                            Indian Toppings + Coriander
+                                                                            {indianStyleToppingsTitle} + Coriander
                                                                             <span
                                                                                 className="ms-2"
                                                                                 onClick={handleRemoveIsIndiansToppings}

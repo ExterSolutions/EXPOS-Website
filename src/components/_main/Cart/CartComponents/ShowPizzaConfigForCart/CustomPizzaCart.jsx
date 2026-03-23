@@ -84,11 +84,11 @@ function CustomPizzaCart({ data }) {
                 {/* Free Toppings */}
                 {data?.toppings?.isAllIndiansTps ?
                     <div>
-                        <p>Indian Toppings + Coriander</p>
+                        <p>Indian Style + Coriander</p>
                     </div>
                     : data?.toppings?.freeToppings?.length > 0 && (
                         <div>
-                            <p>Indian Toppings Toppings: </p>
+                            <p>Indian Style Toppings: </p>
                             {data?.toppings?.freeToppings?.map((data, index) => {
                                 return (
                                     <span className="mx-1">

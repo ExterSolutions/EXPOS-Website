@@ -1,3 +1,4 @@
+import { FaRegStar, FaStar, FaStarHalf } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import fallbackImage from "../../../assets/images/default-pizza.jpg";
 import { useTheme } from '../../../context/ThemeContext';
@@ -7,8 +8,7 @@ const PizzaCarousel = ({
     sectionTitle,
     pizzas,
     redirectBase,
-    type,
-    showBestSelling = false,
+    type
 }) => {
 
     const { theme, colors } = useTheme();
@@ -24,16 +24,28 @@ const PizzaCarousel = ({
 
     const getRedirectPath = (item) => {
         const productType = item?.productType;
+
         switch (productType) {
-            case "dips": return "/dips";
-            case "drinks": return "/drinks";
-            case "sides": return "/sides";
-            case "signature": return "/signaturepizza";
-            case "other": return "/otherpizza";
-            default: return `${redirectBase}/${item.code}`;
+            case "dips":
+                return "/dips";
+
+            case "drinks":
+                return "/drinks";
+
+            case "sides":
+                return "/sides";
+
+            case "signature":
+                return "/signaturepizza";
+
+            case "other":
+                return "/otherpizza";
+
+            case "other":
+            default:
+                return `${redirectBase}/${item.code}`;
         }
     };
-
     return (
         <div className="section pizza-carousel-section pt-60">
             <div className="d-flex align-items-center justify-content-between pb-2">
@@ -44,38 +56,29 @@ const PizzaCarousel = ({
                     >
                         {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
                     </span>
-                    <div className="d-flex align-items-center gap-2">
-                        <div className="section-title">{sectionTitle}</div>
-                        {showBestSelling && (
-                            <span className="best-selling-badge">🏆 Best Sellers</span>
-                        )}
-                    </div>
+                    <div className="section-title">{sectionTitle}</div>
                 </div>
             </div>
             <div className="pizza-grid">
                 {displayPizzas.map((item, index) => {
+                    // let name = item?.pizzaName || item?.name || `Item ${index + 1}`;
                     let name =
                         item?.pizzaName ||
                         item?.dipsName ||
                         item?.name ||
                         `Item ${index + 1}`;
                     const image = item?.pizzaImage || item?.image;
-                    const price = item?.pizza_prices?.[0]?.price || item?.price || '0.00';
+                    const rating = parseFloat(item?.ratings) || 0;
                     const visitLink = getRedirectPath(item);
-                    const description = item?.description || item?.dipsDescription || item?.dipsDiscription;
 
                     return (
-                        <div key={item.code || index} className="pizza-card-wrapper">
-                            <Link to={visitLink} className="pizza-card-modern">
-                                {/* Image area */}
-                                <div className="pizza-card-img-area">
-                                    {showBestSelling && index < 3 && (
-                                        <span className="pizza-card-badge">🔥 Popular</span>
-                                    )}
+                        <div key={item.code || index}>
+                            <Link to={visitLink} className="pizza-item">
+                                <div className="pizza-image-container">
                                     <img
                                         src={image}
                                         alt={name}
-                                        className="pizza-card-img"
+                                        className="pizza-image"
                                         loading="lazy"
                                         onError={(e) => {
                                             e.target.onerror = null;
@@ -83,20 +86,98 @@ const PizzaCarousel = ({
                                         }}
                                     />
                                 </div>
-                                {/* Content area */}
-                                <div className="pizza-card-body">
-                                    <h5 className="pizza-card-name">{name}</h5>
-                                    {description && (
-                                        <p className="pizza-card-desc">{description}</p>
-                                    )}
-                                    <div className="pizza-card-footer">
-                                        <div className="pizza-card-price-group">
-                                            <span className="pizza-card-price-label">From</span>
-                                            <span className="pizza-card-price">${price}</span>
+                                <div className="pizza-content">
+                                    <div className="pizza-rating d-none">
+                                        {[...Array(5)].map((_, i) => {
+                                            const starValue = i + 1;
+                                            if (rating >= starValue) {
+                                                return (
+                                                    <FaStar
+                                                        key={i}
+                                                        className="star"
+                                                    />
+                                                );
+                                            } else if (
+                                                rating >= starValue - 0.5 &&
+                                                rating < starValue
+                                            ) {
+                                                return (
+                                                    <FaStarHalf
+                                                        key={i}
+                                                        className="star"
+                                                    />
+                                                );
+                                            } else {
+                                                return (
+                                                    <FaRegStar
+                                                        key={i}
+                                                        className="star"
+                                                    />
+                                                );
+                                            }
+                                        })}
+                                    </div>
+                                    <h5 className="pizza-name">{name}</h5>
+                                    <div className="product-description">
+                                        {item?.description ||
+                                            item?.dipsDescription ||
+                                            item?.dipsDiscription}
+                                    </div>
+                                    <div
+                                        className="d-flex align-items-center justify-content-between mt-3"
+                                        style={{
+                                            width: '100%',
+                                            flexWrap: 'wrap',
+                                            gap: '8px'
+                                        }}
+                                    >
+
+                                        {/* Left Side: Price Group (Stacked) */}
+                                        <div
+                                            className="d-flex flex-column mt-3"
+                                            style={{ flex: 1, minWidth: 0 }}
+                                        >
+                                            {/* Upper Side: Starts From */}
+                                            <span
+                                                style={{
+                                                    fontSize: '0.8rem',
+                                                    color: '#0c0c0cff',
+                                                    fontWeight: '500',
+                                                    lineHeight: '1',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                Starts From
+                                            </span>
+
+                                            {/* Down Side: Actual Price */}
+                                            <div
+                                                className=""
+                                                style={{
+                                                    fontWeight: '700',
+                                                    color: 'var(--secondary)',
+                                                    fontSize: '1.2rem',
+                                                    // marginTop: '1px',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                ${item?.pizza_prices?.[0]?.price || item?.price || '0.00'}
+                                            </div>
                                         </div>
+
+                                        {/* Right Side: Button */}
                                         <button
                                             type="button"
-                                            className="pizza-card-order-btn"
+                                            title="Order Now"
+                                            className="view-button"
+                                            style={{
+                                                margin: 0,
+                                                width: 'auto',
+                                                padding: '7px 16px',
+                                                flexShrink: 0,
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '0.85rem'
+                                            }}
                                         >
                                             Order Now
                                         </button>

@@ -221,7 +221,7 @@ function MainCartList({ cData, setLoading }) {
                                         {/* Free Toppings */}
                                         {data?.toppings?.freeToppings?.length > 0 && (
                                             <div>
-                                                <p>Indian Toppings Toppings: </p>
+                                                <p>Indian Style Toppings: </p>
                                                 {data?.toppings?.freeToppings?.map((data) => {
                                                     return (
                                                         <span className="mx-1" key={data?.toppingsCode}>
