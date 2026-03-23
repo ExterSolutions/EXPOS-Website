@@ -190,23 +190,6 @@ function PickupOrder() {
             // storeCode: selectedStore?.code,
             // successUrl: `${window.location.origin}/payment/success`,
             // cancelUrl: `${window.location.origin}/payment/cancel`,
-    // "customerCode": "CST_2",
-    // "deliveryType": "pickup",
-    // "customerName": "Brody Kelly",
-    // "mobileNumber": "15195740074",
-    //   "cityCode": "CITY_02",
-    // "discount_code": "E_POS_01",
-    // "storeCode": "STR_10",
-    
-    // "subTotal": "1057.75",
-    // "discountAmount": "0.00",
-    // "taxPer": "2.00",
-    // "taxAmount": "2.00",
-    // "convinencePer": "1.00",
-    // "convinenceCharges": "3.00",
-    // "deliveryCharges": "0.00",
-    // "extraDeliveryCharges": "12.00",
-    // "grandTotal": "49.38"
         };
 
         try {

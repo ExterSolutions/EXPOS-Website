@@ -7,7 +7,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import swal from "sweetalert";
 import * as Yup from "yup";
-import {GlobalContext} from "../context/GlobalContext";
+import { GlobalContext } from "../context/GlobalContext";
 import { useSocket } from "../context/SocketContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import {
@@ -172,13 +172,13 @@ function AddressDetails() {
                 }
             })
             .catch((err) => {
-              
+
             });
     };
 
     // START TIMER FUNCTION
     const startTimer = () => {
-        setTimer(180); 
+        setTimer(180);
         setTimerActive(true);
 
         timerInterval.current = setInterval(() => {
@@ -341,7 +341,7 @@ function AddressDetails() {
             //     zipcode: cleanPostalCode,
             //     storeCode: currentStoreCode
             // });
-            
+
             // if (!storeResponse?.deliverable) {
             //     setLoading(false);
             //     return handleUndeliverable(
@@ -352,7 +352,7 @@ function AddressDetails() {
 
             // const deliveryResponse = await deliverable(payload);
             // if (!deliveryResponse?.deliverable) {
-                // setLoading(false);
+            // setLoading(false);
             //     return handleUndeliverable(
             //         "Postal Code is Undeliverable",
             //         "Postal code cannot be delivered. Please change the postal code and try again"
@@ -379,7 +379,7 @@ function AddressDetails() {
                 subTotal: cart?.subtotal,
                 discountAmount: cart?.discountAmount,
                 //taxPer: deliveryResponse?.taxRates?.tax_percent || 0,
-               // taxAmount: Number((cart?.subtotal || 0) * (deliveryResponse?.taxRates?.tax_percent || 0) * 0.01).toFixed(2),
+                // taxAmount: Number((cart?.subtotal || 0) * (deliveryResponse?.taxRates?.tax_percent || 0) * 0.01).toFixed(2),
                 deliveryCharges: deliveryCh || 0.0,
                 extraDeliveryCharges: cart?.extraDeliveryCharges || 0,
                 grandTotal: Number(cart?.grandtotal || 0).toFixed(2),
@@ -702,11 +702,11 @@ function AddressDetails() {
                                         <li>
                                             <span className="ttl">Sub Total</span>
                                             <span className="stts">
-                                                $ {apiPricing?.subTotal 
-                                                    ? Number(apiPricing.subTotal).toFixed(2) 
-                                                    : cart?.subtotal 
-                                                    ? cart.subtotal 
-                                                    : (0.0).toFixed(2)}
+                                                $ {apiPricing?.subTotal
+                                                    ? Number(apiPricing.subTotal).toFixed(2)
+                                                    : cart?.subtotal
+                                                        ? cart.subtotal
+                                                        : (0.0).toFixed(2)}
                                             </span>
                                         </li>
 
@@ -765,11 +765,11 @@ function AddressDetails() {
                                     <div className="ttl-all" id="font-size" >
                                         <span className="ttlnm">Grand Total</span>
                                         <span className="odr-stts total-font-size" >
-                                            $ {apiPricing?.grandTotal 
-                                                ? Number(apiPricing.grandTotal).toFixed(2) 
-                                                : cart?.grandtotal 
-                                                ? Number(cart.grandtotal).toFixed(2) 
-                                                : (0.0).toFixed(2)}
+                                            $ {apiPricing?.grandTotal
+                                                ? Number(apiPricing.grandTotal).toFixed(2)
+                                                : cart?.grandtotal
+                                                    ? Number(cart.grandtotal).toFixed(2)
+                                                    : (0.0).toFixed(2)}
                                         </span>
                                     </div>
                                     {readOnly && showOrderButtons && (
@@ -813,11 +813,11 @@ function AddressDetails() {
                     <div className="col-12 filled-bx">
                         <span className="">Sub Total</span>
                         <span className="">
-                            $ {apiPricing?.subTotal 
-                                ? Number(apiPricing.subTotal).toFixed(2) 
-                                : cart?.subtotal 
-                                ? cart.subtotal 
-                                : (0.0).toFixed(2)}
+                            $ {apiPricing?.subTotal
+                                ? Number(apiPricing.subTotal).toFixed(2)
+                                : cart?.subtotal
+                                    ? cart.subtotal
+                                    : (0.0).toFixed(2)}
                         </span>
                     </div>
 
@@ -877,11 +877,11 @@ function AddressDetails() {
                     <div className="col-12 filled-bx">
                         <strong className="text-grey">Grand Total</strong>
                         <strong className="text-grey">
-                            $ {apiPricing?.grandTotal 
-                                ? Number(apiPricing.grandTotal).toFixed(2) 
-                                : cart?.grandtotal 
-                                ? Number(cart.grandtotal).toFixed(2) 
-                                : (0.0).toFixed(2)}
+                            $ {apiPricing?.grandTotal
+                                ? Number(apiPricing.grandTotal).toFixed(2)
+                                : cart?.grandtotal
+                                    ? Number(cart.grandtotal).toFixed(2)
+                                    : (0.0).toFixed(2)}
                         </strong>
                     </div>
 
