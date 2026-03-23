@@ -345,7 +345,7 @@ function ViewOrderProductDetails({ orderData }) {
                                                                             <div className="products d-flex justify-content-start mx-1">
                                                                                 <span className="subText">
                                                                                     <strong>
-                                                                                        Indian Toppings + Coriander
+                                                                                        Indian Style + Coriander
                                                                                     </strong>
                                                                                 </span>
                                                                             </div>
@@ -570,50 +570,76 @@ function ViewOrderProductDetails({ orderData }) {
                         </>
                     )}
 
-                    <div className="bg-light w-auto py-2 d-flex justify-content-around productDetails">
-                        <div className="text-end orderSummaryTitle fw-bold subTotal mx-1">
+                    <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails pe-4">
+                        <div className="text-end orderSummaryTitle fw-bold subTotal" style={{ width: "300px" }}>
                             Sub Total :
                         </div>
-                        <div className="text-end amount mx-1">
+                        <div className="text-end amount ms-4" style={{ width: "100px" }}>
                             <span className="orderSummaryText">
                                 $ {orderData?.subTotal}
                             </span>
                         </div>
                     </div>
-                    {
-                        orderData?.discountmount > 0 && (
-                            <div className="bg-light w-auto py-2 d-flex justify-content-around productDetails">
-                                <div className="text-end orderSummaryTitle fw-bold taxAmount mx-1">
-                                    Discount Amount :
-                                </div>
-                                <div className="text-end orderSummaryText fw-bold amount mx-1">
-                                    $ {orderData?.discountmount}
-                                </div>
+                    {Number(orderData?.discountAmount || 0) > 0 && (
+                        <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails pe-4">
+                            <div className="text-end orderSummaryTitle fw-bold text-success" style={{ width: "300px" }}>
+                                Discount ({orderData?.coupon_code}) :
                             </div>
-                        )
-                    }
+                            <div className="text-end orderSummaryText fw-bold text-success amount ms-4" style={{ width: "100px" }}>
+                                - $ {orderData?.discountAmount}
+                            </div>
+                        </div>
+                    )}
 
-                    <div className="bg-light w-auto py-2 d-flex justify-content-around productDetails">
-                        <div className="text-end orderSummaryTitle fw-bold taxAmount mx-1">
-                            Tax Amount ({orderData?.taxPer} %) :
+                    {Number(orderData?.taxAmount || 0) > 0 && (
+                        <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails pe-4">
+                            <div className="text-end orderSummaryTitle fw-bold taxAmount" style={{ width: "300px" }}>
+                                Tax Amount ({orderData?.taxPer} %) :
+                            </div>
+                            <div className="text-end orderSummaryText fw-bold amount ms-4" style={{ width: "100px" }}>
+                                $ {orderData?.taxAmount}
+                            </div>
                         </div>
-                        <div className="text-end orderSummaryText fw-bold amount mx-1">
-                            $ {orderData?.taxAmount}
+                    )}
+
+                    {Number(orderData?.convinenceCharges || 0) > 0 && (
+                        <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails pe-4">
+                            <div className="text-end orderSummaryTitle fw-bold convenienceCharge" style={{ width: "300px" }}>
+                                Convenience Charges ({orderData?.convinencePer} %) :
+                            </div>
+                            <div className="text-end orderSummaryText fw-bold amount ms-4" style={{ width: "100px" }}>
+                                $ {orderData?.convinenceCharges}
+                            </div>
                         </div>
-                    </div>
-                    <div className="bg-light w-auto py-2 d-flex justify-content-around productDetails">
-                        <div className="text-end fw-bold orderSummaryTitle deliveryCharge mx-1">
-                            Delivery Charges :
+                    )}
+
+                    {Number(orderData?.deliveryCharges || 0) > 0 && (
+                        <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails pe-4">
+                            <div className="text-end fw-bold orderSummaryTitle deliveryCharge" style={{ width: "300px" }}>
+                                Delivery Charges :
+                            </div>
+                            <div className="text-end orderSummaryText fw-bold amount ms-4" style={{ width: "100px" }}>
+                                $ {orderData?.deliveryCharges}
+                            </div>
                         </div>
-                        <div className="text-end orderSummaryText fw-bold amount mx-1">
-                            $ {orderData?.deliveryCharges}
+                    )}
+
+                    {Number(orderData?.extraDeliveryCharges || 0) > 0 && (
+                        <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails pe-4">
+                            <div className="text-end fw-bold orderSummaryTitle deliveryCharge" style={{ width: "300px" }}>
+                                Extra Delivery Charges :
+                            </div>
+                            <div className="text-end orderSummaryText fw-bold amount ms-4" style={{ width: "100px" }}>
+                                $ {orderData?.extraDeliveryCharges}
+                            </div>
                         </div>
-                    </div>
-                    <div className="bg-light w-auto py-2 d-flex justify-content-around productDetails border-top">
-                        <div className="text-end fw-bold orderSummaryTitle grandTotal mx-1">
-                            Grand Total :
+                    )}
+
+                    <div className="bg-light w-100 py-2 d-flex justify-content-end productDetails border-top pe-4">
+                        <div className="text-end fw-bold orderSummaryTitle grandTotal" style={{ width: "300px" }}>
+                             Grand Total :
                         </div>
-                        <div className="text-end orderSummaryText fw-bold amount mx-1">
+                        <div className="text-end orderSummaryText fw-bold amount ms-4" style={{ width: "100px" }}>
                             $ {orderData?.grandTotal}
                         </div>
                     </div>

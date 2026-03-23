@@ -1,15 +1,16 @@
 
+
 export const CrustSelector = ({ data, Crust, handleCrust }) => {
-    const isSelected = Crust === data?.crustCode;
     return (
-        <button
-            type="button"
-            className={`cust-pill-btn ${isSelected ? 'cust-pill-btn--active' : ''}`}
-            onClick={() => handleCrust(data?.crustCode)}
-        >
-            {isSelected && <i className="bi bi-check2 me-1" />}
-            {data?.crustName}
-            {data?.price !== null && data?.price != 0 && <span className="cust-pill-price"> +${data?.price}</span>}
-        </button>
-    );
+        <div className={`theme-border ${Crust === data?.crustCode ? 'active' : ''}`} onClick={() => handleCrust(data?.crustCode)}>
+            <div className="d-flex align-items-center gap-2">
+                {Crust === data?.crustCode ? (
+                    <i className="bi bi-check-circle-fill" />
+                ) : (
+                    <i className="bi bi-plus-circle" />
+                )}
+                <div className="">{`${data?.crustName}${data?.price !== null ? ` ($ ${data?.price})` : ""}`}</div>
+            </div>
+        </div>
+    )
 }

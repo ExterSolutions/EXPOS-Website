@@ -1,64 +1,75 @@
 import { useState } from "react";
-import { FaCheck, FaPlus } from "react-icons/fa";
-
-// Placement options with color codes
-const PLACEMENTS = [
-    { value: "whole",     label: "Whole",  color: "#2d7a2d" },
-    { value: "lefthalf",  label: "Left",   color: "#1a6bbf" },
-    { value: "righthalf", label: "Right",  color: "#c06000" },
-    { value: "1/4",       label: "¼",      color: "#8b3cba" },
-];
-
+import { IoMdCheckmarkCircleOutline } from "react-icons/io"
+// push
 export const ToppingOneSelector = ({ data, ToppingsOne, DefaultToppingsOne, handleTopping, handleSizeChange }) => {
     const [pizzaSize, setpizzaSize] = useState("whole");
-    const isSelected = ToppingsOne.some(obj => obj?.code === data?.toppingsCode);
-    const currentSize = ToppingsOne?.find(el => el?.code === data?.toppingsCode)?.size || pizzaSize;
-    const displayPrice = DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price;
 
     const handleChange = (d) => {
-        setpizzaSize(d);
-        if (isSelected) {
+        setpizzaSize(d)
+        if (ToppingsOne.some(obj => obj?.code === data?.toppingsCode)) {
             let updatedPrice = data?.price;
-            const matchingDefault = DefaultToppingsOne?.find(tps => data?.toppingsCode === tps.code);
-            if (matchingDefault) updatedPrice = matchingDefault?.price ?? 0;
-            handleSizeChange({ code: data?.toppingsCode, name: data?.toppingsName, price: updatedPrice, type: "one", size: d });
+            const matchingToppingTwo = DefaultToppingsOne?.find(tps => data?.toppingsCode === tps.code);
+            if (matchingToppingTwo) {
+                updatedPrice = matchingToppingTwo?.price ?? 0
+            }
+            let payload = {
+                code: data?.toppingsCode,
+                name: data?.toppingsName,
+                price: updatedPrice,
+                type: "one",
+                size: d
+            }
+            handleSizeChange(payload);
         }
-    };
+    }
 
     return (
-        <div className={`cust-topping-row ${isSelected ? "cust-topping-row--active" : ""}`}>
-            {/* Main row: checkbox + name + price */}
-            <div
-                className="cust-topping-row__info"
-                onClick={() =>
-                    handleTopping({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "one", size: pizzaSize })
+        <div
+            key={`${data?.toppingsName}-${data?.toppingsCode}`}
+            className={`theme-border ${ToppingsOne.some(obj => obj?.code === data?.toppingsCode) ? 'active' : ''}`}
+            onClick={(e) => {
+                if (e.target.tagName !== "SELECT" && e.target.tagName !== "OPTION") {
+                    handleTopping({
+                        code: data?.toppingsCode,
+                        name: data?.toppingsName,
+                        price: data?.price,
+                        type: "one",
+                        size: pizzaSize,
+                    });
                 }
-            >
-                <span className={`cust-topping-check ${isSelected ? "cust-topping-check--on" : ""}`}>
-                    {isSelected ? <FaCheck size={11} /> : <FaPlus size={11} />}
-                </span>
-                <span className="cust-topping-name">{data?.toppingsName}</span>
-                {displayPrice !== null && displayPrice != 0 && (
-                    <span className="cust-topping-price">+${displayPrice}</span>
-                )}
-            </div>
-
-            {/* Placement pills — only shown when selected */}
-            {isSelected && (
-                <div className="cust-placement-pills">
-                    {PLACEMENTS.map((pl) => (
-                        <button
-                            key={pl.value}
-                            type="button"
-                            className={`cust-placement-pill ${currentSize === pl.value ? "cust-placement-pill--active" : ""}`}
-                            style={{ "--pill-color": pl.color }}
-                            onClick={(e) => { e.stopPropagation(); handleChange(pl.value); }}
-                        >
-                            {pl.label}
-                        </button>
-                    ))}
+            }}
+        >
+            <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center gap-2">
+                    {ToppingsOne.some(obj => obj?.code === data?.toppingsCode) ? (
+                        <i className="bi bi-check-circle-fill" />
+                    ) : (
+                        <i className="bi bi-plus-circle" />
+                    )}
+                    <span className="fw-semibold">
+                        {`${data?.toppingsName}`}
+                    </span>
+                    {(DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price) !== null && (
+                        <span>(${DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price})</span>
+                    )}
                 </div>
-            )}
+            </div>
+            <div className="row">
+                <div className="mt-2 col-12">
+                    <select className="form-select form-select-sm" value={ToppingsOne?.find((el) => el?.code === data?.toppingsCode)?.size || pizzaSize}
+                        onChange={(e) => {
+                            e.stopPropagation();
+                            handleChange(e.target.value)
+                        }
+                        }
+                    >
+                        <option value={"whole"}>Whole</option>
+                        <option value={"righthalf"}>Right Half</option>
+                        <option value={"lefthalf"}>Left Half</option>
+                        <option value={"1/4"}>1/4</option>
+                    </select>
+                </div>
+            </div>
         </div>
-    );
-};
+    )
+}
