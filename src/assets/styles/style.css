@@ -20511,6 +20511,15 @@ category-info {
   }
 }
 
+/* Pizza customization pages also have the sticky Add-to-Cart bar above BottomNav (≈70px each).
+   Add extra breathing room so last option isn't hidden. */
+@media (max-width: 767px) {
+  .has-sticky-cart-bar {
+    padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+
 /* --- Mobile Sticky Cart Checkout Bar --- */
 .mobile-sticky-cart-bar {
   position: fixed;

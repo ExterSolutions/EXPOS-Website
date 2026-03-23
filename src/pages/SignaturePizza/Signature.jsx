@@ -701,7 +701,7 @@ const Signature = () => {
                                 <div className="container">
                                     <div className="mainContainer primary-text-color">
                                         {/* left side */}
-                                        <div className="p-3">
+                                        <div className="p-3 has-sticky-cart-bar">
                                             {/* Hero Header */}
                                             <div className="d-flex align-items-center gap-3 mb-3">
                                                 <img

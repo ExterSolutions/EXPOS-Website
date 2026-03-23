@@ -1,70 +1,39 @@
-import React, { useState } from "react";
-import { IoMdReturnLeft } from "react-icons/io";
+import React from "react";
 
+/**
+ * SizeSelector — pill-button style, consistent with Signature & Other Pizza.
+ * Replaces the old accordion/dropdown component.
+ */
 const SizeSelector = ({ pizzaPrices = [], selectedSize, onSelectSize }) => {
-    const [isOpen, setIsOpen] = useState(true);
-
-    const accordionId = `size-accordion`;
-    const headerId = `size-header`;
-
-    const handleChange = (e, size) => {
-        e.preventDefault();
-        onSelectSize(size);
-    };
-
-    const toggleAccordion = () => {
-        setIsOpen(!isOpen);
-    };
-
     return (
         <div className="mb-3">
-            <div className="accordion" id={accordionId}>
-                <div className="accordion-item">
-                    <h2 className="accordion-header" id={headerId}>
+            <p
+                className="fw-bold text-uppercase mb-2"
+                style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}
+            >
+                Select Size
+            </p>
+            <div className="size-pill-scroll">
+                {pizzaPrices?.map((sizeObj, index) => {
+                    const isActive = selectedSize != null
+                        ? selectedSize?.size === sizeObj?.size
+                        : false;
+                    return (
                         <button
-                            className={`fw-bold fs-6 accordion-button ${isOpen ? "" : "collapsed"}`}
+                            key={index}
                             type="button"
-                            onClick={toggleAccordion}
-                            aria-expanded={isOpen ? "true" : "false"}
-                            aria-controls="collapseOne"
+                            className={`size-pill${isActive ? " size-pill--active" : ""}`}
+                            onClick={() => onSelectSize(sizeObj)}
                         >
-                            SELECT SIZE
+                            <span className="size-pill__label">{sizeObj?.size}</span>
+                            {sizeObj?.price != null && (
+                                <span className="size-pill__price">
+                                    ${Number(sizeObj.price).toFixed(2)}
+                                </span>
+                            )}
                         </button>
-                    </h2>
-                    <div
-                        id="collapseOne"
-                        className={`accordion-collapse collapse ${isOpen ? "show" : ""}`}
-                        aria-labelledby={headerId}
-                        data-bs-parent={`#${accordionId}`}
-                        style={{ overflow: "hidden" }}
-                    >
-                        <div className="accordion-body primary-background-color">
-
-                            <div className="size-grid">
-                                {pizzaPrices?.map((size, index) => {
-                                    const active = selectedSize !== null ? selectedSize?.size === size?.size : false;
-                                    return (
-                                        <div
-                                            className={`py-2 px-3 rounded-3 ${active
-                                                ? "selected-card-background-color selected-card-text-color"
-                                                : "card-background-color card-text-color"
-                                                }`}
-                                            style={{ cursor: "pointer" }}
-                                            onClick={(e) => handleChange(e, size)}
-                                            key={`size-${index}`}
-                                        >
-                                            <div className="">
-                                                <div className="d-block">
-                                                    {size?.size} (${Number(size?.price ?? 0).toFixed(2)})
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    );
+                })}
             </div>
         </div>
     );
