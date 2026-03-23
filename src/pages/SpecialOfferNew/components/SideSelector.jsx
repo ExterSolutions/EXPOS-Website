@@ -1,33 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
+/**
+ * SideSelector — tile-style (always visible), no accordion.
+ * Active tile gets green border + checkmark.
+ */
 const SideSelector = ({ sides = [], selectedSide = [], onSelect }) => {
-    const [isOpen, setIsOpen] = useState(false);
 
-    const accordionId = `side-accordion`;
-    const headerId = `side-header`;
-    const collapseId = `side-collapse`;
-
-    const handleToggleAccordion = () => {
-        setIsOpen(pre => !isOpen);
-    };
-
-    // Preselect first side if available
+    // Preselect first side if nothing selected
     useEffect(() => {
         if (sides.length > 0 && selectedSide.length === 0) {
             const first = sides[0];
             const line = first.lineEntries?.[0] || {};
-            onSelect([
-                {
-                    sideCode: first.code,
-                    sideName: first.sideName,
-                    sideType: first.type ?? "side",
-                    lineCode: line.code ?? "",
-                    sidePrice: 0,
-                    sideSize: line.size ?? "",
-                    quantity: 1,
-                    totalPrice: "0.00",
-                },
-            ]);
+            onSelect([{
+                sideCode: first.code,
+                sideName: first.sideName,
+                sideType: first.type ?? "side",
+                lineCode: line.code ?? "",
+                sidePrice: 0,
+                sideSize: line.size ?? "",
+                quantity: 1,
+                totalPrice: "0.00",
+            }]);
         }
     }, [sides, selectedSide, onSelect]);
 
@@ -37,82 +30,59 @@ const SideSelector = ({ sides = [], selectedSide = [], onSelect }) => {
 
     const handleSelectSide = (side) => {
         const line = side.lineEntries?.[0] || {};
-        const formatted = [
-            {
-                sideCode: side.code,
-                sideName: side.sideName,
-                sideType: side.type ?? "side",
-                lineCode: line.code ?? "",
-                sidePrice: 0,
-                sideSize: line.size ?? "",
-                quantity: 1,
-                totalPrice: "0.00",
-            },
-        ];
-        onSelect(formatted); // replaces old selection
+        onSelect([{
+            sideCode: side.code,
+            sideName: side.sideName,
+            sideType: side.type ?? "side",
+            lineCode: line.code ?? "",
+            sidePrice: 0,
+            sideSize: line.size ?? "",
+            quantity: 1,
+            totalPrice: "0.00",
+        }]);
     };
-
 
     return (
         <div className="mb-3">
-            <div className="accordion mb-3" id={accordionId}>
-                <div className="accordion-item">
-                    <h2 className="accordion-header" id={headerId}>
-                        <button
-                            className={`accordion-button fw-bold ${isOpen ? "text-white" : "collapsed text-dark"}`}
-                            type="button"
-                            aria-expanded={isOpen ? "true" : "false"}
-                            aria-controls={collapseId}
-                            onClick={handleToggleAccordion}
+            <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>
+                Choose Your Side
+            </p>
+            <div className="d-flex flex-column gap-2">
+                {sides.map((side) => {
+                    const line = side.lineEntries?.[0] || {};
+                    const active = activeCode === side.code;
+                    return (
+                        <div
+                            key={side.code}
+                            onClick={() => handleSelectSide(side)}
+                            className="d-flex justify-content-between align-items-center p-3 rounded-3"
+                            style={{
+                                border: `2px solid ${active ? "var(--primary, #2d7a2d)" : "#e0e0e0"}`,
+                                background: active ? "rgba(45,122,45,0.06)" : "#fff",
+                                cursor: "pointer",
+                                transition: "all 0.15s",
+                            }}
                         >
-                            Choose Your Side
-                        </button>
-                    </h2>
-
-                    <div
-                        id={collapseId}
-                        className={`accordion-collapse collapse ${isOpen ? "show" : ""}`}
-                        aria-labelledby={headerId}
-                        data-bs-parent={`#${accordionId}`}
-                    >
-                        <div className="accordion-body">
-                            <div className="d-flex flex-column gap-3">
-                                {sides.map((side) => {
-                                    const line = side.lineEntries?.[0] || {};
-                                    const active = activeCode === side.code;
-                                    return (
-                                        <div
-                                            key={side.code}
-                                            onClick={() => handleSelectSide(side)}
-                                            className="d-flex justify-content-between align-items-center p-2 rounded"
-                                            style={{
-                                                border: "1px solid #ddd",
-                                                cursor: "pointer",
-                                                borderColor: active ? "#F26622" : "#ddd",
-                                                color: active ? "#F26622" : "#000",
-                                                fontWeight: active ? "600" : "400",
-                                            }}
-                                        >
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <div className="d-flex align-items-center gap-2">
-                                                    {active ? (
-                                                        <i className="bi bi-check-circle-fill" />
-                                                    ) : (
-                                                        <i className="bi bi-plus-circle" />
-                                                    )}
-                                                    <span className="fw-medium">{side.sideName}</span>
-                                                    <span className={`small ${active ? "text-white" : "text-secondary"}`}>
-                                                        ({line.size ?? "1  Box/Piece"})
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                            <div className="d-flex align-items-center gap-2">
+                                <span style={{
+                                    width: 22, height: 22, borderRadius: "50%",
+                                    border: `2px solid ${active ? "var(--primary, #2d7a2d)" : "#ccc"}`,
+                                    background: active ? "var(--primary, #2d7a2d)" : "#fff",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    flexShrink: 0,
+                                }}>
+                                    {active && <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>✓</span>}
+                                </span>
+                                <span className="fw-semibold" style={{ color: active ? "var(--primary, #2d7a2d)" : "#1a1a1a", fontSize: "0.9rem" }}>
+                                    {side.sideName}
+                                </span>
                             </div>
+                            <span className="text-muted" style={{ fontSize: "0.78rem" }}>
+                                {line.size ?? "1 Box"}
+                            </span>
                         </div>
-                    </div>
-                </div>
+                    );
+                })}
             </div>
         </div>
     );

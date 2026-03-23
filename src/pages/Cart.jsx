@@ -71,7 +71,35 @@ function Cart() {
                     {cart?.product?.length > 0 ? (
                         <section className="new-block mb-3 BgsecondaryBlackColor">
                             <div className="nav-margin"></div>
-                            <div className="container-fluid px-lg-4 px-md-4 px-sm-2">
+
+                            {/* ── Mobile sticky checkout strip (top, below header) ── */}
+                            <div className="d-lg-none" style={{
+                                position: "sticky", top: 0, zIndex: 999,
+                                background: "#fff", borderBottom: "1px solid #e8e8e8",
+                                padding: "10px 16px",
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                            }}>
+                                <div>
+                                    <div style={{ fontSize: "0.72rem", color: "#888" }}>Grand Total</div>
+                                    <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "#1a1a1a" }}>
+                                        ${cart?.grandtotal ? cart.grandtotal : (0).toFixed(2)}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleCheckout}
+                                    style={{
+                                        background: "var(--primary, #2d7a2d)", color: "#fff",
+                                        border: "none", borderRadius: 10,
+                                        padding: "10px 28px", fontWeight: 700, fontSize: "0.95rem",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Checkout
+                                </button>
+                            </div>
+
+                            <div className="container-fluid px-lg-4 px-md-4 px-sm-2" style={{ paddingBottom: 80 }}>
                                 <div className="row gx-4">
                                     <div className="col-lg-12 col-md-12 col-sm-12 py-1 mt-1">
                                         <div className="d-flex justify-content-start align-items-center w-100 productList mb-1">

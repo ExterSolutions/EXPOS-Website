@@ -71,7 +71,7 @@ function MyAccount() {
         <>
             <Header />
             <div className="nav-margin" />
-            <div style={{ minHeight: "80vh", background: "#f5f5f5", paddingBottom: 90 }}>
+            <div style={{ minHeight: "80vh", background: "#f5f5f5", paddingBottom: "calc(140px + env(safe-area-inset-bottom, 0px))" }}>
 
                 {/* ── Profile Card ── */}
                 <div style={{ background: "#fff", padding: "24px 20px 20px", borderBottom: "1px solid #efefef" }}>
