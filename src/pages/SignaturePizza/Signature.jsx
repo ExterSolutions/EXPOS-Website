@@ -708,7 +708,7 @@ const Signature = () => {
                     {specialBaseOpts.length > 0 && <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={specialBaseOpts} selected={SpecialBases} onSelect={(id) => setSpecialBases(id)} />}
                     {getSignatureData ? (
                         <div className="new-block" id="create-your-own-new">
-                            <section className="special-offers-sec new-block primary-background-color">
+                            <section className="special-offers-sec new-block primary-background-color py-2">
                                 <div className="container">
                                     <div className="mainContainer primary-text-color">
                                         {/* left side */}

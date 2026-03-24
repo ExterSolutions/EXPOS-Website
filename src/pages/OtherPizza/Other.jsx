@@ -723,7 +723,7 @@ const Other = () => {
 
                     {getOtherData ? (
                         <div className="new-block" id="create-your-own-new">
-                            <section className="special-offers-sec new-block primary-background-color">
+                            <section className="special-offers-sec new-block primary-background-color py-2">
                                 <div className="container py-3 has-sticky-cart-bar">
                                     <div className="row">
                                         {/* ── LEFT COLUMN ──────────────────────────────────── */}

@@ -413,7 +413,7 @@ const SpecialOfferPage = () => {
     <div>
       <Header />
       <div className="nav-margin"></div>
-      <div className="container py-2 has-sticky-cart-bar">
+      <div className="container py-4 has-sticky-cart-bar">
         <div className="row">
           {/* Slim Offer Hero Strip (replaces old SummaryTop on mobile) */}
           <div className="col-12 d-lg-none mb-3">

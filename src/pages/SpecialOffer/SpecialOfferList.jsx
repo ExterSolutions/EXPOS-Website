@@ -49,14 +49,16 @@ function SpecialOfferList() {
         <div style={{ position: "relative" }}>
             <Header />
             <div className="nav-margin"></div>
-            <div className="d-flex align-items-center justify-content-between innder-page-header">
-                <div className="flex-grow-1 section-header">
-                    <span className="category-subtitle">Craving Something New?</span>
-                    <div className="section-title">Explore Our Special Deals</div>
+            <div className="container py-2">
+                <div className="d-flex align-items-center justify-content-between innder-page-header">
+                    <div className="flex-grow-1 section-header">
+                        <span className="category-subtitle">Craving Something New?</span>
+                        <div className="section-title">Explore Our Special Deals</div>
+                    </div>
                 </div>
+                {/* basePath /specialoffer → opens SpecialOfferPage (new clean UI, no toppings config) */}
+                <SpecialOffer specialOfferData={specialOfferData} basePath="/specialoffer" />
             </div>
-            {/* basePath /specialoffer → opens SpecialOfferPage (new clean UI, no toppings config) */}
-            <SpecialOffer specialOfferData={specialOfferData} basePath="/specialoffer" />
             <Footer />
         </div>
     );

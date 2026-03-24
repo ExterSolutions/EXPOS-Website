@@ -682,7 +682,10 @@ function SpecialOffer() {
       <div className="d-flex align-items-center justify-content-between innder-page-header"></div>
 
       <div className="new-block" id="create-your-own-new">
-        <section className="special-offers-sec new-block primary-background-color">
+        <section
+          className="new-block primary-background-color py-4"
+          id="create-your-own-new"
+        >
           <div className="container">
             <div className="mainContainer primary-text-color">
               {/* left side */}

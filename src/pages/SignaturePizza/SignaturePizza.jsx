@@ -38,13 +38,15 @@ const SignaturePizzaList = () => {
       <div style={{ position: "relative" }}>
         <Header />
         <div className="nav-margin"></div>
-        <div className="d-flex align-items-center justify-content-between innder-page-header">
-          <div className="flex-grow-1 section-header">
-            <span className="category-subtitle">{signaturePizzaTitle}</span>
-            <div className="section-title">Choose Our Delicious Item</div>
+        <div className="container py-2">
+          <div className="d-flex align-items-center justify-content-between innder-page-header">
+            <div className="flex-grow-1 section-header">
+              <span className="category-subtitle">{signaturePizzaTitle}</span>
+              <div className="section-title">Choose Our Delicious Item</div>
+            </div>
           </div>
+          <SignaturePizza toppingsData={toppingsData} />
         </div>
-        <SignaturePizza toppingsData={toppingsData} />
         <Footer />
       </div>
     </>

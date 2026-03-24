@@ -703,18 +703,6 @@ const CreatePizza = () => {
             id="create-your-own-new"
           >
             <section className="primary-background-color special-offers-sec new-block py-2">
-              <div className="container ">
-                <nav aria-label="breadcrumb">
-                  <ol className="breadcrumb custom-breadcrumb ">
-                    <li className="breadcrumb-item " aria-current="page">
-                      Home
-                    </li>
-                    <li className="breadcrumb-item active" aria-current="page">
-                      Create Your Own
-                    </li>
-                  </ol>
-                </nav>
-              </div>
               <div className="container">
                 <div className="mainContainer primary-text-color">
                   {/* left side */}
