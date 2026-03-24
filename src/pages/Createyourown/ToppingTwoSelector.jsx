@@ -1,65 +1,68 @@
 import { useState } from "react"
-
-const SIZE_OPTIONS = [
-    { value: "whole",     label: "Whole" },
-    { value: "righthalf", label: "½ Right" },
-    { value: "lefthalf",  label: "½ Left" },
-    { value: "1/4",       label: "¼" },
-];
+import { IoMdCheckmarkCircleOutline } from "react-icons/io"
 
 export const ToppingTwoSelector = ({ data, ToppingsTwo, DefaultToppingsTwo, handleTopping, handleSizeChange }) => {
     const [pizzaSize, setpizzaSize] = useState("whole");
 
-    const isSelected = ToppingsTwo.some(obj => obj?.code === data?.toppingsCode);
-    const currentSize = ToppingsTwo?.find(el => el?.code === data?.toppingsCode)?.size || pizzaSize;
-    const displayPrice = DefaultToppingsTwo?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price;
+    const handleChange = (d) => {
+        setpizzaSize(d)
 
-    const handleSizePill = (e, val) => {
-        e.stopPropagation();
-        setpizzaSize(val);
-        if (isSelected) {
+        if (ToppingsTwo.some(obj => obj?.code === data?.toppingsCode)) {
             let updatedPrice = data?.price;
-            const match = DefaultToppingsTwo?.find(tps => data?.toppingsCode === tps.code);
-            if (match) updatedPrice = match?.price ?? 0;
-            handleSizeChange({ code: data?.toppingsCode, name: data?.toppingsName, price: updatedPrice, type: "two", size: val });
+            const matchingToppingTwo = DefaultToppingsTwo?.find(tps => data?.toppingsCode === tps.code);
+            if (matchingToppingTwo) {
+                updatedPrice = matchingToppingTwo?.price ?? 0
+            }
+            let payload = {
+                code: data?.toppingsCode,
+                name: data?.toppingsName,
+                price: updatedPrice,
+                type: "two",
+                size: d
+            }
+            handleSizeChange(payload);
         }
-    };
+
+    }
 
     return (
         <div
             key={`${data?.toppingsName}-${data?.toppingsCode}`}
-            className={`theme-border ${isSelected ? 'active' : ''}`}
-            onClick={() => handleTopping({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "two", size: pizzaSize })}
+            className={`theme-border ${ToppingsTwo.some(obj => obj?.code === data?.toppingsCode) ? 'active' : ''}`}
+            onClick={(e) => {
+                if (e.target.tagName !== "SELECT" && e.target.tagName !== "OPTION") {
+                    handleTopping({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "two", size: pizzaSize })
+                }
+            }}
         >
             {/* TOP ROW */}
             <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-2">
-                    {isSelected ? (
-                        <i className="bi bi-check-circle-fill text-primary" />
+                    {ToppingsTwo.some(obj => obj?.code === data?.toppingsCode) ? (
+                        <i className="bi bi-check-circle-fill" />
                     ) : (
                         <i className="bi bi-plus-circle" />
                     )}
-                    <span className="fw-semibold">{data?.toppingsName}</span>
-                    {displayPrice !== null && displayPrice > 0 && (
-                        <span className="text-muted" style={{ fontSize: '0.82rem' }}>(${displayPrice})</span>
+                    <span className="fw-semibold">
+                        {`${data?.toppingsName}`}
+                    </span>
+                    {(DefaultToppingsTwo?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price) !== null && (
+                        <span>(${DefaultToppingsTwo?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price})</span>
                     )}
                 </div>
             </div>
 
-            {/* PLACEMENT PILLS */}
-            <div className="topping-size-pills" onClick={e => e.stopPropagation()}>
-                {SIZE_OPTIONS.map(opt => (
-                    <button
-                        key={opt.value}
-                        type="button"
-                        className={`topping-size-pill ${currentSize === opt.value ? 'topping-size-pill--active' : ''}`}
-                        onClick={(e) => handleSizePill(e, opt.value)}
-                        aria-pressed={currentSize === opt.value}
-                    >
-                        {opt.label}
-                    </button>
-                ))}
+            {/* POSITION SELECTOR */}
+            <div className="row">
+                <div className="mt-2 col-12">
+                    <select className="form-select form-select-sm" value={ToppingsTwo?.find((el) => el?.code === data?.toppingsCode)?.size || pizzaSize} onChange={(e) => handleChange(e.target.value)}>
+                        <option value={"whole"}>Whole</option>
+                        <option value={"righthalf"}>Right Half</option>
+                        <option value={"lefthalf"}>Left Half</option>
+                        <option value={"1/4"}>1/4</option>
+                    </select>
+                </div>
             </div>
         </div>
-    );
-};
+    )
+}

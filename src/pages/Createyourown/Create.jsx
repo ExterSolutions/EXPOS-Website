@@ -16,11 +16,9 @@ import { getAllIngredients, getSides, settingApi } from "../../services";
 import { CheeseSelector } from "./CheeseSelector";
 import { DipsSelector } from "./DipsSelector";
 import { DrinkSelector } from "./DrinkSelector";
-import { FreeToppingSelector } from "./FreeToppingSelector";
-import { SauceSelector } from "./SauceSelector";
-import { SpicySelector } from "./SpicySelector";
-import { ToppingOneSelector } from "./ToppingOneSelector";
-import { ToppingTwoSelector } from "./ToppingTwoSelector";
+import { CYOFreeToppingSelector } from "./CYOFreeToppingSelector";
+import { CYOToppingOneSelector } from "./CYOToppingOneSelector";
+import { CYOToppingTwoSelector } from "./CYOToppingTwoSelector";
 import ToppingSheet from "../../components/_main/ToppingSheet";
 
 import { FaEye } from "react-icons/fa6";
@@ -878,9 +876,9 @@ const CreatePizza = () => {
                       handleToppingOne={handleToppingOne}
                       handleFreeToppings={handleFreeToppings}
                       handleSizeChange={handleSizeChange}
-                      ToppingTwoSelector={ToppingTwoSelector}
-                      ToppingOneSelector={ToppingOneSelector}
-                      FreeToppingSelector={FreeToppingSelector}
+                      ToppingTwoSelector={CYOToppingTwoSelector}
+                      ToppingOneSelector={CYOToppingOneSelector}
+                      FreeToppingSelector={CYOFreeToppingSelector}
                       nonRegularTitle={nonRegularToppingsTitle}
                       regularTitle={regularToppingsTitle}
                     />
