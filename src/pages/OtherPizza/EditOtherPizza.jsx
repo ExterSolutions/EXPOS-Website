@@ -853,7 +853,7 @@ const EditOther = () => {
                                                             <div className="size-grid">
                                                                 {pizzaSizeArr?.map((data, index) => {
                                                                     return (
-                                                                       <div
+                                                                        <div
                                                                             className={`${size === data?.size
                                                                                 ? "selected-card-background-color selected-card-text-color"
                                                                                 : "card-background-color card-text-color"

@@ -771,54 +771,136 @@ const Other = () => {
                                                     value={toppingCount > 0 ? `${toppingCount} selected` : null}
                                                     sheetKey="toppings"
                                                 />
+                                                {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
+                                                    <div className="selected-toppings-pills mt-2">
+                                                        {[...ToppingsTwo, ...ToppingsOne, ...ToppingsFree].map((t, i) => (
+                                                            <span key={i} className="selected-topping-pill">{t.name}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
+
                                             </div>
                                         </div>
                                         {/* ── RIGHT COLUMN (desktop summary) ── */}
                                         <div className="col-lg-5 col-12 d-none d-lg-block">
-                                            <div className="p-3 bg-white shadow-sm card-text-color rounded-4" style={{ position: 'sticky', top: '80px', border: '1px solid var(--primary-light)' }}>
-                                                <div className="px-3 row">
-                                                    <div className="col-lg-6 p-3 rounded-3">
+                                            <div
+                                                className="p-2 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color"
+                                                style={{
+                                                    position: 'sticky',
+                                                    top: '80px',
+                                                    border: '1px solid var(--primary-light)'
+                                                }}
+                                            >
+                                                <div className="px-2 row g-1">
+                                                    <div className="col-lg-5 p-2 rounded-3">
                                                         <img
                                                             className="pizzaImageBorder"
                                                             src={getOtherData?.pizza_image || pizzaimage}
                                                             alt="pizza-icon"
                                                         />
                                                     </div>
-                                                    <div className="col-lg-6 p-4">
-                                                        <div className="d-flex flex-column py-4">
-                                                            <p className="fs-2 fw-bold text-center text-lg-start">$ {price}</p>
-                                                            <div className="d-flex justify-content-center justify-content-lg-start mt-3" style={{ userSelect: 'none' }}>
-                                                                <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaMinus /></button>
-                                                                <span className="fs-4 fw-bold mx-3">{pizzaQuantity}</span>
-                                                                <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaPlus /></button>
+                                                    <div className="col-lg-6">
+                                                        <div className="d-flex flex-column align-items-center gap-3 py-3">
+                                                            <div className="lh-sm fs-1 fw-bold text-center">
+                                                                $ {price}
                                                             </div>
-                                                            <div className="d-flex justify-content-center justify-content-lg-start mt-4">
-                                                                <button onClick={handleAddToCart} className="view-button px-3">Add to Cart</button>
+                                                            <div className="d-flex align-items-center justify-content-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-secondary rounded-circle pizzaQtyButton"
+                                                                    onClick={() => setPizzaQuantity(Math.max(1, pizzaQuantity - 1))}
+                                                                    disabled={pizzaQuantity <= 1}
+                                                                >
+                                                                    <FaMinus className="pizzaQtyButtonSpan" />
+                                                                </button>
+                                                                <div className="fs-4 fw-bold mx-2">
+                                                                    {pizzaQuantity}
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-secondary rounded-circle pizzaQtyButton"
+                                                                    onClick={() => setPizzaQuantity(pizzaQuantity + 1)}
+                                                                    disabled={pizzaQuantity >= 10}
+                                                                >
+                                                                    <FaPlus className="pizzaQtyButtonSpan" />
+                                                                </button>
+                                                            </div>
+                                                            <div className="d-flex">
+                                                                <button
+                                                                    type="button"
+                                                                    className="view-button px-3"
+                                                                    onClick={handleAddToCart}
+                                                                >
+                                                                    Add to Cart
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                {/* Selection Summary */}
-                                                <div className="scrollable-content">
-                                                    <div className="border-top pizza-card-border-color mt-4 py-3">
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                {[{ label: 'Size', val: size }, { label: 'Dough', val: crustLabel }, { label: 'Crust', val: crustTypeLabel }, { label: 'Cheese', val: cheeseLabel }].map(({ label, val }) => val && val !== 'Select' ? (
-                                                                    <p key={label} className="fs-6 mb-1"><GoDotFill /> {label}: {val}</p>
-                                                                ) : null)}
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                {[{ label: 'Spicy', val: spicyLabel }, { label: 'Sauce', val: sauceLabel }, { label: 'Cook', val: cookLabel }].map(({ label, val }) => val && val !== 'Select' ? (
-                                                                    <p key={label} className="fs-6 mb-1"><GoDotFill /> {label}: {val}</p>
-                                                                ) : null)}
-                                                                {toppingCount > 0 && <p className="fs-6 mb-1"><GoDotFill /> Toppings: {toppingCount} selected</p>}
+                                                    <div className="col-12 mt-2">
+                                                        {/* Selection Summary */}
+                                                        <div className="theme-top-border pt-1">
+                                                            <div className="row g-2">
+                                                                <div className="col-12">
+                                                                    <div className="d-flex gap-2 mb-1">
+                                                                        <strong className="text-muted small">Size:</strong>
+                                                                        <span className="fw-medium small">{size}</span>
+                                                                    </div>
+                                                                    <div className="d-flex gap-2 mb-1">
+                                                                        <strong className="text-muted small">Pizza:</strong>
+                                                                        <span className="fw-medium small">{name}</span>
+                                                                    </div>
+                                                                    {crustLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Dough:</strong>
+                                                                            <span className="fw-medium small">{crustLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {crustTypeLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Crust Type:</strong>
+                                                                            <span className="fw-medium small">{crustTypeLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {cheeseLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Cheese:</strong>
+                                                                            <span className="fw-medium small">{cheeseLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {sauceLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Sauce:</strong>
+                                                                            <span className="fw-medium small">{sauceLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {spicyLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Spicy:</strong>
+                                                                            <span className="fw-medium small">{spicyLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {cookLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Cook:</strong>
+                                                                            <span className="fw-medium small">{cookLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {specialBaseLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Base:</strong>
+                                                                            <span className="fw-medium small">{specialBaseLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </section>

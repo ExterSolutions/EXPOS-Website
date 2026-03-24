@@ -22,10 +22,9 @@ const SummarySidebar = ({ ...props }) => {
 
     return (
         <div className="right-side-div sticky-top">
-            <div className="p-3 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color" style={{ border: '1px solid var(--primary-light)' }}>
-                <div className="px-3 row">
-
-                    <div className="col-lg-6 p-3 rounded-3">
+            <div className="p-2 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color" style={{ border: '1px solid var(--primary-light)' }}>
+                <div className="px-2 row g-1">
+                    <div className="col-lg-5 p-2 rounded-3">
                         <img
                             className="pizzaImageBorder"
                             src={offerData?.image}
@@ -105,13 +104,6 @@ const SummarySidebar = ({ ...props }) => {
                                     return null;
                                 }
 
-                                // Collect all toppings into one array
-                                const allToppings = [
-                                    ...(pizza.toppings?.countAsTwoToppings || []),
-                                    ...(pizza.toppings?.countAsOneToppings || []),
-                                    ...(pizza.toppings?.freeToppings || []),
-                                ];
-
                                 return (
                                     <div className="my-2 theme-top-border" key={`pizza-${idx}`}>
                                         <div className="d-flex gap-2 mb-1 pt-1">
@@ -126,7 +118,7 @@ const SummarySidebar = ({ ...props }) => {
                                                     <span className="ms-2 fw-medium">{pizza?.cheese?.cheeseName}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>Crust:</span>
+                                                    <span>Dough:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.crust?.crustName}</span>
                                                 </div>
                                                 <div className="small">
@@ -151,19 +143,6 @@ const SummarySidebar = ({ ...props }) => {
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {allToppings.length > 0 && (
-                                            <div className="d-flex flex-column gap-1 mt-1">
-                                                <div className="text-muted small">Toppings:</div>
-                                                <div className="fw-medium d-flex flex-wrap gap-1">
-                                                    {allToppings.map((topping, tIdx) => (
-                                                        <span key={tIdx} className="topping-badge">
-                                                            {topping.toppingsName}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 );
                             })
@@ -220,4 +199,4 @@ const SummarySidebar = ({ ...props }) => {
     );
 };
 
-export default SummarySidebar;
+export default SummarySidebar;

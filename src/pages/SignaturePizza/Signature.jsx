@@ -31,6 +31,7 @@ import { ToppingTwoSelector } from "../Createyourown/ToppingTwoSelector";
 import SignatureViewSelectionModal from "./SignatureViewSelectionModal";
 import ToppingSheet from "../../components/_main/ToppingSheet";
 import OptionSheet from "../../components/_main/OptionSheet";
+import SummarySidebar from "../SpecialOfferNew/components/SummarySidebar";
 const Signature = () => {
     // navigate
     const navigate = useNavigate();
@@ -72,6 +73,7 @@ const Signature = () => {
     const [selectedTopping, setSelectedToppings] = useState([]);
     const [isIndiansToppings, setIsIndiansToppings] = useState(false);
     const [price, setPrice] = useState(16);
+    const [unitPrice, setUnitPrice] = useState(16);
     //
     const [isFixed, setIsFixed] = useState(false);
     const [isTranslate, setIsTranslate] = useState(false);
@@ -576,6 +578,7 @@ const Signature = () => {
                 price = +price + +ToppingsFreePrice;
             }
             let fixed_price = price.toFixed(2);
+            setUnitPrice(fixed_price);
             const finalPrice = (Number(fixed_price) * Number(pizzaQuantity)).toFixed(
                 2
             );
@@ -671,32 +674,28 @@ const Signature = () => {
         </button>
     );
 
-    const crustOpts      = Ingredients?.crust?.map(c => ({ id: c.crustCode, label: c.crustName, price: Number(c.price) })) || [];
-    const crustTypeOpts  = Ingredients?.crustType?.map(c => ({ id: c.crustTypeCode, label: c.crustType, price: Number(c.price) })) || [];
-    const cheeseOpts     = Ingredients?.cheese?.map(c => ({ id: c.cheeseCode, label: c.cheeseName, price: Number(c.price) })) || [];
-    const spicyOpts      = Ingredients?.spices?.map(c => ({ id: c.spicyCode, label: c.spicy, price: Number(c.price) })) || [];
-    const sauceOpts      = Ingredients?.sauce?.map(c => ({ id: c.sauceCode, label: c.sauce, price: Number(c.price) })) || [];
-    const cookOpts       = Ingredients?.cook?.map(c => ({ id: c.cookCode, label: c.cook, price: Number(c.price) })) || [];
+    const crustOpts = Ingredients?.crust?.map(c => ({ id: c.crustCode, label: c.crustName, price: Number(c.price) })) || [];
+    const crustTypeOpts = Ingredients?.crustType?.map(c => ({ id: c.crustTypeCode, label: c.crustType, price: Number(c.price) })) || [];
+    const cheeseOpts = Ingredients?.cheese?.map(c => ({ id: c.cheeseCode, label: c.cheeseName, price: Number(c.price) })) || [];
+    const spicyOpts = Ingredients?.spices?.map(c => ({ id: c.spicyCode, label: c.spicy, price: Number(c.price) })) || [];
+    const sauceOpts = Ingredients?.sauce?.map(c => ({ id: c.sauceCode, label: c.sauce, price: Number(c.price) })) || [];
+    const cookOpts = Ingredients?.cook?.map(c => ({ id: c.cookCode, label: c.cook, price: Number(c.price) })) || [];
     const specialBaseOpts = Ingredients?.specialbases?.map(c => ({ id: c.specialbaseCode, label: c.specialbaseName, price: Number(c.price) })) || [];
 
-    const getLabel  = (arr, key, valKey) => arr?.find(x => x[key] === valKey);
-    const crustLabel       = getLabel(Ingredients?.crust,        'crustCode',       Crust)?.crustName       || 'Select';
-    const crustTypeLabel   = getLabel(Ingredients?.crustType,    'crustTypeCode',   CrustType)?.crustType   || 'Select';
-    const cheeseLabel      = getLabel(Ingredients?.cheese,       'cheeseCode',      Cheese)?.cheeseName     || 'Select';
-    const spicyLabel       = getLabel(Ingredients?.spices,       'spicyCode',       Spicy)?.spicy           || 'Select';
-    const sauceLabel       = getLabel(Ingredients?.sauce,        'sauceCode',       Sauce)?.sauce           || 'Select';
-    const cookLabel        = getLabel(Ingredients?.cook,         'cookCode',        Cook)?.cook             || 'Select';
+    const getLabel = (arr, key, valKey) => arr?.find(x => x[key] === valKey);
+    const crustLabel = getLabel(Ingredients?.crust, 'crustCode', Crust)?.crustName || 'Select';
+    const crustTypeLabel = getLabel(Ingredients?.crustType, 'crustTypeCode', CrustType)?.crustType || 'Select';
+    const cheeseLabel = getLabel(Ingredients?.cheese, 'cheeseCode', Cheese)?.cheeseName || 'Select';
+    const spicyLabel = getLabel(Ingredients?.spices, 'spicyCode', Spicy)?.spicy || 'Select';
+    const sauceLabel = getLabel(Ingredients?.sauce, 'sauceCode', Sauce)?.sauce || 'Select';
+    const cookLabel = getLabel(Ingredients?.cook, 'cookCode', Cook)?.cook || 'Select';
     const specialBaseLabel = getLabel(Ingredients?.specialbases, 'specialbaseCode', SpecialBases)?.specialbaseName || 'Select';
 
+    if (loading) return <LoadingLayout />;
+
     return (
-        <>
-            {loading ? (
-                <>
-                    <LoadingLayout />
-                </>
-            ) : (
-                <div>
-                    <Header />
+        <div className="modern-customizer-page">
+            <Header />
                     <div className="nav-margin"></div>
                     {/* OptionSheet Modals */}
                     <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={crustOpts} selected={Crust} onSelect={(id) => setCrust(id)} />
@@ -710,9 +709,9 @@ const Signature = () => {
                         <div className="new-block" id="create-your-own-new">
                             <section className="special-offers-sec new-block primary-background-color py-2">
                                 <div className="container">
-                                    <div className="mainContainer primary-text-color">
+                                    <div className="row g-4 primary-text-color">
                                         {/* left side */}
-                                        <div className="p-3 has-sticky-cart-bar">
+                                        <div className="col-lg-7 col-12 p-3 has-sticky-cart-bar">
                                             {/* Hero Header — Simplified to match Special Offer style */}
                                             <h5 className="fw-bold mb-1 d-none d-lg-block">{name}</h5>
                                             {pizzaSubtitle && <p className="text-secondary small mb-3 d-none d-lg-block">{pizzaSubtitle}</p>}
@@ -745,12 +744,12 @@ const Signature = () => {
                                             <p className="fw-bold text-uppercase mb-2 mt-4" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>CUSTOMIZE YOUR PIZZA</p>
                                             {/* Trigger buttons — same style as Other Pizza / Create Your Own */}
                                             <div className="d-flex flex-column gap-2 mb-2">
-                                                <TriggerBtn icon="🍞" label="Dough"       value={crustLabel}       sheetKey="dough" />
-                                                <TriggerBtn icon="🔥" label="Crust Type"  value={crustTypeLabel}   sheetKey="crustType" />
-                                                <TriggerBtn icon="🧀" label="Cheese"      value={cheeseLabel}      sheetKey="cheese" />
-                                                <TriggerBtn icon="🌶️" label="Spicy"       value={spicyLabel}       sheetKey="spicy" />
-                                                <TriggerBtn icon="🍅" label="Sauce"       value={sauceLabel}       sheetKey="sauce" />
-                                                <TriggerBtn icon="👨‍🍳" label="Cook Style"  value={cookLabel}        sheetKey="cook" />
+                                                <TriggerBtn icon="🍞" label="Dough" value={crustLabel} sheetKey="dough" />
+                                                <TriggerBtn icon="🔥" label="Crust Type" value={crustTypeLabel} sheetKey="crustType" />
+                                                <TriggerBtn icon="🧀" label="Cheese" value={cheeseLabel} sheetKey="cheese" />
+                                                <TriggerBtn icon="🌶️" label="Spicy" value={spicyLabel} sheetKey="spicy" />
+                                                <TriggerBtn icon="🍅" label="Sauce" value={sauceLabel} sheetKey="sauce" />
+                                                <TriggerBtn icon="👨‍🍳" label="Cook Style" value={cookLabel} sheetKey="cook" />
                                                 {specialBaseOpts.length > 0 && (
                                                     <TriggerBtn icon="🍕" label="Special Base" value={specialBaseLabel} sheetKey="specialBase" />
                                                 )}
@@ -929,219 +928,58 @@ const Signature = () => {
                                             />
                                         </div>
                                         {/* right side */}
-                                        <div
-                                            className="right-side-div p-3 d-lg-block d-none"
-                                            style={{ position: "relative !important" }}
-                                        >
-                                            <div
-                                                className={`p-3 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color ${isFixed ? "fixed" : ""
-                                                    } ${isTranslate ? "translate" : ""}`}
-                                                style={{
-                                                    transform: isTranslate
-                                                        ? `translateY(${translateYVal}px)`
-                                                        : "none",
-                                                    position: "sticky",
-                                                    border: "1px solid var(--primary-light)"
-                                                }}
-                                            >
-                                                <div className="px-3 row">
-                                                    <div className="col-lg-6 p-3 rounded-3">
-                                                        <img
-                                                            className="pizzaImageBorder"
-                                                            src={
-                                                                getSignatureData?.pizza_image
-                                                                    ? getSignatureData?.pizza_image
-                                                                    : pizzaimage
-                                                            }
-                                                            alt="pizza-icon"
-                                                        />
-                                                    </div>
-                                                    <div className="col-lg-6 p-4">
-                                                        <div className="d-flex flex-column py-4">
-                                                            <p className=" fs-2 fw-bold text-center text-lg-start">
-                                                                $ {price}
-                                                            </p>
-                                                            <div
-                                                                className="d-flex justify-content-center justify-content-lg-start  mt-3"
-                                                                style={{ userSelect: "none" }}
-                                                            >
-                                                                <button
-                                                                    disabled={pizzaQuantity <= 1}
-                                                                    onClick={() =>
-                                                                        setPizzaQuantity((prev) => prev - 1)
-                                                                    }
-                                                                    className="btn btn-secondary rounded-circle pizzaQtyButton"
-                                                                >
-                                                                    <FaMinus className="pizzaQtyButtonSpan" />
-                                                                </button>
-                                                                <p className=" fs-4 fw-bold mx-3">
-                                                                    {pizzaQuantity}
-                                                                </p>
-                                                                <button
-                                                                    disabled={pizzaQuantity >= 10}
-                                                                    className="btn btn-secondary rounded-circle pizzaQtyButton"
-                                                                    onClick={() =>
-                                                                        setPizzaQuantity((prev) => prev + 1)
-                                                                    }
-                                                                >
-                                                                    <FaPlus className="pizzaQtyButtonSpan" />
-                                                                </button>
-                                                            </div>
-                                                            <div className="d-flex justify-content-center justify-content-lg-start">
-                                                                <button
-                                                                    onClick={() => handleAddToCart()}
-                                                                    className={`view-button px-3`}
-                                                                >
-                                                                    Add to Cart
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="scrollable-content">
-                                                        {size && (
-                                                            <div className="border-top pizza-card-border-color mt-4 py-3">
-                                                                <div className="row">
-                                                                    <div className="col-lg-6">
-                                                                        {(() => {
-                                                                            const sizeObj = pizzaSizeArr?.find(el => el?.size === size);
-                                                                            return size && (
-                                                                                <p className=" fs-6 mt-2 mt-lg-0">
-                                                                                    <GoDotFill /> Size: {size} 
-                                                                                    {sizeObj?.price !== null && ` ($${sizeObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const ctObj = Ingredients?.crustType?.find(top => top?.crustTypeCode === CrustType);
-                                                                            return CrustType && (
-                                                                                <p className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Crust Type: {ctObj?.crustType} 
-                                                                                    {ctObj?.price !== null && ` ($${ctObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const spicyObj = Ingredients?.spices?.find(top => top?.spicyCode === Spicy);
-                                                                            return Spicy && (
-                                                                                <p className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Spicy: {spicyObj?.spicy} 
-                                                                                    {spicyObj?.price !== null && ` ($${spicyObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const sauceObj = Ingredients?.sauce?.find(top => top?.sauceCode === Sauce);
-                                                                            return Sauce && (
-                                                                                <p className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Sauce: {sauceObj?.sauce} 
-                                                                                    {sauceObj?.price !== null && ` ($${sauceObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                    </div>
-                                                                    <div className="col-lg-6">
-                                                                        {(() => {
-                                                                            const crustObj = Ingredients?.crust?.find(top => top?.crustCode === Crust);
-                                                                            return Crust && (
-                                                                                <p className=" fs-6 mt-2 mt-lg-0">
-                                                                                    <GoDotFill /> Crust: {crustObj?.crustName} 
-                                                                                    {crustObj?.price !== null && ` ($${crustObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const cheeseObj = Ingredients?.cheese?.find(top => top?.cheeseCode === Cheese);
-                                                                            return Cheese && (
-                                                                                <p className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Cheese: {cheeseObj?.cheeseName} 
-                                                                                    {cheeseObj?.price !== null && ` ($${cheeseObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const cookObj = Ingredients?.cook?.find(top => top?.cookCode === Cook);
-                                                                            return Cook && (
-                                                                                <p className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Cook: {cookObj?.cook} 
-                                                                                    {cookObj?.price !== null && ` ($${cookObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const sbObj = Ingredients?.specialbases?.find(top => top?.specialbaseCode === SpecialBases);
-                                                                            return SpecialBases && (
-                                                                                <p className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Special Base: {sbObj?.specialbaseName} 
-                                                                                    {sbObj?.price !== null && ` ($${sbObj?.price})`}
-                                                                                </p>
-                                                                            );
-                                                                        })()}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                        {selectedTopping?.length > 0 && (
-                                                            <div className="py-3 border-top pizza-card-border-color">
-                                                                <p>TOPPINGS YOU SELECTED</p>
-                                                                <div className="mt-3 d-flex flex-wrap gap-2">
-                                                                    {isIndiansToppings ? (
-                                                                        <>
-                                                                            {/* Display a single button for Indian Toppings Toppings */}
-                                                                            <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                                {indianStyleToppingsTitle} + Coriander
-                                                                                <span
-                                                                                    className="ms-2 d-none"
-                                                                                    onClick={
-                                                                                        handleRemoveIsIndiansToppings
-                                                                                    }
-                                                                                >
-                                                                                    <IoMdClose />
-                                                                                </span>
-                                                                            </button>
-                                                                            {/* Display non-free toppings */}
-                                                                            {selectedTopping
-                                                                                ?.filter((el) => el?.type !== "free")
-                                                                                ?.map((el) => (
-                                                                                    <div key={el.code}>
-                                                                                        <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                                            {`${el?.name}(${el?.size}) ($${el?.price})`}
-                                                                                            <span
-                                                                                                className="ms-1 d-none"
-                                                                                                onClick={() =>
-                                                                                                    handleRemoveTopping(el)
-                                                                                                }
-                                                                                            >
-                                                                                                <IoMdClose />
-                                                                                            </span>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                ))}
-                                                                        </>
-                                                                    ) : (
-                                                                        // Display all selected toppings
-                                                                        selectedTopping?.map((el) => (
-                                                                            <div key={el.code}>
-                                                                                <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                                                                    {`${el?.name}(${el?.size}) ($${el?.price})`}
-                                                                                    <span
-                                                                                        className="ms-1"
-                                                                                        onClick={() =>
-                                                                                            handleRemoveTopping(el)
-                                                                                        }
-                                                                                    >
-                                                                                        <IoMdClose />
-                                                                                    </span>
-                                                                                </button>
-                                                                            </div>
-                                                                        ))
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div className="col-lg-5 col-12 d-none d-lg-block">
+                                            {(() => {
+                                                const adaptedSelectedSize = pizzaSizeArr?.find((s) => s.size === size) || null;
+                                                
+                                                const getIngredientObj = (category, code) => {
+                                                    const list = Ingredients?.[category] || [];
+                                                    return list.find(item => 
+                                                        (item.crustCode === code) || 
+                                                        (item.crustTypeCode === code) || 
+                                                        (item.cheeseCode === code) || 
+                                                        (item.spicyCode === code) || 
+                                                        (item.sauceCode === code) || 
+                                                        (item.cookCode === code) || 
+                                                        (item.specialbaseCode === code) ||
+                                                        (item.code === code)
+                                                    );
+                                                };
+
+                                                const adaptedPizzaSelections = [{
+                                                    signaturePizzaCode: getSignatureData?.code || "",
+                                                    signaturePizzaName: getSignatureData?.pizza_name || "",
+                                                    crust: getIngredientObj('crust', Crust),
+                                                    cheese: getIngredientObj('cheese', Cheese),
+                                                    crustType: getIngredientObj('crustType', CrustType),
+                                                    specialBases: getIngredientObj('specialbases', SpecialBases),
+                                                    sauce: getIngredientObj('sauce', Sauce),
+                                                    spicy: getIngredientObj('spices', Spicy),
+                                                    cook: getIngredientObj('cook', Cook),
+                                                }];
+
+                                                return (
+                                                    <SummarySidebar
+                                                        selectedSize={adaptedSelectedSize}
+                                                        offerData={{
+                                                            image: getSignatureData?.pizza_image || pizzaimage,
+                                                            name: getSignatureData?.pizza_name
+                                                        }}
+                                                        pizzaSelections={adaptedPizzaSelections}
+                                                        selectedSide={[]}
+                                                        selectedDips={[]}
+                                                        selectedDrink={[]}
+                                                        onAddToCart={handleAddToCart}
+                                                        totalPrice={unitPrice}
+                                                        quantity={pizzaQuantity}
+                                                        setQuantity={setPizzaQuantity}
+                                                        isEditMode={false}
+                                                        handleOpenSummaryPopup={() => setViewSelection(true)}
+                                                    />
+                                                );
+                                            })()}
                                         </div>
+
                                     </div>
                                 </div>
                             </section>
@@ -1203,10 +1041,8 @@ const Signature = () => {
                         </button>
                     </div>
 
-                </div >
-            )}
             <Footer />
-        </>
+        </div>
     );
 };
-export default Signature;
+export default Signature;

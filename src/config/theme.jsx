@@ -1,21 +1,21 @@
 // config/theme.js
 export const theme = {
     primary: {
-        main: '#e52c2c',
-        light: '#FFA6A6',
-        dark: '#980404',
+        main: '#238629',
+        light: '#d3ffd6ff',
+        dark: '#004705ff',
         contrast: '#FFFFFF'
     },
     subprimary: {
-        main: '#e52c2c',
-        light: '#FFA6A6',
-        dark: '#980404',
+        main: '#238629',
+        light: '#d3ffd6ff',
+        dark: '#004705ff',
         contrast: '#FFFFFF'
     },
     secondary: {
-        main: '#e52c2c',
-        light: '#FFA6A6',
-        dark: '#980404',
+        main: '#238629',
+        light: '#d3ffd6ff',
+        dark: '#004705ff',
         contrast: '#FFFFFF'
     }
 };
