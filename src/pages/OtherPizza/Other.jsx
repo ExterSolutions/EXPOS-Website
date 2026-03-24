@@ -24,6 +24,7 @@ import { SauceSelector } from "../Createyourown/SauceSelector";
 import { SpicySelector } from "../Createyourown/SpicySelector";
 import { ToppingOneSelector } from "../Createyourown/ToppingOneSelector";
 import { ToppingTwoSelector } from "../Createyourown/ToppingTwoSelector";
+import ToppingSheet from "../../components/_main/ToppingSheet";
 import OtherViewSelectionModal from "./OtherViewSelectionModal";
 const Other = () => {
     // navigate
@@ -73,7 +74,7 @@ const Other = () => {
     const [viewSelection, setViewSelection] = useState(false);
     const [settingsData, setSettingsData] = useState([]);
     const [openSheet, setOpenSheet] = useState(null); // e.g. 'dough' | 'crustType' | 'cheese' | 'spicy' | 'sauce' | 'cook' | 'toppings'
-    const [toppingTab, setToppingTab] = useState('premium');
+    const [toppingTab, setToppingTab] = useState('two');
     // Healper Function
     const cartFn = new CartFunction();
     // get all ingredients data initially and maintaining initial states
@@ -696,35 +697,29 @@ const Other = () => {
                     <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={cookOpts} selected={Cook} onSelect={(id) => setCook(id)} />
                     {specialBaseOpts.length > 0 && <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={specialBaseOpts} selected={SpecialBases} onSelect={(id) => setSpecialBases(id)} />}
 
-                    {/* Toppings Sheet */}
-                    {openSheet === 'toppings' && (
-                        <>
-                            <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
-                                <div className="topping-sheet__handle" />
-                                <div className="topping-sheet__header">
-                                    <p className="topping-sheet__title">Choose Toppings</p>
-                                    <button className="topping-sheet__close" onClick={() => setOpenSheet(null)} aria-label="Close"><IoMdClose size={20} /></button>
-                                </div>
-                                <div className="topping-sheet__tabs">
-                                    {[['premium', nonRegularToppingsTitle], ['regular', regularToppingsTitle], ['indian', indianStyleToppingsTitle]].map(([key, label]) => (
-                                        <button key={key} className={`topping-sheet__tab${toppingTab === key ? ' active' : ''}`} onClick={() => setToppingTab(key)}>{label}</button>
-                                    ))}
-                                </div>
-                                <div className="topping-sheet__body">
-                                    {toppingTab === 'premium' && Ingredients?.toppings?.countAsTwo?.map((data, index) => (
-                                        <ToppingTwoSelector key={index} data={data} ToppingsTwo={ToppingsTwo} DefaultToppingsTwo={DefaultToppingsTwo} handleTopping={handleToppingsTwo} handleSizeChange={handleSizeChange} />
-                                    ))}
-                                    {toppingTab === 'regular' && Ingredients?.toppings?.countAsOne?.map((data, index) => (
-                                        <ToppingOneSelector key={index} data={data} ToppingsOne={ToppingsOne} DefaultToppingsOne={DefaultToppingsOne} handleTopping={handleToppingOne} handleSizeChange={handleSizeChange} />
-                                    ))}
-                                    {toppingTab === 'indian' && Ingredients?.toppings?.freeToppings?.map((data, index) => (
-                                        <FreeToppingSelector key={index} data={data} ToppingsFree={ToppingsFree} handleTopping={handleFreeToppings} handleSizeChange={handleSizeChange} />
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    )}
+                    {/* Topping Sheet */}
+                    <ToppingSheet
+                        isOpen={openSheet === 'toppings'}
+                        onClose={() => setOpenSheet(null)}
+                        activeTab={toppingTab}
+                        setActiveTab={setToppingTab}
+                        Ingredients={Ingredients}
+                        ToppingsTwo={ToppingsTwo}
+                        ToppingsOne={ToppingsOne}
+                        ToppingsFree={ToppingsFree}
+                        handleToppingsTwo={handleToppingsTwo}
+                        handleToppingOne={handleToppingOne}
+                        handleFreeToppings={handleFreeToppings}
+                        handleSizeChange={handleSizeChange}
+                        ToppingTwoSelector={ToppingTwoSelector}
+                        ToppingOneSelector={ToppingOneSelector}
+                        FreeToppingSelector={FreeToppingSelector}
+                        DefaultToppingsTwo={DefaultToppingsTwo}
+                        DefaultToppingsOne={DefaultToppingsOne}
+                        nonRegularTitle={nonRegularToppingsTitle}
+                        regularTitle={regularToppingsTitle}
+                        indianStyleTitle={indianStyleToppingsTitle}
+                    />
 
                     {getOtherData ? (
                         <div className="new-block" id="create-your-own-new">

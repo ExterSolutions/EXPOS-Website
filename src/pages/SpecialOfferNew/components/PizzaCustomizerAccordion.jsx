@@ -198,7 +198,15 @@ function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelect
 
                 {/* Footer */}
                 <div className="topping-sheet__footer">
-                    <button className="topping-sheet__done" onClick={onClose} type="button">Done</button>
+                    <button className="topping-sheet__done" onClick={onClose} type="button">
+                        {(() => {
+                            const count =
+                                (pizzaSelections?.toppings?.countAsTwoToppings?.length || 0) +
+                                (pizzaSelections?.toppings?.countAsOneToppings?.length || 0) +
+                                (pizzaSelections?.toppings?.freeToppings?.length || 0);
+                            return `✓ Done — ${count} topping${count !== 1 ? "s" : ""} selected`;
+                        })()}
+                    </button>
                 </div>
             </div>
         </>
