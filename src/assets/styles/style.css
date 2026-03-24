@@ -20766,6 +20766,12 @@ body {
    ============================================ */
 
 /* --- Mobile Bottom Navigation Bar --- */
+
+/* ─── Bottom Nav height var (used by sticky bars below) ─── */
+:root {
+  --bottom-nav-h: 60px;
+}
+
 .mobile-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -20777,9 +20783,11 @@ body {
   display: flex;
   align-items: stretch;
   justify-content: space-around;
+  min-height: var(--bottom-nav-h);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-shadow: 0 -4px 16px rgba(0,0,0,0.10);
 }
+
 
 .bottom-nav-item {
   flex: 1;
@@ -21095,10 +21103,12 @@ body {
 /* --- Sticky Add to Cart Bottom Bar (mobile) --- */
 .cust-mobile-sticky {
   position: fixed;
-  bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  /* Sit directly above the BottomNav on small screens (<768px),
+     flush to bottom on md+ since BottomNav is hidden there */
+  bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1035;
+  z-index: 1040;
   background: #fff;
   border-top: 1px solid #ebebeb;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.10);
@@ -21107,6 +21117,14 @@ body {
   align-items: center;
   gap: 12px;
 }
+
+/* On mobile (where BottomNav is visible), push cust-mobile-sticky above it */
+@media (max-width: 767px) {
+  .cust-mobile-sticky {
+    bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 
 .cust-mobile-sticky__price {
   flex: 1;
@@ -21172,18 +21190,19 @@ body {
   white-space: nowrap;
 }
 
-/* Padding to prevent content going under the sticky bar on mobile */
+/* Padding to prevent content going under both the sticky cart bar AND the bottom nav on mobile */
 @media (max-width: 767px) {
   #create-your-own-new {
-    padding-bottom: 100px !important;
+    padding-bottom: calc(var(--bottom-nav-h) + 80px) !important;
   }
   #other-pizza-new {
-    padding-bottom: 100px !important;
+    padding-bottom: calc(var(--bottom-nav-h) + 80px) !important;
   }
   .special-offer-mobile-wrap {
-    padding-bottom: 100px !important;
+    padding-bottom: calc(var(--bottom-nav-h) + 80px) !important;
   }
 }
+
 
 /* --- Size Grid Tweaks --- */
 .size-grid-modern {
@@ -22452,15 +22471,33 @@ body {
 /* ═══════════════════════════════════════════════════════════
    FOOTER — hide on mobile (except home page)
 ═══════════════════════════════════════════════════════════ */
+
+/* Height of cust-mobile-sticky bar (for pages that use it) */
+:root {
+  --cust-sticky-h: 64px;
+}
+
 @media (max-width: 767px) {
+    /* Hide footer on mobile for non-home pages */
     .main-footer.footer-compact {
         display: none !important;
     }
-    /* Except home page — add class footer-compact--visible to override */
+
+    /* Home page footer — visible and pushed above BottomNav + sticky cart bar */
     .main-footer.footer-compact.footer-compact--visible {
         display: block !important;
+        padding-bottom: calc(var(--bottom-nav-h) + var(--cust-sticky-h) + 12px) !important;
     }
 }
+
+/* Tablet (768px–1023px): BottomNav is hidden, but cust-mobile-sticky (d-lg-none) is still visible.
+   All footers on pages using cust-mobile-sticky need clearance on this range. */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .main-footer {
+        padding-bottom: calc(var(--cust-sticky-h) + 12px) !important;
+    }
+}
+
 
 /* ═══════════════════════════════════════════════════════════
    DEAL STEP INDICATOR — improved with text labels
