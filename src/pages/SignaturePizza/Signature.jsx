@@ -713,17 +713,14 @@ const Signature = () => {
                                     <div className="mainContainer primary-text-color">
                                         {/* left side */}
                                         <div className="p-3 has-sticky-cart-bar">
-                                            {/* Hero Header */}
-                                            <div className="d-flex align-items-center gap-3 mb-3">
-                                                <img
-                                                    className="cust-hero-img d-none d-sm-block"
-                                                    src={getSignatureData?.pizza_image || pizzaimage}
-                                                    alt={name}
-                                                />
-                                                <div>
-                                                    <p className="fs-2 fw-bold text-primary mb-1">{name}</p>
-                                                    <p className="mb-0 text-secondary" style={{ fontSize: '0.95rem' }}>{pizzaSubtitle}</p>
-                                                </div>
+                                            {/* Hero Header — Simplified to match Special Offer style */}
+                                            <h5 className="fw-bold mb-1 d-none d-lg-block">{name}</h5>
+                                            {pizzaSubtitle && <p className="text-secondary small mb-3 d-none d-lg-block">{pizzaSubtitle}</p>}
+
+                                            {/* Mobile Hero Strip */}
+                                            <div className="offer-hero-strip d-lg-none mb-3">
+                                                <div className="offer-hero-strip__name">{name}</div>
+                                                <div className="offer-hero-strip__price">${price}</div>
                                             </div>
 
                                             {/* size */}

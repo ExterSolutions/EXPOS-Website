@@ -719,17 +719,14 @@ const CreatePizza = () => {
                 <div className="mainContainer primary-text-color">
                   {/* left side */}
                   <div className="p-3">
-                    {/* Hero Header */}
-                    <div className="d-flex align-items-center gap-3 mb-3">
-                      <img
-                        className="cust-hero-img d-none d-sm-block"
-                        src={CustomizePizzaImg}
-                        alt="Create Your Own Pizza"
-                      />
-                      <div>
-                        <p className="fs-2 fw-bold text-primary mb-1">CREATE YOUR OWN PIZZA</p>
-                        <p className="mb-0 text-secondary" style={{ fontSize: '0.95rem' }}>Your perfect slice, your way!</p>
-                      </div>
+                    {/* Hero Header — Simplified to match Special Offer style */}
+                    <h5 className="fw-bold mb-1 d-none d-lg-block">CREATE YOUR OWN PIZZA</h5>
+                    <p className="text-secondary small mb-3 d-none d-lg-block">Your perfect slice, your way!</p>
+
+                    {/* Mobile Hero Strip */}
+                    <div className="offer-hero-strip d-lg-none mb-3">
+                      <div className="offer-hero-strip__name">CREATE YOUR OWN PIZZA</div>
+                      <div className="offer-hero-strip__price">${price}</div>
                     </div>
 
                     {/* SIZE — horizontal pills */}
