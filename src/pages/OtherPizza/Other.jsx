@@ -776,28 +776,46 @@ const Other = () => {
                                         {/* ── RIGHT COLUMN (desktop summary) ── */}
                                         <div className="col-lg-5 col-12 d-none d-lg-block">
                                             <div className="p-3 bg-white shadow-sm card-text-color rounded-4" style={{ position: 'sticky', top: '80px', border: '1px solid var(--primary-light)' }}>
-                                                <div className="text-center mb-3">
-                                                    <img
-                                                        className="pizzaImageBorder"
-                                                        src={getOtherData?.pizza_image || pizzaimage}
-                                                        alt="pizza-icon"
-                                                        style={{ maxWidth: 160 }}
-                                                    />
+                                                <div className="px-3 row">
+                                                    <div className="col-lg-6 p-3 rounded-3">
+                                                        <img
+                                                            className="pizzaImageBorder"
+                                                            src={getOtherData?.pizza_image || pizzaimage}
+                                                            alt="pizza-icon"
+                                                        />
+                                                    </div>
+                                                    <div className="col-lg-6 p-4">
+                                                        <div className="d-flex flex-column py-4">
+                                                            <p className="fs-2 fw-bold text-center text-lg-start">$ {price}</p>
+                                                            <div className="d-flex justify-content-center justify-content-lg-start mt-3" style={{ userSelect: 'none' }}>
+                                                                <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaMinus /></button>
+                                                                <span className="fs-4 fw-bold mx-3">{pizzaQuantity}</span>
+                                                                <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaPlus /></button>
+                                                            </div>
+                                                            <div className="d-flex justify-content-center justify-content-lg-start mt-4">
+                                                                <button onClick={handleAddToCart} className="view-button px-3">Add to Cart</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <p className="fs-2 fw-bold text-center">$ {price}</p>
-                                                <div className="d-flex justify-content-center align-items-center gap-3 mb-3" style={{ userSelect: 'none' }}>
-                                                    <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaMinus /></button>
-                                                    <span className="fs-4 fw-bold">{pizzaQuantity}</span>
-                                                    <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaPlus /></button>
-                                                </div>
-                                                <button onClick={handleAddToCart} className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold w-100 py-2">Add to Cart</button>
 
                                                 {/* Selection Summary */}
-                                                <div className="mt-3 border-top pt-3">
-                                                    {[{label:'Size', val: size}, {label:'Dough', val: crustLabel}, {label:'Crust', val: crustTypeLabel}, {label:'Cheese', val: cheeseLabel}, {label:'Spicy', val: spicyLabel}, {label:'Sauce', val: sauceLabel}, {label:'Cook', val: cookLabel}].map(({label, val}) => val && val !== 'Select' ? (
-                                                        <p key={label} className="fs-6 mb-1"><GoDotFill /> {label}: {val}</p>
-                                                    ) : null)}
-                                                    {toppingCount > 0 && <p className="fs-6 mb-1"><GoDotFill /> Toppings: {toppingCount} selected</p>}
+                                                <div className="scrollable-content">
+                                                    <div className="border-top pizza-card-border-color mt-4 py-3">
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                {[{ label: 'Size', val: size }, { label: 'Dough', val: crustLabel }, { label: 'Crust', val: crustTypeLabel }, { label: 'Cheese', val: cheeseLabel }].map(({ label, val }) => val && val !== 'Select' ? (
+                                                                    <p key={label} className="fs-6 mb-1"><GoDotFill /> {label}: {val}</p>
+                                                                ) : null)}
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                {[{ label: 'Spicy', val: spicyLabel }, { label: 'Sauce', val: sauceLabel }, { label: 'Cook', val: cookLabel }].map(({ label, val }) => val && val !== 'Select' ? (
+                                                                    <p key={label} className="fs-6 mb-1"><GoDotFill /> {label}: {val}</p>
+                                                                ) : null)}
+                                                                {toppingCount > 0 && <p className="fs-6 mb-1"><GoDotFill /> Toppings: {toppingCount} selected</p>}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

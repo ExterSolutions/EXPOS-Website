@@ -277,8 +277,13 @@ export const getPizzaDetails = async (pizzaCode) => {
   return response;
 };
 
-export const searchProducts = async (query) => {
-  const { data: response } = await http.get(`/search-products?search=${query}`);
+export const searchProducts = async (query, cityCode) => {
+  const { data: response } = await http.get(`/search-products`, {
+    params: {
+        search: query,
+        ...(cityCode && { cityCode })
+    }
+  });
   return response;
 };
 

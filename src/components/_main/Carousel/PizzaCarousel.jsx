@@ -53,7 +53,7 @@ const PizzaCarousel = ({
                         </div>
                     </div>
                 </div>
-                <div className="pizza-grid px-1">
+                <div className="pizza-grid">
                     {displayPizzas.map((item, index) => {
                         let name =
                             item?.pizzaName ||

@@ -3,7 +3,7 @@ import Header from "../components/_main/Header/Header";
 import Footer from "../components/_main/Footer";
 // import "../assets/styles/Cart/MainCartList.css";
 import bgImage from "../assets/images/bg-img.jpg";
-import {GlobalContext} from "../context/GlobalContext";
+import { GlobalContext } from "../context/GlobalContext";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import MainCartList from "../components/_main/Cart/MainCartList";
