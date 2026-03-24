@@ -77,60 +77,57 @@ function MainCartList({ cData, setLoading }) {
                         $ {Number(cData.amount).toFixed(2)}
                     </h5>
                 </div>
-                <div className="w-100 d-flex justify-content-between align-items-center flex-row">
+                <div className="w-100 d-flex justify-content-between align-items-center flex-row mb-1">
                     {/* Quantity */}
-                    <div className="w-100 d-flex text-start my-2 main-cartQty">
-                        <p>Quantity :</p> <span className="mx-2">{cData?.quantity}</span>
+                    <div className="d-flex text-start main-cartQty items-center">
+                        <p className="mb-0 small fw-bold">Quantity:</p> 
+                        <span className="ms-2 small">{cData?.quantity}</span>
                     </div>
-                    <div className="main-cartIcons my-2">
+                    <div className="main-cartIcons">
                         <i
                             className="fa fa-trash mx-2 deleteIcon"
                             aria-hidden="true"
                             onClick={handleDelete}
                         ></i>
-                        {cData.productType === "special_pizza" ||
+                        {(cData.productType === "special_pizza" ||
                             cData.productType === "special_pizza_topping" ||
-                            cData.productType === "custom_pizza" ? (
+                            cData.productType === "custom_pizza") && (
                             <i
                                 className="fa fa-edit mx-2 editIcon"
                                 aria-hidden="true"
                                 onClick={handleEdit}
                             ></i>
-                        ) : (
-                            ""
                         )}
                     </div>
                 </div>
-                {/* Pizza Size */}
+                {/* Side Size */}
                 {cData?.config?.sidesSize && (
-                    <>
-                        <div className="w-100 d-flex mb-2 text-start main-cartPizzaSize">
-                            <p className="">Size : </p>
-                            <span className="mx-2">
-                                {cData?.config?.sidesSize ? cData?.config?.sidesSize : ""}
-                            </span>
-                        </div>
-                        {cData?.comments !== "" && (
-                            <div className="w-100 d-flex mb-2 text-start main-cartPizzaSize">
-                                <p className="">Comments : </p>
-                                <span className="mx-2">{cData?.comments}</span>
-                            </div>
-                        )}
-                    </>
+                    <div className="w-100 d-flex mb-1 text-start main-cartPizzaSize small">
+                        <p className="mb-0 fw-bold">Size :</p>
+                        <span className="ms-2">
+                            {cData?.config?.sidesSize}
+                        </span>
+                    </div>
+                )}
+                {cData?.comments !== "" && cData?.comments && (
+                    <div className="w-100 d-flex mb-1 text-start main-cartPizzaSize small text-muted">
+                        <p className="mb-0">Note :</p>
+                        <span className="ms-2 italic">{cData?.comments}</span>
+                    </div>
                 )}
                 {cData?.pizzaSize && (
-                    <div className="w-100 d-flex mb-2 text-start main-cartPizzaSize">
-                        <p className="">Size : </p>
-                        <span className="mx-2">
-                            {cData?.pizzaSize !== "" ? cData?.pizzaSize : ""}
+                    <div className="w-100 d-flex mb-1 text-start main-cartPizzaSize small">
+                        <p className="mb-0 fw-bold">Size :</p>
+                        <span className="ms-2">
+                            {cData?.pizzaSize}
                         </span>
                     </div>
                 )}
                 {cData?.pizzaPrice && (
-                    <div className="w-100 d-flex mb-2 text-start main-cartPizzaSize">
-                        <p className="">Pizza Price : </p>
-                        <span className="mx-2">
-                            $ {cData?.pizzaPrice !== "" ? cData?.pizzaPrice : ""}
+                    <div className="w-100 d-flex mb-1 text-start main-cartPizzaSize small">
+                        <p className="mb-0 fw-bold">Base Price :</p>
+                        <span className="ms-2">
+                            $ {cData?.pizzaPrice}
                         </span>
                     </div>
                 )}
@@ -238,44 +235,50 @@ function MainCartList({ cData, setLoading }) {
 
                     {/* Sides */}
                     {cData?.config?.sides?.length > 0 && (
-                        <div className="w-100 d-flex justify-content-start flex-wrap align-items-center main-cartPizza mb-1">
-                            <p>Sides :</p>
-                            {cData?.config?.sides?.map((data, index) => {
-                                return (
-                                    <span>
-                                        {data?.sideName} ({data?.sideSize})
-                                        {cData?.config?.sides?.length === index + 1 ? "" : ","}
-                                    </span>
-                                );
-                            })}
+                        <div className="mb-1 sides">
+                            <p className="d-inline">Sides :</p>
+                            <span className="d-inline ms-1">
+                                {cData?.config?.sides?.map((data, index) => {
+                                    return (
+                                        <span key={index}>
+                                            {data?.sideName} ({data?.sideSize})
+                                            {index < cData.config.sides.length - 1 ? ", " : ""}
+                                        </span>
+                                    );
+                                })}
+                            </span>
                         </div>
                     )}
                     {/* Dips */}
                     {cData?.config?.dips?.length > 0 && (
-                        <div className="w-100 d-flex justify-content-start align-items-center flex-warp main-cartPizza mb-1">
-                            <p>Dips: </p>
-                            {cData?.config?.dips?.map((data, index) => {
-                                return (
-                                    <span>
-                                        {data?.dipsName}{" "}
-                                        {cData?.config?.dips?.length === index + 1 ? "" : ","}
-                                    </span>
-                                );
-                            })}
+                        <div className="mb-1 dips">
+                            <p className="d-inline">Dips : </p>
+                            <span className="d-inline ms-1">
+                                {cData?.config?.dips?.map((data, index) => {
+                                    return (
+                                        <span key={index}>
+                                            {data?.dipsName} (x{data?.quantity})
+                                            {index < cData.config.dips.length - 1 ? ", " : ""}
+                                        </span>
+                                    );
+                                })}
+                            </span>
                         </div>
                     )}
                     {/* Drinks */}
                     {cData?.config?.drinks?.length > 0 && (
-                        <div className="w-100 d-flex justify-content-start align-items-center main-cartPizza mb-1">
-                            <p>Drinks: </p>
-                            {cData?.config?.drinks?.map((data, index) => {
-                                return (
-                                    <span>
-                                        {data?.drinksName}{" "}
-                                        {cData?.config?.drinks?.length === index + 1 ? "" : ","}
-                                    </span>
-                                );
-                            })}
+                        <div className="mb-1 drinks">
+                            <p className="d-inline">Drinks : </p>
+                            <span className="d-inline ms-1">
+                                {cData?.config?.drinks?.map((data, index) => {
+                                    return (
+                                        <span key={index}>
+                                            {data?.drinksName} (x{data?.quantity})
+                                            {index < cData.config.drinks.length - 1 ? ", " : ""}
+                                        </span>
+                                    );
+                                })}
+                            </span>
                         </div>
                     )}
                 </div>
