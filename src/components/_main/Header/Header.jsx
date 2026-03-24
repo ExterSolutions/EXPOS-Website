@@ -105,15 +105,19 @@ const Header = () => {
         <header className="header shadow-sm">
 
             <div className="top-bar d-none d-md-flex">
-                <div className="">
-                    <a href={`mailto:${siteData.contact_email}`} className="top-link">
-                        <i className="bi bi-envelope-fill me-1"></i> {siteData.contact_email}
+                <div className="top-bar__contact">
+                    <a href={`mailto:${siteData.contact_email}`} className="top-bar__link" aria-label="Email us">
+                        <i className="bi bi-envelope-fill top-bar__icon"></i>
+                        <span>{siteData.contact_email}</span>
+                    </a>
+                    <span className="top-bar__divider" aria-hidden="true"></span>
+                    <a href={`tel:${siteData.contact_phone}`} className="top-bar__link" aria-label="Call us">
+                        <i className="bi bi-telephone-fill top-bar__icon"></i>
+                        <span>{siteData.contact_phone}</span>
                     </a>
                 </div>
-                <div>
-                    <a href={`tel:${siteData.contact_phone}`} className="top-link">
-                        <i className="bi bi-telephone-fill me-1"></i> {siteData.contact_phone}
-                    </a>
+                <div className="top-bar__tagline">
+                    <span>🍕 Fresh. Hot. Delivered.</span>
                 </div>
             </div>
 
