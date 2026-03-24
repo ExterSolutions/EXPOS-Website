@@ -106,7 +106,7 @@ function Cart() {
                                             <h3 className="mx-2">Your Cart</h3>
                                         </div>
                                     </div>
-                                    <div className="col-lg-8 col-md-12 col-sm-12 py-2 mt-1 mb-3">
+                                    <div className="col-lg-8 col-md-12 col-sm-12 py-2 mt-1 mb-3 rounded-3">
                                         <ul className="list-group">
                                             {cart?.product?.map((cData) => {
                                                 return (
@@ -120,76 +120,51 @@ function Cart() {
                                         </ul>
                                     </div>
                                     {/* Order Summary */}
-                                    <div className="col-lg-4 col-md-12 col-sm-12 py-2 mt-1 mb-3 ">
-                                        <div className="row ">
-                                            <div className="col-lg-12 col-md-12 col-sm-12 mb-2">
-                                                <div className="block-stl10 odr-summary mb-0 bgPrimaryBlackColor primaryWhiteColor">
-                                                    <h3 className="primaryWhiteColor">Order Summary :</h3>
-                                                    <ul className="list-unstyled">
-                                                        <li>
-                                                            <span className="ttl">Sub Total</span>{" "}
-                                                            <span className="stts">
-                                                                ${" "}
-                                                                {cart?.subtotal
-                                                                    ? cart?.subtotal
-                                                                    : (0.0).toFixed(2)}
-                                                            </span>
-                                                        </li>
-                                                        <li className="d-none">
-                                                            <span className="ttl">
-                                                                Convenience Charges (%)
-                                                            </span>{" "}
-                                                            <span className="stts">
-                                                                ${" "}
-                                                                {cart?.convinenceCharges
-                                                                    ? cart?.convinenceCharges
-                                                                    : 0}
-                                                            </span>
-                                                        </li>
-                                                        <li className="d-none">
-                                                            <span className="ttl">Delivery Charges</span>{" "}
-                                                            <span className="stts">
-                                                                ${" "}
-                                                                {cart?.deliveryCharges
-                                                                    ? cart?.deliveryCharges
-                                                                    : Number(0).toFixed(2)}
-                                                            </span>
-                                                        </li>
-                                                    </ul>
-                                                    <div className="ttl-all">
-                                                        <span className="ttlnm">Grand Total</span>
-                                                        <span className="odr-stts">
+                                    <div className="col-lg-4 col-md-12 col-sm-12 py-2 mt-1">
+                                        <div className="mb-2 w-100">
+                                            <div className="block-stl10 odr-summary rounded-3                mb-3 bgPrimaryBlackColor primaryWhiteColor">
+                                                <h3 className="primaryWhiteColor">Order Summary :</h3>
+                                                <ul className="list-unstyled">
+                                                    <li>
+                                                        <span className="ttl">Sub Total</span>{" "}
+                                                        <span className="stts">
                                                             ${" "}
-                                                            {cart?.grandtotal
-                                                                ? cart?.grandtotal
+                                                            {cart?.subtotal
+                                                                ? cart?.subtotal
                                                                 : (0.0).toFixed(2)}
                                                         </span>
-                                                    </div>
-                                                    <p className="tax-subheading">Tax will be calculated later.</p>
+                                                    </li>
+                                                </ul>
+                                                <div className="ttl-all">
+                                                    <span className="ttlnm">Grand Total</span>
+                                                    <span className="odr-stts">
+                                                        ${" "}
+                                                        {cart?.grandtotal
+                                                            ? cart?.grandtotal
+                                                            : (0.0).toFixed(2)}
+                                                    </span>
                                                 </div>
+                                                <p className="tax-subheading">Tax will be calculated later.</p>
                                             </div>
-                                            <div className="col-lg-12 col-md-12 col-sm-12">
-                                                <div className="row gx-3">
-                                                    <div className="col-lg-6 col-md-6 col-sm-12">
-                                                        <button
-                                                            type="button"
-                                                            className="w-100 rounded my-2 py-3 cancelCart"
-                                                            onClick={handleCancelOrder}
-                                                        >
-                                                            Cancel Order
-                                                        </button>
-                                                    </div>
-                                                    <div className="col-lg-6 col-md-6 col-sm-12">
-                                                        <button
-                                                            type="submit"
-                                                            className="w-100 rounded my-2 py-3 addtocart"
-                                                            onClick={handleCheckout}
-                                                        >
-                                                            Checkout
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        </div>
+
+                                        <div className="d-flex flex-column flex-lg-row gap-2 mt-2 px-1">
+                                            <button
+                                                type="button"
+                                                className="w-100 rounded-3 py-3 cancelCart"
+                                                onClick={handleCancelOrder}
+                                                style={{ fontWeight: 600 }}
+                                            >
+                                                Cancel Order
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="w-100 rounded-3 py-3 addtocart"
+                                                onClick={handleCheckout}
+                                                style={{ fontWeight: 700, fontSize: '1.1rem' }}
+                                            >
+                                                Checkout
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
