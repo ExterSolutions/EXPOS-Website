@@ -97,8 +97,6 @@ const Header = () => {
         setOpenMobileMenu(prev => !prev);
     };
 
-    const handleCartBarToggle = () => setCartSidebar(prev => !prev);
-
     return (
         <header className="header shadow-sm">
 
@@ -284,7 +282,7 @@ const Header = () => {
                             <button
                                 type='button'
                                 onClick={handleOrderNowClick}
-                                className="btn btn-primary rounded-pill fw-semibold shadow-md order-now-mobile-btn bg-primary text-white"
+                                className="btn btn-primary rounded-pill fw-semibold shadow-md order-now-mobile-btn bg-primary text-white d-none d-md-inline-block"
                                 style={{
                                     backgroundColor: 'var(--primary)',
                                     borderColor: 'var(--primary)'
