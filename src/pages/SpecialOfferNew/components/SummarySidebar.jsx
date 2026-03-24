@@ -22,7 +22,7 @@ const SummarySidebar = ({ ...props }) => {
 
     return (
         <div className="right-side-div sticky-top">
-            <div className="p-3 right-side-internal-div-new card-background-color card-text-color">
+            <div className="p-3 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color" style={{ border: '1px solid var(--primary-light)' }}>
                 <div className="px-3 row">
 
                     <div className="col-lg-6 p-3 rounded-3">

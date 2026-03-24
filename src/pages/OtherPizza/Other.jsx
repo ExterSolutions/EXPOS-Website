@@ -775,7 +775,7 @@ const Other = () => {
                                         </div>
                                         {/* ── RIGHT COLUMN (desktop summary) ── */}
                                         <div className="col-lg-5 col-12 d-none d-lg-block">
-                                            <div className="p-3 card-background-color card-text-color rounded-3" style={{ position: 'sticky', top: '80px' }}>
+                                            <div className="p-3 bg-white shadow-sm card-text-color rounded-4" style={{ position: 'sticky', top: '80px', border: '1px solid var(--primary-light)' }}>
                                                 <div className="text-center mb-3">
                                                     <img
                                                         className="pizzaImageBorder"

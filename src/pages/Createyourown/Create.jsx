@@ -923,12 +923,14 @@ const CreatePizza = () => {
                     style={{ position: "relative !important" }}
                   >
                     <div
-                      className={`p-3 right-side-internal-div card-background-color ${isFixed ? "fixed" : ""
+                      className={`p-3 right-side-internal-div bg-white shadow-sm rounded-4 ${isFixed ? "fixed" : ""
                         }`}
                       style={{
                         transform: isTranslate
                           ? `translateY(${translateYVal}px)`
                           : "none",
+                        position: isFixed ? "fixed" : "sticky",
+                        border: "1px solid var(--primary-light)"
                       }}
                     >
                       <div className="px-3 row">

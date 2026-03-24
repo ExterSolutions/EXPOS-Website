@@ -880,11 +880,12 @@ function SpecialOffer() {
                 style={{ position: "relative !important" }}
               >
                 <div
-                  className={`p-3 right-side-internal-div-new card-background-color card-text-color ${isFixed ? "fixed" : ""
+                  className={`p-3 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color ${isFixed ? "fixed" : ""
                     } ${isTranslate ? "translate" : ""}`}
                   style={{
                     "--translate-y": isTranslate ? `${translateYVal}px` : "0px",
                     position: "sticky",
+                    border: "1px solid var(--primary-light)"
                   }}
                 >
                   <div className="px-3 row">
