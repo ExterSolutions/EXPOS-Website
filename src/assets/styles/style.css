@@ -19226,7 +19226,7 @@ a:hover {
    MODERN TOP BAR
 ───────────────────────────────────────── */
 .top-bar {
-  background: linear-gradient(135deg, #1b5e2b 0%, #2d7a3a 60%, #225530 100%);
+  background: var(--primary);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.03em;
@@ -22707,25 +22707,32 @@ body {
     letter-spacing: 0.03em;
 }
 
-/* Pizza grid — horizontal scroll snap on mobile */
+/* Pizza grid — optimized for mobile centering with 2 columns */
 .pizza-grid {
   display: grid;
   gap: 1rem;
-  padding-bottom: 1rem;
+  padding-bottom: 2rem;
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  justify-items: center;
 }
 
 @media (max-width: 640px) {
   .pizza-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); /* Exactly 2 cards per row */
     gap: 12px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 4px;
+    padding: 0 5px;
   }
+
   .pizza-card-wrapper {
     width: 100%;
-    max-width: 220px;
+    max-width: 240px;
     margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 }
 
