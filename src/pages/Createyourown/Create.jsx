@@ -16,11 +16,9 @@ import { getAllIngredients, getSides, settingApi } from "../../services";
 import { CheeseSelector } from "./CheeseSelector";
 import { DipsSelector } from "./DipsSelector";
 import { DrinkSelector } from "./DrinkSelector";
-import { FreeToppingSelector } from "./FreeToppingSelector";
-import { SauceSelector } from "./SauceSelector";
-import { SpicySelector } from "./SpicySelector";
-import { ToppingOneSelector } from "./ToppingOneSelector";
-import { ToppingTwoSelector } from "./ToppingTwoSelector";
+import { CYOFreeToppingSelector } from "./CYOFreeToppingSelector";
+import { CYOToppingOneSelector } from "./CYOToppingOneSelector";
+import { CYOToppingTwoSelector } from "./CYOToppingTwoSelector";
 import ToppingSheet from "../../components/_main/ToppingSheet";
 
 import { FaEye } from "react-icons/fa6";
@@ -722,19 +720,6 @@ const CreatePizza = () => {
                       <div>
                         <p className="fs-2 fw-bold text-primary mb-1">CREATE YOUR OWN PIZZA</p>
                         <p className="mb-0 text-secondary" style={{ fontSize: '0.95rem' }}>Your perfect slice, your way!</p>
-                        {/* Desktop Add to Cart controls */}
-                        <div className="d-none d-lg-flex align-items-center gap-3 mt-3">
-                          <div className="d-flex align-items-center gap-2">
-                            <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)}
-                              className="btn btn-secondary rounded-circle" style={{ width: 34, height: 34, padding: 0 }} aria-label="Decrease"><FaMinus /></button>
-                            <span className="fw-bold fs-5">{pizzaQuantity}</span>
-                            <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)}
-                              className="btn btn-secondary rounded-circle" style={{ width: 34, height: 34, padding: 0 }} aria-label="Increase"><FaPlus /></button>
-                          </div>
-                          <span className="fw-bold fs-5">${price}</span>
-                          <button onClick={handleAddToCart} className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold px-4">Add to Cart</button>
-                          <button onClick={() => setViewSelection(true)} className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold"><FaEye /></button>
-                        </div>
                       </div>
                     </div>
 
@@ -891,9 +876,9 @@ const CreatePizza = () => {
                       handleToppingOne={handleToppingOne}
                       handleFreeToppings={handleFreeToppings}
                       handleSizeChange={handleSizeChange}
-                      ToppingTwoSelector={ToppingTwoSelector}
-                      ToppingOneSelector={ToppingOneSelector}
-                      FreeToppingSelector={FreeToppingSelector}
+                      ToppingTwoSelector={CYOToppingTwoSelector}
+                      ToppingOneSelector={CYOToppingOneSelector}
+                      FreeToppingSelector={CYOFreeToppingSelector}
                       nonRegularTitle={nonRegularToppingsTitle}
                       regularTitle={regularToppingsTitle}
                     />

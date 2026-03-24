@@ -40,8 +40,8 @@ function CustomizeDrinkDropdown({ count, drinksType, drinkData, setSelectedDrink
                         aria-labelledby="headingFour"
                         data-bs-parent="#accordionExample4"
                     >
-                        <div className="accordion-body primary-background-color">
-                            <div className="d-flex flex-row gap-2 flex-wrap">
+                        <div className="accordion-body primary-background-color p-0">
+                            <div className="d-flex flex-column">
                                 {drinksType?.map((data, index) => (
                                     <CustomizeDrinksSelector
                                         key={index}

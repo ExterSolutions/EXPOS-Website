@@ -1,30 +1,28 @@
-import React, { useState } from 'react'
+import { useState } from "react";
 import { IoCheckmarkCircle, IoAddCircleOutline } from "react-icons/io5";
 
-function ToppingsOneSelector({ data, multiplier, ToppingsOne, handleTopping, handleSizeChange }) {
-    const [pizzaSize, setPizzaSize] = useState("whole");
+export const CYOToppingOneSelector = ({ data, ToppingsOne, DefaultToppingsOne = [], handleTopping, handleSizeChange }) => {
+    const [pizzaSize, setpizzaSize] = useState("whole");
 
-    const isSelected = ToppingsOne?.some(obj => obj?.toppingsCode === data?.toppingsCode);
-    const currentSize = ToppingsOne?.find(el => el?.toppingsCode === data?.toppingsCode)?.toppingsPlacement || pizzaSize;
+    const isSelected = ToppingsOne.some(obj => obj?.code === data?.toppingsCode);
+    const currentSize = ToppingsOne?.find(el => el?.code === data?.toppingsCode)?.size || pizzaSize;
+    const displayPrice = DefaultToppingsOne?.find(obj => obj?.code === data?.toppingsCode)?.price ?? data?.price;
 
     const handleSizePill = (e, val) => {
         e.stopPropagation();
-        setPizzaSize(val);
+        setpizzaSize(val);
         if (isSelected) {
-            handleSizeChange({ toppingsCode: data?.toppingsCode, toppingsPlacement: val });
+            let updatedPrice = data?.price;
+            const match = DefaultToppingsOne?.find(tps => data?.toppingsCode === tps.code);
+            if (match) updatedPrice = match?.price ?? 0;
+            handleSizeChange({ code: data?.toppingsCode, name: data?.toppingsName, price: updatedPrice, type: "one", size: val });
         }
     };
 
     return (
         <div
             className={`topping-item ${isSelected ? 'topping-item--selected' : ''}`}
-            onClick={() => handleTopping({
-                toppingsCode: data?.toppingsCode,
-                toppingsName: data?.toppingsName,
-                toppingsPrice: data?.price,
-                type: "one",
-                size: pizzaSize,
-            })}
+            onClick={() => handleTopping({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "one", size: pizzaSize })}
         >
             <div className="topping-item__row">
                 <div className="topping-item__left">
@@ -32,13 +30,12 @@ function ToppingsOneSelector({ data, multiplier, ToppingsOne, handleTopping, han
                         ? <IoCheckmarkCircle className="topping-item__check-icon" />
                         : <IoAddCircleOutline className="topping-item__add-icon" />
                     }
-                    <span className="topping-item__name">{data?.toppingsName ?? "Topping"}</span>
+                    <span className="topping-item__name">{data?.toppingsName}</span>
                 </div>
-                {data?.price > 0 && (
-                    <span className="topping-item__price">+${Number(data.price).toFixed(2)}</span>
+                {displayPrice > 0 && (
+                    <span className="topping-item__price">+${Number(displayPrice).toFixed(2)}</span>
                 )}
             </div>
-
             {isSelected && (
                 <div className="topping-placements" onClick={e => e.stopPropagation()}>
                     {[
@@ -57,6 +54,4 @@ function ToppingsOneSelector({ data, multiplier, ToppingsOne, handleTopping, han
             )}
         </div>
     );
-}
-
-export default ToppingsOneSelector
+};
