@@ -1,24 +1,20 @@
-// src/components/_main/MobileMenu.jsx
-import { useContext, useEffect, useState } from 'react';
+
+import { useContext, useEffect } from 'react';
 import {
     FaGlassCheers,
     FaHome,
-    FaInfo,
-    FaMapPin,
-    FaPhone,
     FaPizzaSlice,
     FaTag,
     FaTimes,
     FaUser,
     FaUserPlus,
 } from 'react-icons/fa';
-import { GiPizzaSlice } from 'react-icons/gi';
+import { GiFullPizza, GiPizzaSlice } from 'react-icons/gi';
 import { IoColorPalette } from 'react-icons/io5';
 import { MdRestaurantMenu } from 'react-icons/md';
 import { PiHamburgerFill } from 'react-icons/pi';
 import { SiCoffeescript } from 'react-icons/si';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import '../../assets/styles/mobilemenu.css';
 import { GlobalContext } from '../../context/GlobalContext';
 
 const MobileMenu = () => {
@@ -139,6 +135,12 @@ const MobileMenu = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/special-offers-with-toppings" className={`nav-link ${isActive('/special-offers-with-toppings') ? 'active' : ''}`} onClick={() => handleLinkClick('/special-offers-with-toppings')}>
+                                <GiFullPizza />
+                                <span className="nav-text">Topping Deals</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <Link to="/signaturepizza" className={`nav-link ${isActive('/signaturepizza') ? 'active' : ''}`} onClick={() => handleLinkClick('/signaturepizza')}>
                                 <FaPizzaSlice />
                                 <span className="nav-text">Signature Pizzas</span>
@@ -172,6 +174,12 @@ const MobileMenu = () => {
                             <Link to="/create-your-own" className={`nav-link ${isActive('/create-your-own') ? 'active' : ''}`} onClick={() => handleLinkClick('/create-your-own')}>
                                 <IoColorPalette />
                                 <span className="nav-text">Create Your Own</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/menu" className={`nav-link ${isActive('/menu') ? 'active' : ''}`} onClick={() => handleLinkClick('/menu')}>
+                                <MdRestaurantMenu />
+                                <span className="nav-text">All Menu</span>
                             </Link>
                         </li>
 

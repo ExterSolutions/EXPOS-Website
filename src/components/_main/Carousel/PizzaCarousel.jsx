@@ -36,76 +36,78 @@ const PizzaCarousel = ({
 
     return (
         <div className="section pizza-carousel-section pt-60">
-            <div className="d-flex align-items-center justify-content-between pb-2">
-                <div className="flex-grow-1 section-header">
-                    <span
-                        className="category-subtitle"
-                        style={{ color: colors?.primary }}
-                    >
-                        {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
-                    </span>
-                    <div className="d-flex align-items-center gap-2">
-                        <div className="section-title">{sectionTitle}</div>
-                        {showBestSelling && (
-                            <span className="best-selling-badge">🏆 Best Sellers</span>
-                        )}
+            <div className="container">
+                <div className="d-flex align-items-center justify-content-between pb-2">
+                    <div className="flex-grow-1 section-header">
+                        <span
+                            className="category-subtitle"
+                            style={{ color: colors?.primary }}
+                        >
+                            {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
+                        </span>
+                        <div className="d-flex align-items-center gap-2">
+                            <div className="section-title">{sectionTitle}</div>
+                            {showBestSelling && (
+                                <span className="best-selling-badge">🏆 Best Sellers</span>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="pizza-grid">
-                {displayPizzas.map((item, index) => {
-                    let name =
-                        item?.pizzaName ||
-                        item?.dipsName ||
-                        item?.name ||
-                        `Item ${index + 1}`;
-                    const image = item?.pizzaImage || item?.image;
-                    const price = item?.pizza_prices?.[0]?.price || item?.price || '0.00';
-                    const visitLink = getRedirectPath(item);
-                    const description = item?.description || item?.dipsDescription || item?.dipsDiscription;
+                <div className="pizza-grid px-1">
+                    {displayPizzas.map((item, index) => {
+                        let name =
+                            item?.pizzaName ||
+                            item?.dipsName ||
+                            item?.name ||
+                            `Item ${index + 1}`;
+                        const image = item?.pizzaImage || item?.image;
+                        const price = item?.pizza_prices?.[0]?.price || item?.price || '0.00';
+                        const visitLink = getRedirectPath(item);
+                        const description = item?.description || item?.dipsDescription || item?.dipsDiscription;
 
-                    return (
-                        <div key={item.code || index} className="pizza-card-wrapper">
-                            <Link to={visitLink} className="pizza-card-modern">
-                                {/* Image area */}
-                                <div className="pizza-card-img-area">
-                                    {showBestSelling && index < 3 && (
-                                        <span className="pizza-card-badge">🔥 Popular</span>
-                                    )}
-                                    <img
-                                        src={image}
-                                        alt={name}
-                                        className="pizza-card-img"
-                                        loading="lazy"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = fallbackImage;
-                                        }}
-                                    />
-                                </div>
-                                {/* Content area */}
-                                <div className="pizza-card-body">
-                                    <h5 className="pizza-card-name">{name}</h5>
-                                    {description && (
-                                        <p className="pizza-card-desc">{description}</p>
-                                    )}
-                                    <div className="pizza-card-footer">
-                                        <div className="pizza-card-price-group">
-                                            <span className="pizza-card-price-label">From</span>
-                                            <span className="pizza-card-price">${price}</span>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            className="pizza-card-order-btn"
-                                        >
-                                            Order Now
-                                        </button>
+                        return (
+                            <div key={item.code || index} className="pizza-card-wrapper">
+                                <Link to={visitLink} className="pizza-card-modern">
+                                    {/* Image area */}
+                                    <div className="pizza-card-img-area">
+                                        {showBestSelling && index < 3 && (
+                                            <span className="pizza-card-badge">🔥 Popular</span>
+                                        )}
+                                        <img
+                                            src={image}
+                                            alt={name}
+                                            className="pizza-card-img"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = fallbackImage;
+                                            }}
+                                        />
                                     </div>
-                                </div>
-                            </Link>
-                        </div>
-                    );
-                })}
+                                    {/* Content area */}
+                                    <div className="pizza-card-body">
+                                        <h5 className="pizza-card-name">{name}</h5>
+                                        {description && (
+                                            <p className="pizza-card-desc">{description}</p>
+                                        )}
+                                        <div className="pizza-card-footer">
+                                            <div className="pizza-card-price-group">
+                                                <span className="pizza-card-price-label">From</span>
+                                                <span className="pizza-card-price">${price}</span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="pizza-card-order-btn"
+                                            >
+                                                Order Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

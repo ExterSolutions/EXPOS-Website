@@ -22718,6 +22718,9 @@ body {
   .pizza-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
   }
 }
 

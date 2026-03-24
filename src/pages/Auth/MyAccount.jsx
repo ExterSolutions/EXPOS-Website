@@ -170,7 +170,7 @@ function MyAccount() {
                 </div>
 
                 {/* ── Full-width Sign Out at Bottom ── */}
-                <div style={{ padding: "0 12px" }}>
+                <div className="d-lg-none" style={{ padding: "0 12px" }}>
                     <button
                         onClick={handleLogout}
                         style={{
