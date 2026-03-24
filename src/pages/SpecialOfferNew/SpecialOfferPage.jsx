@@ -171,6 +171,9 @@ const SpecialOfferPage = () => {
         regularToppingLabel:
           settingsData.find((s) => s.shortCode === "regular-toppings")?.settingValue ??
           "Regular Toppings",
+        indianToppingLabel:
+          settingsData.find((s) => s.shortCode === "indian-style-toppings")?.settingValue ??
+          "Indian Toppings",
       };
       const signaturePizza =
         specialOfferData?.signaturePizzas?.length > 0

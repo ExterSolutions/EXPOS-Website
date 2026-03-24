@@ -48,6 +48,7 @@ const ToppingSheet = ({
     DefaultToppingsOne = [],
     nonRegularTitle = "Premium Toppings",
     regularTitle = "Regular Toppings",
+    indianStyleTitle = "Indian Toppings",
 }) => {
     const sheetRef = useRef(null);
 
@@ -78,7 +79,7 @@ const ToppingSheet = ({
     const tabs = [
         { key: "two",  label: nonRegularTitle, count: premiumCount },
         { key: "one",  label: regularTitle,    count: regularCount },
-        { key: "free", label: "Indian Toppings",  count: indianCount  },
+        { key: "free", label: indianStyleTitle,  count: indianCount  },
     ];
 
     return (

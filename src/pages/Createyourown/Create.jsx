@@ -123,13 +123,22 @@ const CreatePizza = () => {
     }
   };
 
-  const nonRegularToppingsTitle = "Premium Toppings";
+  const regularToppingsTitle =
+    settingsData.find((item) => item.shortCode === "regular-toppings")
+      ?.settingValue ?? "Regular Toppings";
 
-  const regularToppingsTitle = "Regular Toppings";
+  const nonRegularToppingsTitle =
+    settingsData.find((item) => item.shortCode === "non-regular-toppings")
+      ?.settingValue ?? "Premium Toppings";
+
+  const indianStyleToppingsTitle =
+    settingsData.find((item) => item.shortCode === "indian-style-toppings")
+      ?.settingValue ?? "Indian Toppings";
 
   const premiumToppingCount =
     Number(
-      settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
+      settingsData.find((item) => item.shortCode === "non-regular-toppings-count")
+        ?.settingValue
     ) || 1;
 
   const toggleAccordion = (accordionName) => {
@@ -881,6 +890,7 @@ const CreatePizza = () => {
                       FreeToppingSelector={CYOFreeToppingSelector}
                       nonRegularTitle={nonRegularToppingsTitle}
                       regularTitle={regularToppingsTitle}
+                      indianStyleTitle={indianStyleToppingsTitle}
                     />
 
                     {/* ── Sides / Drinks / Dips trigger buttons ── */}
@@ -1126,7 +1136,7 @@ const CreatePizza = () => {
                                   <>
                                     {/* Display a single button for Indian Toppings Toppings */}
                                     <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                      Indian Toppings + Coriander
+                                      {indianStyleToppingsTitle} + Coriander
                                       <span
                                         className="ms-2"
                                         onClick={handleRemoveIsIndiansToppings}

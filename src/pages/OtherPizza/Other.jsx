@@ -105,11 +105,22 @@ const Other = () => {
             }
         }
     };
-    const nonRegularToppingsTitle = "Premium Toppings";
-    const regularToppingsTitle = "Regular Toppings";
+    const regularToppingsTitle =
+        settingsData.find((item) => item.shortCode === "regular-toppings")
+            ?.settingValue ?? "Regular Toppings";
+
+    const nonRegularToppingsTitle =
+        settingsData.find((item) => item.shortCode === "non-regular-toppings")
+            ?.settingValue ?? "Premium Toppings";
+
+    const indianStyleToppingsTitle =
+        settingsData.find((item) => item.shortCode === "indian-style-toppings")
+            ?.settingValue ?? "Indian Toppings";
+
     const premiumToppingCount =
         Number(
-            settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
+            settingsData.find((item) => item.shortCode === "non-regular-toppings-count")
+                ?.settingValue
         ) || 1;
     const toggleAccordion = (accordionName) => {
         setActiveAccordion(
@@ -696,7 +707,7 @@ const Other = () => {
                                     <button className="topping-sheet__close" onClick={() => setOpenSheet(null)} aria-label="Close"><IoMdClose size={20} /></button>
                                 </div>
                                 <div className="topping-sheet__tabs">
-                                    {[['premium', nonRegularToppingsTitle], ['regular', regularToppingsTitle], ['indian', 'Indian Toppings']].map(([key, label]) => (
+                                    {[['premium', nonRegularToppingsTitle], ['regular', regularToppingsTitle], ['indian', indianStyleToppingsTitle]].map(([key, label]) => (
                                         <button key={key} className={`topping-sheet__tab${toppingTab === key ? ' active' : ''}`} onClick={() => setToppingTab(key)}>{label}</button>
                                     ))}
                                 </div>

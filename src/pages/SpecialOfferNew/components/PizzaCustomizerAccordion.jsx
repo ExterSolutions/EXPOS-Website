@@ -73,13 +73,13 @@ function allToppingNames(pizzaSelections) {
 // We'll use ToppingSheet's own internal rendering — which calls these class props.
 // Instead of faking adapters, we'll build a simpler inline topping popup using ToppingsSelector.
 
-const TOPPINGS_TABS = [
-    { id: "countAsTwo",  label: "Premium Toppings"  },
-    { id: "countAsOne",  label: "Regular Toppings"  },
-    { id: "free",        label: "Indian Toppings" },
-];
-
 function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelections, settings, onUpdateCustomization, index }) {
+    const TOPPINGS_TABS = [
+        { id: "countAsTwo", label: settings?.premiumTopppingLabel || "Premium Toppings" },
+        { id: "countAsOne", label: settings?.regularToppingLabel || "Regular Toppings" },
+        { id: "free", label: settings?.indianToppingLabel || "Indian Toppings" },
+    ];
+
     const [activeTab, setActiveTab] = useState("countAsTwo");
 
     const handleToppingsChange = (type, list) => {
@@ -155,7 +155,7 @@ function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelect
                     {activeTab === "countAsTwo" && (
                         <ToppingsSelector
                             key={`premium-${index}`}
-                            title={settings?.premiumTopppingLabel || "Premium"}
+                            title={TOPPINGS_TABS[0].label}
                             options={toppings?.countAsTwo ?? []}
                             defaultOptions={[]}
                             selected={pizzaSelections?.toppings?.countAsTwoToppings ?? []}
@@ -167,7 +167,7 @@ function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelect
                     {activeTab === "countAsOne" && (
                         <ToppingsSelector
                             key={`regular-${index}`}
-                            title={settings?.regularToppingLabel || "Regular"}
+                            title={TOPPINGS_TABS[1].label}
                             options={toppings?.countAsOne ?? []}
                             defaultOptions={[]}
                             selected={pizzaSelections?.toppings?.countAsOneToppings ?? []}
@@ -179,7 +179,7 @@ function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelect
                     {activeTab === "free" && (
                         <ToppingsSelector
                             key={`indian-${index}`}
-                            title="Indian Toppings"
+                            title={TOPPINGS_TABS[2].label}
                             options={toppings?.freeToppings ?? []}
                             defaultOptions={[]}
                             selected={pizzaSelections?.toppings?.freeToppings ?? []}
