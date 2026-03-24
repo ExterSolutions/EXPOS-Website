@@ -1,19 +1,18 @@
+import { IoCheckmarkCircle, IoAddCircleOutline } from "react-icons/io5";
 
 export const CustomizeDrinksSelector = ({ data, selectedDrinksType, handleDrinksType }) => {
     const isSelected = selectedDrinksType === data;
+
     return (
         <div
-            className={`theme-border ${isSelected ? "active" : ""}`}
+            className={`drink-item ${isSelected ? 'drink-item--selected' : ''}`}
             onClick={() => handleDrinksType(data)}
         >
-            <div className="d-flex align-items-center gap-2">
-                {isSelected ? (
-                    <i className="bi bi-check-circle-fill" />
-                ) : (
-                    <i className="bi bi-plus-circle" />
-                )}
-                <span className="fw-medium">{data}</span>
-            </div>
+            {isSelected
+                ? <IoCheckmarkCircle className="topping-item__check-icon" />
+                : <IoAddCircleOutline className="topping-item__add-icon" />
+            }
+            <span className="drink-item__name">{data}</span>
         </div>
     );
 };
