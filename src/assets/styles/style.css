@@ -20571,7 +20571,7 @@ body {
 
 .category-section {
   padding-top: 1rem;
-  padding-bottom: 3rem
+  padding-bottom: 1rem;
 }
 
 .category-card {
@@ -20638,6 +20638,45 @@ body {
 
 
 
+
+/* Category Swiper pagination dots */
+.category-swiper-wrap {
+  padding-bottom: 32px;
+}
+
+.category-swiper-wrap .swiper {
+  overflow: visible;
+}
+
+.category-swiper-wrap .swiper-pagination {
+  bottom: -28px;
+  position: absolute;
+}
+
+.category-swiper-wrap .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: #ccc;
+  opacity: 1;
+  border-radius: 4px;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.category-swiper-wrap .swiper-pagination-bullet-active {
+  width: 22px;
+  border-radius: 4px;
+  background: var(--primary, #2d7a3a);
+}
+
+/* Hide dots on desktop where all 6 fit at once */
+@media (min-width: 1024px) {
+  .category-swiper-wrap {
+    padding-bottom: 0;
+  }
+  .category-swiper-wrap .swiper-pagination {
+    display: none;
+  }
+}
 
 .drink-qty-container {
   margin-top: 12px;

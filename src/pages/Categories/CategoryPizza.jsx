@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/autoplay';
-import { A11y, Autoplay } from 'swiper/modules';
+import 'swiper/css/pagination';
+import { A11y, Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import createPizza from "../../assets/images/download/new/cat/Thumbails/Createyourown-1.png";
 import Deals from "../../assets/images/download/new/cat/Thumbails/Deals-1.png";
@@ -40,17 +41,22 @@ const CategoryPizza = () => {
                     <div className="section-title">Shop By Category</div>
                 </div>
             </div>
-            <div className="category-container">
+            <div className="category-container category-swiper-wrap">
                 <Swiper
-                    modules={[A11y, Autoplay]}
+                    modules={[A11y, Autoplay, Pagination]}
                     autoplay={{
                         delay: 2500,
                         disableOnInteraction: false,
                         pauseOnMouseEnter: true,
                     }}
+                    pagination={{
+                        clickable: true,
+                        dynamicBullets: true,
+                    }}
                     loop={true}
                     slidesPerView={2}
                     spaceBetween={12}
+                    style={{ paddingBottom: '36px' }}
                     breakpoints={{
                         0:    { slidesPerView: 2.4, spaceBetween: 12 },
                         480:  { slidesPerView: 3,   spaceBetween: 12 },
