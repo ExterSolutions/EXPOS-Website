@@ -13616,20 +13616,21 @@ body.menu-open {
   top: 25px;
   left: 25px;
   z-index: 1001;
-  background: #ff6b35;
+  background: var(--primary);
   color: #fff;
   padding: 12px 18px;
   border-radius: 25px;
   font-size: 14px;
   font-weight: 600;
   transition: .3s;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, .3)
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .1)
 }
 
 .toggle-btn:hover {
-  background: #ff8e53;
+  background: var(--primary);
+  filter: brightness(0.9);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 107, 53, .4)
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .15)
 }
 
 .toggle-btn.hidden {
@@ -13684,13 +13685,13 @@ body.menu-open {
   max-width: 300px;
   height: 100dvh;
   background: #fff;
-  color: #ff6b35;
+  color: var(--primary);
   z-index: 999;
   overflow-y: auto;
   overflow-x: hidden;
   transition: left .3s;
-  box-shadow: 4px 0 20px rgba(255, 107, 53, .1);
-  border-right: 1px solid #ff6b35;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, .1);
+  border-right: 1px solid var(--primary-light);
   display: flex;
   flex-direction: column
 }
@@ -13701,7 +13702,7 @@ body.menu-open {
 
 .sidebar-header {
   padding: 1rem;
-  border-bottom: 1px solid #ff6b35;
+  border-bottom: 1px solid var(--primary-light);
   display: flex;
   justify-content: space-between;
   align-items: center
@@ -13719,7 +13720,7 @@ body.menu-open {
 
 .logo-icon {
   font-size: 1.5em;
-  background: #ff6b35;
+  background: var(--primary);
   border-radius: 8px;
   width: 40px;
   height: 40px;
@@ -13736,7 +13737,7 @@ body.menu-open {
   margin: 0;
   font-size: 1.4em;
   font-weight: 600;
-  color: #ff6b35
+  color: var(--primary)
 }
 
 .close-btn {
@@ -13790,14 +13791,14 @@ body.menu-open {
 .sidebar-nav a.active,
 .sidebar-nav a:hover,
 .submenu-toggle:hover {
-  background: #fff8f5
+  background: var(--primary-light)
 }
 
 .nav-icon {
   font-size: 1.2em;
   width: 20px;
   text-align: center;
-  color: #ff6b35
+  color: var(--primary)
 }
 
 .nav-text {
@@ -13824,7 +13825,7 @@ body.menu-open {
   overflow: hidden;
   transition: max-height .3s, opacity .3s;
   opacity: 0;
-  background: #fff8f5
+  background: var(--primary-light)
 }
 
 .submenu.show {
@@ -13841,7 +13842,8 @@ body.menu-open {
 }
 
 .submenu li a:hover {
-  background: #ffe8dc
+  background: var(--primary-light);
+  filter: brightness(0.95);
 }
 
 .has-submenu .submenu-toggle svg {
@@ -13896,9 +13898,9 @@ body.menu-open {
 }
 
 .signin-btn {
-  background-color: #f8f9fa;
+  background-color: #fcfcfc;
   color: #333;
-  border: 1px solid #ddd
+  border: 1px solid var(--primary-light)
 }
 
 .signin-btn:hover {
@@ -13906,13 +13908,25 @@ body.menu-open {
   transform: translateY(-1px)
 }
 
+.account-btn {
+  background-color: #fff;
+  color: var(--primary);
+  border: 1px solid var(--primary-light)
+}
+
+.account-btn:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-1px)
+}
+
 .signup-btn {
-  background-color: #ff6b35;
+  background-color: var(--primary);
   color: #fff
 }
 
 .signup-btn:hover {
-  background-color: #e55a2b;
+  background-color: var(--primary);
+  filter: brightness(0.9);
   transform: translateY(-1px)
 }
 
