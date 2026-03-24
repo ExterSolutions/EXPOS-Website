@@ -1,14 +1,5 @@
-/**
- * CYOToppingOneSelector — pill-style placement selector for Create Your Own only.
- */
 import { useState } from "react";
-
-const SIZE_OPTIONS = [
-    { value: "whole",     label: "Whole" },
-    { value: "righthalf", label: "½ Right" },
-    { value: "lefthalf",  label: "½ Left" },
-    { value: "1/4",       label: "¼" },
-];
+import { IoCheckmarkCircle, IoAddCircleOutline } from "react-icons/io5";
 
 export const CYOToppingOneSelector = ({ data, ToppingsOne, DefaultToppingsOne = [], handleTopping, handleSizeChange }) => {
     const [pizzaSize, setpizzaSize] = useState("whole");
@@ -30,35 +21,37 @@ export const CYOToppingOneSelector = ({ data, ToppingsOne, DefaultToppingsOne = 
 
     return (
         <div
-            className={`theme-border ${isSelected ? 'active' : ''}`}
+            className={`topping-item ${isSelected ? 'topping-item--selected' : ''}`}
             onClick={() => handleTopping({ code: data?.toppingsCode, name: data?.toppingsName, price: data?.price, type: "one", size: pizzaSize })}
         >
-            <div className="d-flex align-items-center gap-2">
-                {isSelected ? (
-                    <i className="bi bi-check-circle-fill text-primary" />
-                ) : (
-                    <i className="bi bi-plus-circle" />
-                )}
-                <span className="fw-semibold">{data?.toppingsName}</span>
-                {displayPrice !== null && Number(displayPrice) > 0 && (
-                    <span className="text-muted" style={{ fontSize: '0.82rem' }}>(${displayPrice})</span>
+            <div className="topping-item__row">
+                <div className="topping-item__left">
+                    {isSelected
+                        ? <IoCheckmarkCircle className="topping-item__check-icon" />
+                        : <IoAddCircleOutline className="topping-item__add-icon" />
+                    }
+                    <span className="topping-item__name">{data?.toppingsName}</span>
+                </div>
+                {displayPrice > 0 && (
+                    <span className="topping-item__price">+${Number(displayPrice).toFixed(2)}</span>
                 )}
             </div>
-
-            {/* Placement pills */}
-            <div className="topping-size-pills" onClick={e => e.stopPropagation()}>
-                {SIZE_OPTIONS.map(opt => (
-                    <button
-                        key={opt.value}
-                        type="button"
-                        className={`topping-size-pill ${currentSize === opt.value ? 'topping-size-pill--active' : ''}`}
-                        onClick={e => handleSizePill(e, opt.value)}
-                        aria-pressed={currentSize === opt.value}
-                    >
-                        {opt.label}
-                    </button>
-                ))}
-            </div>
+            {isSelected && (
+                <div className="topping-placements" onClick={e => e.stopPropagation()}>
+                    {[
+                        { value: "whole",     label: "Whole" },
+                        { value: "lefthalf",  label: "Left" },
+                        { value: "righthalf", label: "Right" },
+                        { value: "1/4",       label: "¼" },
+                    ].map(opt => (
+                        <button key={opt.value} type="button"
+                            className={`topping-placement-pill topping-placement-pill--${opt.value} ${currentSize === opt.value ? 'topping-placement-pill--active' : ''}`}
+                            onClick={e => handleSizePill(e, opt.value)}>
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

@@ -7497,40 +7497,163 @@ button.btn.btn-search.active {
   }
 }
 
-/* ── Topping placement pill buttons ── */
-.topping-size-pills {
+/* ══════════════════════════════════════════════════════
+   PREMIUM TOPPING ITEM — matches screenshot style
+   Used by: Signature, CYO, Special Offer, Other Pizza
+══════════════════════════════════════════════════════ */
+
+/* Row item — no card border, only bottom separator */
+.topping-item {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.topping-size-pill {
-  flex: 1 1 0;
-  min-width: 54px;
-  padding: 4px 8px;
-  font-size: 0.73rem;
-  font-weight: 600;
-  border: 1.5px solid #c8c8c8;
-  border-radius: 20px;
-  background: #f4f4f4;
-  color: #444;
+  flex-direction: column;
+  padding: 12px 4px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
   cursor: pointer;
-  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
-  text-align: center;
-  white-space: nowrap;
+  transition: background 0.12s ease;
+  margin-bottom: 0;
+  gap: 0;
 }
 
-.topping-size-pill--active {
-  background: var(--primary, #2d7a3a);
-  border-color: var(--primary, #2d7a3a);
+.topping-item:last-child {
+  border-bottom: none;
+}
+
+.topping-item:hover {
+  background: #fafafa;
+}
+
+/* Selected = warm orange/peach background, matching the production UI */
+.topping-item--selected {
+  background: #fff8f2;
+}
+
+
+/* Top row */
+.topping-item__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.topping-item__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* React Icons SVG — plus (unselected) */
+.topping-item__add-icon {
+  color: #b0b0b0;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* React Icons SVG — checkmark (selected) */
+.topping-item__check-icon {
+  color: var(--primary, #2d7a3a);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.topping-item__name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Name stays same color on select — match production */
+.topping-item--selected .topping-item__name {
+  color: #1a1a1a;
+}
+
+
+/* Price on the right */
+.topping-item__price {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Placement pills row (only visible when selected) ── */
+.topping-placements {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+/* Base pill */
+.topping-placement-pill {
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1.5px solid;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  line-height: 1.5;
+}
+
+/* Whole — green */
+.topping-placement-pill--whole {
+  border-color: #2d7a3a;
+  color: #2d7a3a;
+}
+.topping-placement-pill--whole.topping-placement-pill--active {
+  background: #2d7a3a;
   color: #fff;
 }
 
-.topping-size-pill:hover:not(.topping-size-pill--active) {
-  border-color: var(--primary, #2d7a3a);
-  color: var(--primary, #2d7a3a);
-  background: rgba(45,122,58,0.06);
+/* Left half — teal */
+.topping-placement-pill--lefthalf {
+  border-color: #0e9090;
+  color: #0e9090;
+}
+.topping-placement-pill--lefthalf.topping-placement-pill--active {
+  background: #0e9090;
+  color: #fff;
+}
+
+/* Right half — orange */
+.topping-placement-pill--righthalf {
+  border-color: #e07b20;
+  color: #e07b20;
+}
+.topping-placement-pill--righthalf.topping-placement-pill--active {
+  background: #e07b20;
+  color: #fff;
+}
+
+/* Quarter — purple */
+.topping-placement-pill--1\/4 {
+  border-color: #7c3aed;
+  color: #7c3aed;
+}
+.topping-placement-pill--1\/4.topping-placement-pill--active {
+  background: #7c3aed;
+  color: #fff;
+}
+
+/* Hover brightening for unselected pills */
+.topping-placement-pill:hover:not(.topping-placement-pill--active) {
+  opacity: 0.75;
 }
 
 
