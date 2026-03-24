@@ -4,7 +4,6 @@ import { CgPin, CgMail, CgPhone } from "react-icons/cg";
 import { FaLinkedinIn, FaSnapchatGhost, FaTiktok, FaTwitter } from "react-icons/fa";
 import { FiFacebook, FiInstagram, FiYoutube } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import appLogo from "../../assets/images/logo.png";
 import { GlobalContext } from "../../context/GlobalContext";
 import { footerContent } from "../../services";
 
@@ -14,6 +13,7 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
     const [footerData, setFooterData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [linksOpen, setLinksOpen] = useState(false);
+    const [logoError, setLogoError] = useState(false);
     const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
     useEffect(() => {
@@ -29,7 +29,6 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
         fetchFooterData();
     }, [baseUrl]);
 
-    const logoSrc = footerData?.logo || appLogo;
     const copyrightText = footerData?.copyright_text || "2024 CopyRight. All Rights Reserved. Designed by ";
 
     const getSocialIcon = (platform) => {
@@ -56,7 +55,18 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
                 <div className="footer-top">
                     <div className="footer-brand">
                         <Link to="/">
-                            <img src={logoSrc} alt="Logo" className="footer-logo" />
+                            {loading || logoError ? (
+                                <div className="placeholder-glow d-inline-block">
+                                    <span className="placeholder rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '42px', height: '42px' }}></span>
+                                </div>
+                            ) : (
+                                <img
+                                    src={footerData?.logo}
+                                    alt="Logo"
+                                    className="footer-logo"
+                                    onError={() => setLogoError(true)}
+                                />
+                            )}
                         </Link>
                         <div className="footer-contact-row">
                             {footerData?.contact_info?.phone && (

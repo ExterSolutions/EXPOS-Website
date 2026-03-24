@@ -216,6 +216,7 @@ function SpecialPizzaConfig({
     const [crustOpen, setCrustOpen] = useState(false);
     const [crustTypeOpen, setCrustTypeOpen] = useState(false);
     const [toppingOpen, setToppingOpen] = useState(false);
+    const [pizzaOpen, setPizzaOpen] = useState(false);
 
     // Current slot state
     const slot = pizzaState[count] || {};
@@ -299,15 +300,34 @@ function SpecialPizzaConfig({
                 {signaturePizzas.length > 0 && (
                     <div className="mb-3">
                         <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>Select Pizza</p>
-                        <select
-                            className="form-select form-select-sm"
-                            value={slot.signaturePizza?.code || ""}
-                            onChange={handlePizzaChange}
-                        >
-                            {signaturePizzas.map((p) => (
-                                <option key={p.code} value={p.code}>{p.name}</option>
-                            ))}
-                        </select>
+                        
+                        <TriggerBtn
+                            icon="🍕"
+                            label="Pizza"
+                            value={slot.signaturePizza?.name || slot.signaturePizza?.pizza_name || "Select Pizza"}
+                            onClick={() => setPizzaOpen(true)}
+                        />
+                        <OptionSheet
+                            isOpen={pizzaOpen}
+                            onClose={() => setPizzaOpen(false)}
+                            title="Choose Pizza"
+                            options={signaturePizzas.map(p => ({
+                                id: p.code || p.id,
+                                label: p.name || p.pizza_name || "Unknown Pizza",
+                                price: 0
+                            }))}
+                            selected={slot.signaturePizza?.code || slot.signaturePizza?.id}
+                            onSelect={(id) => {
+                                const selectedPizza = signaturePizzas.find((p) => (p.code || p.id) === id);
+                                if (selectedPizza) {
+                                    setPizzaState((prev) => {
+                                        const newState = [...prev];
+                                        newState[count] = { ...newState[count], signaturePizza: selectedPizza };
+                                        return newState;
+                                    });
+                                }
+                            }}
+                        />
                     </div>
                 )}
 
