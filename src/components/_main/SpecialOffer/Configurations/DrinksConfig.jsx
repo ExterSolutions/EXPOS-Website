@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 import DrinksSelector from '../Selector/DrinksSelector';
 
-function DrinksConfig({ Drinks, setDrinks, specialOfferData, activeAccordion, toggleAccordion }) {
+function DrinksConfig({ Drinks, setDrinks, specialOfferData }) {
     const handleDrinks = (code) => {
         const selected = specialOfferData?.pops?.find((drinks) => drinks?.code === code) || specialOfferData?.bottle?.find((drinks) => drinks?.code === code);
         if (selected) {
@@ -18,33 +18,45 @@ function DrinksConfig({ Drinks, setDrinks, specialOfferData, activeAccordion, to
     };
 
     return (
-        <div className="mt-4">
-            <div className="topping-header-bar" onClick={() => toggleAccordion('drinks')}>
-                <span>DRINKS</span>
-                {activeAccordion === 'drinks' ? <FaChevronUp /> : <FaChevronDown />}
+        <div className="mb-3">
+            <div className="d-flex align-items-center justify-content-between mb-2">
+                <p
+                  className="fw-bold text-uppercase mb-0"
+                  style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}
+                >
+                  Choose Your Drink
+                </p>
+                <span
+                  style={{
+                    fontSize: "0.72rem",
+                    fontWeight: 600,
+                    color: "var(--primary, #2d7a2d)",
+                    background: "rgba(45,122,45,0.1)",
+                    padding: "2px 8px",
+                    borderRadius: 12,
+                  }}
+                >
+                  Required
+                </span>
             </div>
 
-            <div className={`mt-2 ${activeAccordion === 'drinks' ? 'd-block' : 'd-none'} border p-3 rounded-2`}>
-                <div className="accordion-body px-0 py-2">
-                    {specialOfferData?.pops?.map((data, index) => (
-                        <DrinksSelector
-                            key={`${index}-${data?.code}`}
-                            Drinks={Drinks[0]}
-                            setDrinks={setDrinks}
-                            data={data}
-                            handleDrinks={handleDrinks}
-                        />
-                    ))}
-                    {specialOfferData?.bottle?.map((data, index) => (
-                        <DrinksSelector
-                            key={`${index}-${data?.code}`}
-                            Drinks={Drinks[0]}
-                            setDrinks={setDrinks}
-                            data={data}
-                            handleDrinks={handleDrinks}
-                        />
-                    ))}
-                </div>
+            <div className="d-flex flex-column gap-0">
+                {specialOfferData?.pops?.map((data, index) => (
+                    <DrinksSelector
+                        key={`pop-${index}-${data?.code}`}
+                        Drinks={Drinks?.[0]}
+                        data={data}
+                        handleDrinks={handleDrinks}
+                    />
+                ))}
+                {specialOfferData?.bottle?.map((data, index) => (
+                    <DrinksSelector
+                        key={`bottle-${index}-${data?.code}`}
+                        Drinks={Drinks?.[0]}
+                        data={data}
+                        handleDrinks={handleDrinks}
+                    />
+                ))}
             </div>
         </div>
     );

@@ -12,12 +12,8 @@ function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity, numberO
 
     if (newQuantity === 0) {
       if (numberOfDips > 0) {
-        // Count total quantity of all selected dips
         const totalSelectedDips = Dips?.reduce((acc, curr) => acc + curr.quantity, 0);
-        if (totalSelectedDips <= 1) {
-          // If this is the last one (total quantity across all dips is 1), don't allow 0
-          return;
-        }
+        if (totalSelectedDips <= 1) return;
       }
       handleDips(data.dipsCode, 0);
     } else {
@@ -28,7 +24,6 @@ function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity, numberO
         dipsPrice: Number(data?.price),
         totalPrice: Number(data?.price) * Number(newQuantity),
       };
-
       if (isSelected) {
         handleDipsQuantity(payload);
       } else {
@@ -37,42 +32,68 @@ function DipsSelector({ data, Dips = [], handleDips, handleDipsQuantity, numberO
     }
   };
 
+  const isFree = !data?.price || parseFloat(data.price) === 0;
+
   return (
     <div
-      className={`rounded p-2 mb-2 theme-border ${isSelected ? "active text-primary" : "text-dark"
-        }`}
+      className="d-flex justify-content-between align-items-center p-3 rounded-3 mb-2"
+      style={{
+        border: `2px solid ${isSelected ? "var(--primary, #2d7a2d)" : "#e0e0e0"}`,
+        background: isSelected ? "rgba(45,122,45,0.05)" : "#fff",
+        transition: "all 0.15s",
+      }}
     >
-      <div className="d-flex flex-column">
-        {/* Name + Price */}
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <span className="fw-semibold">{data?.dipsName}</span>
-          <span className="text-muted small">
-            ${Number(data?.price || 0).toFixed(2)}
-          </span>
+      {/* Name + Price */}
+      <div>
+        <div className="fw-semibold" style={{ fontSize: "0.9rem", color: "#1a1a1a" }}>
+          {data?.dipsName}
         </div>
-
-        {/* Quantity Controls */}
-        <div className="d-flex align-items-center">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary rounded-circle me-2"
-            onClick={() => handleQuantityChange(-1)}
-            disabled={quantity <= 0}
-          >
-            <FaMinus size={12} />
-          </button>
-
-          <span className="fw-bold mx-3">{quantity}</span>
-
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary rounded-circle ms-2"
-            onClick={() => handleQuantityChange(1)}
-            disabled={quantity >= 10}
-          >
-            <FaPlus size={12} />
-          </button>
+        <div style={{ fontSize: "0.75rem", color: "#888" }}>
+          {isFree ? (
+            <span style={{ color: "var(--primary, #2d7a2d)", fontWeight: 600 }}>FREE</span>
+          ) : (
+            `$${Number(data?.price || 0).toFixed(2)}`
+          )}
         </div>
+      </div>
+
+      {/* Quantity Controls */}
+      <div className="d-flex align-items-center gap-2">
+        <button
+          type="button"
+          onClick={() => handleQuantityChange(-1)}
+          disabled={quantity <= 0}
+          style={{
+            width: 30, height: 30, borderRadius: "50%",
+            border: "1.5px solid #ccc",
+            background: quantity <= 0 ? "#f5f5f5" : "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: quantity <= 0 ? "not-allowed" : "pointer",
+            flexShrink: 0,
+          }}
+        >
+          <FaMinus size={10} color={quantity <= 0 ? "#ccc" : "#555"} />
+        </button>
+
+        <span style={{ minWidth: 20, textAlign: "center", fontWeight: 700, fontSize: "0.9rem" }}>
+          {quantity}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => handleQuantityChange(1)}
+          disabled={quantity >= 10}
+          style={{
+            width: 30, height: 30, borderRadius: "50%",
+            border: "1.5px solid var(--primary, #2d7a2d)",
+            background: "var(--primary, #2d7a2d)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: quantity >= 10 ? "not-allowed" : "pointer",
+            flexShrink: 0,
+          }}
+        >
+          <FaPlus size={10} color="#fff" />
+        </button>
       </div>
     </div>
   );

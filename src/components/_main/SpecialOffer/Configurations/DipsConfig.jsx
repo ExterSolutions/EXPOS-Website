@@ -1,5 +1,4 @@
 import React from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import DipsSelector from "../Selector/DipsSelector";
 
 function DipsConfig({
@@ -37,31 +36,44 @@ function DipsConfig({
     setDips(updatedDips);
   };
 
+  const totalSelected = Dips?.reduce((sum, d) => sum + (d.quantity || 0), 0) || 0;
+
   return (
-    <div className="mt-4">
-      <div
-        className="topping-header-bar"
-        onClick={() => toggleAccordion("dips")}
-      >
-        <span>Choose Your Dips (Free limit: {numberOfDips})</span>
-        {activeAccordion === "dips" ? <FaChevronUp /> : <FaChevronDown />}
+    <div className="mb-3">
+      {/* Header row matching SpecialOfferNew style */}
+      <div className="d-flex align-items-center justify-content-between mb-2">
+        <p
+          className="fw-bold text-uppercase mb-0"
+          style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}
+        >
+          Choose Your Dips
+        </p>
+        <span
+          style={{
+            fontSize: "0.72rem",
+            fontWeight: 600,
+            color: totalSelected >= numberOfDips ? "#888" : "var(--primary, #2d7a2d)",
+            background: totalSelected >= numberOfDips ? "#f0f0f0" : "rgba(45,122,45,0.1)",
+            padding: "2px 8px",
+            borderRadius: 12,
+          }}
+        >
+          {totalSelected}/{numberOfDips} free
+        </span>
       </div>
 
-      <div
-        className={`${activeAccordion === "dips" ? "d-block" : "d-none"} dips-container`}
-      >
-        <div className="accordion-body px-0 py-0">
-          {dipsData?.map((data, index) => (
-            <DipsSelector
-              key={`${index}-${data?.dipsCode}`}
-              Dips={Dips}
-              data={data}
-              handleDips={handleDips}
-              handleDipsQuantity={handleDipsQuantity}
-              numberOfDips={numberOfDips}
-            />
-          ))}
-        </div>
+      {/* Dip cards — always visible, no accordion */}
+      <div className="d-flex flex-column gap-0">
+        {dipsData?.map((data, index) => (
+          <DipsSelector
+            key={`${index}-${data?.dipsCode}`}
+            Dips={Dips}
+            data={data}
+            handleDips={handleDips}
+            handleDipsQuantity={handleDipsQuantity}
+            numberOfDips={numberOfDips}
+          />
+        ))}
       </div>
     </div>
   );

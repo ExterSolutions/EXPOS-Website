@@ -34,6 +34,8 @@ import {
   settingApi,
 } from "../../services";
 import DealsViewSelectionModal from "./DealsViewSelectionModal";
+import SizeSelector from "../SpecialOfferNew/components/SizeSelector";
+import SummarySidebar from "../SpecialOfferNew/components/SummarySidebar";
 
 function SpecialOffer() {
   // navigate
@@ -74,7 +76,7 @@ function SpecialOffer() {
   const [numberOfSides, setNumberOfSides] = useState(0);
   //
   const [size, setSize] = useState("Large");
-  const [price, setPrice] = useState(16);
+  const [price, setPrice] = useState(0);
   const [pizzaQuantity, setPizzaQuantity] = useState(1);
   const [pizzaState, setPizzaState] = useState([]);
   console.log("pizzaState", pizzaState);
@@ -295,7 +297,7 @@ function SpecialOffer() {
                   "Regular",
                 crustName:
                   firstCrust?.crustName || firstCrust?.name || "Regular",
-                price: firstCrust?.price || 0,
+                price: 0,
               },
               crustType: {
                 crustTypeCode:
@@ -309,7 +311,7 @@ function SpecialOffer() {
                   firstCrustType?.crustType ||
                   firstCrustType?.name ||
                   "Regular",
-                price: firstCrustType?.price || 0,
+                price: 0,
               },
               cheese: {
                 cheeseCode:
@@ -322,7 +324,7 @@ function SpecialOffer() {
                   "Regular",
                 cheeseName:
                   firstCheese?.cheeseName || firstCheese?.name || "Regular",
-                price: firstCheese?.price || 0,
+                price: 0,
               },
               spicy: {
                 spicyCode:
@@ -333,7 +335,7 @@ function SpecialOffer() {
                   firstSpicy?.label ||
                   "Normal",
                 spicy: firstSpicy?.spicy || firstSpicy?.name || "Normal",
-                price: firstSpicy?.price || 0,
+                price: 0,
               },
               sauce: {
                 sauceCode:
@@ -343,7 +345,7 @@ function SpecialOffer() {
                   firstSauce?.name ||
                   "Normal",
                 sauce: firstSauce?.sauce || firstSauce?.name || "Normal",
-                price: firstSauce?.price || 0,
+                price: 0,
               },
               cook: {
                 cookCode:
@@ -354,7 +356,7 @@ function SpecialOffer() {
                   firstCook?.label ||
                   "Normal",
                 cook: firstCook?.cook || firstCook?.name || "Normal",
-                price: firstCook?.price || 0,
+                price: 0,
               },
               specialBases: {
                 specialbaseCode:
@@ -370,7 +372,7 @@ function SpecialOffer() {
                   firstSpecialBase?.specialBases ||
                   firstSpecialBase?.name ||
                   "None",
-                price: firstSpecialBase?.price || 0,
+                price: 0,
               },
               toppings: {
                 countAsTwoToppings: [],
@@ -621,8 +623,6 @@ function SpecialOffer() {
           if (scrollY + 80 >= rightDivTopOffset) {
             setIsFixed(true); // Keep fixed to maintain viewport positioning
             setIsTranslate(true);
-            // Calculate translateY to position the bottom of the div 100px above the footer
-            // Assumes fixed top is 0px (common for sticky after header); adjust if your CSS fixed top differs
             setTranslateYVal(footerOffset - 100 - rightDivHeight - scrollY);
           } else {
             setIsFixed(true);
@@ -673,440 +673,241 @@ function SpecialOffer() {
 
   if (loading) return <LoadingLayout />;
 
+  // Intermediate state: data is fetched but state mapping/binding is still processing
+  if (!specialOfferData || pizzaState.length === 0) {
+    return (
+      <div>
+        <Header />
+        <div className="nav-margin"></div>
+        <div className="container py-4">
+          <div className="row placeholder-glow text-secondary" style={{ opacity: 0.6 }}>
+            {/* Mobile Title Skeleton */}
+            <div className="col-12 d-lg-none mb-4">
+              <span className="placeholder col-8 fs-2 rounded mb-2 d-block bg-secondary"></span>
+              <span className="placeholder col-4 fs-4 rounded d-block bg-secondary"></span>
+            </div>
+
+            {/* Left Column Skeleton: text and accordions */}
+            <div className="col-lg-6 col-12">
+              <span className="placeholder col-6 fs-3 rounded mb-3 d-none d-lg-block bg-secondary"></span>
+              <span className="placeholder col-12 fs-6 rounded mb-4 d-none d-lg-block bg-secondary" style={{ height: '40px' }}></span>
+
+              <h6 className="mt-3 mb-2 fw-bold" style={{ color: '#888' }}>
+                <span className="placeholder col-4 rounded bg-secondary"></span>
+              </h6>
+
+              {/* Fake accordion blocks */}
+              <div className="placeholder col-12 rounded mb-3 bg-secondary" style={{ height: '70px', borderRadius: '12px' }}></div>
+              <div className="placeholder col-12 rounded mb-3 bg-secondary" style={{ height: '70px', borderRadius: '12px' }}></div>
+              <div className="placeholder col-12 rounded mb-3 bg-secondary" style={{ height: '70px', borderRadius: '12px' }}></div>
+            </div>
+
+            {/* Right Column Skeleton: sidebar image and summary */}
+            <div className="col-lg-5 col-12 d-none d-lg-block">
+              <div className="p-4 bg-white border" style={{ minHeight: '600px', borderRadius: '12px' }}>
+                <div className="placeholder col-12 rounded mb-4 bg-secondary" style={{ height: '350px' }}></div>
+                <div className="placeholder col-6 fs-1 rounded mb-4 bg-secondary"></div>
+                <div className="placeholder col-12 rounded mb-4 bg-secondary" style={{ height: '50px', borderRadius: '25px' }}></div>
+                <hr className="my-4" />
+                <div className="placeholder col-12 rounded mb-2 bg-secondary" style={{ height: '20px' }}></div>
+                <div className="placeholder col-8 rounded bg-secondary" style={{ height: '20px' }}></div>
+              </div>
+            </div>
+
+            <div className="col-lg-1"></div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   if (specialOfferData?.length < 0) return <SPNotFound />;
+
+  // Adapter: bridge SpecialOffer state shape → SummarySidebar props format
+  const adaptedSelectedSize = pizzaSizeArr?.find((s) => s.size === size) || null;
+  const adaptedPizzaSelections = pizzaState.map((p) => ({
+    signaturePizzaCode: p?.signaturePizza?.code || "",
+    signaturePizzaName: p?.signaturePizza?.pizzaName || "",
+    crust: p?.crust,
+    cheese: p?.cheese,
+    crustType: p?.crustType,
+    specialBases: p?.specialBases,
+    sauce: p?.sauce,
+    spicy: p?.spicy,
+    cook: p?.cook,
+    toppings: p?.toppings,
+  }));
 
   return (
     <div>
       <Header />
       <div className="nav-margin"></div>
-      <div className="d-flex align-items-center justify-content-between innder-page-header"></div>
 
-      <div className="new-block" id="create-your-own-new">
-        <section
-          className="new-block primary-background-color py-4"
-          id="create-your-own-new"
-        >
-          <div className="container">
-            <div className="mainContainer primary-text-color">
-              {/* left side */}
-              <div className=" p-3">
-                <p className="fs-5 mb-0 text-secondary">{specialOfferTitle}</p>
-                <p className="fw-bold fs-5 text-dark">{name}</p>
-                <p
-                  className={`mt-3 mb-3 fs-6 ${specialOfferDealType === "pickupdeal"
-                    ? "pickup-deal-style"
-                    : ""
-                    }`}
-                >
-                  {pizzaSubtitle}
-                </p>
-                <div
-                  className="right-side-div p-0 w-100 d-lg-none d-block"
-                  style={{ position: "relative !important" }}
-                >
-                  <div
-                    className={`p-3 card-background-color card-text-color ${isFixed ? "fixed" : ""
-                      }`}
-                    style={{
-                      transform: isTranslate
-                        ? `translateY(${translateYVal}px)`
-                        : "none",
-                    }}
-                  >
-                    <div className="row justify-content-start align-content-center p-0 m-0">
-                      <div className="col-auto p-0 m-0 rounded-3 text-center">
-                        {specialOfferData?.image ? (
-                          <img
-                            className="pizzaImageBorderSM"
-                            src={specialOfferData.image}
-                            alt="Pizza icon"
-                          />
-                        ) : (
-                          <div className="pizzaImageBorderSM placeholder-glow d-inline-block" style={{ width: "115px", height: "115px" }}>
-                            <span className="placeholder w-100 h-100 rounded-3" style={{ backgroundColor: "#e0e0e0" }}></span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="col-7 p-0 m-0">
-                        <div className="d-flex flex-column justify-content-center">
-                          <p className="lh-sm fw-bold text-start my-1 pizzaPriceSm">
-                            $ {price}
-                          </p>
-                          <div
-                            className="d-flex justify-content-start align-items-center my-1"
-                            style={{ userSelect: "none" }}
-                          >
-                            <button
-                              disabled={pizzaQuantity <= 1}
-                              onClick={() =>
-                                setPizzaQuantity((prev) => prev - 1)
-                              }
-                              className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
-                              aria-label="Decrease Quantity"
-                            >
-                              <FaMinus className="pizzaQtyButtonSpanSm fs-6" />
-                            </button>
-                            <div className="lh-sm fs-5 fw-bold mx-2">
-                              {pizzaQuantity}
-                            </div>
-                            <button
-                              disabled={pizzaQuantity >= 10}
-                              onClick={() =>
-                                setPizzaQuantity((prev) => prev + 1)
-                              }
-                              className="btn btn-secondary rounded-circle pizzaQtyButtonSm"
-                              aria-label="Increase Quantity"
-                            >
-                              <FaPlus className="pizzaQtyButtonSpanSm fs-6" />
-                            </button>
-                          </div>
-                          <div className="d-flex flex-row justify-content-start">
-                            <div className="d-flex me-2 justify-content-start py-2">
-                              <button
-                                onClick={handleAddToCart}
-                                className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
-                              >
-                                Add to Cart
-                              </button>
-                            </div>
-                            <div className="d-flex justify-content-start py-2">
-                              <button
-                                onClick={() => setViewSelection(true)}
-                                className="btn pizza-view-selection-btn-background-color pizza-card-btn-text-color fw-bold pizzaAddToCardBtnSm"
-                              >
-                                <FaEye />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      <div className="container py-4" id="create-your-own-new">
+        <div className="row">
 
-                {/* size */}
-                <div className="mt-3">
-                  <div className="accordion" id="accordion-size">
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="accordion-size">
-                        <button
-                          className={`fw-bold fs-6 accordion-button ${activeAccordion === "size" ? "" : "collapsed"
-                            }`}
-                          type="button"
-                          onClick={() => toggleAccordion("size")}
-                          aria-expanded={
-                            activeAccordion === "size" ? "true" : "false"
-                          }
-                          aria-controls="collapseSize"
-                        >
-                          SELECT SIZE
-                          {/* {activeAccordion === "size" ? <FaChevronUp className="ms-auto" /> : <FaChevronDown className="ms-auto" />} */}
-                        </button>
-                      </h2>
-                      <div
-                        id="collapseSize"
-                        className={`accordion-collapse collapse ${activeAccordion === "size" ? "show" : ""
-                          }`}
-                        aria-labelledby="accordion-size"
-                        data-bs-parent="#accordion-size"
-                        style={{ overflow: "hidden" }}
-                      >
-                        <div className="accordion-body primary-background-color">
-                          <div className="size-grid">
-                            {pizzaSizeArr
-                              ?.filter((price) => parseFloat(price.price) > 0)
-                              ?.map((data, index) => {
-                                const active = size === data?.size;
-
-                                return (
-                                  <div
-                                    key={`size-${index}`}
-                                    className={`py-2 px-3 rounded-3 ${active
-                                      ? "selected-card-background-color selected-card-text-color"
-                                      : "card-background-color card-text-color"
-                                      }`}
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => setSize(data?.size)}
-                                  >
-                                    <div className="d-block">
-                                      {data?.size} ($
-                                      {Number(data?.price ?? 0).toFixed(2)})
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="fs-6 fw-bold mt-4 text-dark">CUSTOMIZE</p>
-
-                <p className="mt-3 fs-6">Select any of the below to Deals.</p>
-
-                {specialPizzaConfig}
-
-                {numberOfSides > 0 && (
-                  <SidesConfig
-                    Sides={Sides}
-                    setSides={setSides}
-                    specialOfferData={specialOfferData}
-                    activeAccordion={activeAccordion}
-                    toggleAccordion={toggleAccordion}
-                  />
-                )}
-                {numberOfDips > 0 && (
-                  <DipsConfig
-                    Dips={Dips}
-                    setDips={setDips}
-                    dipsData={dipsData}
-                    numberOfDips={numberOfDips}
-                    activeAccordion={activeAccordion}
-                    toggleAccordion={toggleAccordion}
-                  />
-                )}
-                {numberOfDrinks > 0 && (
-                  <DrinksConfig
-                    Drinks={Drinks}
-                    setDrinks={setDrinks}
-                    specialOfferData={specialOfferData}
-                    activeAccordion={activeAccordion}
-                    toggleAccordion={toggleAccordion}
-                  />
-                )}
-              </div>
-              {/* right side */}
-              <div
-                className="right-side-div p-3 d-lg-block d-none"
-                style={{ position: "relative !important" }}
-              >
-                <div
-                  className={`p-3 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color ${isFixed ? "fixed" : ""
-                    } ${isTranslate ? "translate" : ""}`}
-                  style={{
-                    "--translate-y": isTranslate ? `${translateYVal}px` : "0px",
-                    position: "sticky",
-                    border: "1px solid var(--primary-light)"
-                  }}
-                >
-                  <div className="px-3 row">
-                    <div className="col-lg-6 p-3">
-                      {specialOfferData?.image ? (
-                        <img
-                          className="pizzaImageBorder w-100"
-                          src={specialOfferData.image}
-                          alt="pizza-icon"
-                          style={{ objectFit: "cover", aspectRatio: "1/1" }}
-                        />
-                      ) : (
-                        <div className="pizzaImageBorder placeholder-glow w-100 d-block" style={{ aspectRatio: "1/1" }}>
-                          <span className="placeholder w-100 h-100 rounded-3" style={{ backgroundColor: "#e0e0e0" }}></span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="col-lg-6 p-4">
-                      <div className="d-flex flex-column py-4">
-                        <p className="lh-sm fs-1 fw-bold text-center text-lg-start">
-                          $ {price}
-                        </p>
-                        <div
-                          className="d-flex justify-content-center  justify-content-lg-start align-items-center mt-3 py-2"
-                          style={{ userSelect: "none" }}
-                        >
-                          <button
-                            disabled={pizzaQuantity <= 1}
-                            onClick={() => setPizzaQuantity((prev) => prev - 1)}
-                            className="btn btn-secondary rounded-circle pizzaQtyButton"
-                          >
-                            <FaMinus className="pizzaQtyButtonSpan" />
-                          </button>
-                          <p className="lh-sm fs-4 fw-bold mx-3">
-                            {pizzaQuantity}
-                          </p>
-                          <button
-                            disabled={pizzaQuantity >= 10}
-                            className="btn btn-secondary rounded-circle pizzaQtyButton"
-                            onClick={() => setPizzaQuantity((prev) => prev + 1)}
-                          >
-                            <FaPlus className="pizzaQtyButtonSpan" />
-                          </button>
-                        </div>
-                        <div className="d-flex justify-content-center justify-content-lg-start">
-                          <button
-                            onClick={handleAddToCart}
-                            className={`view-button px-3`}
-                          >
-                            Add to Cart
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="scrollable-content">
-                      <div className="border-top pizza-card-border-color mt-4">
-                        <div className="row">
-                          <div className="col-12 p-2">
-                            <div className="d-flex flex-column py-2">
-                              {numberOfDips > 0 && (
-                                <>
-                                  <p className="fs-5 mb-2 fw-bold">
-                                    Free Dips:{" "}
-                                    <span className="mx-2">
-                                      {numberOfDips - noOfFreeDips} / {numberOfDips}
-                                    </span>
-                                  </p>
-                                  <p className="fs-5 mb-2 fw-bold">
-                                    Additional Dips:{" "}
-                                    <span className="mx-2 text-danger">
-                                      {noOfAdditionalDips}
-                                    </span>
-                                  </p>
-                                </>
-                              )}
-                              {specialOfferData?.noofToppings > 0 &&
-                                (() => {
-                                  const totalToppingsLimit = Number(
-                                    specialOfferData.noofToppings || 0,
-                                  );
-
-                                  const totalSelected = pizzaState.reduce(
-                                    (acc, pizza) => {
-                                      return (
-                                        acc +
-                                        (pizza?.toppings?.countAsOneToppings
-                                          ?.length || 0) +
-                                        (pizza?.toppings?.countAsTwoToppings
-                                          ?.length || 0) *
-                                        (premiumToppingCount || 1)
-                                      );
-                                    },
-                                    0,
-                                  );
-                                  console.log("totalSelected", totalSelected);
-
-                                  const freeUsed = Math.min(
-                                    totalSelected,
-                                    totalToppingsLimit,
-                                  );
-                                  const additional = Math.max(
-                                    0,
-                                    totalSelected - totalToppingsLimit,
-                                  );
-
-                                  return (
-                                    <>
-                                      <p className="fs-5 mb-2 fw-bold">
-                                        Free Toppings:{" "}
-                                        <span className="mx-2">
-                                          {freeUsed} / {totalToppingsLimit}
-                                        </span>
-                                      </p>
-                                      <p className="fs-5 fw-bold">
-                                        Additional Toppings:{" "}
-                                        <span
-                                          className={`mx-2 ${additional > 0 ? "text-danger" : ""}`}
-                                        >
-                                          {additional}
-                                        </span>
-                                      </p>
-                                    </>
-                                  );
-                                })()}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {size && (
-                        <div className="border-top pizza-card-border-color ">
-                          <div className="row">
-                            <div className="col-lg-12">
-                              {size && (
-                                <p className="lh-sm fs-6 mt-2 mt-lg-0">
-                                  <GoDotFill /> Size: {size} (
-                                  {
-                                    pizzaSizeArr?.find(
-                                      (data) => data?.size === size,
-                                    )?.price
-                                  }
-                                  )
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {showSpecialOfferConfig}
-                      {Drinks?.length > 0 && (
-                        <div className="py-3 border-top pizza-card-border-color">
-                          <p>DRINKS YOU SELECTED</p>
-                          <div className="mt-3 d-flex flex-wrap gap-3">
-                            {Drinks?.map((el) => {
-                              return (
-                                <div>
-                                  <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">{`${el?.drinksName}(${el?.quantity}) ($${el?.totalPrice})`}</button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {Dips?.length > 0 && (
-                        <div className="py-3 border-top pizza-card-border-color">
-                          <p>DIPS YOU SELECTED</p>
-                          <div className="mt-3 d-flex flex-wrap gap-3">
-                            {Dips?.map((el) => {
-                              return (
-                                <div>
-                                  <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">
-                                    {`${el?.dipsName}(${el?.quantity}) ($${dipsData?.find(
-                                      (data) =>
-                                        data?.dipsCode === el?.dipsCode,
-                                    )?.price * el?.quantity
-                                      })`}{" "}
-                                    <span
-                                      className="ms-2"
-                                      onClick={() => handleRemoveDips(el)}
-                                    >
-                                      <IoMdClose />
-                                    </span>
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {Sides?.length > 0 && (
-                        <div className="py-3 border-top pizza-card-border-color">
-                          <p>SIDES YOU SELECTED</p>
-                          <div className="mt-3 d-flex flex-wrap gap-3">
-                            {Sides?.map((el) => {
-                              return (
-                                <div>
-                                  <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">{`${el?.sideName}(${el?.quantity}) ($${el?.totalPrice})`}</button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* ── Slim Offer Hero Strip (mobile only) ── */}
+          <div className="col-12 d-lg-none mb-3">
+            <div className="offer-hero-strip">
+              <div className="offer-hero-strip__name">{name}</div>
+              <div className="offer-hero-strip__price">${price}</div>
             </div>
           </div>
-        </section>
+
+          {/* ── Pizza Step Indicator (mobile, multi-pizza deals only) ── */}
+          {numberOfPizza > 1 && (
+            <div className="col-12 d-lg-none mb-3">
+              <div className="deal-step-indicator">
+                {[...Array(numberOfPizza)].map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`deal-step-dot ${activeAccordion === `pizza-${i}` ? "deal-step-dot--active" : ""}`}
+                    onClick={() => toggleAccordion(`pizza-${i}`)}
+                    aria-label={`Pizza ${i + 1}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── LEFT — configuration column ── */}
+          <div className="col-lg-6 col-12">
+            <h5 className="fw-bold d-none d-lg-block mb-1">{name}</h5>
+            {pizzaSubtitle && (
+              <p className={`mb-3 fs-6 ${specialOfferDealType === "pickupdeal" ? "pickup-deal-style" : ""}`}>
+                {pizzaSubtitle}
+              </p>
+            )}
+
+            {/* SIZE — modern SizeSelector component */}
+            <SizeSelector
+              pizzaPrices={pizzaSizeArr?.filter((p) => parseFloat(p.price) > 0)}
+              selectedSize={adaptedSelectedSize}
+              onSelectSize={(s) => setSize(s?.size)}
+            />
+
+            <h6 className="mt-3 mb-2 fw-bold" style={{ letterSpacing: "0.06em", fontSize: "0.8rem", color: "#888" }}>
+              CUSTOMIZE YOUR DEAL
+            </h6>
+
+            {/* Existing pizza accordion configs — untouched */}
+            {specialPizzaConfig}
+
+            {numberOfSides > 0 && (
+              <SidesConfig
+                Sides={Sides}
+                setSides={setSides}
+                specialOfferData={specialOfferData}
+                activeAccordion={activeAccordion}
+                toggleAccordion={toggleAccordion}
+              />
+            )}
+            {numberOfDips > 0 && (
+              <DipsConfig
+                Dips={Dips}
+                setDips={setDips}
+                dipsData={dipsData}
+                numberOfDips={numberOfDips}
+                activeAccordion={activeAccordion}
+                toggleAccordion={toggleAccordion}
+              />
+            )}
+            {numberOfDrinks > 0 && (
+              <DrinksConfig
+                Drinks={Drinks}
+                setDrinks={setDrinks}
+                specialOfferData={specialOfferData}
+                activeAccordion={activeAccordion}
+                toggleAccordion={toggleAccordion}
+              />
+            )}
+          </div>
+
+          {/* ── RIGHT — desktop summary sidebar ── */}
+          <div className="col-lg-5 col-12 d-none d-lg-block">
+
+
+            <SummarySidebar
+              selectedSize={adaptedSelectedSize}
+              offerData={specialOfferData}
+              pizzaSelections={adaptedPizzaSelections}
+              selectedSide={Sides}
+              selectedDips={calcDipsArr}
+              selectedDrink={Drinks}
+              onAddToCart={handleAddToCart}
+              totalPrice={price}
+              quantity={pizzaQuantity}
+              setQuantity={setPizzaQuantity}
+              isEditMode={false}
+              handleOpenSummaryPopup={() => setViewSelection(true)}
+            />
+            {specialOfferData?.noofToppings > 0 && (() => {
+              const totalToppingsLimit = Number(specialOfferData.noofToppings || 0);
+              const totalSelected = pizzaState.reduce((acc, pizza) => {
+                return (
+                  acc +
+                  (pizza?.toppings?.countAsOneToppings?.length || 0) +
+                  (pizza?.toppings?.countAsTwoToppings?.length || 0) * (premiumToppingCount || 1)
+                );
+              }, 0);
+              const freeUsed = Math.min(totalSelected, totalToppingsLimit);
+              const additional = Math.max(0, totalSelected - totalToppingsLimit);
+              return (
+                <div className="p-3 mt-3 bg-white" style={{ borderRadius: '12px', border: '1px solid #e0e0e0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="fw-bold fs-6 text-dark">Free Toppings:</span>
+                    <span className="fw-bold" style={{ color: 'var(--primary, #2d7a2d)' }}>
+                      {freeUsed} / {totalToppingsLimit}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <span className="fw-bold fs-6 text-dark">Additional Toppings:</span>
+                    <span className={`fw-bold ${additional > 0 ? "text-danger" : "text-secondary"}`}>
+                      {additional}
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
+          <div className="col-lg-1"></div>
+        </div>
       </div>
 
-      <ResponsiveCart
-        handleCart={handleAddToCart}
-        totalPrice={price}
-        section={"Add to Cart"}
-      />
+      {/* ── Mobile Sticky Bottom Add-to-Cart Bar ── */}
+      <div className="cust-mobile-sticky d-lg-none">
+        <div className="cust-mobile-sticky__price">
+          <div className="cust-mobile-sticky__label">Total</div>
+          <div className="cust-mobile-sticky__amount">${price}</div>
+        </div>
+        <div className="cust-mobile-sticky__qty">
+          <button
+            className="cust-mobile-sticky__qty-btn"
+            disabled={pizzaQuantity <= 1}
+            onClick={() => setPizzaQuantity((prev) => Math.max(1, prev - 1))}
+            aria-label="Decrease Quantity"
+          >
+            <FaMinus size={12} />
+          </button>
+          <span className="cust-mobile-sticky__qty-num">{pizzaQuantity}</span>
+          <button
+            className="cust-mobile-sticky__qty-btn"
+            disabled={pizzaQuantity >= 10}
+            onClick={() => setPizzaQuantity((prev) => Math.min(10, prev + 1))}
+            aria-label="Increase Quantity"
+          >
+            <FaPlus size={12} />
+          </button>
+        </div>
+        <button className="cust-mobile-sticky__add" onClick={handleAddToCart}>
+          Add to Cart
+        </button>
+      </div>
 
       <DealsViewSelectionModal
         viewSelection={viewSelection}
@@ -1125,6 +926,7 @@ function SpecialOffer() {
         pizzaState={pizzaState}
         specialOfferData={specialOfferData}
       />
+
       <Footer />
     </div>
   );
