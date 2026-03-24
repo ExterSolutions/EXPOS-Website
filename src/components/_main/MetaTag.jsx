@@ -6,7 +6,7 @@
 //         <Helmet>
 //             <meta charSet="utf-8" />
 //             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-//             {/* <link rel="canonical" href="https://fletcher.chandigarhpizza.ca/" /> */}
+//             {/* <link rel="canonical" href="https://web.exter.ca/" /> */}
 //             <link rel="apple-touch-icon" sizes="57x57" href="/images/logo/xapple-icon-57x57.png" />
 //             <link rel="apple-touch-icon" sizes="60x60" href="/images/logo/xapple-icon-60x60.png" />
 //             <link rel="apple-touch-icon" sizes="72x72" href="/images/logo/xapple-icon-72x72.png" />
@@ -29,9 +29,9 @@
 import React from 'react'
 
 const MetaTag = () => {
-  return (
-    <div>MetaTag</div>
-  )
+    return (
+        <div>MetaTag</div>
+    )
 }
 
 export default MetaTag

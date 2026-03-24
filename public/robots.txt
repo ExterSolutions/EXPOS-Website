@@ -4,4 +4,4 @@ Disallow: /wp-admin/
 Disallow: /cgi-bin/
 Allow: /wp-admin/admin-ajax.php
 
-Sitemap: https://fletcher.chandigarhpizza.ca/sitemap.xml
+Sitemap: https://web.exter.ca/sitemap.xml
