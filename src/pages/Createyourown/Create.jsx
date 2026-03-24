@@ -737,10 +737,14 @@ const CreatePizza = () => {
                     </div>
                     {/* ── OptionSheet Modals ── */}
                     <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={(Ingredients?.crust || []).map(c => ({ id: c.crustCode, label: c.crustName, price: Number(c.price) }))} selected={Crust} onSelect={setCrust} />
+                    <OptionSheet isOpen={openSheet === 'crustType'} onClose={() => setOpenSheet(null)} title="Choose Crust Type" options={(Ingredients?.crustType || []).map(ct => ({ id: ct.crustTypeCode, label: ct.crustType, price: Number(ct.price) }))} selected={CrustType} onSelect={setCrustType} />
                     <OptionSheet isOpen={openSheet === 'cheese'} onClose={() => setOpenSheet(null)} title="Choose Cheese" options={(Ingredients?.cheese || []).map(c => ({ id: c.cheeseCode, label: c.cheeseName, price: Number(c.price) }))} selected={Cheese} onSelect={setCheese} />
                     <OptionSheet isOpen={openSheet === 'spicy'} onClose={() => setOpenSheet(null)} title="Choose Spicy Level" options={(Ingredients?.spices || []).map(c => ({ id: c.spicyCode, label: c.spicy, price: Number(c.price) }))} selected={Spicy} onSelect={setSpicy} />
                     <OptionSheet isOpen={openSheet === 'sauce'} onClose={() => setOpenSheet(null)} title="Choose Sauce" options={(Ingredients?.sauce || []).map(c => ({ id: c.sauceCode, label: c.sauce, price: Number(c.price) }))} selected={Sauce} onSelect={setSauce} />
                     <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={(Ingredients?.cook || []).map(c => ({ id: c.cookCode, label: c.cook, price: Number(c.price) }))} selected={Cook} onSelect={setCook} />
+                    {Ingredients?.specialbases?.length > 0 && (
+                      <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={(Ingredients?.specialbases || []).map(sb => ({ id: sb.specialbaseCode, label: sb.specialbaseName, price: Number(sb.price) }))} selected={SpecialBases} onSelect={setSpecialBases} />
+                    )}
 
                     {/* Sides sheet */}
                     {openSheet === 'sides' && (
@@ -807,6 +811,20 @@ const CreatePizza = () => {
                         <span className="topping-trigger-btn__value">{(Ingredients?.crust || []).find(c => c.crustCode === Crust)?.crustName || 'Select'}</span>
                         <span className="topping-trigger-btn__chevron">›</span>
                       </button>
+                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('crustType')}>
+                        <span className="topping-trigger-btn__icon">⭕</span>
+                        <span className="topping-trigger-btn__label">Crust Type</span>
+                        <span className="topping-trigger-btn__value">{(Ingredients?.crustType || []).find(ct => ct.crustTypeCode === CrustType)?.crustType || 'Select'}</span>
+                        <span className="topping-trigger-btn__chevron">›</span>
+                      </button>
+                      {Ingredients?.specialbases?.length > 0 && (
+                        <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('specialBase')}>
+                          <span className="topping-trigger-btn__icon">🍕</span>
+                          <span className="topping-trigger-btn__label">Special Base</span>
+                          <span className="topping-trigger-btn__value">{(Ingredients?.specialbases || []).find(sb => sb.specialbaseCode === SpecialBases)?.specialbaseName || 'Select'}</span>
+                          <span className="topping-trigger-btn__chevron">›</span>
+                        </button>
+                      )}
                       <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('cheese')}>
                         <span className="topping-trigger-btn__icon">🧀</span>
                         <span className="topping-trigger-btn__label">Cheese</span>
@@ -1027,9 +1045,13 @@ const CreatePizza = () => {
                           {/* Selected Sides */}
                           {Sides?.length > 0 && (
                             <div className="my-2 theme-top-border">
-                              <div className="d-flex flex-row align-items-center gap-2 pt-1">
-                                <strong className="text-muted">Side:</strong>
-                                <span className="fw-medium small">{Sides[0]?.sideName}</span>
+                              <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                <strong className="text-muted">Sides:</strong>
+                                <div className="fw-medium ms-1">
+                                  {Sides.map((s, idx) => (
+                                    <div key={idx} className="small">{s.sideName}</div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           )}
@@ -1037,9 +1059,13 @@ const CreatePizza = () => {
                           {/* Selected Drinks */}
                           {Drinks?.length > 0 && (
                             <div className="my-2 theme-top-border">
-                              <div className="d-flex flex-row align-items-center gap-2 pt-1">
-                                <strong className="text-muted">Drink:</strong>
-                                <span className="fw-medium small">{Drinks[0]?.name}</span>
+                              <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                <strong className="text-muted">Drinks:</strong>
+                                <div className="fw-medium ms-1">
+                                  {Drinks.map((d, idx) => (
+                                    <div key={idx} className="small">{d.name} (x{d.quantity})</div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           )}

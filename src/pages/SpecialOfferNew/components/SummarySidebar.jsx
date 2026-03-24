@@ -151,13 +151,16 @@ const SummarySidebar = ({ ...props }) => {
                         {/* Selected Side */}
                         {selectedSide && (Array.isArray(selectedSide) ? selectedSide.length > 0 : Object.keys(selectedSide).length > 0) && (
                             <div className="my-2 theme-top-border">
-                                <div className="d-flex flex-row align-items-center gap-2 pt-1">
-                                    <strong className="text-muted">Side:</strong>
-                                    <span className="fw-medium small">
+                                <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                    <strong className="text-muted">Sides:</strong>
+                                    <div className="fw-medium ms-1">
                                         {Array.isArray(selectedSide)
-                                            ? selectedSide[0]?.sideName
-                                            : selectedSide.sideName}
-                                    </span>
+                                            ? selectedSide.map((side, idx) => (
+                                                <div key={idx} className="small">{side.sideName}</div>
+                                            ))
+                                            : <div className="small">{selectedSide.sideName}</div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -165,13 +168,16 @@ const SummarySidebar = ({ ...props }) => {
                         {/* Selected Drink */}
                         {selectedDrink && (Array.isArray(selectedDrink) ? selectedDrink.length > 0 : Object.keys(selectedDrink).length > 0) && (
                             <div className="my-2 theme-top-border">
-                                <div className="d-flex flex-row align-items-center gap-2 pt-1">
-                                    <strong className="text-muted">Drink:</strong>
-                                    <span className="fw-medium small">
+                                <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                    <strong className="text-muted">Drinks:</strong>
+                                    <div className="fw-medium ms-1">
                                         {Array.isArray(selectedDrink)
-                                            ? selectedDrink[0]?.drinksName
-                                            : selectedDrink.drinksName}
-                                    </span>
+                                            ? selectedDrink.map((drink, idx) => (
+                                                <div key={idx} className="small">{drink.drinksName} (x{drink.quantity})</div>
+                                            ))
+                                            : <div className="small">{selectedDrink.drinksName} (x{selectedDrink.quantity})</div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         )}
