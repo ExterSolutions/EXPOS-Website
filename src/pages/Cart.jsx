@@ -150,7 +150,7 @@ function Cart() {
                                                     {/* Convenience Fee - Only if > 0 */}
                                                     {cart?.convinenceCharges && Number(cart.convinenceCharges) > 0 && (
                                                         <li>
-                                                            <span className="ttl">Convenience Fee</span>{" "}
+                                                            <span className="ttl">Convenience Fee ({cart?.convinencePer || 0}%)</span>{" "}
                                                             <span className="stts">
                                                                 $ {Number(cart.convinenceCharges).toFixed(2)}
                                                             </span>
