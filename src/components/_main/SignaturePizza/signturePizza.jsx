@@ -108,13 +108,13 @@ function SignaturePizzas({ data, toppingsData }) {
                             </div>
                         </div>
 
-                        {/* Action Buttons - Responsive wrap */}
-                        <div className="d-flex flex-column flex-sm-row gap-2 w-100 mt-1">
-                            <button type="button" className="view-button-new flex-grow-1" onClick={handleSides} style={{ minWidth: "0" }}>
+                        {/* Action Buttons - Always side by side */}
+                        <div className="d-flex flex-row gap-2 w-100 mt-1">
+                            <button type="button" className="view-button-new flex-grow-1" onClick={handleSides} style={{ minWidth: "0", fontSize: "13px" }}>
                                 Add to Cart
                             </button>
                             {!hideCustomize && (
-                                <button type="button" className="customize-btn-new flex-grow-1" onClick={handleRedirect} style={{ minWidth: "0" }}>
+                                <button type="button" className="customize-btn-new flex-grow-1" onClick={handleRedirect} style={{ minWidth: "0", fontSize: "13px" }}>
                                     Customize
                                 </button>
                             )}
