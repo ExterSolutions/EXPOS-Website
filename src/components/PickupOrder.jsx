@@ -345,7 +345,8 @@ function PickupOrder() {
                             <div className="d-flex gap-3">
                                 <button className="btn btn-light flex-grow-1 py-2" onClick={() => setIsShowConfirmPickup(false)}>Back</button>
                                 <button
-                                    className="btn btn-success flex-grow-1 py-2 fw-bold"
+                                    className="btn btn-primary flex-grow-1 py-2 fw-bold"
+                                    style={{ backgroundColor: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: '10px' }}
                                     onClick={handlePickupOrder}
                                     disabled={busyLoader}
                                 >
