@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import swal from "sweetalert";
 import { deliverable, orderPlace } from "../services";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { motion } from "framer-motion";
+import emptyCartImg from "../assets/images/empty-cart.png";
 
 function Cart() {
     const globalCtx = useContext(GlobalContext);
@@ -171,29 +173,52 @@ function Cart() {
                             </div>
                         </section>
                     ) : (
-                        <>
-                            <div className="new-block">
-                                <div
-                                    className="row m-0 p-0 align-items-center justify-content-center"
-                                    style={{ height: "600px" }}
-                                >
-                                    <div className="text-center">
-                                        <div className="py-1">
-                                            <AiOutlineShoppingCart
-                                                style={{ width: "40px", height: "40px", color: "white" }}
-                                            />
+                        <div className="new-block d-flex align-items-center justify-content-center" style={{ minHeight: "80vh", background: "inherit" }}>
+                            <div className="container d-flex align-items-center justify-content-center">
+                                <div className="empty-cart-card d-flex flex-column align-items-center justify-content-center p-5 text-center"
+                                    style={{
+                                        background: "transparent",
+                                        maxWidth: "550px",
+                                        width: "90%",
+                                    }}>
+
+                                    <div className="mb-4">
+                                        <div style={{ position: "relative" }}>
+                                            {emptyCartImg ? (
+                                                <img
+                                                    src={emptyCartImg}
+                                                    alt="Empty Cart Illustration"
+                                                    style={{ width: "240px", height: "auto", borderRadius: "24px" }}
+                                                />
+                                            ) : (
+                                                <AiOutlineShoppingCart style={{ fontSize: "5rem", color: "#888" }} />
+                                            )}
                                         </div>
-                                        <p className="emptyCartMsg py-4 text-white">Your Cart is Empty</p>
-                                        <button
-                                            className="btn btn-md addtocart mb-3"
-                                            onClick={handleContinueShopping}
-                                        >
-                                            Continue Shopping
-                                        </button>
                                     </div>
+
+                                    <h2 className="mb-2" style={{ fontWeight: 800, fontSize: "1.8rem", letterSpacing: "-0.5px", color: "#888" }}>
+                                        Your Cart is Empty!
+                                    </h2>
+
+                                    <p className="px-lg-4 mb-4" style={{ fontSize: "1rem", lineHeight: 1.6, maxWidth: "400px", color: "#888" }}>
+                                        "Discover something delicious to fill your cart and satisfy your cravings."
+                                    </p>
+
+                                    <button
+                                        className="btn btn-lg px-5 py-3 mt-2 addtocart"
+                                        onClick={handleContinueShopping}
+                                        style={{
+                                            borderRadius: "16px",
+                                            fontWeight: 700,
+                                            fontSize: "1rem",
+                                            border: "none",
+                                        }}
+                                    >
+                                        Continue Shopping
+                                    </button>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     )}
                 </>
             )}
