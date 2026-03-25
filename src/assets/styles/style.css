@@ -21479,7 +21479,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 15px; /* Added horizontal padding to prevent cutting at edges */
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -22702,7 +22702,7 @@ body {
   gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 4px 0;
+  padding: 6px 15px; /* Added horizontal padding to prevent cutting at edges */
 }
 .deal-step-dot {
   display: flex;
