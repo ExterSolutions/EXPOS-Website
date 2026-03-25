@@ -1,7 +1,6 @@
 // src/pages/Home.jsx - UPDATED VERSION
 import React, { useContext, useEffect, useState, Suspense, lazy } from "react";
 import Header from "../components/_main/Header/Header";
-import SEOHead from "../components/_main/SEOHead";
 import Footer from "../components/_main/Footer";
 import { useLocation } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
@@ -142,11 +141,6 @@ const Home = () => {
 
     return (
         <div>
-            <SEOHead
-              title="Exter Pizza - Order Fresh Pizza Online | Delivery &amp; Pickup"
-              description="Order fresh, handcrafted pizza online from Exter Pizza. Choose from signature pizzas, build your own, special deals, and more. Fast delivery and pickup available."
-              canonical="https://www.exter.ca/"
-            />
             <Header />
             <div className="inner-nav"></div>
             <div className="container-fluid container-lg px-0">

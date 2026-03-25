@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { GoDotFill } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,25 +7,19 @@ import { v4 as uuidv4 } from "uuid";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 import OptionSheet from "../../components/_main/OptionSheet";
-import SEOHead from "../../components/_main/SEOHead";
 import CartFunction from "../../components/cart";
 import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import { getAllIngredients, getSides, settingApi } from "../../services";
-import { CheeseSelector } from "./CheeseSelector";
 import { DipsSelector } from "./DipsSelector";
 import { DrinkSelector } from "./DrinkSelector";
 import { CYOFreeToppingSelector } from "./CYOFreeToppingSelector";
 import { CYOToppingOneSelector } from "./CYOToppingOneSelector";
 import { CYOToppingTwoSelector } from "./CYOToppingTwoSelector";
 import ToppingSheet from "../../components/_main/ToppingSheet";
-
-import { FaEye } from "react-icons/fa6";
 import CustomizePizzaImg from "../../assets/images/customizePizza.jpg";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
-import { CookSelector } from "./CookSelector";
 import CustomizeViewSelectionModal from "./CustomizeViewSelectionModal";
-import DoughSelector from "./DoughSelector";
 import SidesSelector from "./SidesSelector";
 
 const CreatePizza = () => {
@@ -691,10 +684,6 @@ const CreatePizza = () => {
         </>
       ) : (
         <div className="">
-          <SEOHead
-            title="Build Your Own Pizza | Pizza"
-            description="Create your perfect pizza from scratch. Choose your dough, cheese, spicy level, sauce, cook style, and toppings. Order online for delivery or pickup."
-          />
           <Header />
           <div className="nav-margin"></div>
 
