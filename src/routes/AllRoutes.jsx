@@ -107,7 +107,7 @@ const AllRoutes = () => {
                 <Route path="/customize-drink/:did" element={<CustomizeDrinks />} />
 
                 {/* Cart, Checkout & Payments */}
-                <Route path="/addtocart" element={<Cart />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order/verify" element={<Success />} />
                 <Route path="/payment/success" element={<PaymentSuccess />} />

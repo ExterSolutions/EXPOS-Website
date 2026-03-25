@@ -43,8 +43,8 @@ const BottomNav = () => {
                     )}
                 </span>
             ),
-            action: () => navigate('/addtocart'),
-            active: isActive('/addtocart'),
+            action: () => navigate('/cart'),
+            active: isActive('/cart'),
         },
         {
             label: 'Account',

@@ -295,7 +295,7 @@ const Header = () => {
 
                     <button
                         type='button'
-                        onClick={() => navigate('/addtocart')}
+                        onClick={() => navigate('/cart')}
                         className="btn fw-semibold d-flex position-relative"
                         aria-label="View Cart"
                     >

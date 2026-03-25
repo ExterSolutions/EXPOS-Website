@@ -489,7 +489,7 @@ const Other = () => {
             ct.product.push(payload);
             const cartProduct = ct.product;
             cartFn.addCart(cartProduct, setCart, false, settings);
-            navigate("/addtocart");
+            navigate("/cart");
         }
     };
     useEffect(() => {

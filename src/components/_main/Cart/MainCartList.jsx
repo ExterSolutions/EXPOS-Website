@@ -235,8 +235,8 @@ function MainCartList({ cData, setLoading }) {
 
                     {/* Sides */}
                     {cData?.config?.sides?.length > 0 && (
-                        <div className="mb-1 sides">
-                            <p className="d-inline">Sides :</p>
+                        <div className="mb-1 sides main-cartPizza">
+                            <p className="d-inline fw-bold">Sides :</p>
                             <span className="d-inline ms-1">
                                 {cData?.config?.sides?.map((data, index) => {
                                     return (
@@ -251,8 +251,8 @@ function MainCartList({ cData, setLoading }) {
                     )}
                     {/* Dips */}
                     {cData?.config?.dips?.length > 0 && (
-                        <div className="mb-1 dips">
-                            <p className="d-inline">Dips : </p>
+                        <div className="mb-1 dips main-cartPizza">
+                            <p className="d-inline fw-bold">Dips : </p>
                             <span className="d-inline ms-1">
                                 {cData?.config?.dips?.map((data, index) => {
                                     return (
@@ -267,8 +267,8 @@ function MainCartList({ cData, setLoading }) {
                     )}
                     {/* Drinks */}
                     {cData?.config?.drinks?.length > 0 && (
-                        <div className="mb-1 drinks">
-                            <p className="d-inline">Drinks : </p>
+                        <div className="mb-1 drinks main-cartPizza">
+                            <p className="d-inline fw-bold">Drinks : </p>
                             <span className="d-inline ms-1">
                                 {cData?.config?.drinks?.map((data, index) => {
                                     return (

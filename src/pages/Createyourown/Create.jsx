@@ -507,7 +507,7 @@ const CreatePizza = () => {
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
       toast.success("🛒 Added to cart! Review your order.");
-      navigate("/addtocart");
+      navigate("/cart");
     }
   };
 

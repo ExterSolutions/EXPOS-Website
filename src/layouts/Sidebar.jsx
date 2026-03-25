@@ -1,5 +1,5 @@
 // Sidebar.jsx — Legacy cart drawer replaced.
-// Any code that sets showSidebar=true now gets redirected to /addtocart instead.
+// Any code that sets showSidebar=true now gets redirected to /cart instead.
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
@@ -14,11 +14,11 @@ const Sidebar = () => {
     if (showSidebar) {
       // Close the legacy drawer and redirect to the proper cart page
       setShowSidebar(false);
-      navigate("/addtocart");
+      navigate("/cart");
     }
   }, [showSidebar, setShowSidebar, navigate]);
 
-  // Render nothing — cart UI lives at /addtocart
+  // Render nothing — cart UI lives at /cart
   return null;
 };
 
