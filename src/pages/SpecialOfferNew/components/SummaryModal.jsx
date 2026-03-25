@@ -54,7 +54,7 @@ const SummaryModal = ({ ...props }) => {
                                 return (
                                     <div className="my-2 theme-top-border" key={idx}>
                                         <div className="d-flex gap-2 mb-1 pt-1">
-                                            <strong className="text-muted">Pizza :</strong>
+                                            <strong className="text-muted">Pizza {idx + 1} :</strong>
                                             <span className="fw-medium">{pizza.signaturePizzaName}</span>
                                         </div>
 
