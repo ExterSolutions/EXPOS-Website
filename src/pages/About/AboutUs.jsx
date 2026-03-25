@@ -20,11 +20,11 @@ const AboutUs = () => {
                     <div className="one-half custombanner-part2">
                         <div className="custombanner-content">
                             <div className="sub-title">About Us</div>
-                            <div className="main-title">Chandigarh Pizza</div>
-                            <div className="cms-desc">At Chandigarh Pizza, we craft unforgettable vegetarian pizzas that fuse the rich flavors of Punjab with classic Italian style, creating a deliciously sustainable dining experience for food lovers everywhere..
+                            <div className="main-title">Exter Pizza</div>
+                            <div className="cms-desc">At Exter Pizza, we craft unforgettable vegetarian pizzas that fuse the rich flavors of Punjab with classic Italian style, creating a deliciously sustainable dining experience for food lovers everywhere..
                             </div>
                             <div className="cms-desc">
-                                Chandigarh Pizza brings authentic Punjabi-style vegetarian pizzas to Calgary NE. Whether you're searching for "pizza near me" or craving our signature Amritsari Pizza, we’ve got you covered. Visit us at 5 Coral Springs Blvd NE or order online for pickup or delivery!
+                                Exter Pizza brings authentic Punjabi-style vegetarian pizzas to Calgary NE. Whether you're searching for "pizza near me" or craving our signature Amritsari Pizza, we’ve got you covered. Visit us at 5 Coral Springs Blvd NE or order online for pickup or delivery!
                             </div>
                         </div>
                         <div className="shopnow">

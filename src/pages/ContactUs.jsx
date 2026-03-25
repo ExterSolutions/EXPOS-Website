@@ -129,7 +129,7 @@ function ContactUs() {
                     <h1 className="contact-title">
                         Contact <span className="brand-color "
                             style={{ color: colors?.primary }}
-                        >Chandigarh Pizza</span>
+                        >Exter Pizza</span>
                     </h1>
                     <p className="contact-subtitle">
                         We'd love to hear from you! Send us a message and we'll respond as
