@@ -61,7 +61,10 @@ const PizzaCarousel = ({
                             item?.name ||
                             `Item ${index + 1}`;
                         const image = item?.pizzaImage || item?.image;
-                        const price = item?.pizza_prices?.[0]?.price || item?.price || '0.00';
+                        //const price = item?.pizza_prices?.[0]?.price || item?.price || '0.00';
+                        const price = item?.pizza_prices?.find(p => parseFloat(p?.price) > 0)?.price
+                            || item?.price
+                            || '0.00';
                         const visitLink = getRedirectPath(item);
                         const description = item?.description || item?.dipsDescription || item?.dipsDiscription;
 
