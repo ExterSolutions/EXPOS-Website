@@ -136,8 +136,28 @@ function Cart() {
                                                                 : (0.0).toFixed(2)}
                                                         </span>
                                                     </li>
+
+                                                    {/* Tax Amount - Only if > 0 */}
+                                                    {cart?.taxAmount && Number(cart.taxAmount) > 0 && (
+                                                        <li>
+                                                            <span className="ttl">Tax ({cart?.taxPer || 0}%)</span>{" "}
+                                                            <span className="stts">
+                                                                $ {Number(cart.taxAmount).toFixed(2)}
+                                                            </span>
+                                                        </li>
+                                                    )}
+
+                                                    {/* Convenience Fee - Only if > 0 */}
+                                                    {cart?.convinenceCharges && Number(cart.convinenceCharges) > 0 && (
+                                                        <li>
+                                                            <span className="ttl">Convenience Fee</span>{" "}
+                                                            <span className="stts">
+                                                                $ {Number(cart.convinenceCharges).toFixed(2)}
+                                                            </span>
+                                                        </li>
+                                                    )}
                                                 </ul>
-                                                <div className="ttl-all">
+                                                <div className="ttl-all mt-2">
                                                     <span className="ttlnm">Grand Total</span>
                                                     <span className="odr-stts">
                                                         ${" "}
@@ -146,7 +166,6 @@ function Cart() {
                                                             : (0.0).toFixed(2)}
                                                     </span>
                                                 </div>
-                                                <p className="tax-subheading">Tax will be calculated later.</p>
                                             </div>
                                         </div>
 

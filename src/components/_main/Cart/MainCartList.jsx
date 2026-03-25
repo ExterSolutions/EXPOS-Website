@@ -161,8 +161,7 @@ function MainCartList({ cData, setLoading }) {
                                             </span>
                                         </div>
                                     )}
-                                    {data?.specialBases &&
-                                        isEmptyObject(data?.specialBases) === false && (
+                                    {data?.specialBases?.specialbaseName && (
                                             <div className="mb-1 specialbases">
                                                 <p className="d-inline">Specialbases :</p>
                                                 <span className="d-inline">
