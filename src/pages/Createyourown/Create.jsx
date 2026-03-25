@@ -21,6 +21,7 @@ import CustomizePizzaImg from "../../assets/images/customizePizza.jpg";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import CustomizeViewSelectionModal from "./CustomizeViewSelectionModal";
 import SidesSelector from "./SidesSelector";
+import { sortPizzaSizes } from "../../utils/pizzaUtils";
 
 const CreatePizza = () => {
   // navigate
@@ -92,8 +93,9 @@ const CreatePizza = () => {
       setSpicy(res?.data?.spices[0]?.spicyCode);
       setSauce(res?.data?.sauce[0]?.sauceCode);
       setCook(res?.data?.cook[0]?.cookCode);
-      setPizzaSizeArr(res?.data?.sizesAndPrices);
-      setSize(res?.data?.sizesAndPrices[0]?.size);
+      const sortedSizes = sortPizzaSizes(res?.data?.sizesAndPrices);
+      setPizzaSizeArr(sortedSizes);
+      setSize(sortedSizes[0]?.size);
       const indianStyleToppings = res?.data?.toppings?.freeToppings?.map(
         (el) => {
           return {

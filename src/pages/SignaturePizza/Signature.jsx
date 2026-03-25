@@ -29,6 +29,7 @@ import { SpicySelector } from "../Createyourown/SpicySelector";
 import { ToppingOneSelector } from "../Createyourown/ToppingOneSelector";
 import { ToppingTwoSelector } from "../Createyourown/ToppingTwoSelector";
 import SignatureViewSelectionModal from "./SignatureViewSelectionModal";
+import { sortPizzaSizes } from "../../utils/pizzaUtils";
 import ToppingSheet from "../../components/_main/ToppingSheet";
 import OptionSheet from "../../components/_main/OptionSheet";
 import SummarySidebar from "../SpecialOfferNew/components/SummarySidebar";
@@ -146,16 +147,15 @@ const Signature = () => {
             const data = res?.data || null;
             if (data) {
                 setGetSignatureData(res?.data);
-                setPizzaSizeArr(
+                const sortedPrices = sortPizzaSizes(
                     res?.data?.pizza_prices?.filter(
                         (price) => parseFloat(price?.price) > 0
-                    )
+                    ) || []
                 );
+                setPizzaSizeArr(sortedPrices);
                 setName(res?.data?.pizza_name);
                 setPizzaSubTitle(res?.data?.pizza_subtitle);
-                let sizeObj = res?.data?.pizza_prices.find(
-                    (price) => parseFloat(price?.price) > 0
-                );
+                let sizeObj = sortedPrices[0];
                 setSize(sizeObj?.size);
                 setCrust(res?.data?.crust?.code);
                 setCrustType(res?.data?.crust_type?.code);
@@ -696,66 +696,66 @@ const Signature = () => {
     return (
         <div className="modern-customizer-page">
             <Header />
-                    <div className="nav-margin"></div>
-                    {/* OptionSheet Modals */}
-                    <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={crustOpts} selected={Crust} onSelect={(id) => setCrust(id)} />
-                    <OptionSheet isOpen={openSheet === 'crustType'} onClose={() => setOpenSheet(null)} title="Choose Crust Type" options={crustTypeOpts} selected={CrustType} onSelect={(id) => setCrustType(id)} />
-                    <OptionSheet isOpen={openSheet === 'cheese'} onClose={() => setOpenSheet(null)} title="Choose Cheese" options={cheeseOpts} selected={Cheese} onSelect={(id) => setCheese(id)} />
-                    <OptionSheet isOpen={openSheet === 'spicy'} onClose={() => setOpenSheet(null)} title="Choose Spicy Level" options={spicyOpts} selected={Spicy} onSelect={(id) => setSpicy(id)} />
-                    <OptionSheet isOpen={openSheet === 'sauce'} onClose={() => setOpenSheet(null)} title="Choose Sauce" options={sauceOpts} selected={Sauce} onSelect={(id) => setSauce(id)} />
-                    <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={cookOpts} selected={Cook} onSelect={(id) => setCook(id)} />
-                    {specialBaseOpts.length > 0 && <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={specialBaseOpts} selected={SpecialBases} onSelect={(id) => setSpecialBases(id)} />}
-                    {getSignatureData ? (
-                        <div className="new-block" id="create-your-own-new">
-                            <section className="special-offers-sec new-block primary-background-color py-2">
-                                <div className="container">
-                                    <div className="row g-4 primary-text-color">
-                                        {/* left side */}
-                                        <div className="col-lg-7 col-12 p-3 has-sticky-cart-bar">
-                                            {/* Hero Header — Simplified to match Special Offer style */}
-                                            <h5 className="fw-bold mb-1 d-none d-lg-block">{name}</h5>
-                                            {pizzaSubtitle && <p className="text-secondary small mb-3 d-none d-lg-block">{pizzaSubtitle}</p>}
+            <div className="nav-margin"></div>
+            {/* OptionSheet Modals */}
+            <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={crustOpts} selected={Crust} onSelect={(id) => setCrust(id)} />
+            <OptionSheet isOpen={openSheet === 'crustType'} onClose={() => setOpenSheet(null)} title="Choose Crust Type" options={crustTypeOpts} selected={CrustType} onSelect={(id) => setCrustType(id)} />
+            <OptionSheet isOpen={openSheet === 'cheese'} onClose={() => setOpenSheet(null)} title="Choose Cheese" options={cheeseOpts} selected={Cheese} onSelect={(id) => setCheese(id)} />
+            <OptionSheet isOpen={openSheet === 'spicy'} onClose={() => setOpenSheet(null)} title="Choose Spicy Level" options={spicyOpts} selected={Spicy} onSelect={(id) => setSpicy(id)} />
+            <OptionSheet isOpen={openSheet === 'sauce'} onClose={() => setOpenSheet(null)} title="Choose Sauce" options={sauceOpts} selected={Sauce} onSelect={(id) => setSauce(id)} />
+            <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={cookOpts} selected={Cook} onSelect={(id) => setCook(id)} />
+            {specialBaseOpts.length > 0 && <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={specialBaseOpts} selected={SpecialBases} onSelect={(id) => setSpecialBases(id)} />}
+            {getSignatureData ? (
+                <div className="new-block" id="create-your-own-new">
+                    <section className="special-offers-sec new-block primary-background-color py-2">
+                        <div className="container">
+                            <div className="row g-4 primary-text-color">
+                                {/* left side */}
+                                <div className="col-lg-7 col-12 p-3 has-sticky-cart-bar">
+                                    {/* Hero Header — Simplified to match Special Offer style */}
+                                    <h5 className="fw-bold mb-1 d-none d-lg-block">{name}</h5>
+                                    {pizzaSubtitle && <p className="text-secondary small mb-3 d-none d-lg-block">{pizzaSubtitle}</p>}
 
-                                            {/* Mobile Hero Strip */}
-                                            <div className="offer-hero-strip d-lg-none mb-3">
-                                                <div className="offer-hero-strip__name">{name}</div>
-                                                <div className="offer-hero-strip__price">${price}</div>
-                                            </div>
+                                    {/* Mobile Hero Strip */}
+                                    <div className="offer-hero-strip d-lg-none mb-3">
+                                        <div className="offer-hero-strip__name">{name}</div>
+                                        <div className="offer-hero-strip__price">${price}</div>
+                                    </div>
 
-                                            {/* size */}
-                                            {/* SIZE — horizontal pills */}
-                                            <div className="mt-1 mb-3">
-                                                <p className="fw-bold text-uppercase mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>Select Size</p>
-                                                <div className="size-pill-scroll">
-                                                    {pizzaSizeArr?.map((data, index) => (
-                                                        <button
-                                                            key={index}
-                                                            className={`size-pill ${size === data?.size ? 'size-pill--active' : ''}`}
-                                                            onClick={() => setSize(data?.size)}
-                                                        >
-                                                            <span className="size-pill__label">{data?.size}</span>
-                                                            {data?.price !== null && (
-                                                                <span className="size-pill__price">${data?.price}</span>
-                                                            )}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <p className="fw-bold text-uppercase mb-2 mt-4" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>CUSTOMIZE YOUR PIZZA</p>
-                                            {/* Trigger buttons — same style as Other Pizza / Create Your Own */}
-                                            <div className="d-flex flex-column gap-2 mb-2">
-                                                <TriggerBtn icon="🍞" label="Dough" value={crustLabel} sheetKey="dough" />
-                                                <TriggerBtn icon="🔥" label="Crust Type" value={crustTypeLabel} sheetKey="crustType" />
-                                                <TriggerBtn icon="🧀" label="Cheese" value={cheeseLabel} sheetKey="cheese" />
-                                                <TriggerBtn icon="🌶️" label="Spicy" value={spicyLabel} sheetKey="spicy" />
-                                                <TriggerBtn icon="🍅" label="Sauce" value={sauceLabel} sheetKey="sauce" />
-                                                <TriggerBtn icon="👨‍🍳" label="Cook Style" value={cookLabel} sheetKey="cook" />
-                                                {specialBaseOpts.length > 0 && (
-                                                    <TriggerBtn icon="🍕" label="Special Base" value={specialBaseLabel} sheetKey="specialBase" />
-                                                )}
-                                            </div>
-                                            {/* toppings */}
-                                            {/* <div className="mt-3">
+                                    {/* size */}
+                                    {/* SIZE — horizontal pills */}
+                                    <div className="mt-1 mb-3">
+                                        <p className="fw-bold text-uppercase mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>Select Size</p>
+                                        <div className="size-pill-scroll">
+                                            {pizzaSizeArr?.map((data, index) => (
+                                                <button
+                                                    key={index}
+                                                    className={`size-pill ${size === data?.size ? 'size-pill--active' : ''}`}
+                                                    onClick={() => setSize(data?.size)}
+                                                >
+                                                    <span className="size-pill__label">{data?.size}</span>
+                                                    {data?.price !== null && (
+                                                        <span className="size-pill__price">${data?.price}</span>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="fw-bold text-uppercase mb-2 mt-4" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>CUSTOMIZE YOUR PIZZA</p>
+                                    {/* Trigger buttons — same style as Other Pizza / Create Your Own */}
+                                    <div className="d-flex flex-column gap-2 mb-2">
+                                        <TriggerBtn icon="🍞" label="Dough" value={crustLabel} sheetKey="dough" />
+                                        <TriggerBtn icon="🔥" label="Crust Type" value={crustTypeLabel} sheetKey="crustType" />
+                                        <TriggerBtn icon="🧀" label="Cheese" value={cheeseLabel} sheetKey="cheese" />
+                                        <TriggerBtn icon="🌶️" label="Spicy" value={spicyLabel} sheetKey="spicy" />
+                                        <TriggerBtn icon="🍅" label="Sauce" value={sauceLabel} sheetKey="sauce" />
+                                        <TriggerBtn icon="👨‍🍳" label="Cook Style" value={cookLabel} sheetKey="cook" />
+                                        {specialBaseOpts.length > 0 && (
+                                            <TriggerBtn icon="🍕" label="Special Base" value={specialBaseLabel} sheetKey="specialBase" />
+                                        )}
+                                    </div>
+                                    {/* toppings */}
+                                    {/* <div className="mt-3">
                                                 <div className="accordion" id="accordionExample9">
                                                     <div className="accordion-item">
                                                         <h2 className="accordion-header" id="headingNine">
@@ -879,167 +879,167 @@ const Signature = () => {
                                                     </div>
                                                 </div>
                                             </div> */}
-                                            {/* TOPPINGS — bottom sheet trigger */}
-                                            <div className="mt-3 mb-4">
-                                                <button
-                                                    className="topping-trigger-btn"
-                                                    onClick={() => setToppingSheetOpen(true)}
-                                                >
-                                                    <span className="topping-trigger-btn__icon">🍕</span>
-                                                    <span className="topping-trigger-btn__label">Choose Toppings</span>
-                                                    {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
-                                                        <span className="topping-trigger-btn__count">
-                                                            {ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length} selected
-                                                        </span>
-                                                    )}
-                                                    <span className="topping-trigger-btn__arrow">›</span>
-                                                </button>
-                                                {/* Selected toppings summary */}
-                                                {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
-                                                    <div className="selected-toppings-pills">
-                                                        {[...ToppingsTwo, ...ToppingsOne, ...ToppingsFree].map((t, i) => (
-                                                            <span key={i} className="selected-topping-pill">{t.name}</span>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                    {/* TOPPINGS — bottom sheet trigger */}
+                                    <div className="mt-3 mb-4">
+                                        <button
+                                            className="topping-trigger-btn"
+                                            onClick={() => setToppingSheetOpen(true)}
+                                        >
+                                            <span className="topping-trigger-btn__icon">🍕</span>
+                                            <span className="topping-trigger-btn__label">Choose Toppings</span>
+                                            {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
+                                                <span className="topping-trigger-btn__count">
+                                                    {ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length} selected
+                                                </span>
+                                            )}
+                                            <span className="topping-trigger-btn__arrow">›</span>
+                                        </button>
+                                        {/* Selected toppings summary */}
+                                        {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
+                                            <div className="selected-toppings-pills">
+                                                {[...ToppingsTwo, ...ToppingsOne, ...ToppingsFree].map((t, i) => (
+                                                    <span key={i} className="selected-topping-pill">{t.name}</span>
+                                                ))}
                                             </div>
-
-                                            {/* Topping Sheet */}
-                                            <ToppingSheet
-                                                isOpen={toppingSheetOpen}
-                                                onClose={() => setToppingSheetOpen(false)}
-                                                activeTab={toppingSheetTab}
-                                                setActiveTab={setToppingSheetTab}
-                                                Ingredients={Ingredients}
-                                                ToppingsTwo={ToppingsTwo}
-                                                ToppingsOne={ToppingsOne}
-                                                ToppingsFree={ToppingsFree}
-                                                handleToppingsTwo={handleToppingsTwo}
-                                                handleToppingOne={handleToppingOne}
-                                                handleFreeToppings={handleFreeToppings}
-                                                handleSizeChange={handleSizeChange}
-                                                ToppingTwoSelector={ToppingTwoSelector}
-                                                ToppingOneSelector={ToppingOneSelector}
-                                                FreeToppingSelector={FreeToppingSelector}
-                                                DefaultToppingsTwo={DefaultToppingsTwo}
-                                                DefaultToppingsOne={DefaultToppingsOne}
-                                                nonRegularTitle={nonRegularToppingsTitle}
-                                                regularTitle={regularToppingsTitle}
-                                            />
-                                        </div>
-                                        {/* right side */}
-                                        <div className="col-lg-5 col-12 d-none d-lg-block">
-                                            {(() => {
-                                                const adaptedSelectedSize = pizzaSizeArr?.find((s) => s.size === size) || null;
-                                                
-                                                const getIngredientObj = (category, code) => {
-                                                    const list = Ingredients?.[category] || [];
-                                                    return list.find(item => 
-                                                        (item.crustCode === code) || 
-                                                        (item.crustTypeCode === code) || 
-                                                        (item.cheeseCode === code) || 
-                                                        (item.spicyCode === code) || 
-                                                        (item.sauceCode === code) || 
-                                                        (item.cookCode === code) || 
-                                                        (item.specialbaseCode === code) ||
-                                                        (item.code === code)
-                                                    );
-                                                };
-
-                                                const adaptedPizzaSelections = [{
-                                                    signaturePizzaCode: getSignatureData?.code || "",
-                                                    signaturePizzaName: getSignatureData?.pizza_name || "",
-                                                    crust: getIngredientObj('crust', Crust),
-                                                    cheese: getIngredientObj('cheese', Cheese),
-                                                    crustType: getIngredientObj('crustType', CrustType),
-                                                    specialBases: getIngredientObj('specialbases', SpecialBases),
-                                                    sauce: getIngredientObj('sauce', Sauce),
-                                                    spicy: getIngredientObj('spices', Spicy),
-                                                    cook: getIngredientObj('cook', Cook),
-                                                }];
-
-                                                return (
-                                                    <SummarySidebar
-                                                        selectedSize={adaptedSelectedSize}
-                                                        offerData={{
-                                                            image: getSignatureData?.pizza_image || pizzaimage,
-                                                            name: getSignatureData?.pizza_name
-                                                        }}
-                                                        pizzaSelections={adaptedPizzaSelections}
-                                                        selectedSide={[]}
-                                                        selectedDips={[]}
-                                                        selectedDrink={[]}
-                                                        onAddToCart={handleAddToCart}
-                                                        totalPrice={unitPrice}
-                                                        quantity={pizzaQuantity}
-                                                        setQuantity={setPizzaQuantity}
-                                                        isEditMode={false}
-                                                        handleOpenSummaryPopup={() => setViewSelection(true)}
-                                                    />
-                                                );
-                                            })()}
-                                        </div>
-
+                                        )}
                                     </div>
-                                </div>
-                            </section>
-                        </div>
-                    ) : (
-                        <SPNotFound />
-                    )}
-                    <ResponsiveCart
-                        handleCart={handleAddToCart}
-                        totalPrice={price}
-                        section={"Add to Cart"}
-                    />
-                    <SignatureViewSelectionModal
-                        viewSelection={viewSelection}
-                        setViewSelection={setViewSelection}
-                        Ingredients={Ingredients}
-                        size={size}
-                        pizzaSizeArr={pizzaSizeArr}
-                        CrustType={CrustType}
-                        Spicy={Spicy}
-                        Sauce={Sauce}
-                        Crust={Crust}
-                        Cheese={Cheese}
-                        Cook={Cook}
-                        SpecialBases={SpecialBases}
-                        selectedTopping={selectedTopping}
-                        handleRemoveTopping={handleRemoveTopping}
-                        isIndiansToppings={isIndiansToppings}
-                        handleRemoveIsIndiansToppings={handleRemoveIsIndiansToppings}
-                    />
 
-                    {/* Mobile Sticky Bottom Add-to-Cart Bar */}
-                    <div className="cust-mobile-sticky d-lg-none">
-                        <div className="cust-mobile-sticky__price">
-                            <div className="cust-mobile-sticky__label">Total</div>
-                            <div className="cust-mobile-sticky__amount">${price}</div>
+                                    {/* Topping Sheet */}
+                                    <ToppingSheet
+                                        isOpen={toppingSheetOpen}
+                                        onClose={() => setToppingSheetOpen(false)}
+                                        activeTab={toppingSheetTab}
+                                        setActiveTab={setToppingSheetTab}
+                                        Ingredients={Ingredients}
+                                        ToppingsTwo={ToppingsTwo}
+                                        ToppingsOne={ToppingsOne}
+                                        ToppingsFree={ToppingsFree}
+                                        handleToppingsTwo={handleToppingsTwo}
+                                        handleToppingOne={handleToppingOne}
+                                        handleFreeToppings={handleFreeToppings}
+                                        handleSizeChange={handleSizeChange}
+                                        ToppingTwoSelector={ToppingTwoSelector}
+                                        ToppingOneSelector={ToppingOneSelector}
+                                        FreeToppingSelector={FreeToppingSelector}
+                                        DefaultToppingsTwo={DefaultToppingsTwo}
+                                        DefaultToppingsOne={DefaultToppingsOne}
+                                        nonRegularTitle={nonRegularToppingsTitle}
+                                        regularTitle={regularToppingsTitle}
+                                    />
+                                </div>
+                                {/* right side */}
+                                <div className="col-lg-5 col-12 d-none d-lg-block">
+                                    {(() => {
+                                        const adaptedSelectedSize = pizzaSizeArr?.find((s) => s.size === size) || null;
+
+                                        const getIngredientObj = (category, code) => {
+                                            const list = Ingredients?.[category] || [];
+                                            return list.find(item =>
+                                                (item.crustCode === code) ||
+                                                (item.crustTypeCode === code) ||
+                                                (item.cheeseCode === code) ||
+                                                (item.spicyCode === code) ||
+                                                (item.sauceCode === code) ||
+                                                (item.cookCode === code) ||
+                                                (item.specialbaseCode === code) ||
+                                                (item.code === code)
+                                            );
+                                        };
+
+                                        const adaptedPizzaSelections = [{
+                                            signaturePizzaCode: getSignatureData?.code || "",
+                                            signaturePizzaName: getSignatureData?.pizza_name || "",
+                                            crust: getIngredientObj('crust', Crust),
+                                            cheese: getIngredientObj('cheese', Cheese),
+                                            crustType: getIngredientObj('crustType', CrustType),
+                                            specialBases: getIngredientObj('specialbases', SpecialBases),
+                                            sauce: getIngredientObj('sauce', Sauce),
+                                            spicy: getIngredientObj('spices', Spicy),
+                                            cook: getIngredientObj('cook', Cook),
+                                        }];
+
+                                        return (
+                                            <SummarySidebar
+                                                selectedSize={adaptedSelectedSize}
+                                                offerData={{
+                                                    image: getSignatureData?.pizza_image || pizzaimage,
+                                                    name: getSignatureData?.pizza_name
+                                                }}
+                                                pizzaSelections={adaptedPizzaSelections}
+                                                selectedSide={[]}
+                                                selectedDips={[]}
+                                                selectedDrink={[]}
+                                                onAddToCart={handleAddToCart}
+                                                totalPrice={unitPrice}
+                                                quantity={pizzaQuantity}
+                                                setQuantity={setPizzaQuantity}
+                                                isEditMode={false}
+                                                handleOpenSummaryPopup={() => setViewSelection(true)}
+                                            />
+                                        );
+                                    })()}
+                                </div>
+
+                            </div>
                         </div>
-                        <div className="cust-mobile-sticky__qty">
-                            <button
-                                className="cust-mobile-sticky__qty-btn"
-                                disabled={pizzaQuantity <= 1}
-                                onClick={() => setPizzaQuantity(p => p - 1)}
-                                aria-label="Decrease Quantity"
-                            >
-                                <FaMinus size={12} />
-                            </button>
-                            <span className="cust-mobile-sticky__qty-num">{pizzaQuantity}</span>
-                            <button
-                                className="cust-mobile-sticky__qty-btn"
-                                disabled={pizzaQuantity >= 10}
-                                onClick={() => setPizzaQuantity(p => p + 1)}
-                                aria-label="Increase Quantity"
-                            >
-                                <FaPlus size={12} />
-                            </button>
-                        </div>
-                        <button className="cust-mobile-sticky__add" onClick={handleAddToCart}>
-                            Add to Cart
-                        </button>
-                    </div>
+                    </section>
+                </div>
+            ) : (
+                <SPNotFound />
+            )}
+            <ResponsiveCart
+                handleCart={handleAddToCart}
+                totalPrice={price}
+                section={"Add to Cart"}
+            />
+            <SignatureViewSelectionModal
+                viewSelection={viewSelection}
+                setViewSelection={setViewSelection}
+                Ingredients={Ingredients}
+                size={size}
+                pizzaSizeArr={pizzaSizeArr}
+                CrustType={CrustType}
+                Spicy={Spicy}
+                Sauce={Sauce}
+                Crust={Crust}
+                Cheese={Cheese}
+                Cook={Cook}
+                SpecialBases={SpecialBases}
+                selectedTopping={selectedTopping}
+                handleRemoveTopping={handleRemoveTopping}
+                isIndiansToppings={isIndiansToppings}
+                handleRemoveIsIndiansToppings={handleRemoveIsIndiansToppings}
+            />
+
+            {/* Mobile Sticky Bottom Add-to-Cart Bar */}
+            <div className="cust-mobile-sticky d-lg-none">
+                <div className="cust-mobile-sticky__price">
+                    <div className="cust-mobile-sticky__label">Total</div>
+                    <div className="cust-mobile-sticky__amount">${price}</div>
+                </div>
+                <div className="cust-mobile-sticky__qty">
+                    <button
+                        className="cust-mobile-sticky__qty-btn"
+                        disabled={pizzaQuantity <= 1}
+                        onClick={() => setPizzaQuantity(p => p - 1)}
+                        aria-label="Decrease Quantity"
+                    >
+                        <FaMinus size={12} />
+                    </button>
+                    <span className="cust-mobile-sticky__qty-num">{pizzaQuantity}</span>
+                    <button
+                        className="cust-mobile-sticky__qty-btn"
+                        disabled={pizzaQuantity >= 10}
+                        onClick={() => setPizzaQuantity(p => p + 1)}
+                        aria-label="Increase Quantity"
+                    >
+                        <FaPlus size={12} />
+                    </button>
+                </div>
+                <button className="cust-mobile-sticky__add" onClick={handleAddToCart}>
+                    Add to Cart
+                </button>
+            </div>
 
             <Footer />
         </div>

@@ -26,6 +26,7 @@ import SidesSelector from "./SidesSelector";
 import { SpicySelector } from "./SpicySelector";
 import { ToppingOneSelector } from "./ToppingOneSelector";
 import { ToppingTwoSelector } from "./ToppingTwoSelector";
+import { sortPizzaSizes } from "../../utils/pizzaUtils";
 
 const EditCreatePizza = () => {
   // navigate
@@ -111,7 +112,7 @@ const EditCreatePizza = () => {
       const sideRes = await getSides();
       setSidesIngredients(sideRes?.data);
       setIngredients(res?.data);
-      setPizzaSizeArr(res?.data?.sizesAndPrices);
+      setPizzaSizeArr(sortPizzaSizes(res?.data?.sizesAndPrices));
     } catch (error) {
       if (error.response?.status === 400 || error.response?.status === 500) {
         toast.error(error.response.data.message);

@@ -434,9 +434,8 @@ const SpecialOfferPage = () => {
                     <button
                       key={i}
                       type="button"
-                      className={`deal-step-dot ${
-                        active ? 'deal-step-dot--active' : done ? 'deal-step-dot--done' : ''
-                      }`}
+                      className={`deal-step-dot ${active ? 'deal-step-dot--active' : done ? 'deal-step-dot--done' : ''
+                        }`}
                       data-index={i + 1}
                       onClick={() => setActivePizzaIndex(i)}
                       aria-label={`Pizza ${i + 1}`}

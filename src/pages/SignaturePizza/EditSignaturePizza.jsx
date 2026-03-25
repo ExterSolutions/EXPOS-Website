@@ -1385,80 +1385,80 @@ const EditSignature = () => {
                                                         <div className="border-top pizza-card-border-color ">
                                                             <div className="row">
                                                                 <div className="col-lg-6">
-                                                                        {(() => {
-                                                                            const sizeObj = pizzaSizeArr?.find(el => el?.size === size);
-                                                                            return size && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Size: {size} 
-                                                                                    {sizeObj?.price !== null && ` ($${sizeObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const ctObj = Ingredients?.crustType?.find(top => top?.crustTypeCode === CrustType);
-                                                                            return CrustType && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Crust Type: {ctObj?.crustType} 
-                                                                                    {ctObj?.price !== null && ` ($${ctObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const spicyObj = Ingredients?.spices?.find(top => top?.spicyCode === Spicy);
-                                                                            return Spicy && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Spicy: {spicyObj?.spicy} 
-                                                                                    {spicyObj?.price !== null && ` ($${spicyObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const sauceObj = Ingredients?.sauce?.find(top => top?.sauceCode === Sauce);
-                                                                            return Sauce && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Sauce: {sauceObj?.sauce} 
-                                                                                    {sauceObj?.price !== null && ` ($${sauceObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
+                                                                    {(() => {
+                                                                        const sizeObj = pizzaSizeArr?.find(el => el?.size === size);
+                                                                        return size && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Size: {size}
+                                                                                {sizeObj?.price !== null && ` ($${sizeObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                    {(() => {
+                                                                        const ctObj = Ingredients?.crustType?.find(top => top?.crustTypeCode === CrustType);
+                                                                        return CrustType && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Crust Type: {ctObj?.crustType}
+                                                                                {ctObj?.price !== null && ` ($${ctObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                    {(() => {
+                                                                        const spicyObj = Ingredients?.spices?.find(top => top?.spicyCode === Spicy);
+                                                                        return Spicy && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Spicy: {spicyObj?.spicy}
+                                                                                {spicyObj?.price !== null && ` ($${spicyObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                    {(() => {
+                                                                        const sauceObj = Ingredients?.sauce?.find(top => top?.sauceCode === Sauce);
+                                                                        return Sauce && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Sauce: {sauceObj?.sauce}
+                                                                                {sauceObj?.price !== null && ` ($${sauceObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
                                                                 </div>
                                                                 <div className="col-lg-6">
-                                                                        {(() => {
-                                                                            const crustObj = Ingredients?.crust?.find(top => top?.crustCode === Crust);
-                                                                            return Crust && (
-                                                                                <div className=" fs-6 mt-2 mt-lg-0">
-                                                                                    <GoDotFill /> Crust: {crustObj?.crustName} 
-                                                                                    {crustObj?.price !== null && ` ($${crustObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const cheeseObj = Ingredients?.cheese?.find(top => top?.cheeseCode === Cheese);
-                                                                            return Cheese && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Cheese: {cheeseObj?.cheeseName} 
-                                                                                    {cheeseObj?.price !== null && ` ($${cheeseObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const cookObj = Ingredients?.cook?.find(top => top?.cookCode === Cook);
-                                                                            return Cook && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Cook: {cookObj?.cook} 
-                                                                                    {cookObj?.price !== null && ` ($${cookObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
-                                                                        {(() => {
-                                                                            const sbObj = Ingredients?.specialbases?.find(top => top?.specialbaseCode === SpecialBases);
-                                                                            return SpecialBases && (
-                                                                                <div className=" fs-6 mt-2">
-                                                                                    <GoDotFill /> Special Base: {sbObj?.specialbaseName} 
-                                                                                    {sbObj?.price !== null && ` ($${sbObj?.price})`}
-                                                                                </div>
-                                                                            );
-                                                                        })()}
+                                                                    {(() => {
+                                                                        const crustObj = Ingredients?.crust?.find(top => top?.crustCode === Crust);
+                                                                        return Crust && (
+                                                                            <div className=" fs-6 mt-2 mt-lg-0">
+                                                                                <GoDotFill /> Crust: {crustObj?.crustName}
+                                                                                {crustObj?.price !== null && ` ($${crustObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                    {(() => {
+                                                                        const cheeseObj = Ingredients?.cheese?.find(top => top?.cheeseCode === Cheese);
+                                                                        return Cheese && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Cheese: {cheeseObj?.cheeseName}
+                                                                                {cheeseObj?.price !== null && ` ($${cheeseObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                    {(() => {
+                                                                        const cookObj = Ingredients?.cook?.find(top => top?.cookCode === Cook);
+                                                                        return Cook && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Cook: {cookObj?.cook}
+                                                                                {cookObj?.price !== null && ` ($${cookObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                    {(() => {
+                                                                        const sbObj = Ingredients?.specialbases?.find(top => top?.specialbaseCode === SpecialBases);
+                                                                        return SpecialBases && (
+                                                                            <div className=" fs-6 mt-2">
+                                                                                <GoDotFill /> Special Base: {sbObj?.specialbaseName}
+                                                                                {sbObj?.price !== null && ` ($${sbObj?.price})`}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
                                                                 </div>
                                                             </div>
                                                         </div>

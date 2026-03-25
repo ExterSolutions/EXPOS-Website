@@ -26,6 +26,7 @@ import { ToppingOneSelector } from "../Createyourown/ToppingOneSelector";
 import { ToppingTwoSelector } from "../Createyourown/ToppingTwoSelector";
 import ToppingSheet from "../../components/_main/ToppingSheet";
 import OtherViewSelectionModal from "./OtherViewSelectionModal";
+import { sortPizzaSizes } from "../../utils/pizzaUtils";
 const Other = () => {
     // navigate
     const navigate = useNavigate();
@@ -136,16 +137,15 @@ const Other = () => {
             const data = res?.data || null;
             if (data) {
                 setGetOtherData(res?.data);
-                setPizzaSizeArr(
+                const sortedPrices = sortPizzaSizes(
                     res?.data?.pizza_prices?.filter(
                         (price) => parseFloat(price.price) > 0
-                    )
+                    ) || []
                 );
+                setPizzaSizeArr(sortedPrices);
                 setName(res?.data?.pizza_name);
                 setPizzaSubTitle(res?.data?.pizza_subtitle);
-                let sizeObj = res?.data?.pizza_prices.find(
-                    (price) => parseFloat(price.price) > 0
-                );
+                let sizeObj = sortedPrices[0];
                 setSize(sizeObj?.size);
                 setCrust(res?.data?.crust?.code);
                 setCrustType(res?.data?.crust_type?.code);
