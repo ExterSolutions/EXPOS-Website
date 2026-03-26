@@ -82,7 +82,7 @@ const Header = () => {
     const hideOrderNow = HIDE_ORDER_NOW_PATHS.some(p => location.pathname.startsWith(p));
 
     const circleMenuItems = [
-        { id: "specialoffer", name: "Special Deals", icon: <FaTag className="w-4 h-4" /> },
+        { id: "specialoffer", name: "Signature Deals", icon: <FaTag className="w-4 h-4" /> },
         { id: "special-offers-with-toppings", name: "Topping Deals", icon: <GiFullPizza className="w-4 h-4" /> },
         { id: "signaturepizza", name: "Signature Pizza", icon: <FaPizzaSlice className="w-4 h-4" /> },
         { id: "otherpizza", name: "Other Pizza", icon: <GiPizzaSlice className="w-4 h-4" /> },

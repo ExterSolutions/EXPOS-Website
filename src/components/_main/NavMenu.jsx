@@ -141,7 +141,7 @@ const NavMenu = ({
         },
         {
             id: "specialoffer",
-            name: "Special Deals",
+            name: "Signature Deals",
             icon: <FaTag className="w-4 h-4" />,
         },
         {

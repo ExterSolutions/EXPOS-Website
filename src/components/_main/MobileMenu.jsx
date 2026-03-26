@@ -131,7 +131,7 @@ const MobileMenu = () => {
                         <li className="nav-item">
                             <Link to="/specialoffer" className={`nav-link ${isActive('/specialoffer') ? 'active' : ''}`} onClick={() => handleLinkClick('/specialoffer')}>
                                 <FaTag />
-                                <span className="nav-text">Special Deals</span>
+                                <span className="nav-text">Signature Deals</span>
                             </Link>
                         </li>
                         <li className="nav-item">
