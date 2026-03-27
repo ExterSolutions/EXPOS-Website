@@ -8,6 +8,7 @@ import createPizza from "../../assets/images/download/new/cat/Thumbails/Createyo
 import Deals from "../../assets/images/download/new/cat/Thumbails/Deals-1.png";
 import Sides from "../../assets/images/download/new/cat/Thumbails/Sides-nw.png";
 import SignaturePizza from "../../assets/images/download/new/cat/Thumbails/SignaturePizza-1.png";
+import SignaturePizzaMain from "../../assets/images/download/new/cat/pizza-topping.png";
 import dips from "../../assets/images/download/new/cat/Thumbails/dips-nw.png";
 import drinks from "../../assets/images/download/new/cat/Thumbails/drinks-nw.png";
 import { useTheme } from '../../context/ThemeContext';
@@ -18,12 +19,13 @@ const CategoryPizza = () => {
     const { theme, colors } = useTheme();
 
     const categories = [
-        { id: 6, name: 'Deals',           image: Deals,         path: 'specialoffer',    alt: 'Deals' },
-        { id: 1, name: 'Signature Pizzas', image: SignaturePizza, path: 'signaturepizza',  alt: 'Signature Pizza' },
-        { id: 2, name: 'Sides',            image: Sides,          path: 'sides',           alt: 'Sides' },
-        { id: 3, name: 'Dips',             image: dips,           path: 'dips',            alt: 'Dips' },
-        { id: 4, name: 'Drinks',           image: drinks,         path: 'drinks',          alt: 'Drinks' },
-        { id: 5, name: 'Create Your Own',  image: createPizza,    path: 'create-your-own', alt: 'Create Your Own' },
+        { id: 6, name: 'Signature Deals', image: SignaturePizza, path: 'specialoffer', alt: 'Signature Deals' },
+        { id: 7, name: 'Topping Deals', image: createPizza, path: 'special-offers-with-toppings', alt: 'Topping Deals' },
+        { id: 1, name: 'Signature Pizzas', image: SignaturePizzaMain, path: 'signaturepizza', alt: 'Signature Pizza' },
+        { id: 2, name: 'Sides', image: Sides, path: 'sides', alt: 'Sides' },
+        { id: 3, name: 'Dips', image: dips, path: 'dips', alt: 'Dips' },
+        { id: 4, name: 'Drinks', image: drinks, path: 'drinks', alt: 'Drinks' },
+        { id: 5, name: 'Create Your Own', image: Deals, path: 'create-your-own', alt: 'Create Your Own' },
     ];
 
     const handleCategorySelect = (id, path) => {
@@ -31,53 +33,55 @@ const CategoryPizza = () => {
     };
 
     return (
-        <section className="category-section pt-60">
-            <div className="d-flex align-items-center justify-content-between">
-                <div className="flex-grow-1 section-header">
-                    <span
-                        className="category-subtitle"
-                        style={{ color: colors?.primary }}
-                    >CHOOSE YOUR FLAVOR</span>
-                    <div className="section-title">Shop By Category</div>
+        <section className="category-section pt-60 text-center">
+            <div className="container-fluid container-lg">
+                <div className="d-flex align-items-center justify-content-center">
+                    <div className="section-header w-100">
+                        <span
+                            className="category-subtitle text-center"
+                            style={{ color: colors?.primary }}
+                        >CHOOSE YOUR FLAVOR</span>
+                        <div className="section-title text-center">Shop By Category</div>
+                    </div>
                 </div>
-            </div>
-            <div className="category-container category-swiper-wrap">
-                <Swiper
-                    modules={[A11y, Autoplay, Pagination]}
-                    autoplay={{
-                        delay: 2500,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: true,
-                    }}
-                    pagination={{
-                        clickable: true,
-                        dynamicBullets: true,
-                    }}
-                    loop={true}
-                    slidesPerView={2}
-                    spaceBetween={12}
-                    style={{ paddingBottom: '36px' }}
-                    breakpoints={{
-                        0:    { slidesPerView: 2.4, spaceBetween: 12 },
-                        480:  { slidesPerView: 3,   spaceBetween: 12 },
-                        640:  { slidesPerView: 3,   spaceBetween: 14 },
-                        768:  { slidesPerView: 4,   spaceBetween: 14 },
-                        1024: { slidesPerView: 6,   spaceBetween: 16 },
-                    }}
-                >
+                <div className="category-container category-swiper-wrap mt-4 mx-auto" style={{ maxWidth: '1100px' }}>
+                    <Swiper
+                        modules={[A11y, Autoplay, Pagination]}
+                        autoplay={{
+                            delay: 2500,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                        }}
+                        pagination={{
+                            clickable: true,
+                            dynamicBullets: true,
+                        }}
+                        loop={false}
+                        centeredSlides={false}
+                        slidesPerView={2.5}
+                        spaceBetween={12}
+                        style={{ paddingBottom: '36px' }}
+                        breakpoints={{
+                            0: { slidesPerView: 2.5, spaceBetween: 10, centeredSlides: true },
+                            480: { slidesPerView: 3.5, spaceBetween: 12, centeredSlides: true },
+                            640: { slidesPerView: 4.5, spaceBetween: 15, centeredSlides: true },
+                            768: { slidesPerView: 6, spaceBetween: 15, centeredSlides: false },
+                            1024: { slidesPerView: 7, spaceBetween: 20, centeredSlides: false },
+                        }}
+                    >
                     {categories.map((cat, index) => (
                         <SwiperSlide key={index}>
-                            <div className="category-card" onClick={() => handleCategorySelect(cat.id, cat.path)}>
-                                <div className="category-image-wrapper">
+                            <div className="category-card text-center" onClick={() => handleCategorySelect(cat.id, cat.path)}>
+                                <div className="category-image-wrapper mx-auto">
                                     <img
                                         src={cat.image}
                                         alt={cat.alt}
                                         className="category-image"
                                     />
                                 </div>
-                                <div className="category-info">
+                                <div className="category-info text-center">
                                     <h3
-                                        className="category-name"
+                                        className="category-name text-center"
                                         style={{ color: colors.primary }}
                                     >
                                         {cat.name}
@@ -86,7 +90,8 @@ const CategoryPizza = () => {
                             </div>
                         </SwiperSlide>
                     ))}
-                </Swiper>
+                    </Swiper>
+                </div>
             </div>
         </section>
     );
