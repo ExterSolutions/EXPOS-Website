@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { LOGIN_SUCCESS } from "../redux/authProvider/actionType";
 import CartFunction from "../components/cart";
+import { settingApi } from "../services";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -252,9 +253,25 @@ export const GlobalProvider = ({ children }) => {
   const [reset, setReset] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
+  // Fetch settings on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await settingApi();
+        if (res?.data) {
+          setSettings(res.data);
+        }
+      } catch (err) {
+        console.error("[GlobalContext] Failed to fetch settings:", err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   // Recalculate cart totals whenever store or settings change
   useEffect(() => {
-    if (selectedStore && cart?.product?.length > 0) {
+    // GUARD: Only recalculate if we have settings (to avoid zeroing out charges on initial load)
+    if (selectedStore && cart?.product?.length > 0 && settings) {
       const cartFn = new CartFunction();
       cartFn.updateCartTotals(cart, setCart, settings, selectedStore);
     }

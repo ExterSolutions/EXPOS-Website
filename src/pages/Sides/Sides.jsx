@@ -21,14 +21,16 @@ const Sides = () => {
         <div style={{ position: "relative" }}>
             <Header />
             <div className="nav-margin"></div>
-            <div className="d-flex align-items-center justify-content-between mt-4">
-                <div className="flex-grow-1 section-header">
-                    <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
-                    <div className="section-title">Sides</div>
+            <div className="container py-2">
+                <div className="d-flex align-items-center justify-content-between">
+                    <div className="flex-grow-1 section-header">
+                        <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
+                        <div className="section-title">Sides</div>
+                    </div>
                 </div>
-            </div>
-            <div className="mb-4">
-                <SidesMenu searchQuery={searchQuery} searchCode={selectedCode} />
+                <div className="mb-4">
+                    <SidesMenu searchQuery={searchQuery} searchCode={selectedCode} />
+                </div>
             </div>
             <Footer />
         </div>

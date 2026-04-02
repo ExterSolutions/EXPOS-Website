@@ -47,7 +47,7 @@ function OtherPizza({ toppingsData }) {
                     <div className="row g-3">
                         {otherData?.map((data) => {
                             return (
-                                <div className="col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
+                                <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
                                     <OtherPizzas data={data} key={data.code} toppingsData={toppingsData} ingredients={ingredients} />
                                 </div>
                             )

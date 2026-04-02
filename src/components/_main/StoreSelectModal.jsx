@@ -169,47 +169,6 @@ export default function StoreSelectModal({ onClose, required = false }) {
                 {/* ── Scrollable body ─────────────────────────────────────── */}
                 <div style={{ overflowY: 'auto', flex: 1, padding: '16px 24px 24px' }}>
 
-                    {/* ── Currently selected store ────────────────────────── */}
-                    {selectedStore && (
-                        <>
-                            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
-                                Currently Selected
-                            </p>
-                            <div style={{
-                                border: '2px solid var(--primary, #E63946)',
-                                borderRadius: '14px',
-                                padding: '14px 16px',
-                                marginBottom: '20px',
-                                background: 'rgba(230,57,70,0.04)',
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: 12,
-                            }}>
-                                <FaCheckCircle size={16} style={{ color: 'var(--primary, #E63946)', flexShrink: 0, marginTop: 2 }} />
-                                <div style={{ lineHeight: 1.5 }}>
-                                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--primary, #E63946)' }}>
-                                        {selectedStore.storeLocation || selectedStore.city}
-                                    </div>
-                                    {selectedStore.city && selectedStore.city !== selectedStore.storeLocation && (
-                                        <div style={{ fontSize: '0.78rem', color: '#666' }}>
-                                            {selectedStore.city}
-                                        </div>
-                                    )}
-                                    <div style={{ fontSize: '0.78rem', color: '#888', display: 'flex', alignItems: 'flex-start', gap: 4, marginTop: 2 }}>
-                                        <FaMapMarkerAlt size={11} style={{ marginTop: 2, flexShrink: 0 }} />
-                                        {selectedStore.storeAddress}
-                                    </div>
-                                    {selectedStore.pickupNumber && (
-                                        <div style={{ fontSize: '0.78rem', color: '#888', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                                            <FaPhone size={10} />
-                                            {selectedStore.pickupNumber}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
-
                     {/* ── Store list ──────────────────────────────────────── */}
                     {loading && (
                         <div style={{ textAlign: 'center', padding: '32px 0', color: '#aaa' }}>

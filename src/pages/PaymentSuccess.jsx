@@ -2,7 +2,6 @@
 
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/images/logo.png';
 import CartFunction from '../components/cart';
 import { GlobalContext } from '../context/GlobalContext';
 import { useSiteData } from '../components/_main/Header/hooks/useSiteData';
@@ -18,7 +17,8 @@ const PaymentSuccess = () => {
     const [currentStore, setCurrentStore] = globalctx.currentStore;
     const [cart, setCart] = globalctx.cart;
     const cartFn = new CartFunction();
-    const { siteData } = useSiteData();
+    const { siteData, loading: siteDataLoading } = useSiteData();
+    const [logoError, setLogoError] = useState(false);
 
     const handleContinue = useCallback(() => {
         setPaymentStatus('success');
@@ -89,20 +89,23 @@ const PaymentSuccess = () => {
                             {paymentStatus === 'success' ? (
                                 <>
                                     <div className="d-flex justify-content-center align-items-center mb-4">
-                                        <img
-                                            src={siteData?.logo || logo}
-                                            alt="Logo"
-                                            className="img-fluid"
-                                            style={{
-                                                maxWidth: '120px',
-                                                height: 'auto',
-                                                objectFit: 'contain'
-                                            }}
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = logo;
-                                            }}
-                                        />
+                                        {siteDataLoading || logoError ? (
+                                            <div className="placeholder-glow d-inline-block" style={{ width: '120px', height: '120px' }}>
+                                                <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block' }}></span>
+                                            </div>
+                                        ) : (
+                                            <img
+                                                src={siteData?.logo}
+                                                alt="Logo"
+                                                className="img-fluid"
+                                                style={{
+                                                    maxWidth: '120px',
+                                                    height: 'auto',
+                                                    objectFit: 'contain'
+                                                }}
+                                                onError={() => setLogoError(true)}
+                                            />
+                                        )}
                                     </div>
                                     <h2 className="card-title text-success mb-3">Payment Successful!</h2>
                                     <p className="card-text mb-3">

@@ -1,22 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import {GlobalContext} from "../../context/GlobalContext";
-import CartFunction from "../../components/cart";
-import Header from "../../components/_main/Header/Header";
-import Footer from "../../components/_main/Footer";
-import { paymentVerified } from "../../services";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import paymentSuccess from "../../assets/images/payment-success.png";
-import paymentCancelled from "../../assets/images/payment-cancel.png";
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
+import { useSiteData } from "../../components/_main/Header/hooks/useSiteData";
 
 function Success() {
     const globalctx = useContext(GlobalContext);
     const [cart, setCart] = globalctx.cart;
     const [loading, setLoading] = useState(false);
     const placeOrderData = JSON.parse(localStorage.getItem("placedOrder"));
-
+    const { siteData, loading: siteDataLoading } = useSiteData();
+    const [logoError, setLogoError] = useState(false);
     const navigate = useNavigate();
 
     const handleBack = () => {
@@ -44,17 +39,28 @@ function Success() {
             ) : (
                 <div className="container-fluid d-flex align-items-center justify-content-center flex-column">
                     <div className="w-100 d-flex flex-column align-items-center py-3">
-                        <img
-                            src={logo}
-                            className="card-img-top"
-                            alt=""
-                            style={{ width: "3.5rem", height: "3.5rem" }}
-                        />
+                        {siteDataLoading || logoError ? (
+                            <div className="placeholder-glow d-inline-block" style={{ width: '80px', height: '80px' }}>
+                                <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block' }}></span>
+                            </div>
+                        ) : (
+                            <img
+                                src={siteData?.logo}
+                                alt="Logo"
+                                className="img-fluid"
+                                style={{
+                                    maxWidth: '80px',
+                                    height: 'auto',
+                                    objectFit: 'contain'
+                                }}
+                                onError={() => setLogoError(true)}
+                            />
+                        )}
                         <h2
                             className="mt-3"
                             style={{ fontSize: "1.3rem", letterSpacing: ".08rem" }}
                         >
-                            <strong>pizza</strong>
+                            <strong>{siteData?.site_name}</strong>
                         </h2>
                     </div>
                     <div className="container-fluid row m-0 p-0 px-3 d-flex justify-content-center">

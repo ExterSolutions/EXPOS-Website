@@ -1,25 +1,25 @@
-// src/components/_main/MobileMenu.jsx
-import { useContext, useEffect, useState } from 'react';
+
+import { useContext, useEffect } from 'react';
 import {
-    FaChevronDown,
-    FaChevronUp,
+    FaGlassCheers,
     FaHome,
-    FaInfo,
-    FaMapPin,
-    FaPhone,
+    FaPizzaSlice,
+    FaTag,
     FaTimes,
     FaUser,
     FaUserPlus,
 } from 'react-icons/fa';
+import { GiFullPizza, GiPizzaSlice } from 'react-icons/gi';
+import { IoColorPalette } from 'react-icons/io5';
 import { MdRestaurantMenu } from 'react-icons/md';
-import { Link, useNavigate } from 'react-router-dom';
-// import '../../assets/styles/mobilemenu.css';
+import { PiHamburgerFill } from 'react-icons/pi';
+import { SiCoffeescript } from 'react-icons/si';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../context/GlobalContext';
 
 const MobileMenu = () => {
     const navigate = useNavigate();
-    const [activeLink, setActiveLink] = useState('home');
-    const [openSubmenu, setOpenSubmenu] = useState(false);
+    const location = useLocation();
     const globalCtx = useContext(GlobalContext);
 
     // Safely access context with default values
@@ -59,15 +59,14 @@ const MobileMenu = () => {
     }, [openMobileMenu]);
 
     const handleLinkClick = (link) => {
-        setActiveLink(link);
         if (setOpenMobileMenu) {
             setOpenMobileMenu(false);
         }
-        navigate(link);
-    };
-
-    const handleSubmenuToggle = () => {
-        setOpenSubmenu((prev) => !prev);
+        if (link.startsWith('http')) {
+            window.location.href = link;
+        } else {
+            navigate(link);
+        }
     };
 
     const handleAuthClick = (path) => {
@@ -83,6 +82,8 @@ const MobileMenu = () => {
             setOpenMobileMenu(false);
         }
     };
+
+    const isActive = (path) => location.pathname === path;
 
     return (
         <div className="mobile-menu-wrapper">
@@ -114,10 +115,10 @@ const MobileMenu = () => {
                         <li className="nav-item">
                             <a
                                 href="https://web.exter.ca/"
-                                className={`nav-link ${activeLink === 'home' ? 'active' : ''}`}
+                                className={`nav-link ${isActive('/') ? 'active' : ''}`}
                                 onClick={(e) => {
-                                    // Optional: if you want to update state before the page leaves
-                                    handleLinkClick('home');
+                                    e.preventDefault();
+                                    handleLinkClick('https://web.exter.ca/');
                                 }}
                             >
                                 <FaHome />
@@ -126,110 +127,60 @@ const MobileMenu = () => {
                         </li>
 
 
-                        {/* MENU with Submenu */}
-                        <li className={`has-submenu ${openSubmenu ? 'open' : ''}`}>
-                            <button
-                                className="submenu-toggle"
-                                onClick={handleSubmenuToggle}
-                                aria-expanded={openSubmenu}
-                            >
+                        {/* MENU Items Directly */}
+                        <li className="nav-item">
+                            <Link to="/specialoffer" className={`nav-link ${isActive('/specialoffer') ? 'active' : ''}`} onClick={() => handleLinkClick('/specialoffer')}>
+                                <FaTag />
+                                <span className="nav-text">Signature Deals</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/special-offers-with-toppings" className={`nav-link ${isActive('/special-offers-with-toppings') ? 'active' : ''}`} onClick={() => handleLinkClick('/special-offers-with-toppings')}>
+                                <GiFullPizza />
+                                <span className="nav-text">Topping Deals</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/signaturepizza" className={`nav-link ${isActive('/signaturepizza') ? 'active' : ''}`} onClick={() => handleLinkClick('/signaturepizza')}>
+                                <FaPizzaSlice />
+                                <span className="nav-text">Signature Pizzas</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/otherpizza" className={`nav-link ${isActive('/otherpizza') ? 'active' : ''}`} onClick={() => handleLinkClick('/otherpizza')}>
+                                <GiPizzaSlice />
+                                <span className="nav-text">Other Pizzas</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/sides" className={`nav-link ${isActive('/sides') ? 'active' : ''}`} onClick={() => handleLinkClick('/sides')}>
+                                <PiHamburgerFill />
+                                <span className="nav-text">Sides</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/dips" className={`nav-link ${isActive('/dips') ? 'active' : ''}`} onClick={() => handleLinkClick('/dips')}>
+                                <SiCoffeescript />
+                                <span className="nav-text">Dips</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/drinks" className={`nav-link ${isActive('/drinks') ? 'active' : ''}`} onClick={() => handleLinkClick('/drinks')}>
+                                <FaGlassCheers />
+                                <span className="nav-text">Drinks</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/create-your-own" className={`nav-link ${isActive('/create-your-own') ? 'active' : ''}`} onClick={() => handleLinkClick('/create-your-own')}>
+                                <IoColorPalette />
+                                <span className="nav-text">Create Your Own</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/menu" className={`nav-link ${isActive('/menu') ? 'active' : ''}`} onClick={() => handleLinkClick('/menu')}>
                                 <MdRestaurantMenu />
-                                <span className="nav-text">Menu</span>
-                                {openSubmenu ? <FaChevronUp /> : <FaChevronDown />}
-                            </button>
-
-                            <ul className={`submenu ${openSubmenu ? 'show' : ''}`}>
-                                <li key="mmenu-offers">
-                                    <Link
-                                        to="/specialoffer"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/specialoffer');
-                                        }}
-                                    >
-                                        Special Deals
-                                    </Link>
-                                </li>
-                                <li key="mmenu-signaturepizza">
-                                    <Link
-                                        to="/signaturepizza"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/signaturepizza');
-                                        }}
-                                    >
-                                        Signature
-                                    </Link>
-                                </li>
-                                <li key="mmenu-other">
-                                    <Link
-                                        to="/otherpizza"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/otherpizza');
-                                        }}
-                                    >
-                                        Other
-                                    </Link>
-                                </li>
-                                <li key="mmenu-sides">
-                                    <Link
-                                        to="/sides"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/sides');
-                                        }}
-                                    >
-                                        Sides
-                                    </Link>
-                                </li>
-                                <li key="mmenu-dips">
-                                    <Link
-                                        to="/dips"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/dips');
-                                        }}
-                                    >
-                                        Dips
-                                    </Link>
-                                </li>
-                                <li key="mmenu-drinks">
-                                    <Link
-                                        to="/drinks"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/drinks');
-                                        }}
-                                    >
-                                        Drinks
-                                    </Link>
-                                </li>
-
-                                <li key="mmenu-allmenu">
-                                    <Link
-                                        to="/create-your-own"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/menu');
-                                        }}
-                                    >
-                                        All Menu
-                                    </Link>
-                                </li>
-
-                                <li key="mmenu-own">
-                                    <Link
-                                        to="/create-your-own"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleLinkClick('/create-your-own');
-                                        }}
-                                    >
-                                        Create Your Own
-                                    </Link>
-                                </li>
-                            </ul>
+                                <span className="nav-text">All Menu</span>
+                            </Link>
                         </li>
 
                         {/* <li>
@@ -254,14 +205,14 @@ const MobileMenu = () => {
                         {!isAuthenticated ? (
                             <>
                                 <button
-                                    className="auth-btn signin-btn"
+                                    className={`auth-btn signin-btn ${isActive('/login') ? 'active' : ''}`}
                                     onClick={() => handleAuthClick('/login')}
                                 >
                                     <FaUser />
                                     <span>Sign In</span>
                                 </button>
                                 <button
-                                    className="auth-btn signup-btn"
+                                    className={`auth-btn signup-btn ${isActive('/registration') ? 'active' : ''}`}
                                     onClick={() => handleAuthClick('/registration')}
                                 >
                                     <FaUserPlus />
@@ -270,7 +221,7 @@ const MobileMenu = () => {
                             </>
                         ) : (
                             <button
-                                className="auth-btn account-btn"
+                                className={`auth-btn account-btn ${isActive('/my-account') ? 'active' : ''}`}
                                 onClick={() => handleAuthClick('/my-account')}
                             >
                                 <FaUser />

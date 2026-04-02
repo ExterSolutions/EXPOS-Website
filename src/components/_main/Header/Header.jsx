@@ -1,5 +1,5 @@
 // components/Header.js
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { FaBars, FaEdit, FaGlassCheers, FaMapMarkerAlt, FaPizzaSlice, FaSearch, FaTag, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { FaCartShopping } from "react-icons/fa6";
 import { GiPizzaSlice } from 'react-icons/gi';
@@ -39,6 +39,7 @@ const Header = () => {
     const [cartSidebar, setCartSidebar] = globalCtx.sidebar;
     const [openMobileMenu, setOpenMobileMenu] = globalCtx.mobileMenu;
     const [selectedStore] = globalCtx.selectedStore ?? [null];
+    const [logoError, setLogoError] = useState(false);
 
     const { user } = useSelector((state) => state);
 
@@ -81,8 +82,8 @@ const Header = () => {
     const hideOrderNow = HIDE_ORDER_NOW_PATHS.some(p => location.pathname.startsWith(p));
 
     const circleMenuItems = [
-        { id: "specialoffer", name: "Special Deals", icon: <FaTag className="w-4 h-4" /> },
-        { id: "special-offers-with-toppings", name: "SpecialPizza + Toppings", icon: <GiFullPizza className="w-4 h-4" /> },
+        { id: "specialoffer", name: "Signature Deals", icon: <FaTag className="w-4 h-4" /> },
+        { id: "special-offers-with-toppings", name: "Topping Deals", icon: <GiFullPizza className="w-4 h-4" /> },
         { id: "signaturepizza", name: "Signature Pizza", icon: <FaPizzaSlice className="w-4 h-4" /> },
         { id: "otherpizza", name: "Other Pizza", icon: <GiPizzaSlice className="w-4 h-4" /> },
         { id: "sides", name: "Sides", icon: <PiHamburgerFill className="w-4 h-4" /> },
@@ -95,11 +96,6 @@ const Header = () => {
     const toggleMobileMenu = () => {
         setOpenMobileMenu(prev => !prev);
     };
-
-    const handleCartBarToggle = () => setCartSidebar(prev => !prev);
-
-    // Fallback logo
-    const defaultLogo = '../../../assets/images/logo.png';
 
     return (
         <header className="header shadow-sm">
@@ -135,17 +131,16 @@ const Header = () => {
                         <FaBars size={20} className="text-primary" />
                     </button>
                     <div onClick={() => { navigate("/") }}>
-                        {loading ? (
-                            <div className="logo-placeholder"></div>
+                        {loading || logoError ? (
+                            <div className="logo-placeholder placeholder-glow">
+                                <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
+                            </div>
                         ) : (
                             <img
-                                src={siteData.logo || defaultLogo}
+                                src={siteData.logo}
                                 alt={`${siteData.site_name} Logo`}
                                 className='logo'
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = defaultLogo;
-                                }}
+                                onError={() => setLogoError(true)}
                             />
                         )}
                     </div>
@@ -211,21 +206,22 @@ const Header = () => {
 
                 {/* Logo and Site Name */}
                 <div className="d-none d-md-flex align-items-center justify-content-center flex-fill" onClick={() => { navigate("/") }}>
-                    {loading ? (
+                    {loading || logoError ? (
                         <div className="d-flex align-items-center">
-                            <div className="logo-placeholder"></div>
-                            <span className="fw-bold fs-5 text-primary ms-2 align-middle">Loading...</span>
+                            <div className="logo-placeholder placeholder-glow me-2">
+                                <span className="placeholder rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '58px', height: '58px' }}></span>
+                            </div>
+                            <span className="fw-bold fs-5 text-primary align-middle">
+                                {loading ? "Loading..." : siteData.site_name}
+                            </span>
                         </div>
                     ) : (
                         <>
                             <img
-                                src={siteData.logo || defaultLogo}
+                                src={siteData.logo}
                                 alt={`${siteData.site_name} Logo`}
                                 className='logo'
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = defaultLogo;
-                                }}
+                                onError={() => setLogoError(true)}
                             />
                             <span className="fw-bold fs-5 text-primary ms-2 align-middle">
                                 {siteData.site_name}
@@ -286,7 +282,7 @@ const Header = () => {
                             <button
                                 type='button'
                                 onClick={handleOrderNowClick}
-                                className="btn btn-primary rounded-pill fw-semibold shadow-md order-now-mobile-btn bg-primary text-white"
+                                className="btn btn-primary rounded-pill fw-semibold shadow-md order-now-mobile-btn bg-primary text-white d-none d-md-inline-block"
                                 style={{
                                     backgroundColor: 'var(--primary)',
                                     borderColor: 'var(--primary)'
@@ -299,7 +295,7 @@ const Header = () => {
 
                     <button
                         type='button'
-                        onClick={() => navigate('/addtocart')}
+                        onClick={() => navigate('/cart')}
                         className="btn fw-semibold d-flex position-relative"
                         aria-label="View Cart"
                     >

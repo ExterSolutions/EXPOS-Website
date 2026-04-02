@@ -21,21 +21,23 @@ http.interceptors.request.use(
         ...config.headers,
       };
 
-    // Inject CITY_CODE into every request
+    // Inject CITY_CODE into every request (only as fallback)
     if (CITY_CODE) {
       const method = config.method?.toLowerCase();
       if (method === "get" || method === "delete") {
-        // Append as query parameter
+        // Append as query parameter if not already provided
         config.params = {
-          ...config.params,
           cityCode: CITY_CODE,
+          ...config.params,
         };
       } else if (method === "post" || method === "put" || method === "patch") {
-        // Merge into request body
+        // Merge into request body if not already provided
         if (config.data instanceof FormData) {
-          config.data.append("cityCode", CITY_CODE);
+          if (!config.data.has("cityCode")) {
+            config.data.append("cityCode", CITY_CODE);
+          }
         } else if (config.data && typeof config.data === "object") {
-          config.data = { ...config.data, cityCode: CITY_CODE };
+          config.data = { cityCode: CITY_CODE, ...config.data };
         } else if (!config.data) {
           config.data = { cityCode: CITY_CODE };
         }

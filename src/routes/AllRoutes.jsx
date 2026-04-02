@@ -88,8 +88,8 @@ const AllRoutes = () => {
 
                 {/* Deals+toppings — dedicated list page with its own API call */}
                 <Route path="/special-offers-with-toppings" element={<SpecialOfferWithToppingsList />} />
-                <Route path="/special-offers-with-toppings/:sid" element={<SpecialOfferPage />} />
-                <Route path="/special-offers-with-toppings/:pid/:sid" element={<EditSpecialOfferPage />} />
+                <Route path="/special-offers-with-toppings/:sid" element={<SpecialOffer />} />
+                <Route path="/special-offers-with-toppings/:pid/:sid" element={<EditSpecialOffer />} />
 
                 {/* Signature Pizzas */}
                 <Route path="/signaturepizza" element={<SignaturePizzaList />} />
@@ -107,7 +107,7 @@ const AllRoutes = () => {
                 <Route path="/customize-drink/:did" element={<CustomizeDrinks />} />
 
                 {/* Cart, Checkout & Payments */}
-                <Route path="/addtocart" element={<Cart />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order/verify" element={<Success />} />
                 <Route path="/payment/success" element={<PaymentSuccess />} />

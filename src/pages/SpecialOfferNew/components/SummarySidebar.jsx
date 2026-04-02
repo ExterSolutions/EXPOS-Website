@@ -22,10 +22,9 @@ const SummarySidebar = ({ ...props }) => {
 
     return (
         <div className="right-side-div sticky-top">
-            <div className="p-3 right-side-internal-div-new card-background-color card-text-color">
-                <div className="px-3 row">
-
-                    <div className="col-lg-6 p-3 rounded-3">
+            <div className="p-2 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color" style={{ border: '1px solid var(--primary-light)' }}>
+                <div className="px-2 row g-1">
+                    <div className="col-lg-5 p-2 rounded-3">
                         <img
                             className="pizzaImageBorder"
                             src={offerData?.image}
@@ -105,17 +104,10 @@ const SummarySidebar = ({ ...props }) => {
                                     return null;
                                 }
 
-                                // Collect all toppings into one array
-                                const allToppings = [
-                                    ...(pizza.toppings?.countAsTwoToppings || []),
-                                    ...(pizza.toppings?.countAsOneToppings || []),
-                                    ...(pizza.toppings?.freeToppings || []),
-                                ];
-
                                 return (
                                     <div className="my-2 theme-top-border" key={`pizza-${idx}`}>
                                         <div className="d-flex gap-2 mb-1 pt-1">
-                                            <strong className="text-muted">Pizza :</strong>
+                                            <strong className="text-muted">Pizza {idx + 1} :</strong>
                                             <span className="fw-medium">{pizza.signaturePizzaName}</span>
                                         </div>
 
@@ -126,7 +118,7 @@ const SummarySidebar = ({ ...props }) => {
                                                     <span className="ms-2 fw-medium">{pizza?.cheese?.cheeseName}</span>
                                                 </div>
                                                 <div className="small">
-                                                    <span>Crust:</span>
+                                                    <span>Dough:</span>
                                                     <span className="ms-2 fw-medium">{pizza?.crust?.crustName}</span>
                                                 </div>
                                                 <div className="small">
@@ -151,19 +143,6 @@ const SummarySidebar = ({ ...props }) => {
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {allToppings.length > 0 && (
-                                            <div className="d-flex flex-column gap-1 mt-1">
-                                                <div className="text-muted small">Toppings:</div>
-                                                <div className="fw-medium d-flex flex-wrap gap-1">
-                                                    {allToppings.map((topping, tIdx) => (
-                                                        <span key={tIdx} className="topping-badge">
-                                                            {topping.toppingsName}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 );
                             })
@@ -172,13 +151,16 @@ const SummarySidebar = ({ ...props }) => {
                         {/* Selected Side */}
                         {selectedSide && (Array.isArray(selectedSide) ? selectedSide.length > 0 : Object.keys(selectedSide).length > 0) && (
                             <div className="my-2 theme-top-border">
-                                <div className="d-flex flex-row align-items-center gap-2 pt-1">
-                                    <strong className="text-muted">Side:</strong>
-                                    <span className="fw-medium small">
+                                <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                    <strong className="text-muted">Sides:</strong>
+                                    <div className="fw-medium ms-1">
                                         {Array.isArray(selectedSide)
-                                            ? selectedSide[0]?.sideName
-                                            : selectedSide.sideName}
-                                    </span>
+                                            ? selectedSide.map((side, idx) => (
+                                                <div key={idx} className="small">{side.sideName}</div>
+                                            ))
+                                            : <div className="small">{selectedSide.sideName}</div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -186,13 +168,16 @@ const SummarySidebar = ({ ...props }) => {
                         {/* Selected Drink */}
                         {selectedDrink && (Array.isArray(selectedDrink) ? selectedDrink.length > 0 : Object.keys(selectedDrink).length > 0) && (
                             <div className="my-2 theme-top-border">
-                                <div className="d-flex flex-row align-items-center gap-2 pt-1">
-                                    <strong className="text-muted">Drink:</strong>
-                                    <span className="fw-medium small">
+                                <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                    <strong className="text-muted">Drinks:</strong>
+                                    <div className="fw-medium ms-1">
                                         {Array.isArray(selectedDrink)
-                                            ? selectedDrink[0]?.drinksName
-                                            : selectedDrink.drinksName}
-                                    </span>
+                                            ? selectedDrink.map((drink, idx) => (
+                                                <div key={idx} className="small">{drink.drinksName} (x{drink.quantity})</div>
+                                            ))
+                                            : <div className="small">{selectedDrink.drinksName} (x{selectedDrink.quantity})</div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -220,4 +205,4 @@ const SummarySidebar = ({ ...props }) => {
     );
 };
 
-export default SummarySidebar;
+export default SummarySidebar;

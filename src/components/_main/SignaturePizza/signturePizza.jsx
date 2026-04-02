@@ -62,67 +62,64 @@ function SignaturePizzas({ data, toppingsData }) {
             <div className="pizza-item" onClick={handleLinkClick}>
                 {/* Circular Image */}
                 <div className="pizza-image-container">
-
                     {data?.pizza_subtitle && (
                         <span className="pizza-badge">
                             {data.pizza_subtitle}
-                        </span>)}
-
+                        </span>
+                    )}
                     <img
                         src={data?.pizza_image}
                         alt={data?.pizza_name}
                         className="pizza-image"
-                        loading="lazy" />
+                        loading="lazy"
+                    />
                 </div>
 
                 {/* Card Content */}
                 <div className="pizza-content">
-
-
                     <h5 className="pizza-name">{data?.pizza_name}</h5>
-
 
                     <div className="product-description">
                         {data?.description || ""}
                     </div>
 
-                    {/* Size & Quantity */}
-                    <div className="d-flex flex-col sm-flex-row gap-2">
-                        <div className="flex-fill-1">
-                            <select className="form-select" ref={pizzaSizeRef}>
-                                {data?.pizza_prices
-                                    ?.filter(price => parseFloat(price.price) > 0)
-                                    ?.map(price => (
-                                        <option key={price.shortcode} value={price.shortcode}>
-                                            {price.size} - ${price.price}
+                    {/* Size & Quantity - Stacked on mobile/tablet if needed */}
+                    <div className="d-flex flex-column w-100 gap-2 mt-auto">
+                        <div className="d-flex gap-2">
+                            <div className="flex-grow-1">
+                                <select className="form-select w-100" ref={pizzaSizeRef}>
+                                    {data?.pizza_prices
+                                        ?.filter(price => parseFloat(price.price) > 0)
+                                        ?.map(price => (
+                                            <option key={price.shortcode} value={price.shortcode}>
+                                                {price.size} - ${price.price}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <div style={{ width: "80px" }}>
+                                <select className="form-select w-100" ref={pizzaQuantityRef}>
+                                    {[...Array(10).keys()].map(num => (
+                                        <option key={num + 1} value={num + 1}>
+                                            {num + 1}
                                         </option>
                                     ))}
-                            </select>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <select className="form-select" ref={pizzaQuantityRef}>
-                                {[...Array(10).keys()].map(num => (
-                                    <option key={num + 1} value={num + 1}>
-                                        {num + 1}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
 
-                    <div className="d-flex gap-2 flex-row">
-                        <button type="button" className="view-button-new" onClick={handleSides}>
-                            Add to Cart
-                        </button>
-                        {
-                            !hideCustomize && (
-                                <button type="button" className="customize-btn-new" onClick={handleRedirect}>
+                        {/* Action Buttons - Always side by side */}
+                        <div className="d-flex flex-row gap-2 w-100 mt-1">
+                            <button type="button" className="view-button-new flex-grow-1" onClick={handleSides} style={{ minWidth: "0", fontSize: "13px" }}>
+                                Add to Cart
+                            </button>
+                            {!hideCustomize && (
+                                <button type="button" className="customize-btn-new flex-grow-1" onClick={handleRedirect} style={{ minWidth: "0", fontSize: "13px" }}>
                                     Customize
                                 </button>
-                            )
-                        }
+                            )}
+                        </div>
                     </div>
-
                 </div>
             </div>
 

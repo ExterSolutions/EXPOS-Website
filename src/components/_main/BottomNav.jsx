@@ -22,7 +22,7 @@ const BottomNav = () => {
         {
             label: 'Home',
             icon: <FaHome size={20} />,
-            action: () => { window.location.href = 'https://web.exter.ca/'; },
+            action: () => navigate('/'),
             active: location.pathname === '/',
         },
         {
@@ -43,8 +43,8 @@ const BottomNav = () => {
                     )}
                 </span>
             ),
-            action: () => navigate('/addtocart'),
-            active: isActive('/addtocart'),
+            action: () => navigate('/cart'),
+            active: isActive('/cart'),
         },
         {
             label: 'Account',

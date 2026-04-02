@@ -1,7 +1,6 @@
 // src/pages/Home.jsx - UPDATED VERSION
-import React, { useContext, useEffect, useState, Suspense, lazy } from "react";
+import React, { useContext, useEffect, useState, lazy } from "react";
 import Header from "../components/_main/Header/Header";
-import SEOHead from "../components/_main/SEOHead";
 import Footer from "../components/_main/Footer";
 import { useLocation } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
@@ -9,16 +8,10 @@ import CartFunction from "../components/cart";
 import { getDynamicSlider, getDynamicSlidersImage, getHomePizzas, settingApi, getSpecialOffersWithToppingsList } from "../services";
 import { toast } from "react-toastify";
 import PizzaCarousel from "../components/_main/Carousel/PizzaCarousel";
-// import "../assets/styles/theme/theme.css";
-// import '../assets/styles/card.css';
 import LoadingLayout from "../layouts/LoadingLayout";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import CategoryPizza from "./Categories/CategoryPizza";
-import OfferCards from "../components/_main/OfferCards";
-import DownloadSection from "../components/_main/DownloadSection";
-
-const HeroSliderNew = lazy(() => import('../components/_main/Carousel/HeroSliderNew'));
 
 const Home = () => {
     const [loading, setLoading] = useState(true);
@@ -162,11 +155,6 @@ const Home = () => {
 
     return (
         <div>
-            <SEOHead
-              title="Exter Pizza - Order Fresh Pizza Online | Delivery &amp; Pickup"
-              description="Order fresh, handcrafted pizza online from Exter Pizza. Choose from signature pizzas, build your own, special deals, and more. Fast delivery and pickup available."
-              canonical="https://www.exter.ca/"
-            />
             <Header />
             <div className="inner-nav"></div>
             <div className="container-fluid container-lg px-0">

@@ -171,6 +171,9 @@ const SpecialOfferPage = () => {
         regularToppingLabel:
           settingsData.find((s) => s.shortCode === "regular-toppings")?.settingValue ??
           "Regular Toppings",
+        indianToppingLabel:
+          settingsData.find((s) => s.shortCode === "indian-style-toppings")?.settingValue ??
+          "Indian Toppings",
       };
       const signaturePizza =
         specialOfferData?.signaturePizzas?.length > 0
@@ -377,7 +380,7 @@ const SpecialOfferPage = () => {
       ct.product.push(payload);
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
-      navigate("/addtocart");
+      navigate("/cart");
     }
   };
 
@@ -410,7 +413,7 @@ const SpecialOfferPage = () => {
     <div>
       <Header />
       <div className="nav-margin"></div>
-      <div className="container py-2 has-sticky-cart-bar">
+      <div className="container py-4 has-sticky-cart-bar">
         <div className="row">
           {/* Slim Offer Hero Strip (replaces old SummaryTop on mobile) */}
           <div className="col-12 d-lg-none mb-3">
@@ -431,9 +434,8 @@ const SpecialOfferPage = () => {
                     <button
                       key={i}
                       type="button"
-                      className={`deal-step-dot ${
-                        active ? 'deal-step-dot--active' : done ? 'deal-step-dot--done' : ''
-                      }`}
+                      className={`deal-step-dot ${active ? 'deal-step-dot--active' : done ? 'deal-step-dot--done' : ''
+                        }`}
                       data-index={i + 1}
                       onClick={() => setActivePizzaIndex(i)}
                       aria-label={`Pizza ${i + 1}`}

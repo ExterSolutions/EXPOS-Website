@@ -1,10 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { searchProducts } from '../../../../services';
+import { GlobalContext } from '../../../../context/GlobalContext';
 
 export const useSearch = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const globalCtx = useContext(GlobalContext);
+    const [selectedStore] = globalCtx?.selectedStore || [null];
+    const cityCode = selectedStore?.cityCode || '';
     
     // Get initial query from URL or navigation state
     const getInitialQuery = () => {
@@ -31,21 +35,49 @@ export const useSearch = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (searchQuery.length >= 2) {
-                fetchSearchResults(searchQuery);
+                fetchSearchResults(searchQuery, cityCode);
             } else {
                 setSearchResults([]);
                 setShowSearchDropdown(false);
             }
         }, 300);
         return () => clearTimeout(timer);
-    }, [searchQuery]);
+    }, [searchQuery, cityCode]);
 
     // Fetch search results
-    const fetchSearchResults = async (query) => {
+    const fetchSearchResults = async (query, code) => {
         try {
-            const res = await searchProducts(query);
-            setSearchResults(res.data || []);
-            setShowSearchDropdown(true);
+            const res = await searchProducts(query, code);
+            
+            // Log for debugging (user can check browser console)
+            console.log(`[Search] Query: "${query}", City: "${code || 'Default'}"`, res);
+            
+            // Highly resilient response parsing
+            let results = [];
+            
+            // 1. Direct array or res.data is array
+            if (Array.isArray(res)) {
+                results = res;
+            } else if (res && Array.isArray(res.data)) {
+                results = res.data;
+            } 
+            // 2. Double-nested in data.data or similar (e.g. { data: { data: [...] } })
+            else if (res?.data?.data && Array.isArray(res.data.data)) {
+                results = res.data.data;
+            }
+            // 3. Fallback for objects with results or products keys
+            else if (res?.results && Array.isArray(res.results)) {
+                results = res.results;
+            } else if (res?.products && Array.isArray(res.products)) {
+                results = res.products;
+            }
+            // 4. Case where data contains the list directly but res is axios object
+            else if (res?.data && Array.isArray(res.data)) {
+                results = res.data;
+            }
+
+            setSearchResults(results);
+            setShowSearchDropdown(true); // Always show so dropdown can render results or "No results found"
         } catch (error) {
             console.error('Search error:', error);
             setSearchResults([]);

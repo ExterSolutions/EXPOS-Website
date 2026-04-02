@@ -16,7 +16,7 @@ function PickupOrder() {
     const [loading, setLoading] = useState(false);
     const [storeDetails, setStoreDetails] = useState([]);
     const [isShowConfirmPickup, setIsShowConfirmPickup] = useState(false);
-    const [selectedStore, setSelectedStore] = useState(null);
+    const [selectedStore, setSelectedStore] = useState(globalctx.selectedStore[0]);
 
     const [cart, setCart] = globalctx.cart;
     const [currentLatitude] = globalctx.currentLatitude;
@@ -64,11 +64,6 @@ function PickupOrder() {
             }
 
             setStoreDetails(filteredStores);
-
-            if (currentStoreCode && filteredStores?.length > 0) {
-                const preSelected = filteredStores.find(d => d.code === currentStoreCode);
-                if (preSelected) setSelectedStore(preSelected);
-            }
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to fetch stores");
         } finally {
@@ -101,7 +96,15 @@ function PickupOrder() {
         getCouponList();
         getSettings();
         window.scrollTo(0, 0);
-    }, []);
+    }, [currentStoreCode]);
+
+    // Sync selectedStore when storeDetails or currentStoreCode changes
+    useEffect(() => {
+        if (!selectedStore && currentStoreCode && storeDetails.length > 0) {
+            const preSelected = storeDetails.find(d => d.code === currentStoreCode);
+            if (preSelected) setSelectedStore(preSelected);
+        }
+    }, [storeDetails, currentStoreCode]);
 
     // Recalculate totals for SINGLE coupon
     useEffect(() => {
@@ -342,7 +345,8 @@ function PickupOrder() {
                             <div className="d-flex gap-3">
                                 <button className="btn btn-light flex-grow-1 py-2" onClick={() => setIsShowConfirmPickup(false)}>Back</button>
                                 <button
-                                    className="btn btn-success flex-grow-1 py-2 fw-bold"
+                                    className="btn btn-primary flex-grow-1 py-2 fw-bold"
+                                    style={{ backgroundColor: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: '10px' }}
                                     onClick={handlePickupOrder}
                                     disabled={busyLoader}
                                 >

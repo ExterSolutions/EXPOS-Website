@@ -4,9 +4,10 @@ import { GlobalContext } from "../../../context/GlobalContext";
 import OptionSheet from "../OptionSheet";
 import ToppingSheet from "../ToppingSheet";
 // Special offer topping selectors (different API shape than Signature)
-import ToppingsTwo from "./Configurations/Toppings/ToppingsTwo";
-import ToppingsOne from "./Configurations/Toppings/ToppingsOne";
-import ToppingsFree from "./Configurations/Toppings/ToppingsFree";
+import ToppingsTwoComponent from "./Configurations/Toppings/ToppingsTwo";
+import ToppingsOneComponent from "./Configurations/Toppings/ToppingsOne";
+import ToppingsFreeComponent from "./Configurations/Toppings/ToppingsFree";
+
 
 // ─── Local helpers ──────────────────────────────────────────────────────────
 
@@ -135,10 +136,8 @@ function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState
         });
     };
 
-    // ToppingSheet expects these as component classes with specific props
-    // We wrap ToppingsTwo/One/Free (SpecialOffer selectors) into adapters
     const ToppingTwoSelectorAdapter = ({ data, ToppingsTwo: tw, handleTopping, handleSizeChange: hsc }) => (
-        <ToppingsTwo
+        <ToppingsTwoComponent
             count={count}
             pizzaState={pizzaState}
             setPizzaState={setPizzaState}
@@ -150,7 +149,7 @@ function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState
     );
 
     const ToppingOneSelectorAdapter = ({ data, ToppingsOne: to, handleTopping, handleSizeChange: hsc }) => (
-        <ToppingsOne
+        <ToppingsOneComponent
             count={count}
             pizzaState={pizzaState}
             setPizzaState={setPizzaState}
@@ -162,7 +161,7 @@ function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState
     );
 
     const FreeToppingSelectorAdapter = ({ data, ToppingsFree: tf, handleTopping, handleSizeChange: hsc }) => (
-        <ToppingsFree
+        <ToppingsFreeComponent
             count={count}
             pizzaState={pizzaState}
             setPizzaState={setPizzaState}
@@ -205,7 +204,7 @@ function SpecialPizzaConfig({
     activeAccordion,
     toggleAccordion,
 }) {
-    const [isOpen, setIsOpen] = useState(true);
+    const isActive = activeAccordion === `pizza-${count}`;
     const signaturePizzas = specialOfferData?.signaturePizzas ?? [];
 
     // Sheet open states — one per category
@@ -216,6 +215,7 @@ function SpecialPizzaConfig({
     const [crustOpen, setCrustOpen] = useState(false);
     const [crustTypeOpen, setCrustTypeOpen] = useState(false);
     const [toppingOpen, setToppingOpen] = useState(false);
+    const [pizzaOpen, setPizzaOpen] = useState(false);
 
     // Current slot state
     const slot = pizzaState[count] || {};
@@ -283,31 +283,66 @@ function SpecialPizzaConfig({
     ].map((t) => t.toppingsName);
 
     return (
-        <div className="mt-3">
-            {/* Pizza header (collapsible) */}
-            <div
-                className="topping-header-bar mb-1"
-                style={{ backgroundColor: "var(--primary)" }}
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span>PIZZA - {count + 1}</span>
-                {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+        <div
+            className={`deal-pizza-card ${isActive ? 'deal-pizza-card--active' : ''} mb-3`}
+            onClick={() => { if (!isActive) toggleAccordion(`pizza-${count}`); }}
+            role="button"
+            style={{ cursor: isActive ? 'default' : 'pointer' }}
+        >
+            {/* Card Header */}
+            <div className="deal-pizza-card__header">
+                <div className="deal-pizza-card__num">
+                    <span>{count + 1}</span>
+                </div>
+                <div className="deal-pizza-card__title">
+                    <div className="fw-bold" style={{ fontSize: '0.95rem' }}>
+                        Pizza {count + 1}
+                        {(slot.signaturePizza?.name || slot.signaturePizza?.pizza_name) && (
+                            <span className="deal-pizza-card__selected-name">
+                                {" "}— {slot.signaturePizza?.name || slot.signaturePizza?.pizza_name}
+                            </span>
+                        )}
+                    </div>
+                </div>
+                {!isActive && (
+                    <FaChevronDown style={{ color: '#888', flexShrink: 0 }} />
+                )}
             </div>
 
-            <div className={`mt-2 ${isOpen ? "d-block" : "d-none"}`}>
+            {isActive && (
+                <div className="deal-pizza-card__body">
                 {/* Signature pizza selector (if applicable) */}
                 {signaturePizzas.length > 0 && (
                     <div className="mb-3">
                         <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>Select Pizza</p>
-                        <select
-                            className="form-select form-select-sm"
-                            value={slot.signaturePizza?.code || ""}
-                            onChange={handlePizzaChange}
-                        >
-                            {signaturePizzas.map((p) => (
-                                <option key={p.code} value={p.code}>{p.name}</option>
-                            ))}
-                        </select>
+                        
+                        <TriggerBtn
+                            icon="🍕"
+                            label="Pizza"
+                            value={slot.signaturePizza?.name || slot.signaturePizza?.pizza_name || "Select Pizza"}
+                            onClick={() => setPizzaOpen(true)}
+                        />
+                        <OptionSheet
+                            isOpen={pizzaOpen}
+                            onClose={() => setPizzaOpen(false)}
+                            title="Choose Pizza"
+                            options={signaturePizzas.map(p => ({
+                                id: p.code || p.id,
+                                label: p.name || p.pizza_name || "Unknown Pizza",
+                                price: 0
+                            }))}
+                            selected={slot.signaturePizza?.code || slot.signaturePizza?.id}
+                            onSelect={(id) => {
+                                const selectedPizza = signaturePizzas.find((p) => (p.code || p.id) === id);
+                                if (selectedPizza) {
+                                    setPizzaState((prev) => {
+                                        const newState = [...prev];
+                                        newState[count] = { ...newState[count], signaturePizza: selectedPizza };
+                                        return newState;
+                                    });
+                                }
+                            }}
+                        />
                     </div>
                 )}
 
@@ -469,6 +504,7 @@ function SpecialPizzaConfig({
                     noofToppings={specialOfferData?.noofToppings || 0}
                 />
             </div>
+            )}
         </div>
     );
 }

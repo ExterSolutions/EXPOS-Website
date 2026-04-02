@@ -752,7 +752,7 @@ function AddressDetails() {
                                         {/* Convenience Charges - Only if > 0 */}
                                         {(apiPricing?.convinenceCharges || cart?.convinenceCharges) && Number(apiPricing?.convinenceCharges || cart?.convinenceCharges) > 0 && (
                                             <li>
-                                                <span className="ttl">Convenience Fee</span>
+                                                <span className="ttl">Convenience Fee ({apiPricing?.convinencePer || cart?.convinencePer || 0}%)</span>
                                                 <span className="stts">
                                                     $ {Number(apiPricing?.convinenceCharges || cart?.convinenceCharges).toFixed(2)}
                                                 </span>
@@ -863,7 +863,7 @@ function AddressDetails() {
                     {/* Convenience Charges - Only if > 0 */}
                     {apiPricing?.convinenceCharges && Number(apiPricing.convinenceCharges) > 0 && (
                         <div className="col-12 filled-bx">
-                            <span className="">Convenience Charges</span>
+                            <span className="">Convenience Charges ({apiPricing?.convinencePer || 0}%)</span>
                             <span className="">
                                 $ {Number(apiPricing.convinenceCharges).toFixed(2)}
                             </span>

@@ -69,21 +69,23 @@ function SpecialOfferWithToppingsList() {
         <div style={{ position: "relative" }}>
             <Header />
             <div className="nav-margin"></div>
-            <div className="d-flex align-items-center justify-content-between innder-page-header">
-                <div className="flex-grow-1 section-header">
-                    <span className="category-subtitle">{specialOffersWithToppingsTitle}</span>
-                    <div className="section-title">Special Pizza + Toppings</div>
+            <div className="container py-2">
+                <div className="d-flex align-items-center justify-content-between innder-page-header">
+                    <div className="flex-grow-1 section-header">
+                        <span className="category-subtitle">{specialOffersWithToppingsTitle}</span>
+                        <div className="section-title">Special Pizza + Toppings</div>
+                    </div>
                 </div>
+                {/* 
+                    basePath="/special-offers-with-toppings"
+                    → card Customize → /special-offers-with-toppings/:code
+                    → opens SpecialOffer.jsx (full toppings, crust, sauce, dips customisation)
+                */}
+                <SpecialOffer
+                    specialOfferData={specialOfferData}
+                    basePath="/special-offers-with-toppings"
+                />
             </div>
-            {/*
-                basePath="/special-offers-with-toppings"
-                → card Customize → /special-offers-with-toppings/:code
-                → opens SpecialOffer.jsx (full toppings, crust, sauce, dips customisation)
-            */}
-            <SpecialOffer
-                specialOfferData={specialOfferData}
-                basePath="/special-offers-with-toppings"
-            />
             <Footer />
         </div>
     );

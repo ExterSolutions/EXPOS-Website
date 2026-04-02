@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { GoDotFill } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,26 +7,21 @@ import { v4 as uuidv4 } from "uuid";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 import OptionSheet from "../../components/_main/OptionSheet";
-import SEOHead from "../../components/_main/SEOHead";
 import CartFunction from "../../components/cart";
 import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import { getAllIngredients, getSides, settingApi } from "../../services";
-import { CheeseSelector } from "./CheeseSelector";
 import { DipsSelector } from "./DipsSelector";
 import { DrinkSelector } from "./DrinkSelector";
 import { CYOFreeToppingSelector } from "./CYOFreeToppingSelector";
 import { CYOToppingOneSelector } from "./CYOToppingOneSelector";
 import { CYOToppingTwoSelector } from "./CYOToppingTwoSelector";
 import ToppingSheet from "../../components/_main/ToppingSheet";
-
-import { FaEye } from "react-icons/fa6";
 import CustomizePizzaImg from "../../assets/images/customizePizza.jpg";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
-import { CookSelector } from "./CookSelector";
 import CustomizeViewSelectionModal from "./CustomizeViewSelectionModal";
-import DoughSelector from "./DoughSelector";
 import SidesSelector from "./SidesSelector";
+import { sortPizzaSizes } from "../../utils/pizzaUtils";
 
 const CreatePizza = () => {
   // navigate
@@ -99,8 +93,9 @@ const CreatePizza = () => {
       setSpicy(res?.data?.spices[0]?.spicyCode);
       setSauce(res?.data?.sauce[0]?.sauceCode);
       setCook(res?.data?.cook[0]?.cookCode);
-      setPizzaSizeArr(res?.data?.sizesAndPrices);
-      setSize(res?.data?.sizesAndPrices[0]?.size);
+      const sortedSizes = sortPizzaSizes(res?.data?.sizesAndPrices);
+      setPizzaSizeArr(sortedSizes);
+      setSize(sortedSizes[0]?.size);
       const indianStyleToppings = res?.data?.toppings?.freeToppings?.map(
         (el) => {
           return {
@@ -123,13 +118,22 @@ const CreatePizza = () => {
     }
   };
 
-  const nonRegularToppingsTitle = "Premium Toppings";
+  const regularToppingsTitle =
+    settingsData.find((item) => item.shortCode === "regular-toppings")
+      ?.settingValue ?? "Regular Toppings";
 
-  const regularToppingsTitle = "Regular Toppings";
+  const nonRegularToppingsTitle =
+    settingsData.find((item) => item.shortCode === "non-regular-toppings")
+      ?.settingValue ?? "Premium Toppings";
+
+  const indianStyleToppingsTitle =
+    settingsData.find((item) => item.shortCode === "indian-style-toppings")
+      ?.settingValue ?? "Indian Toppings";
 
   const premiumToppingCount =
     Number(
-      settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
+      settingsData.find((item) => item.shortCode === "non-regular-toppings-count")
+        ?.settingValue
     ) || 1;
 
   const toggleAccordion = (accordionName) => {
@@ -498,7 +502,7 @@ const CreatePizza = () => {
       const cartProduct = ct.product;
       cartFn.addCart(cartProduct, setCart, false, settings);
       toast.success("🛒 Added to cart! Review your order.");
-      navigate("/addtocart");
+      navigate("/cart");
     }
   };
 
@@ -682,10 +686,6 @@ const CreatePizza = () => {
         </>
       ) : (
         <div className="">
-          <SEOHead
-            title="Build Your Own Pizza | Pizza"
-            description="Create your perfect pizza from scratch. Choose your dough, cheese, spicy level, sauce, cook style, and toppings. Order online for delivery or pickup."
-          />
           <Header />
           <div className="nav-margin"></div>
 
@@ -694,33 +694,18 @@ const CreatePizza = () => {
             id="create-your-own-new"
           >
             <section className="primary-background-color special-offers-sec new-block py-2">
-              <div className="container ">
-                <nav aria-label="breadcrumb">
-                  <ol className="breadcrumb custom-breadcrumb ">
-                    <li className="breadcrumb-item " aria-current="page">
-                      Home
-                    </li>
-                    <li className="breadcrumb-item active" aria-current="page">
-                      Create Your Own
-                    </li>
-                  </ol>
-                </nav>
-              </div>
               <div className="container">
                 <div className="mainContainer primary-text-color">
                   {/* left side */}
                   <div className="p-3">
-                    {/* Hero Header */}
-                    <div className="d-flex align-items-center gap-3 mb-3">
-                      <img
-                        className="cust-hero-img d-none d-sm-block"
-                        src={CustomizePizzaImg}
-                        alt="Create Your Own Pizza"
-                      />
-                      <div>
-                        <p className="fs-2 fw-bold text-primary mb-1">CREATE YOUR OWN PIZZA</p>
-                        <p className="mb-0 text-secondary" style={{ fontSize: '0.95rem' }}>Your perfect slice, your way!</p>
-                      </div>
+                    {/* Hero Header — Simplified to match Special Offer style */}
+                    <h5 className="fw-bold mb-1 d-none d-lg-block">CREATE YOUR OWN PIZZA</h5>
+                    <p className="text-secondary small mb-3 d-none d-lg-block">Your perfect slice, your way!</p>
+
+                    {/* Mobile Hero Strip */}
+                    <div className="offer-hero-strip d-lg-none mb-3">
+                      <div className="offer-hero-strip__name">CREATE YOUR OWN PIZZA</div>
+                      <div className="offer-hero-strip__price">${price}</div>
                     </div>
 
                     {/* SIZE — horizontal pills */}
@@ -743,10 +728,14 @@ const CreatePizza = () => {
                     </div>
                     {/* ── OptionSheet Modals ── */}
                     <OptionSheet isOpen={openSheet === 'dough'} onClose={() => setOpenSheet(null)} title="Choose Dough" options={(Ingredients?.crust || []).map(c => ({ id: c.crustCode, label: c.crustName, price: Number(c.price) }))} selected={Crust} onSelect={setCrust} />
+                    <OptionSheet isOpen={openSheet === 'crustType'} onClose={() => setOpenSheet(null)} title="Choose Crust Type" options={(Ingredients?.crustType || []).map(ct => ({ id: ct.crustTypeCode, label: ct.crustType, price: Number(ct.price) }))} selected={CrustType} onSelect={setCrustType} />
                     <OptionSheet isOpen={openSheet === 'cheese'} onClose={() => setOpenSheet(null)} title="Choose Cheese" options={(Ingredients?.cheese || []).map(c => ({ id: c.cheeseCode, label: c.cheeseName, price: Number(c.price) }))} selected={Cheese} onSelect={setCheese} />
                     <OptionSheet isOpen={openSheet === 'spicy'} onClose={() => setOpenSheet(null)} title="Choose Spicy Level" options={(Ingredients?.spices || []).map(c => ({ id: c.spicyCode, label: c.spicy, price: Number(c.price) }))} selected={Spicy} onSelect={setSpicy} />
                     <OptionSheet isOpen={openSheet === 'sauce'} onClose={() => setOpenSheet(null)} title="Choose Sauce" options={(Ingredients?.sauce || []).map(c => ({ id: c.sauceCode, label: c.sauce, price: Number(c.price) }))} selected={Sauce} onSelect={setSauce} />
                     <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={(Ingredients?.cook || []).map(c => ({ id: c.cookCode, label: c.cook, price: Number(c.price) }))} selected={Cook} onSelect={setCook} />
+                    {Ingredients?.specialbases?.length > 0 && (
+                      <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={(Ingredients?.specialbases || []).map(sb => ({ id: sb.specialbaseCode, label: sb.specialbaseName, price: Number(sb.price) }))} selected={SpecialBases} onSelect={setSpecialBases} />
+                    )}
 
                     {/* Sides sheet */}
                     {openSheet === 'sides' && (
@@ -813,6 +802,20 @@ const CreatePizza = () => {
                         <span className="topping-trigger-btn__value">{(Ingredients?.crust || []).find(c => c.crustCode === Crust)?.crustName || 'Select'}</span>
                         <span className="topping-trigger-btn__chevron">›</span>
                       </button>
+                      <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('crustType')}>
+                        <span className="topping-trigger-btn__icon">⭕</span>
+                        <span className="topping-trigger-btn__label">Crust Type</span>
+                        <span className="topping-trigger-btn__value">{(Ingredients?.crustType || []).find(ct => ct.crustTypeCode === CrustType)?.crustType || 'Select'}</span>
+                        <span className="topping-trigger-btn__chevron">›</span>
+                      </button>
+                      {Ingredients?.specialbases?.length > 0 && (
+                        <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('specialBase')}>
+                          <span className="topping-trigger-btn__icon">🍕</span>
+                          <span className="topping-trigger-btn__label">Special Base</span>
+                          <span className="topping-trigger-btn__value">{(Ingredients?.specialbases || []).find(sb => sb.specialbaseCode === SpecialBases)?.specialbaseName || 'Select'}</span>
+                          <span className="topping-trigger-btn__chevron">›</span>
+                        </button>
+                      )}
                       <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('cheese')}>
                         <span className="topping-trigger-btn__icon">🧀</span>
                         <span className="topping-trigger-btn__label">Cheese</span>
@@ -881,6 +884,7 @@ const CreatePizza = () => {
                       FreeToppingSelector={CYOFreeToppingSelector}
                       nonRegularTitle={nonRegularToppingsTitle}
                       regularTitle={regularToppingsTitle}
+                      indianStyleTitle={indianStyleToppingsTitle}
                     />
 
                     {/* ── Sides / Drinks / Dips trigger buttons ── */}
@@ -909,336 +913,164 @@ const CreatePizza = () => {
 
                   {/* right side */}
                   <div
-                    className="right-side-div p-3 d-lg-block d-none"
-                    style={{ position: "relative !important" }}
+                    className="right-side-div sticky-top d-lg-block d-none"
                   >
                     <div
-                      className={`p-3 right-side-internal-div card-background-color ${isFixed ? "fixed" : ""
-                        }`}
+                      className="p-2 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color"
                       style={{
-                        transform: isTranslate
-                          ? `translateY(${translateYVal}px)`
-                          : "none",
+                        border: "1px solid var(--primary-light)",
+                        marginTop: "1rem"
                       }}
                     >
-                      <div className="px-3 row">
-                        <div className="col-lg-6 p-3 rounded-3">
+                      <div className="px-2 row g-1">
+                        <div className="col-lg-5 p-2 rounded-3">
                           <img
                             className="pizzaImageBorder"
                             src={CustomizePizzaImg}
                             alt="pizza-icon"
                           />
                         </div>
-                        <div className="col-lg-6 p-4">
-                          <div className="d-flex flex-column py-4">
-                            <p className="lh-sm fs-1 fw-bold text-center text-lg-start">
-                              $ {price}
-                            </p>
-                            <div
-                              className="d-none d-flex justify-content-center  justify-content-lg-start align-items-center mt-3"
-                              style={{ userSelect: "none" }}
-                            >
+                        <div className="col-lg-6">
+                          <div className="d-flex flex-column align-items-center gap-3 py-3">
+                            <div className="lh-sm fs-1 fw-bold text-center">
+                              $ {(parseFloat(price) * pizzaQuantity).toFixed(2)}
+                            </div>
+                            <div className="d-flex align-items-center justify-content-center gap-2">
                               <button
-                                disabled={pizzaQuantity <= 1}
-                                onClick={() =>
-                                  setPizzaQuantity((prev) => prev - 1)
-                                }
+                                type="button"
                                 className="btn btn-secondary rounded-circle pizzaQtyButton"
+                                onClick={() => setPizzaQuantity(Math.max(1, pizzaQuantity - 1))}
+                                disabled={pizzaQuantity <= 1}
                               >
                                 <FaMinus className="pizzaQtyButtonSpan" />
                               </button>
-                              <p className="lh-sm fs-4 fw-bold mx-2">
+                              <div className="fs-4 fw-bold mx-2">
                                 {pizzaQuantity}
-                              </p>
+                              </div>
                               <button
-                                disabled={pizzaQuantity >= 10}
+                                type="button"
                                 className="btn btn-secondary rounded-circle pizzaQtyButton"
-                                onClick={() =>
-                                  setPizzaQuantity((prev) => prev + 1)
-                                }
+                                onClick={() => setPizzaQuantity(pizzaQuantity + 1)}
+                                disabled={pizzaQuantity >= 10}
                               >
                                 <FaPlus className="pizzaQtyButtonSpan" />
                               </button>
                             </div>
-                            <div className="d-flex justify-content-center justify-content-lg-start">
+                            <div className="d-flex">
                               <button
+                                type="button"
+                                className="view-button px-3"
                                 onClick={() => handleAddToCart()}
-                                className={`view-button px-3`}
                               >
                                 Add to Cart
                               </button>
                             </div>
                           </div>
                         </div>
-                        <div className="scrollable-content">
+
+                        <div className="col-12">
+                          {/* Size Selection */}
                           {size && (
-                            <div className="border-top pizza-card-border-color mt-4 py-3">
-                              <div className="row">
-                                <div className="col-lg-6">
-                                  {size && (
-                                    <p className="lh-sm fs-6 mt-2 mt-lg-0">
-                                      <GoDotFill /> Size: {size} ($
-                                      {
-                                        pizzaSizeArr?.find(
-                                          (el) => el?.size === size
-                                        )?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                  {CrustType && (
-                                    <p className="lh-sm fs-6 mt-2">
-                                      <GoDotFill /> Crust Type:{" "}
-                                      {
-                                        Ingredients?.crustType?.filter(
-                                          (top) =>
-                                            top?.crustTypeCode === CrustType
-                                        )[0]?.crustType
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.crustType?.filter(
-                                          (top) =>
-                                            top?.crustTypeCode === CrustType
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                  {Spicy && (
-                                    <p className="lh-sm fs-6 mt-2">
-                                      <GoDotFill /> Spicy:{" "}
-                                      {
-                                        Ingredients?.spices?.filter(
-                                          (top) => top?.spicyCode === Spicy
-                                        )[0]?.spicy
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.spices?.filter(
-                                          (top) => top?.spicyCode === Spicy
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                  {Sauce && (
-                                    <p className="lh-sm fs-6 mt-2">
-                                      <GoDotFill /> Sauce:{" "}
-                                      {
-                                        Ingredients?.sauce?.filter(
-                                          (top) => top?.sauceCode === Sauce
-                                        )[0]?.sauce
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.sauce?.filter(
-                                          (top) => top?.sauceCode === Sauce
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                </div>
-                                <div className="col-lg-6">
-                                  {Crust && (
-                                    <p className="lh-sm fs-6 mt-2 mt-lg-0">
-                                      <GoDotFill /> Crust:{" "}
-                                      {
-                                        Ingredients?.crust?.filter(
-                                          (top) => top?.crustCode === Crust
-                                        )[0]?.crustName
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.crust?.filter(
-                                          (top) => top?.crustCode === Crust
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                  {Cheese && (
-                                    <p className="lh-sm fs-6 mt-2">
-                                      <GoDotFill /> Cheese:{" "}
-                                      {
-                                        Ingredients?.cheese?.filter(
-                                          (top) => top?.cheeseCode === Cheese
-                                        )[0]?.cheeseName
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.cheese?.filter(
-                                          (top) => top?.cheeseCode === Cheese
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                  {Cook && (
-                                    <p className="lh-sm fs-6 mt-2">
-                                      <GoDotFill /> Cook:{" "}
-                                      {
-                                        Ingredients?.cook?.filter(
-                                          (top) => top?.cookCode === Cook
-                                        )[0]?.cook
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.cook?.filter(
-                                          (top) => top?.cookCode === Cook
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                  {SpecialBases && (
-                                    <p className="lh-sm fs-6 mt-2">
-                                      <GoDotFill /> Special Base:{" "}
-                                      {
-                                        Ingredients?.specialbases?.filter(
-                                          (top) =>
-                                            top?.specialbaseCode ===
-                                            SpecialBases
-                                        )[0]?.specialbaseName
-                                      }{" "}
-                                      ($
-                                      {
-                                        Ingredients?.specialbases?.filter(
-                                          (top) =>
-                                            top?.specialbaseCode ===
-                                            SpecialBases
-                                        )[0]?.price
-                                      }
-                                      )
-                                    </p>
-                                  )}
-                                </div>
+                            <div className="mb-1 theme-top-border">
+                              <div className="d-flex gap-2 pt-1">
+                                <strong className="text-muted">Size :</strong>
+                                <span className="fw-medium">{size}</span>
                               </div>
                             </div>
                           )}
 
-                          {selectedTopping?.length > 0 && (
-                            <div className="py-3 border-top pizza-card-border-color">
-                              <p>TOPPINGS YOU SELECTED</p>
-                              <div className="mt-3 d-flex flex-wrap gap-2">
-                                {isIndiansToppings ? (
-                                  <>
-                                    {/* Display a single button for Indian Toppings Toppings */}
-                                    <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                      Indian Toppings + Coriander
-                                      <span
-                                        className="ms-2"
-                                        onClick={handleRemoveIsIndiansToppings}
-                                      >
-                                        <IoMdClose />
-                                      </span>
-                                    </button>
-
-                                    {/* Display non-free toppings */}
-                                    {selectedTopping
-                                      ?.filter((el) => el?.type !== "free")
-                                      ?.map((el) => (
-                                        <div key={el.code}>
-                                          <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                            {`${el?.name}(${el?.size}) ($${el?.price})`}
-                                            <span
-                                              className="ms-1"
-                                              onClick={() =>
-                                                handleRemoveTopping(el)
-                                              }
-                                            >
-                                              <IoMdClose />
-                                            </span>
-                                          </button>
-                                        </div>
-                                      ))}
-                                  </>
-                                ) : (
-                                  // Display all selected toppings
-                                  selectedTopping?.map((el) => (
-                                    <div key={el.code}>
-                                      <button className="px-2 py-1 btn card-secondary-tabs-background-color rounded-5 lh-sm fs-6 button-font">
-                                        {`${el?.name}(${el?.size}) ($${el?.price})`}
-                                        <span
-                                          className="ms-1"
-                                          onClick={() =>
-                                            handleRemoveTopping(el)
-                                          }
-                                        >
-                                          <IoMdClose />
-                                        </span>
-                                      </button>
-                                    </div>
-                                  ))
+                          {/* Pizza Config */}
+                          <div className="my-2 theme-top-border">
+                            <div className="d-flex gap-2 mb-1 pt-1">
+                              <strong className="text-muted">Pizza :</strong>
+                              <span className="fw-medium">Custom Pizza</span>
+                            </div>
+                            <div className="d-flex flex-row gap-1">
+                              <div className="flex-fill">
+                                {Cheese && (
+                                  <div className="small">
+                                    <span>Cheese:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.cheese?.find(c => c.cheeseCode === Cheese)?.cheeseName}</span>
+                                  </div>
+                                )}
+                                {Crust && (
+                                  <div className="small">
+                                    <span>Dough:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.crust?.find(c => c.crustCode === Crust)?.crustName}</span>
+                                  </div>
+                                )}
+                                {CrustType && (
+                                  <div className="small">
+                                    <span>Crust Type:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.crustType?.find(ct => ct.crustTypeCode === CrustType)?.crustType}</span>
+                                  </div>
+                                )}
+                                {Sauce && (
+                                  <div className="small">
+                                    <span>Sauce:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.sauce?.find(s => s.sauceCode === Sauce)?.sauce}</span>
+                                  </div>
+                                )}
+                                {Cook && (
+                                  <div className="small">
+                                    <span>Cook:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.cook?.find(c => c.cookCode === Cook)?.cook}</span>
+                                  </div>
+                                )}
+                                {Spicy && (
+                                  <div className="small">
+                                    <span>Spicy:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.spices?.find(s => s.spicyCode === Spicy)?.spicy}</span>
+                                  </div>
+                                )}
+                                {SpecialBases && (
+                                  <div className="small">
+                                    <span>Special Base:</span>
+                                    <span className="ms-2 fw-medium">{Ingredients?.specialbases?.find(sb => sb.specialbaseCode === SpecialBases)?.specialbaseName}</span>
+                                  </div>
                                 )}
                               </div>
                             </div>
+                          </div>
+
+                          {/* Selected Sides */}
+                          {Sides?.length > 0 && (
+                            <div className="my-2 theme-top-border">
+                              <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                <strong className="text-muted">Sides:</strong>
+                                <div className="fw-medium ms-1">
+                                  {Sides.map((s, idx) => (
+                                    <div key={idx} className="small">{s.sideName}</div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
                           )}
 
+                          {/* Selected Drinks */}
                           {Drinks?.length > 0 && (
-                            <div className="py-3 border-top pizza-card-border-color">
-                              <p>DRINKS YOU SELECTED</p>
-                              <div className="mt-3 d-flex flex-wrap gap-3">
-                                {Drinks?.map((el) => {
-                                  return (
-                                    <div>
-                                      <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">
-                                        {`${el?.name}(${el?.quantity}) ($${el?.totalPrice})`}
-                                        <span
-                                          className="ms-2"
-                                          onClick={() => handleRemovDrinks(el)}
-                                        >
-                                          <IoMdClose />
-                                        </span>
-                                      </button>
-                                    </div>
-                                  );
-                                })}
+                            <div className="my-2 theme-top-border">
+                              <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                <strong className="text-muted">Drinks:</strong>
+                                <div className="fw-medium ms-1">
+                                  {Drinks.map((d, idx) => (
+                                    <div key={idx} className="small">{d.name} (x{d.quantity})</div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           )}
+
+                          {/* Selected Dips */}
                           {Dips?.length > 0 && (
-                            <div className="py-3 border-top pizza-card-border-color">
-                              <p>DIPS YOU SELECTED</p>
-                              <div className="mt-3 d-flex flex-wrap gap-3">
-                                {Dips?.map((el) => {
-                                  return (
-                                    <div>
-                                      <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">
-                                        {`${el?.name}(${el?.quantity}) ($${el?.totalPrice})`}
-                                        <span
-                                          className="ms-2"
-                                          onClick={() => handleRemoveDips(el)}
-                                        >
-                                          <IoMdClose />
-                                        </span>
-                                      </button>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          )}
-                          {Sides?.length > 0 && (
-                            <div className="py-3 border-top pizza-card-border-color">
-                              <p>SIDES YOU SELECTED</p>
-                              <div className="mt-3 d-flex flex-wrap gap-3">
-                                {Sides?.map((el) => {
-                                  return (
-                                    <div>
-                                      <button className="px-3 py-1 btn card-secondary-tabs-background-color rounded-5">
-                                        {`${el?.sideName}(${el?.quantity}) ($${el?.totalPrice})`}
-                                        <span
-                                          className="ms-2"
-                                          onClick={() => handleRemoveSides(el)}
-                                        >
-                                          <IoMdClose />
-                                        </span>
-                                      </button>
-                                    </div>
-                                  );
-                                })}
+                            <div className="my-2 theme-top-border">
+                              <div className="d-flex flex-row align-items-top gap-2 pt-1">
+                                <strong className="text-muted">Dips:</strong>
+                                <div className="fw-medium ms-1">
+                                  {Dips.map((d, idx) => (
+                                    <div key={idx} className="small">{d.name} (x{d.quantity})</div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           )}

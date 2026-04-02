@@ -339,7 +339,7 @@ function PupulerModel({
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <label className="mb-2">Crust:</label>
+                            <label className="mb-2">Dough:</label>
                             <select
                                 style={{ width: "100%" }}
                                 className="select-input sideSize mb-3 card-background-color card-text-color square-select"

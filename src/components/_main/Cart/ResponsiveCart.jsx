@@ -16,7 +16,7 @@ function ResponsiveCart({ handleCart, totalPrice, section }) {
     };
     //handle Checkout Button
     const handleCheckout = () => {
-        navigate("/addtocart");
+        navigate("/cart");
     };
 
     useEffect(() => { }, [cart]);

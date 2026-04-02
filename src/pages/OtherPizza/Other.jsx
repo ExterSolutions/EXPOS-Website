@@ -24,7 +24,9 @@ import { SauceSelector } from "../Createyourown/SauceSelector";
 import { SpicySelector } from "../Createyourown/SpicySelector";
 import { ToppingOneSelector } from "../Createyourown/ToppingOneSelector";
 import { ToppingTwoSelector } from "../Createyourown/ToppingTwoSelector";
+import ToppingSheet from "../../components/_main/ToppingSheet";
 import OtherViewSelectionModal from "./OtherViewSelectionModal";
+import { sortPizzaSizes } from "../../utils/pizzaUtils";
 const Other = () => {
     // navigate
     const navigate = useNavigate();
@@ -73,7 +75,7 @@ const Other = () => {
     const [viewSelection, setViewSelection] = useState(false);
     const [settingsData, setSettingsData] = useState([]);
     const [openSheet, setOpenSheet] = useState(null); // e.g. 'dough' | 'crustType' | 'cheese' | 'spicy' | 'sauce' | 'cook' | 'toppings'
-    const [toppingTab, setToppingTab] = useState('premium');
+    const [toppingTab, setToppingTab] = useState('two');
     // Healper Function
     const cartFn = new CartFunction();
     // get all ingredients data initially and maintaining initial states
@@ -105,11 +107,22 @@ const Other = () => {
             }
         }
     };
-    const nonRegularToppingsTitle = "Premium Toppings";
-    const regularToppingsTitle = "Regular Toppings";
+    const regularToppingsTitle =
+        settingsData.find((item) => item.shortCode === "regular-toppings")
+            ?.settingValue ?? "Regular Toppings";
+
+    const nonRegularToppingsTitle =
+        settingsData.find((item) => item.shortCode === "non-regular-toppings")
+            ?.settingValue ?? "Premium Toppings";
+
+    const indianStyleToppingsTitle =
+        settingsData.find((item) => item.shortCode === "indian-style-toppings")
+            ?.settingValue ?? "Indian Toppings";
+
     const premiumToppingCount =
         Number(
-            settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
+            settingsData.find((item) => item.shortCode === "non-regular-toppings-count")
+                ?.settingValue
         ) || 1;
     const toggleAccordion = (accordionName) => {
         setActiveAccordion(
@@ -124,16 +137,15 @@ const Other = () => {
             const data = res?.data || null;
             if (data) {
                 setGetOtherData(res?.data);
-                setPizzaSizeArr(
+                const sortedPrices = sortPizzaSizes(
                     res?.data?.pizza_prices?.filter(
                         (price) => parseFloat(price.price) > 0
-                    )
+                    ) || []
                 );
+                setPizzaSizeArr(sortedPrices);
                 setName(res?.data?.pizza_name);
                 setPizzaSubTitle(res?.data?.pizza_subtitle);
-                let sizeObj = res?.data?.pizza_prices.find(
-                    (price) => parseFloat(price.price) > 0
-                );
+                let sizeObj = sortedPrices[0];
                 setSize(sizeObj?.size);
                 setCrust(res?.data?.crust?.code);
                 setCrustType(res?.data?.crust_type?.code);
@@ -477,7 +489,7 @@ const Other = () => {
             ct.product.push(payload);
             const cartProduct = ct.product;
             cartFn.addCart(cartProduct, setCart, false, settings);
-            navigate("/addtocart");
+            navigate("/cart");
         }
     };
     useEffect(() => {
@@ -685,39 +697,33 @@ const Other = () => {
                     <OptionSheet isOpen={openSheet === 'cook'} onClose={() => setOpenSheet(null)} title="Choose Cook Style" options={cookOpts} selected={Cook} onSelect={(id) => setCook(id)} />
                     {specialBaseOpts.length > 0 && <OptionSheet isOpen={openSheet === 'specialBase'} onClose={() => setOpenSheet(null)} title="Choose Special Base" options={specialBaseOpts} selected={SpecialBases} onSelect={(id) => setSpecialBases(id)} />}
 
-                    {/* Toppings Sheet */}
-                    {openSheet === 'toppings' && (
-                        <>
-                            <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
-                                <div className="topping-sheet__handle" />
-                                <div className="topping-sheet__header">
-                                    <p className="topping-sheet__title">Choose Toppings</p>
-                                    <button className="topping-sheet__close" onClick={() => setOpenSheet(null)} aria-label="Close"><IoMdClose size={20} /></button>
-                                </div>
-                                <div className="topping-sheet__tabs">
-                                    {[['premium', nonRegularToppingsTitle], ['regular', regularToppingsTitle], ['indian', 'Indian Toppings']].map(([key, label]) => (
-                                        <button key={key} className={`topping-sheet__tab${toppingTab === key ? ' active' : ''}`} onClick={() => setToppingTab(key)}>{label}</button>
-                                    ))}
-                                </div>
-                                <div className="topping-sheet__body">
-                                    {toppingTab === 'premium' && Ingredients?.toppings?.countAsTwo?.map((data, index) => (
-                                        <ToppingTwoSelector key={index} data={data} ToppingsTwo={ToppingsTwo} DefaultToppingsTwo={DefaultToppingsTwo} handleTopping={handleToppingsTwo} handleSizeChange={handleSizeChange} />
-                                    ))}
-                                    {toppingTab === 'regular' && Ingredients?.toppings?.countAsOne?.map((data, index) => (
-                                        <ToppingOneSelector key={index} data={data} ToppingsOne={ToppingsOne} DefaultToppingsOne={DefaultToppingsOne} handleTopping={handleToppingOne} handleSizeChange={handleSizeChange} />
-                                    ))}
-                                    {toppingTab === 'indian' && Ingredients?.toppings?.freeToppings?.map((data, index) => (
-                                        <FreeToppingSelector key={index} data={data} ToppingsFree={ToppingsFree} handleTopping={handleFreeToppings} handleSizeChange={handleSizeChange} />
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    )}
+                    {/* Topping Sheet */}
+                    <ToppingSheet
+                        isOpen={openSheet === 'toppings'}
+                        onClose={() => setOpenSheet(null)}
+                        activeTab={toppingTab}
+                        setActiveTab={setToppingTab}
+                        Ingredients={Ingredients}
+                        ToppingsTwo={ToppingsTwo}
+                        ToppingsOne={ToppingsOne}
+                        ToppingsFree={ToppingsFree}
+                        handleToppingsTwo={handleToppingsTwo}
+                        handleToppingOne={handleToppingOne}
+                        handleFreeToppings={handleFreeToppings}
+                        handleSizeChange={handleSizeChange}
+                        ToppingTwoSelector={ToppingTwoSelector}
+                        ToppingOneSelector={ToppingOneSelector}
+                        FreeToppingSelector={FreeToppingSelector}
+                        DefaultToppingsTwo={DefaultToppingsTwo}
+                        DefaultToppingsOne={DefaultToppingsOne}
+                        nonRegularTitle={nonRegularToppingsTitle}
+                        regularTitle={regularToppingsTitle}
+                        indianStyleTitle={indianStyleToppingsTitle}
+                    />
 
                     {getOtherData ? (
                         <div className="new-block" id="create-your-own-new">
-                            <section className="special-offers-sec new-block primary-background-color">
+                            <section className="special-offers-sec new-block primary-background-color py-2">
                                 <div className="container py-3 has-sticky-cart-bar">
                                     <div className="row">
                                         {/* ── LEFT COLUMN ──────────────────────────────────── */}
@@ -765,36 +771,136 @@ const Other = () => {
                                                     value={toppingCount > 0 ? `${toppingCount} selected` : null}
                                                     sheetKey="toppings"
                                                 />
+                                                {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
+                                                    <div className="selected-toppings-pills mt-2">
+                                                        {[...ToppingsTwo, ...ToppingsOne, ...ToppingsFree].map((t, i) => (
+                                                            <span key={i} className="selected-topping-pill">{t.name}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
+
                                             </div>
                                         </div>
                                         {/* ── RIGHT COLUMN (desktop summary) ── */}
                                         <div className="col-lg-5 col-12 d-none d-lg-block">
-                                            <div className="p-3 card-background-color card-text-color rounded-3" style={{ position: 'sticky', top: '80px' }}>
-                                                <div className="text-center mb-3">
-                                                    <img
-                                                        className="pizzaImageBorder"
-                                                        src={getOtherData?.pizza_image || pizzaimage}
-                                                        alt="pizza-icon"
-                                                        style={{ maxWidth: 160 }}
-                                                    />
-                                                </div>
-                                                <p className="fs-2 fw-bold text-center">$ {price}</p>
-                                                <div className="d-flex justify-content-center align-items-center gap-3 mb-3" style={{ userSelect: 'none' }}>
-                                                    <button disabled={pizzaQuantity <= 1} onClick={() => setPizzaQuantity(p => p - 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaMinus /></button>
-                                                    <span className="fs-4 fw-bold">{pizzaQuantity}</span>
-                                                    <button disabled={pizzaQuantity >= 10} onClick={() => setPizzaQuantity(p => p + 1)} className="btn btn-secondary rounded-circle pizzaQtyButton"><FaPlus /></button>
-                                                </div>
-                                                <button onClick={handleAddToCart} className="btn pizza-card-btn-background-color pizza-card-btn-text-color fw-bold w-100 py-2">Add to Cart</button>
+                                            <div
+                                                className="p-2 right-side-internal-div-new bg-white shadow-sm rounded-4 card-text-color"
+                                                style={{
+                                                    position: 'sticky',
+                                                    top: '80px',
+                                                    border: '1px solid var(--primary-light)'
+                                                }}
+                                            >
+                                                <div className="px-2 row g-1">
+                                                    <div className="col-lg-5 p-2 rounded-3">
+                                                        <img
+                                                            className="pizzaImageBorder"
+                                                            src={getOtherData?.pizza_image || pizzaimage}
+                                                            alt="pizza-icon"
+                                                        />
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="d-flex flex-column align-items-center gap-3 py-3">
+                                                            <div className="lh-sm fs-1 fw-bold text-center">
+                                                                $ {price}
+                                                            </div>
+                                                            <div className="d-flex align-items-center justify-content-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-secondary rounded-circle pizzaQtyButton"
+                                                                    onClick={() => setPizzaQuantity(Math.max(1, pizzaQuantity - 1))}
+                                                                    disabled={pizzaQuantity <= 1}
+                                                                >
+                                                                    <FaMinus className="pizzaQtyButtonSpan" />
+                                                                </button>
+                                                                <div className="fs-4 fw-bold mx-2">
+                                                                    {pizzaQuantity}
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-secondary rounded-circle pizzaQtyButton"
+                                                                    onClick={() => setPizzaQuantity(pizzaQuantity + 1)}
+                                                                    disabled={pizzaQuantity >= 10}
+                                                                >
+                                                                    <FaPlus className="pizzaQtyButtonSpan" />
+                                                                </button>
+                                                            </div>
+                                                            <div className="d-flex">
+                                                                <button
+                                                                    type="button"
+                                                                    className="view-button px-3"
+                                                                    onClick={handleAddToCart}
+                                                                >
+                                                                    Add to Cart
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                                {/* Selection Summary */}
-                                                <div className="mt-3 border-top pt-3">
-                                                    {[{label:'Size', val: size}, {label:'Dough', val: crustLabel}, {label:'Crust', val: crustTypeLabel}, {label:'Cheese', val: cheeseLabel}, {label:'Spicy', val: spicyLabel}, {label:'Sauce', val: sauceLabel}, {label:'Cook', val: cookLabel}].map(({label, val}) => val && val !== 'Select' ? (
-                                                        <p key={label} className="fs-6 mb-1"><GoDotFill /> {label}: {val}</p>
-                                                    ) : null)}
-                                                    {toppingCount > 0 && <p className="fs-6 mb-1"><GoDotFill /> Toppings: {toppingCount} selected</p>}
+                                                    <div className="col-12 mt-2">
+                                                        {/* Selection Summary */}
+                                                        <div className="theme-top-border pt-1">
+                                                            <div className="row g-2">
+                                                                <div className="col-12">
+                                                                    <div className="d-flex gap-2 mb-1">
+                                                                        <strong className="text-muted small">Size:</strong>
+                                                                        <span className="fw-medium small">{size}</span>
+                                                                    </div>
+                                                                    <div className="d-flex gap-2 mb-1">
+                                                                        <strong className="text-muted small">Pizza:</strong>
+                                                                        <span className="fw-medium small">{name}</span>
+                                                                    </div>
+                                                                    {crustLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Dough:</strong>
+                                                                            <span className="fw-medium small">{crustLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {crustTypeLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Crust Type:</strong>
+                                                                            <span className="fw-medium small">{crustTypeLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {cheeseLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Cheese:</strong>
+                                                                            <span className="fw-medium small">{cheeseLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {sauceLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Sauce:</strong>
+                                                                            <span className="fw-medium small">{sauceLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {spicyLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Spicy:</strong>
+                                                                            <span className="fw-medium small">{spicyLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {cookLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Cook:</strong>
+                                                                            <span className="fw-medium small">{cookLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {specialBaseLabel !== 'Select' && (
+                                                                        <div className="d-flex gap-2 mb-1">
+                                                                            <strong className="text-muted small">Base:</strong>
+                                                                            <span className="fw-medium small">{specialBaseLabel}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </section>

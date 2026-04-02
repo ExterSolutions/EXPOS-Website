@@ -27,7 +27,7 @@ function About() {
                                     </p>
                                     <p className="fst-italic lh-base infoText card-text-color">
 
-                                        At Chandigarh Pizza, we’re passionate about crafting delicious, 100% vegetarian pizzas that bring together bold, flavorful ingredients to create a truly satisfying experience. Every pizza is made with care, blending tradition with creativity to please every palate.
+                                        At Exter Pizza, we’re passionate about crafting delicious, 100% vegetarian pizzas that bring together bold, flavorful ingredients to create a truly satisfying experience. Every pizza is made with care, blending tradition with creativity to please every palate.
                                     </p>
                                     <br />
                                     <br />
@@ -65,7 +65,7 @@ function About() {
                                                             <strong className="top-h">Quality - </strong>
                                                             <span className="card-text-color  ">
                                                                 Quality is at the heart of everything we do at
-                                                                Chandigarh Pizza. We source the fresh produce,
+                                                                Exter Pizza. We source the fresh produce,
                                                                 sauces, and finest cheeses to ensure that every
                                                                 pizza we serve is of the highest quality.
                                                             </span>

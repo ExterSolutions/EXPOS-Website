@@ -40,19 +40,21 @@ const PizzaCarousel = ({
 
     return (
         <div className="section pizza-carousel-section pt-60">
-            <div className="d-flex align-items-center justify-content-between pb-2">
-                <div className="flex-grow-1 section-header">
-                    <span
-                        className="category-subtitle"
-                        style={{ color: colors?.primary }}
-                    >
-                        {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
-                    </span>
-                    <div className="d-flex align-items-center gap-2">
-                        <div className="section-title">{sectionTitle}</div>
-                        {showBestSelling && (
-                            <span className="best-selling-badge">🏆 Best Sellers</span>
-                        )}
+            <div className="container">
+                <div className="d-flex align-items-center justify-content-between pb-2">
+                    <div className="flex-grow-1 section-header">
+                        <span
+                            className="category-subtitle"
+                            style={{ color: colors?.primary }}
+                        >
+                            {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
+                        </span>
+                        <div className="d-flex align-items-center gap-2">
+                            <div className="section-title">{sectionTitle}</div>
+                            {showBestSelling && (
+                                <span className="best-selling-badge">🏆 Best Sellers</span>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
