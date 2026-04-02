@@ -22693,7 +22693,7 @@ body {
     letter-spacing: 0.03em;
 }
 
-/* Pizza grid — horizontal scroll snap on mobile */
+/* Pizza grid — responsive columns */
 .pizza-grid {
   display: grid;
   gap: 1rem;
@@ -22718,6 +22718,153 @@ body {
   .pizza-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE LAYOUT FIX — Prevent horizontal overflow
+   Targets iPhone 13 (390px), Samsung S25 (384px) and similar
+   ═══════════════════════════════════════════════════════════ */
+
+/* Root overflow fix */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* ── Pizza Carousel Section ──────────────────────────────── */
+.pizza-carousel-section {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 640px) {
+  .pizza-carousel-section {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  /* Grid respects the inner padding */
+  .pizza-carousel-section .pizza-grid {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* ── Section Header text ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .section-header {
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .category-subtitle {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* ── Pizza Card — compact mobile ────────────────────────── */
+@media (max-width: 480px) {
+  .pizza-card-body {
+    padding: 8px 10px 10px;
+    gap: 3px;
+  }
+
+  .pizza-card-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .pizza-card-desc {
+    font-size: 0.68rem;
+  }
+
+  .pizza-card-price {
+    font-size: 1rem;
+  }
+
+  .pizza-card-price-label {
+    font-size: 0.58rem;
+  }
+
+  .pizza-card-order-btn {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    border-radius: 14px;
+  }
+
+  .pizza-card-footer {
+    padding-top: 6px;
+    gap: 5px;
+  }
+}
+
+/* ── Category Section ───────────────────────────────────── */
+.category-section {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .category-image-wrapper {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .category-name {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .category-image-wrapper {
+    width: 4.8rem;
+    height: 4.8rem;
+  }
+
+  .category-name {
+    font-size: 0.65rem;
+  }
+}
+
+/* ── Category swiper — clip to viewport ─────────────────── */
+.category-swiper-wrap {
+  overflow: hidden;
+}
+
+/* ── Prevent any child from pushing row wider ───────────── */
+@media (max-width: 640px) {
+  .pizza-card-modern {
+    min-width: 0;
+  }
+
+  .pizza-card-img-area {
+    min-width: 0;
+  }
+
+  .pizza-card-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* ── "pt-60" utility used in home sections ──────────────── */
+@media (max-width: 640px) {
+  .pt-60 {
+    padding-top: 32px !important;
   }
 }
 
