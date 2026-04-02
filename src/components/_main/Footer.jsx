@@ -125,10 +125,29 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
                 {/* Copyright bar */}
                 <div className="footer-bottom">
                     <span className="footer-copyright">
-                        {copyrightText}
-                        {!copyrightText.toLowerCase().includes("exter") && (
-                            <a href="https://www.exter.ca/" target="_blank" rel="noopener noreferrer"> EXTER</a>
-                        )}
+                        {(() => {
+                            // Find "exter" in the copyright text (case-insensitive) and hyperlink it
+                            const match = copyrightText.match(/exter/i);
+                            if (match) {
+                                const idx = copyrightText.toLowerCase().indexOf("exter");
+                                return (
+                                    <>
+                                        {copyrightText.slice(0, idx)}
+                                        <a href="https://www.exter.ca/" target="_blank" rel="noopener noreferrer">
+                                            {copyrightText.slice(idx, idx + 5)}
+                                        </a>
+                                        {copyrightText.slice(idx + 5)}
+                                    </>
+                                );
+                            }
+                            // Fallback: append link if "exter" not found in text
+                            return (
+                                <>
+                                    {copyrightText}
+                                    <a href="https://www.exter.ca/" target="_blank" rel="noopener noreferrer"> EXTER</a>
+                                </>
+                            );
+                        })()}
                     </span>
                 </div>
             </div>

@@ -95,16 +95,36 @@ const Home = () => {
             setSliderDataNew(getDynamicSliderResponse?.data?.filter((data) => data?.code !== "static"));
 
             const rawPopularItems = getHomePizzasResponse?.data?.popularItems || [];
-            const filteredPopularPizzas = rawPopularItems
-                ?.filter(item => item.productType && (item.productType === "other" || item.productType === "signature" || item.productType === "drinks" || item.productType === "sides" || item.productType === "dips"))
-                ?.map(item => ({
+
+            // Only signatures + up to 3 sides; exclude drinks, dips, other
+            const signatureItems = rawPopularItems
+                .filter(item => item.productType === "signature")
+                .map(item => ({
                     ...item,
                     pizzaName: item.name,
                     pizzaImage: item.image,
                     pizzaSubtitle: null,
                     ratings: item.ratings,
-                    code: item.code
-                })) || [];
+                    code: item.code,
+                    // Price: first pizza_prices entry
+                    displayPrice: item?.pizza_prices?.[0]?.price ?? null,
+                }));
+
+            const sideItems = rawPopularItems
+                .filter(item => item.productType === "sides")
+                .slice(0, 3)
+                .map(item => ({
+                    ...item,
+                    pizzaName: item.sideName || item.name,
+                    pizzaImage: item.image,
+                    pizzaSubtitle: null,
+                    ratings: item.ratings,
+                    code: item.code,
+                    // Price: cheapest combination entry
+                    displayPrice: item?.combination?.[0]?.price ?? null,
+                }));
+
+            const filteredPopularPizzas = [...signatureItems, ...sideItems];
             setPopulerPizzaList(filteredPopularPizzas);
         } catch (error) {
             if (error.response?.status === 400 || error.response?.status === 500) {
@@ -156,7 +176,6 @@ const Home = () => {
                 <PizzaCarousel sectionSubTitle={`🔥 Craving Something Delicious?`} sectionTitle={`Top Deals`} pizzas={specialOfferList} type="special" redirectBase={'/specialoffer'} />
                 <PizzaCarousel sectionSubTitle={`Chef's Selection`} sectionTitle={`Special + Toppings`} pizzas={specialPizzaWithToppings} type="special" redirectBase={'/special-offers-with-toppings'} />
                 <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Signature Pizzas`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} />
-                <PizzaCarousel sectionSubTitle={`Fan Favourites`} sectionTitle={`Other Pizzas`} pizzas={otherPizzaList} type="other" redirectBase={'/otherpizza'} />
                 <PizzaCarousel sectionSubTitle={`Our Customers Love These`} sectionTitle={`Best Sellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} showBestSelling={true} />
             </div>
             <div className="container-fluid px-0">

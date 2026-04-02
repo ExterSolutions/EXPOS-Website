@@ -24,13 +24,17 @@ const PizzaCarousel = ({
 
     const getRedirectPath = (item) => {
         const productType = item?.productType;
+        const code = item?.code;
         switch (productType) {
-            case "dips": return "/dips";
-            case "drinks": return "/drinks";
-            case "sides": return "/sides";
-            case "signature": return "/signaturepizza";
-            case "other": return "/otherpizza";
-            default: return `${redirectBase}/${item.code}`;
+            // Direct item pages (have /:sid route)
+            case "signature": return code ? `/signaturepizza/${code}` : "/signaturepizza";
+            case "special":   return code ? `${redirectBase}/${code}` : redirectBase;
+            case "other":     return code ? `/otherpizza/${code}` : "/otherpizza";
+            // List pages only (no individual item route)
+            case "sides":   return "/sides";
+            case "dips":    return "/dips";
+            case "drinks":  return "/drinks";
+            default:        return code ? `${redirectBase}/${code}` : redirectBase;
         }
     };
 
@@ -60,7 +64,9 @@ const PizzaCarousel = ({
                         item?.name ||
                         `Item ${index + 1}`;
                     const image = item?.pizzaImage || item?.image;
-                    const price = item?.pizza_prices?.[0]?.price || item?.price || '0.00';
+                    // Use per-type displayPrice if set, then fall back to common fields
+                    const rawPrice = item?.displayPrice ?? item?.pizza_prices?.[0]?.price ?? item?.combination?.[0]?.price ?? item?.price ?? null;
+                    const price = rawPrice !== null && rawPrice !== undefined ? rawPrice : null;
                     const visitLink = getRedirectPath(item);
                     const description = item?.description || item?.dipsDescription || item?.dipsDiscription;
 
@@ -90,10 +96,14 @@ const PizzaCarousel = ({
                                         <p className="pizza-card-desc">{description}</p>
                                     )}
                                     <div className="pizza-card-footer">
-                                        <div className="pizza-card-price-group">
-                                            <span className="pizza-card-price-label">From</span>
-                                            <span className="pizza-card-price">${price}</span>
-                                        </div>
+                                        {price !== null && Number(price) > 0 ? (
+                                            <div className="pizza-card-price-group">
+                                                <span className="pizza-card-price-label">From</span>
+                                                <span className="pizza-card-price">${Number(price).toFixed(2)}</span>
+                                            </div>
+                                        ) : (
+                                            <div className="pizza-card-price-group" />
+                                        )}
                                         <button
                                             type="button"
                                             className="pizza-card-order-btn"

@@ -21823,10 +21823,11 @@ body {
   text-decoration: none;
 }
 
-/* Mobile: bottom nav padding so footer isn't cut off */
+/* Mobile: footer background extends to fill space above bottom nav — no grey gap */
 @media (max-width: 767px) {
   .footer-compact {
-    margin-bottom: 60px; /* height of bottom nav bar */
+    margin-bottom: 0;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
