@@ -15,9 +15,9 @@ import {
     cancelOrder,
     getPostalcodeList,
     getStoreLocationByCity,
-    orderPlace,
-    settingApi
+    orderPlace
 } from "../services";
+
 
 const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
 const canadianPostalCode = Yup.string().test(
@@ -79,7 +79,6 @@ function AddressDetails() {
 
     const [postalCodeOp, setPostalCodeOp] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [deliveryCh, setDeliveryCh] = useState(0.0);
 
     const [taxRates, setTaxRates] = useState(null);
     const [readOnly, setReadOnly] = useState(false)
@@ -160,22 +159,9 @@ function AddressDetails() {
         setStores(storeOptions);
     }, [currentCity, currentStore])
 
-    // Developer: Shreyas Mahamuni, Working Date: 26-12-2023
-    const settingValues = async () => {
-        await settingApi()
-            .then((res) => {
-                if (res) {
-                    res.data.map((data) => {
-                        if (data?.shortCode === "delivery_charges" && data?.type === "amount") {
-                            setDeliveryCh(data?.settingValue);
-                        }
-                    });
-                }
-            })
-            .catch((err) => {
-
-            });
-    };
+    // Delivery charges are handled by Nash on the backend.
+    // The orderPlace response (apiPricing) returns the Nash-calculated fee
+    // which is already displayed in the Order Summary section below.
 
     // START TIMER FUNCTION
     const startTimer = () => {
@@ -388,8 +374,8 @@ function AddressDetails() {
                 discountAmount: cart?.discountAmount,
                 //taxPer: deliveryResponse?.taxRates?.tax_percent || 0,
                 // taxAmount: Number((cart?.subtotal || 0) * (deliveryResponse?.taxRates?.tax_percent || 0) * 0.01).toFixed(2),
-                deliveryCharges: deliveryCh || 0.0,
-                extraDeliveryCharges: cart?.extraDeliveryCharges || 0,
+                deliveryCharges: 0,          // Calculated by Nash on backend
+                extraDeliveryCharges: 0,      // Set by Nash backend
                 grandTotal: Number(cart?.grandtotal || 0).toFixed(2),
                 successUrl: `${baseUrl}/payment/success`,
                 cancelUrl: `${baseUrl}/payment/cancel`,
@@ -491,14 +477,11 @@ function AddressDetails() {
         postalCodeList();
     }, [formik.values.postalcode]);
 
-    useEffect(() => {
-        settingValues();
-    }, []);
 
     if (loading) return <LoadingLayout />;
 
     return (
-        <div className="relative" style={{ paddingBottom: "200px" }}>
+        <div className="relative" style={{ paddingBottom: "80px" }}>
             <div
                 className="container-fluid container-lg d-flex justify-content-start align-items-start flex-column p-0 m-0"
                 style={{ backgroundColor: "#ffffff" }}
@@ -525,27 +508,40 @@ function AddressDetails() {
                             <div className='col-12'>
                                 <div className="fs-6 fw-bold text-secondary">Choose your nearest Store:</div>
                             </div>
-                            {/* City Dropdown */}
+                            {/* City Dropdown — locked to current city, prices vary per city */}
                             <div className='col-md-12 col-lg-6'>
-                                <label htmlFor="city-select" className="form-label">City:</label>
+                                <label htmlFor="city-select" className="form-label d-flex align-items-center gap-2">
+                                    City:
+                                    <small className="text-muted fw-normal" style={{ fontSize: '0.75rem' }}>
+                                        🔒 Fixed to your selected city
+                                    </small>
+                                </label>
                                 <Select
                                     id="city-select"
                                     options={cities}
                                     value={selectedCity}
                                     onChange={handleCityChange}
                                     placeholder="Select a city..."
-                                    isSearchable
+                                    isSearchable={false}
+                                    isDisabled={true}
                                     menuPortalTarget={document.body}
                                     styles={{
                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                         container: (base) => ({ ...base, width: '100%' }),
-                                        control: (base) => ({ ...base, width: '100%' }),
+                                        control: (base) => ({
+                                            ...base,
+                                            width: '100%',
+                                            backgroundColor: '#f5f5f5',
+                                            cursor: 'not-allowed',
+                                            opacity: 0.75,
+                                        }),
                                         menu: (base) => ({ ...base, width: '100%' }),
+                                        singleValue: (base) => ({ ...base, color: '#666' }),
                                     }}
                                     aria-label="City Select"
                                 />
                             </div>
-                            {/* Store Dropdown */}
+                            {/* Store Dropdown — changeable to get correct tax/pricing breakdown */}
                             <div className='col-md-12 col-lg-6'>
                                 <label htmlFor="store-select" className="form-label">Store:</label>
                                 <Select
@@ -682,13 +678,22 @@ function AddressDetails() {
                                             ) : null}
                                         </div>
 
-                                        {!readOnly && <div className="d-flex gap-4 mb-2">
+                                        {!readOnly && <div className="d-grid mt-3 mb-2">
                                             <button
-                                                className="py-2 fw-bold btn btn-md regBtn"
+                                                className="py-2 fw-bold btn btn-lg"
                                                 type="submit"
+                                                style={{
+                                                    background: 'var(--primary, #2d7a2d)',
+                                                    color: '#fff',
+                                                    borderRadius: '10px',
+                                                    fontSize: '1rem',
+                                                }}
                                             >
-                                                Get delivery
+                                                🚚 Confirm Address &amp; Place Order
                                             </button>
+                                            <small className="text-muted text-center mt-2">
+                                                Your delivery charges will be calculated at checkout
+                                            </small>
                                         </div>}
                                         {readOnly && !showOrderButtons && <div className="d-flex gap-4 mb-2">
                                             <button

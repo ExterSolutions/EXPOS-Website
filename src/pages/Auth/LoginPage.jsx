@@ -15,7 +15,10 @@ function LoginPage() {
         if (user != null) {
             const userData = JSON.parse(user);
             if (userData) {
-                navigate("/");
+                // Respect any redirectTo path saved before the login redirect
+                const redirectTo = localStorage.getItem("redirectTo") || "/";
+                localStorage.removeItem("redirectTo");
+                navigate(redirectTo);
             }
         }
         setLoading(false);

@@ -19,7 +19,8 @@ function Cart() {
     const [cart, setCart] = globalCtx.cart;
     const [regUser, setRegUser] = globalCtx.regUser;
     const [loading, setLoading] = useState(false);
-    const { user } = useSelector((state) => state);
+    const user = useSelector((state) => state.user);
+
 
     const navigate = useNavigate();
     const location = useLocation();

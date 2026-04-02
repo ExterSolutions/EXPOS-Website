@@ -442,14 +442,15 @@ function ForgetPassword() {
                 const res = await customerResetPassword(payload);
                 if (res) {
                     const response = res;
-                    if (response.status !== "200") {
+                    // Use resetToken presence as the success indicator
+                    // (response.status may be a number or string depending on backend)
+                    if (!response.resetToken) {
                         toast.error(response.message || "Failed to send OTP. Please try again.");
                     } else {
                         setResetToken(response.resetToken);
                         setMobileNumber(values.mobileNumber);
                         toast.success(response.message || "OTP sent successfully to your mobile number");
                         setStep(2);
-
                     }
                 } else {
                     throw new Error("Invalid response from server");

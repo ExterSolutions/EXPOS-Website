@@ -18,7 +18,8 @@ function CheckoutPage() {
     const [cart, setCart] = globalctx.cart;
     const [isAuthenticated, setIsAuthenticated] = globalctx.auth;
     const [selectedType, setSelectedType] = globalctx.selectedType;
-    const { user } = useSelector((state) => state);
+    const user = useSelector((state) => state.user);
+
 
     const navigate = useNavigate();
 
@@ -53,74 +54,65 @@ function CheckoutPage() {
                     >
                         <div className="container-fluid py-3 px-lg-5 px-3">
                             <div className="row gx-3 justify-content-center align-items-center">
-                                <div className="col-12 text-start">
-                                    <h4 className="fw-bolder text-secondary mb-3">
-                                        Choose One of the following
-                                    </h4>
-                                </div>
-                                <nav className="col-lg-12 col-md-8 col-sm-12 placeorderTab">
-                                    <div
-                                        className="nav nav-tabs w-100"
-                                        id="nav-tab"
-                                        role="tablist"
-                                        style={{ border: "none" }}
-                                    >
-
+                                <div className="col-12">
+                                    {/* Modern pill toggle switcher */}
+                                    <div style={{
+                                        display: 'inline-flex',
+                                        background: '#f0f0f0',
+                                        borderRadius: '50px',
+                                        padding: '4px',
+                                        gap: '4px',
+                                        width: '100%',
+                                        maxWidth: '380px',
+                                    }}>
                                         <button
-                                            className={`nav-link py-md-2 py-1 px-md-5 px-3 ${selectedType === 'pickup' ? 'active' : ''}`}
                                             id="nav-home-tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#nav-home"
                                             type="button"
-                                            role="tab"
-                                            aria-controls="nav-home"
-                                            aria-selected="true"
                                             onClick={() => setSelectedType("pickup")}
+                                            style={{
+                                                flex: 1,
+                                                padding: '10px 20px',
+                                                borderRadius: '50px',
+                                                border: 'none',
+                                                fontWeight: 600,
+                                                fontSize: '0.95rem',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                background: selectedType === 'pickup' ? 'var(--primary, #2d7a2d)' : 'transparent',
+                                                color: selectedType === 'pickup' ? '#fff' : '#555',
+                                                boxShadow: selectedType === 'pickup' ? '0 2px 8px rgba(45,122,45,0.3)' : 'none',
+                                            }}
                                         >
-                                            Pickup
+                                            🏪 Pickup
                                         </button>
-
-                                        {/* <button
-                                            className={`nav-link  ${selectedType === 'delivery' ? 'active' : ''} py-md-2 py-1 px-md-5 px-3`}
+                                        <button
                                             id="nav-profile-tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#nav-profile"
                                             type="button"
-                                            role="tab"
-                                            aria-controls="nav-profile"
-                                            aria-selected="false"
                                             onClick={() => setSelectedType("delivery")}
+                                            style={{
+                                                flex: 1,
+                                                padding: '10px 20px',
+                                                borderRadius: '50px',
+                                                border: 'none',
+                                                fontWeight: 600,
+                                                fontSize: '0.95rem',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                background: selectedType === 'delivery' ? 'var(--primary, #2d7a2d)' : 'transparent',
+                                                color: selectedType === 'delivery' ? '#fff' : '#555',
+                                                boxShadow: selectedType === 'delivery' ? '0 2px 8px rgba(45,122,45,0.3)' : 'none',
+                                            }}
                                         >
-                                            Delivery
-                                        </button> */}
-
+                                            🚴 Delivery
+                                        </button>
                                     </div>
-                                </nav>
+                                </div>
                             </div>
                         </div>
 
                         <div className="container-fluid px-lg-5 px-3 pt-3">
-                            <div className="tab-content" id="nav-tabContent">
-
-                                <div
-                                    className={`tab-pane fade ${selectedType === 'pickup' ? 'show active' : ''}`}
-                                    id="nav-home"
-                                    role="tabpanel"
-                                    aria-labelledby="nav-home-tab"
-                                >
-                                    <PickupOrder />
-                                </div>
-
-                                <div
-                                    className={`tab-pane fade mb-3 ${selectedType === 'delivery' ? 'show active' : ''}`}
-                                    id="nav-profile"
-                                    role="tabpanel"
-                                    aria-labelledby="nav-profile-tab"
-                                >
-                                    <AddressDetails />
-                                </div>
-
-                            </div>
+                            {selectedType === 'pickup' && <PickupOrder />}
+                            {selectedType === 'delivery' && <AddressDetails />}
                         </div>
 
                     </div>

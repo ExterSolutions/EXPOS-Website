@@ -10,7 +10,7 @@ export const useOrderNow = () => {
     const [cart] = globalCtx.cart;
     const [currentStore] = globalCtx.currentStore;
     const [showStorePopup, setShowStorePopup] = globalCtx.showStorePopup;
-    const { user } = useSelector((state) => state);
+    const user = useSelector((state) => state.user);
 
     const handleOrderNowClick = (e) => {
         e.preventDefault();
