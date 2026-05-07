@@ -137,6 +137,7 @@ function AddressDetails() {
             const cityOptions = res.data.map((item) => ({
                 value: item.city,
                 label: item.city,
+                cityCode: item.cityCode,
                 stores: item.storeLocations,
             }));
             setCities(cityOptions);
@@ -368,6 +369,7 @@ function AddressDetails() {
                 mobileNumber: values?.phoneno,
                 address: values?.address,
                 zipCode: values.postalcode,
+                cityCode: selectedCity?.cityCode || currentCity?.cityCode || "",
                 storeCode: currentStoreCode,
                 products: cart?.product,
                 subTotal: cart?.subtotal,

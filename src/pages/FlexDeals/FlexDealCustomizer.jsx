@@ -385,6 +385,7 @@ const FlexDealCustomizer = () => {
             productName: deal.name,
             productType: 'flex_deal',
             dealFormat: 'v3',
+            pizzaSize: selectedSize?.size || '',
             quantity,
             price: totalPrice,
             amount: parseFloat((totalPrice * quantity).toFixed(2)),
