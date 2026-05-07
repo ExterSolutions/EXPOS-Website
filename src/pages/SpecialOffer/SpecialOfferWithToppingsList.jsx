@@ -86,7 +86,7 @@ function SpecialOfferWithToppingsList() {
                     basePath="/special-offers-with-toppings"
                 />
             </div>
-            <Footer />
+
         </div>
     );
 }

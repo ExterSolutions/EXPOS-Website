@@ -287,9 +287,10 @@ const PizzaCustomizerAccordion = ({
     const handleSignaturePizzaChange = (code) => {
         setSignatureCode(code);
         const pizzas = Array.isArray(signaturePizzas) ? signaturePizzas : (signaturePizzas?.data || []);
-        const selectedPizza = pizzas?.find((p) => (p.code || p.sideCode || p.id) === code) || null;
+        // Use same id resolution as SignaturePizzaSelector.normalizedOptions so the find always matches
+        const selectedPizza = pizzas?.find((p, idx) => (p.code || p.sideCode || p.id || idx) === code) || null;
         if (selectedPizza) {
-            onUpdateCustomization(index, "signaturePizzaCode", selectedPizza.code || selectedPizza.sideCode || selectedPizza.id);
+            onUpdateCustomization(index, "signaturePizzaCode", selectedPizza.code || selectedPizza.sideCode || selectedPizza.id || code);
             onUpdateCustomization(index, "signaturePizzaName", selectedPizza.pizza_name || selectedPizza.pizzaName || selectedPizza.name || selectedPizza.sideName || "");
             onUpdateCustomization(index, "toppings", { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] });
         } else {

@@ -1586,7 +1586,7 @@ const EditOther = () => {
                             </div>
                         </section>
                     </div >
-                    <Footer />
+
                     <ResponsiveCart
                         handleCart={handleUpdatePizza}
                         totalPrice={price}

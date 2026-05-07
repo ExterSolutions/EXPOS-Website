@@ -48,7 +48,7 @@ function TermsCondtions() {
                     </div>
                 )}
             </div>
-            <Footer />
+
         </>
     );
 }

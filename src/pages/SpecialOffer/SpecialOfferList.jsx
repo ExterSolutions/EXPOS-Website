@@ -59,7 +59,7 @@ function SpecialOfferList() {
                 {/* basePath /specialoffer → opens SpecialOfferPage (new clean UI, no toppings config) */}
                 <SpecialOffer specialOfferData={specialOfferData} basePath="/specialoffer" />
             </div>
-            <Footer />
+
         </div>
     );
 }

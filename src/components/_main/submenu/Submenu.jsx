@@ -17,8 +17,8 @@ const Submenu = ({ isOpen, items, onLinkClick }) => {
       icon: <IoColorPalette className="submenu-icon" />
     },
     { 
-      id: "specialoffer", 
-      name: "Deals", 
+      id: "flex-deals", 
+      name: "Flex Deals", 
       icon: <FaTag className="submenu-icon" />
     },
     { 

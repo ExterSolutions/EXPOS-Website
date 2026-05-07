@@ -957,7 +957,7 @@ const Other = () => {
                     />
                 </div>
             )}
-            <Footer />
+
         </>
     );
 };

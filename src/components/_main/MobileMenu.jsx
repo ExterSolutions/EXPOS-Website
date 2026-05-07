@@ -129,15 +129,9 @@ const MobileMenu = () => {
 
                         {/* MENU Items Directly */}
                         <li className="nav-item">
-                            <Link to="/specialoffer" className={`nav-link ${isActive('/specialoffer') ? 'active' : ''}`} onClick={() => handleLinkClick('/specialoffer')}>
+                            <Link to="/flex-deals" className={`nav-link ${isActive('/flex-deals') ? 'active' : ''}`} onClick={() => handleLinkClick('/flex-deals')}>
                                 <FaTag />
-                                <span className="nav-text">Signature Deals</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/special-offers-with-toppings" className={`nav-link ${isActive('/special-offers-with-toppings') ? 'active' : ''}`} onClick={() => handleLinkClick('/special-offers-with-toppings')}>
-                                <GiFullPizza />
-                                <span className="nav-text">Topping Deals</span>
+                                <span className="nav-text">Flex Deals</span>
                             </Link>
                         </li>
                         <li className="nav-item">

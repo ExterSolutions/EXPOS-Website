@@ -39,6 +39,8 @@ import TermsCondtions from "../pages/TermsCondtions.jsx";
 import SpecialOfferPage from "../pages/SpecialOfferNew/SpecialOfferPage.jsx";
 import EditSpecialOfferPage from "../pages/SpecialOfferNew/EditSpecialOfferPage.jsx";
 import SpecialOfferWithToppingsList from "../pages/SpecialOffer/SpecialOfferWithToppingsList.jsx";
+import FlexDealList from "../pages/FlexDeals/FlexDealList.jsx";
+import FlexDealCustomizer from "../pages/FlexDeals/FlexDealCustomizer.jsx";
 import ScrollToTop from "../ScrollToTop.jsx";
 import Sidebar from "../layouts/Sidebar";
 import MobileMenu from "../components/_main/MobileMenu";
@@ -90,6 +92,10 @@ const AllRoutes = () => {
                 <Route path="/special-offers-with-toppings" element={<SpecialOfferWithToppingsList />} />
                 <Route path="/special-offers-with-toppings/:sid" element={<SpecialOffer />} />
                 <Route path="/special-offers-with-toppings/:pid/:sid" element={<EditSpecialOffer />} />
+
+                {/* ── Flex Deals (V3 Slot-Based) — completely separate section ── */}
+                <Route path="/flex-deals" element={<FlexDealList />} />
+                <Route path="/flex-deals/:code" element={<FlexDealCustomizer />} />
 
                 {/* Signature Pizzas */}
                 <Route path="/signaturepizza" element={<SignaturePizzaList />} />

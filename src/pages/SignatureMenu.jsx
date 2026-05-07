@@ -990,7 +990,7 @@ function SignatureMenu() {
                     </section>
                 </>
             )}
-            <Footer />
+
         </div>
     );
 }

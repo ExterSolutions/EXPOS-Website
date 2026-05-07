@@ -242,7 +242,7 @@ function Cart() {
                     )}
                 </>
             )}
-            <Footer />
+
         </>
     );
 }

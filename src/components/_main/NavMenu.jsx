@@ -140,8 +140,8 @@ const NavMenu = ({
             icon: <IoColorPalette className="w-4 h-4" />,
         },
         {
-            id: "specialoffer",
-            name: "Signature Deals",
+            id: "flex-deals",
+            name: "Flex Deals",
             icon: <FaTag className="w-4 h-4" />,
         },
         {

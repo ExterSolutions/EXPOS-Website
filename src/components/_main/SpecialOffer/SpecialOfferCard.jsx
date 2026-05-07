@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import SafeImage from "../../common/SafeImage";
 
 function SpecialOfferCard({ data, colors, basePath = "/specialoffer" }) {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ function SpecialOfferCard({ data, colors, basePath = "/specialoffer" }) {
         <div className="pizza-item">
             {/* Image */}
             <div className="pizza-image-container">
-                <img src={data?.image} alt={data?.name} className="pizza-image" />
+                <SafeImage src={data?.image} alt={data?.name} className="pizza-image" />
             </div>
 
             {/* Content */}

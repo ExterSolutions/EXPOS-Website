@@ -5,6 +5,7 @@ import CartFunction from '../../cart';
 
 function SignatureSelector({ signaturePizzas, topping }) {
     const cartFn = new CartFunction();
+    if (!signaturePizzas || signaturePizzas.length === 0) return null;
     return (
         <>
             <div className="section pt-1" id="signaturemenucard">

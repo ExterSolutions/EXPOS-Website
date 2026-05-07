@@ -32,7 +32,7 @@ const Sides = () => {
                     <SidesMenu searchQuery={searchQuery} searchCode={selectedCode} />
                 </div>
             </div>
-            <Footer />
+
         </div>
     );
 };

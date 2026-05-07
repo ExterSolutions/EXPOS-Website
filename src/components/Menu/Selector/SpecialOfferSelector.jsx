@@ -2,6 +2,7 @@
 import SpecialOfferCard from '../../_main/SpecialOffer/SpecialOfferCard';
 
 function SpecialOfferSelector({ specialOffers }) {
+    if (!specialOffers || specialOffers.length === 0) return null;
     return (
         <div className="section pt-1" id="specialmenucard">
             <div className="d-flex align-items-center justify-content-between mb-3">

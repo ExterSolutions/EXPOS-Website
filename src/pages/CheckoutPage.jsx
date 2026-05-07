@@ -118,7 +118,7 @@ function CheckoutPage() {
                     </div>
                 </div>
             )}
-            <Footer />
+
         </div>
     );
 }

@@ -3,37 +3,28 @@ import Header from '../components/_main/Header/Header';
 import Footer from '../components/_main/Footer';
 import MenuContent from '../components/Menu/MenuContent';
 import LoadingLayout from '../layouts/LoadingLayout';
-import { getDips, getDrinks, getOtherPizza, getSides, getSignaturePizza, getToppings, specialIngredients } from '../services';
+import { getDips, getDrinks, getOtherPizza, getSides } from '../services';
 
 function Menu() {
     const [loading, setLoading] = React.useState(true);
 
-    const [signaturePizzas, setSignaturePizzas] = React.useState([]);
-    const [specialOffers, setSpecialOffers] = React.useState([]);
     const [otherPizzas, setOtherPizzas] = React.useState([]);
     const [sides, setSides] = React.useState([]);
     const [dips, setDips] = React.useState([]);
     const [drinks, setDrinks] = React.useState([]);
-    const [topping, setTopping] = React.useState([]);
 
     const fetchData = async () => {
         try {
-            const [signaturePizzasData, specialOffersData, otherPizzasData, sidesData, dipsData, drinksData, toppingData] = await Promise.all([
-                getSignaturePizza(),
-                specialIngredients(),
+            const [otherPizzasData, sidesData, dipsData, drinksData] = await Promise.all([
                 getOtherPizza(),
                 getSides(),
                 getDips(),
                 getDrinks(),
-                getToppings(),
             ]);
-            setSignaturePizzas(signaturePizzasData?.data?.slice(0, 8) || []);
-            setSpecialOffers(specialOffersData?.data?.slice(0, 8) || []);
             setOtherPizzas(otherPizzasData?.data?.slice(0, 8) || []);
             setSides(sidesData?.data?.slice(0, 8) || []);
             setDips(dipsData?.data?.slice(0, 8) || []);
             setDrinks(drinksData?.data?.slice(0, 8) || []);
-            setTopping(toppingData?.data?.slice(0, 4) || []);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -55,9 +46,6 @@ function Menu() {
                     <section className="primary-background-color special-offers-sec new-block">*/}
                 <div className="container-fluid container-lg">
                     <MenuContent
-                        signaturePizzas={signaturePizzas}
-                        topping={topping}
-                        specialOffers={specialOffers}
                         otherPizzas={otherPizzas}
                         sides={sides}
                         dips={dips}
@@ -67,7 +55,7 @@ function Menu() {
                 {/* </section>
                  </div> */}
             </main>
-            <Footer />
+
         </div>
     );
 }

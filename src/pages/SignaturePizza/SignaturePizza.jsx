@@ -47,7 +47,7 @@ const SignaturePizzaList = () => {
           </div>
           <SignaturePizza toppingsData={toppingsData} />
         </div>
-        <Footer />
+
       </div>
     </>
   );

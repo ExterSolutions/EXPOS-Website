@@ -39,7 +39,7 @@ function RegistrationPage() {
                     </div>
                 </div>
             </div>
-            <Footer />
+
         </>
     );
 }

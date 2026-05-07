@@ -33,7 +33,7 @@ const PopularItem = () => {
         </div>
         {/* Renders the popular items grid */}
         <PopulerPizza toppingsData={toppingsData} />
-        <Footer />
+
       </div>
     </>
   );

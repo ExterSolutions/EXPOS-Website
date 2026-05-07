@@ -717,7 +717,7 @@ function SpecialOffer() {
             <div className="col-lg-1"></div>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
@@ -927,7 +927,7 @@ function SpecialOffer() {
         specialOfferData={specialOfferData}
       />
 
-      <Footer />
+
     </div>
   );
 }

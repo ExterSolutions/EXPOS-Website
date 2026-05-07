@@ -1035,7 +1035,7 @@ const EditSpecialOffer = () => {
           ) : (
             <SPNotFound />
           )}
-          <Footer />
+
           <ResponsiveCart
             handleCart={handleAddToCart}
             totalPrice={price}

@@ -190,7 +190,7 @@ function MyAccount() {
                     </button>
                 </div>
             </div>
-            <Footer />
+
         </>
     );
 }

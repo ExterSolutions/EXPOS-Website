@@ -365,3 +365,33 @@ export const applyCoupon = async () => {
   const { data: response } = await http.get(`/coupon/list`);
   return response;
 }
+
+// ─── V3 Flex Deals ──────────────────────────────────────────────────────────
+// The V3 API lives at /api/v3/deals — derive the base by swapping the version
+// label in VITE_APP_BASE_URL (e.g. http://localhost:8000/api/v2 → /api/v3).
+
+const getV3BaseUrl = () => {
+  const base = (import.meta.env.VITE_APP_BASE_URL || '').replace(/\/v\d+\/?$/, '');
+  return `${base}/v3`;
+};
+
+/**
+ * List all active V3 (Flex) deals visible on the customer site.
+ * Backend already filters showOnClient=1 when cashier param is absent.
+ * @param {string} [cityCode] - optional city filter
+ */
+export const getFlexDeals = async (cityCode) => {
+  const params = cityCode ? { cityCode } : {};
+  const { data: response } = await http.get(`${getV3BaseUrl()}/deals`, { params });
+  return response;
+};
+
+/**
+ * Fetch full Flex Deal detail including all groups + allowed_items.
+ * Called when the customer opens a specific deal page.
+ * @param {string} dealCode - e.g. 'SPO_34'
+ */
+export const getFlexDealDetail = async (dealCode) => {
+  const { data: response } = await http.get(`${getV3BaseUrl()}/deals/${dealCode}`);
+  return response;
+};

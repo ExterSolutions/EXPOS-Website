@@ -51,7 +51,7 @@ function PrivacyPolicy() {
                     </div>
                 )}
             </div>
-            <Footer />
+
         </>
     );
 }

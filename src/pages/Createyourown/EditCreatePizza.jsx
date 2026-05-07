@@ -1944,7 +1944,7 @@ const EditCreatePizza = () => {
               </div>
             </section>
           </div>
-          <Footer />
+
           <ResponsiveCart
             handleCart={handleUpdateToCart}
             totalPrice={price}

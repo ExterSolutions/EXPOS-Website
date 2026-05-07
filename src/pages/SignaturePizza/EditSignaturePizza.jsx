@@ -1554,7 +1554,7 @@ const EditSignature = () => {
                         handleRemoveIsIndiansToppings={handleRemoveIsIndiansToppings}
                     />
 
-                    <Footer />
+
                 </div>
             )}
         </>

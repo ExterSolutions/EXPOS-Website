@@ -1,0 +1,235 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   modern-cards.css — Premium card design for Sides, Drinks, Dips
+   ═══════════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Card Grid ─────────────────────────────────────────────────────────────── */
+.mc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0.25rem 0 1.5rem;
+}
+@media (min-width: 576px) { .mc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px) { .mc-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+@media (min-width: 1100px) { .mc-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* ── Card Wrapper ──────────────────────────────────────────────────────────── */
+.mc-card {
+    background: #fff;
+    border-radius: 1rem;
+    border: 1.5px solid #f0f0f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    font-family: 'Inter', -apple-system, sans-serif;
+    position: relative;
+}
+.mc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(255,107,53,0.14);
+    border-color: #ff6b35;
+}
+
+/* ── Image ─────────────────────────────────────────────────────────────────── */
+.mc-card__img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: linear-gradient(135deg, #fff8f5, #fdeee6);
+    flex-shrink: 0;
+}
+.mc-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+.mc-card:hover .mc-card__img { transform: scale(1.06); }
+.mc-card__img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+}
+
+/* ── Contain variant — for icon-style images (drinks, dips) ───────────────── */
+.mc-card__img-wrap--contain {
+    background: linear-gradient(135deg, #f0f8ff, #e8f4fd);
+}
+.mc-card__img--contain {
+    object-fit: contain;
+    padding: 1rem;
+    transition: transform 0.3s ease;
+}
+.mc-card:hover .mc-card__img--contain { transform: scale(1.08); }
+
+/* ── Popular badge ─────────────────────────────────────────────────────────── */
+.mc-card__badge {
+    position: absolute; top: 0.55rem; left: 0.55rem;
+    background: #22c55e; color: #fff;
+    font-size: 0.62rem; font-weight: 800; letter-spacing: 0.06em;
+    padding: 0.18rem 0.55rem; border-radius: 2rem;
+    text-transform: uppercase;
+}
+
+/* ── Body ──────────────────────────────────────────────────────────────────── */
+.mc-card__body {
+    padding: 0.85rem 0.9rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.35rem;
+}
+.mc-card__name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.3;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.mc-card__desc {
+    font-size: 0.72rem;
+    color: #64748b;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+.mc-card__price {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ff6b35;
+    margin: 0.1rem 0 0.25rem;
+}
+
+/* ── Variant select ────────────────────────────────────────────────────────── */
+.mc-card__select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 0.4rem 2rem 0.4rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 2rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #334155;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 0.65rem center;
+    background-size: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    margin-bottom: 0.5rem;
+}
+.mc-card__select:focus { outline: none; border-color: #ff6b35; }
+
+/* ── Footer row (qty + add) ────────────────────────────────────────────────── */
+.mc-card__footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+/* Qty stepper */
+.mc-card__qty {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f1f5f9;
+    border-radius: 2rem;
+    padding: 0.2rem 0.45rem;
+    flex-shrink: 0;
+}
+.mc-card__qty-btn {
+    width: 1.6rem; height: 1.6rem;
+    border-radius: 50%;
+    border: none;
+    font-size: 1rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    background: #fff;
+    color: #ff6b35;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1;
+    padding: 0;
+}
+.mc-card__qty-btn:hover { background: #fff3ee; }
+.mc-card__qty-btn:active { transform: scale(0.92); }
+.mc-card__qty-btn.disabled { opacity: 0.35; cursor: not-allowed; }
+.mc-card__qty-val {
+    font-size: 0.88rem; font-weight: 700;
+    min-width: 1.4rem; text-align: center;
+    color: #1e293b;
+}
+
+/* Add to Cart button */
+.mc-card__add {
+    flex: 1;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: #fff;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+}
+.mc-card__add:hover { transform: scale(1.03); box-shadow: 0 4px 14px rgba(255,107,53,0.3); }
+.mc-card__add:active { transform: scale(0.97); }
+.mc-card__add--outline {
+    background: transparent;
+    border: 2px solid #ff6b35;
+    color: #ff6b35;
+}
+.mc-card__add--outline:hover { background: #fff3ee; }
+
+/* ── Section header ────────────────────────────────────────────────────────── */
+.mc-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.mc-section-sub {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ff6b35;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+.mc-section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+.mc-view-all {
+    font-size: 0.8rem; font-weight: 700;
+    color: #ff6b35; text-decoration: none;
+    border: 1.5px solid #ff6b35;
+    padding: 0.3rem 0.85rem;
+    border-radius: 2rem;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+.mc-view-all:hover { background: #ff6b35; color: #fff; }

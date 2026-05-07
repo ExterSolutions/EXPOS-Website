@@ -16,8 +16,9 @@ function MenuContent({
 }) {
     return (
         <>
-            <SpecialOfferSelector specialOffers={specialOffers} />
-            <SignatureSelector signaturePizzas={signaturePizzas} topping={topping} />
+            {/* SpecialOfferSelector and SignatureSelector hidden — Flex Deals covers these */}
+            {/* <SpecialOfferSelector specialOffers={specialOffers} /> */}
+            {/* <SignatureSelector signaturePizzas={signaturePizzas} topping={topping} /> */}
             <OtherPizzaSelector otherPizzas={otherPizzas} topping={topping} />
             <SidesSelector sides={sides} />
             <DipsSelector dips={dips} />

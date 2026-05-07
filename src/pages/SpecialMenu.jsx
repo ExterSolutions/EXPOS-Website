@@ -1029,7 +1029,7 @@ function SpecialMenu() {
                     )}
                 </>
             )}
-            <Footer />
+
         </div>
     );
 }

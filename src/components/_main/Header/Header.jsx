@@ -82,14 +82,13 @@ const Header = () => {
     const hideOrderNow = HIDE_ORDER_NOW_PATHS.some(p => location.pathname.startsWith(p));
 
     const circleMenuItems = [
-        { id: "specialoffer", name: "Signature Deals", icon: <FaTag className="w-4 h-4" /> },
-        { id: "special-offers-with-toppings", name: "Topping Deals", icon: <GiFullPizza className="w-4 h-4" /> },
+        { id: "flex-deals",     name: "Flex Deals",     icon: <FaTag className="w-4 h-4" /> },
         { id: "signaturepizza", name: "Signature Pizza", icon: <FaPizzaSlice className="w-4 h-4" /> },
-        { id: "otherpizza", name: "Other Pizza", icon: <GiPizzaSlice className="w-4 h-4" /> },
-        { id: "sides", name: "Sides", icon: <PiHamburgerFill className="w-4 h-4" /> },
-        { id: "dips", name: "Dips", icon: <SiCoffeescript className="w-4 h-4" /> },
-        { id: "drinks", name: "Drinks", icon: <FaGlassCheers className="w-4 h-4" /> },
-        { id: "menu", name: "All Menu", icon: <MdRestaurantMenu className="w-4 h-4" /> },
+        { id: "otherpizza",     name: "Other Pizza",    icon: <GiPizzaSlice className="w-4 h-4" /> },
+        { id: "sides",         name: "Sides",          icon: <PiHamburgerFill className="w-4 h-4" /> },
+        { id: "dips",          name: "Dips",           icon: <SiCoffeescript className="w-4 h-4" /> },
+        { id: "drinks",        name: "Drinks",         icon: <FaGlassCheers className="w-4 h-4" /> },
+        { id: "menu",          name: "All Menu",       icon: <MdRestaurantMenu className="w-4 h-4" /> },
         { id: "create-your-own", name: "Create Your Own", icon: <IoColorPalette className="w-4 h-4" /> },
     ];
 

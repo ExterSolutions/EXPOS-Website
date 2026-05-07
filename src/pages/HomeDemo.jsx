@@ -141,7 +141,7 @@ const HomeDemo = () => {
             <PizzaCarousel sectionTitle={`Deals`} pizzas={specialOfferList} redirectBase={'/specialoffer'} isdemo={true} />
             <PizzaCarousel sectionTitle={`Create Your Own`} pizzas={otherPizzaList} redirectBase={'/otherpizza'} isdemo={true} />
             <DownloadApps isdemo={true} />
-            <Footer isdemo={true} />
+FOOTER_PLACEHOLDERisdemo={true} />
         </div>
     );
 };

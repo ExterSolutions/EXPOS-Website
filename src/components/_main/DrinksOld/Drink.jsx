@@ -2,43 +2,32 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import {GlobalContext} from "../../../context/GlobalContext";
-import '../../../cardsui/cardsui.css';
+import { GlobalContext } from "../../../context/GlobalContext";
+import '../../../assets/styles/modern-cards.css';
+import SafeImage from "../../common/SafeImage";
 
 const Drink = ({ data, cartFn }) => {
     const navigate = useNavigate();
     const globalctx = useContext(GlobalContext);
-
     const [cart, setCart] = globalctx.cart;
     const [settings] = globalctx.settings;
     const [currentStoreCode] = globalctx.currentStoreCode;
     const [showStorePopup, setShowStorePopup] = globalctx.showStorePopup;
     const user = useSelector((state) => state?.user);
+
     const [count, setCount] = useState(1);
     const [product, setProduct] = useState(null);
     const isJuice = data?.drinksType === "juice";
 
-    const handleNavigate = () => {
-        navigate(`/customize-drink/${data.softdrinkCode}`);
-    };
+    const countDec = () => { if (count > 1) setCount(c => c - 1); };
+    const countInc = () => { if (count < 10) setCount(c => c + 1); };
 
-    const countDec = () => {
-        if (count > 1) setCount(prev => prev - 1);
-    };
-
-    const countInc = () => {
-        if (count < 10) setCount(prev => prev + 1);
-    };
+    const handleNavigate = () => navigate(`/customize-drink/${data.softdrinkCode}`);
 
     const handleAddToCart = () => {
-        if (!currentStoreCode) {
-            setShowStorePopup(true);
-            return;
-        }
-
+        if (!currentStoreCode) { setShowStorePopup(true); return; }
         const totalPrice = Number(data.price) * count;
-
-        const obj = {
+        setProduct({
             id: uuidv4(),
             customerCode: user?.data?.customerCode,
             cashierCode: "#NA",
@@ -52,26 +41,18 @@ const Drink = ({ data, cartFn }) => {
             taxPer: 0,
             pizzaSize: "",
             comments: "",
-        };
-
-        setProduct(obj);
+        });
         setCount(1);
     };
 
-    useEffect(() => {
-        cartFn?.createCart(setCart);
-    }, [cartFn, setCart]);
-
+    useEffect(() => { cartFn?.createCart(setCart); }, [cartFn, setCart]);
     useEffect(() => {
         if (product) {
             let ct = JSON.parse(localStorage.getItem("cart"));
             const pCode = ct?.product.find(p => p.productCode === product.productCode);
-
             if (pCode) {
                 pCode.quantity += product.quantity;
-                pCode.amount = (
-                    Number(pCode.amount) + Number(product.amount)
-                ).toFixed(2);
+                pCode.amount = (Number(pCode.amount) + Number(product.amount)).toFixed(2);
                 cartFn.addCart(ct.product, setCart, true, settings);
             } else {
                 ct.product.push(product);
@@ -81,54 +62,37 @@ const Drink = ({ data, cartFn }) => {
     }, [product, cartFn, setCart, settings]);
 
     return (
-        <div className="pizza-item">
-            <div className="pizza-image-container">
-                <img
-                    src={data?.image}
-                    alt={data?.softDrinksName}
-                    className="pizza-image"
-                    loading="lazy"
-                />
+        <div className="mc-card">
+            {/* Image */}
+            <div className="mc-card__img-wrap mc-card__img-wrap--contain">
+                <SafeImage src={data.image} alt={data.softDrinksName} className="mc-card__img mc-card__img--contain" />
             </div>
 
-            <div className="pizza-content mb-2">
-                <h5 className="pizza-name">{data?.softDrinksName}</h5>
-
-                {data?.description && (
-                    <p className="card-desc-drink">{data.description}</p>
+            {/* Body */}
+            <div className="mc-card__body">
+                <h5 className="mc-card__name">{data?.softDrinksName}</h5>
+                {data?.description && <p className="mc-card__desc">{data.description}</p>}
+                {data?.price && (
+                    <div className="mc-card__price">${Number(data.price).toFixed(2)}</div>
                 )}
 
-                <div className="card-price">
-                    ${Number(data?.price).toFixed(2)}
-                </div>
-
-
-                {isJuice ? (
-                    <>
-                        <div className="qty-controls">
-                            <span className={`qty-btn minus ${count <= 1 ? "disabled" : ""}`} onClick={countDec}>-</span>
-                            <span className="qty-value">{count}</span>
-                            <span className={`qty-btn plus ${count >= 10 ? "disabled" : ""}`} onClick={countInc}>+</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            className="view-button-new"
-                            onClick={handleAddToCart}
-                        >
-                            Add to Cart
+                {/* Footer */}
+                <div className="mc-card__footer">
+                    {isJuice ? (
+                        <>
+                            <div className="mc-card__qty" style={{ userSelect: 'none' }}>
+                                <button className={`mc-card__qty-btn${count <= 1 ? ' disabled' : ''}`} onClick={countDec}>−</button>
+                                <span className="mc-card__qty-val">{count}</span>
+                                <button className={`mc-card__qty-btn${count >= 10 ? ' disabled' : ''}`} onClick={countInc}>+</button>
+                            </div>
+                            <button className="mc-card__add" onClick={handleAddToCart}>Add to Cart</button>
+                        </>
+                    ) : (
+                        <button className="mc-card__add mc-card__add--outline" style={{ width: '100%' }} onClick={handleNavigate}>
+                            Customize
                         </button>
-                    </>
-                ) : (
-                
-                    <button
-                        type="button"
-                        className="customize-btn-new"
-                        onClick={handleNavigate}
-                    >
-                        Customize
-                    </button>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

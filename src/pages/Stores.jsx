@@ -258,7 +258,7 @@ const Stores = () => {
 
                 </Row>
             </Container>
-            <Footer />
+
         </div>
     );
 };

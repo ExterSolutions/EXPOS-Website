@@ -66,7 +66,7 @@ const FranchiseHero = () => {
                     handleSubmit={handleSubmit}
                 />
             </div>
-            <Footer />
+
         </>
     );
 };

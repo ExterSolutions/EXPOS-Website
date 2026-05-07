@@ -1082,7 +1082,7 @@ const CreatePizza = () => {
               </div>
             </section>
           </div>
-          <Footer />
+
           <ResponsiveCart
             handleCart={handleAddToCart}
             totalPrice={price}

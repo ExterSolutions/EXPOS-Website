@@ -19,13 +19,12 @@ const CategoryPizza = () => {
     const { theme, colors } = useTheme();
 
     const categories = [
-        { id: 6, name: 'Signature Deals', image: SignaturePizza, path: 'specialoffer', alt: 'Signature Deals' },
-        { id: 7, name: 'Topping Deals', image: createPizza, path: 'special-offers-with-toppings', alt: 'Topping Deals' },
-        { id: 1, name: 'Signature Pizzas', image: SignaturePizzaMain, path: 'signaturepizza', alt: 'Signature Pizza' },
-        { id: 2, name: 'Sides', image: Sides, path: 'sides', alt: 'Sides' },
-        { id: 3, name: 'Dips', image: dips, path: 'dips', alt: 'Dips' },
-        { id: 4, name: 'Drinks', image: drinks, path: 'drinks', alt: 'Drinks' },
-        { id: 5, name: 'Create Your Own', image: Deals, path: 'create-your-own', alt: 'Create Your Own' },
+        { id: 8, name: 'Flex Deals',      image: Deals,             path: 'flex-deals',      alt: 'Flex Deals' },
+        { id: 1, name: 'Signature Pizzas', image: SignaturePizzaMain, path: 'signaturepizza',  alt: 'Signature Pizza' },
+        { id: 5, name: 'Create Your Own', image: createPizza,        path: 'create-your-own', alt: 'Create Your Own' },
+        { id: 2, name: 'Sides',           image: Sides,              path: 'sides',           alt: 'Sides' },
+        { id: 3, name: 'Dips',            image: dips,               path: 'dips',            alt: 'Dips' },
+        { id: 4, name: 'Drinks',          image: drinks,             path: 'drinks',          alt: 'Drinks' },
     ];
 
     const handleCategorySelect = (id, path) => {
@@ -40,8 +39,8 @@ const CategoryPizza = () => {
                         <span
                             className="category-subtitle text-center"
                             style={{ color: colors?.primary }}
-                        >CHOOSE YOUR FLAVOR</span>
-                        <div className="section-title text-center">Shop By Category</div>
+                        >EXPLORE OUR MENU</span>
+                        <div className="section-title text-center">Order by Category</div>
                     </div>
                 </div>
                 <div className="category-container category-swiper-wrap mt-4 mx-auto" style={{ maxWidth: '1100px' }}>

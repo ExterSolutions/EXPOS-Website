@@ -4,6 +4,7 @@ import CartFunction from '../../cart';
 
 function DipsSelector({ dips }) {
     const cartFn = new CartFunction();
+    if (!dips || dips.length === 0) return null;
 
     return (
         <>

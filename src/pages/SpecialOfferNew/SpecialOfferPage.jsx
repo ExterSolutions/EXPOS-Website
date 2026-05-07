@@ -558,7 +558,7 @@ const SpecialOfferPage = () => {
         </button>
       </div>
 
-      <Footer />
+
 
       <SummaryModal
         modalState={showSummaryPopup}

@@ -32,7 +32,7 @@ const Drinks = () => {
           </div>
           <DrinkMenu searchQuery={searchQuery} searchCode={selectedCode} />
         </div>
-        <Footer />
+
       </div>
     </>
   );

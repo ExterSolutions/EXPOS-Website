@@ -1,0 +1,311 @@
+/* ================================================================
+   HOME PAGE — Mobile Optimisation + Pizza Cards styled like Flex Deal cards
+   All card overrides are scoped under .pc-modern to beat style.css specificity.
+   ================================================================ */
+
+/* ── 1. Section spacing ─────────────────────────────────────── */
+.pizza-carousel-section.pt-60 { padding-top: 2.25rem; }
+@media (max-width: 640px) {
+    .pizza-carousel-section.pt-60 { padding-top: 1.25rem; }
+    .category-section.pt-60       { padding-top: 0.75rem; }
+}
+
+/* ── 2. Section header mobile ───────────────────────────────── */
+@media (max-width: 640px) {
+    .pizza-carousel-section .section-header    { margin-bottom: 0.6rem; }
+    .pizza-carousel-section .category-subtitle { font-size: 0.7rem; letter-spacing: 0.1em; margin-bottom: 0.15rem; display: block; }
+    .pizza-carousel-section .section-title     { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+}
+
+/* ── 3. Grid — uniform tile sizes (grid layout) ──────────────── */
+@media (max-width: 640px) {
+    .pizza-carousel-section { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .pizza-grid              { gap: 0.7rem; }
+}
+
+/*
+  The grid has inline style gridAutoRows: 290px (desktop).
+  Use !important in media queries to override the inline value on mobile.
+*/
+@media (max-width: 640px) {
+    .pc-modern .pizza-grid     { grid-auto-rows: 240px !important; }
+    .pc-modern .pizza-card-img-area { height: 120px !important; }
+}
+@media (max-width: 360px) {
+    .pc-modern .pizza-grid     { grid-auto-rows: 210px !important; }
+    .pc-modern .pizza-card-img-area { height: 100px !important; }
+}
+
+/* ── 3b. Horizontal list layout (Option A) ─────────────────── */
+/*
+  On mobile: 1 column (full-width list)
+  On tablet/desktop: 2 columns side-by-side
+  No fixed row height — each card auto-sizes to its content.
+*/
+.pc-modern.pc-horizontal .pizza-grid {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto !important;
+    gap: 0.55rem !important;
+}
+@media (min-width: 600px) {
+    .pc-modern.pc-horizontal .pizza-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media (min-width: 1024px) {
+    .pc-modern.pc-horizontal .pizza-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+/* tighter side padding for horizontal sections */
+.pc-modern.pc-horizontal.pizza-carousel-section {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+@media (max-width: 480px) {
+    .category-section          { padding-top: 0.6rem; padding-bottom: 0; }
+    .category-image-wrapper    { width: 5rem; height: 5rem; }
+    .category-name             { font-size: 0.68rem; font-weight: 700; }
+    .category-section .section-title     { font-size: 1.2rem; }
+    .category-section .category-subtitle { font-size: 0.68rem; }
+}
+
+/* ── 5. Overflow guard ──────────────────────────────────────── */
+@media (max-width: 640px) {
+    .container-fluid.container-lg { overflow-x: hidden; }
+}
+
+/* ================================================================
+   SCOPED CARD OVERRIDES (.pc-modern parent = higher specificity)
+   Mirrors fd-card exactly: white card · 150px image · orange CTA
+   ================================================================ */
+
+/* Wrapper */
+.pc-modern .pizza-card-wrapper {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+}
+
+/* ── Card shell — matches fd-card ───────────────────────────── */
+.pc-modern .pizza-card-modern {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 0.875rem;
+    overflow: hidden;
+    border: 1.5px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+    text-decoration: none !important;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+    /* reset dark-overlay design */
+    aspect-ratio: unset;
+    position: relative;
+}
+
+/* Kill the dark gradient overlay pseudo-element */
+.pc-modern .pizza-card-modern::after {
+    display: none !important;
+}
+
+.pc-modern .pizza-card-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(255,107,53,0.18);
+    border-color: #ff6b35;
+    color: inherit;
+    text-decoration: none;
+}
+
+/* FLEX badge variant — matches fd-card__flex-badge */
+.pc-modern .pizza-card-badge--flex {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    top: 0.55rem;
+    left: 0.55rem;
+    right: unset;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    box-shadow: none;
+}
+
+/* ── Image — fixed 150px height, warm placeholder ───────────── */
+.pc-modern .pizza-card-img-area {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    aspect-ratio: unset;
+    background: linear-gradient(135deg, #fff8f5, #fdeee6);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.pc-modern .pizza-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+    opacity: 1;
+}
+
+.pc-modern .pizza-card-modern:hover .pizza-card-img {
+    transform: scale(1.05);
+}
+
+/* Badge — top-right, matching fd-card__flex-badge */
+.pc-modern .pizza-card-badge {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    left: unset;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    box-shadow: none;
+    z-index: 2;
+}
+
+/* ── Body — static, not absolute ───────────────────────────── */
+.pc-modern .pizza-card-body {
+    position: static;
+    bottom: unset;
+    padding: 0.8rem 0.9rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0;
+    background: transparent;
+}
+
+/* Name */
+.pc-modern .pizza-card-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.25rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: none;
+    letter-spacing: -0.01em;
+}
+
+@media (min-width: 768px) {
+    .pc-modern .pizza-card-name { font-size: 0.95rem; }
+}
+
+/* Description — 2-line clamp, fixed min-height so cards WITHOUT
+   a description still occupy the same vertical space ───────── */
+.pc-modern .pizza-card-desc {
+    display: -webkit-box;
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.45;
+    flex: 0 0 auto;          /* don't stretch — fixed height */
+    min-height: 2.17rem;     /* always reserve 2 lines of space */
+    margin: 0 0 0.65rem;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Footer row */
+.pc-modern .pizza-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0;
+    gap: 6px;
+}
+
+.pc-modern .pizza-card-price-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+    gap: 1px;
+}
+
+.pc-modern .pizza-card-price-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* Price in orange like fd-card__price */
+.pc-modern .pizza-card-price {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ff6b35;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+}
+
+/* CTA — exactly fd-card__cta */
+.pc-modern .pizza-card-order-btn {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: #fff;
+    border: none;
+    border-radius: 0.6rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    letter-spacing: 0;
+    min-height: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.pc-modern .pizza-card-order-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 4px 12px rgba(255,107,53,0.28);
+}
+
+/* ── Best Sellers badge ─────────────────────────────────────── */
+.best-selling-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    line-height: 1.8;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    letter-spacing: 0.03em;
+}
+
+/* ── Very small phones < 360px ─────────────────────────────── */
+@media (max-width: 360px) {
+    .pc-modern .pizza-grid           { grid-auto-rows: 230px; }
+    .pc-modern .pizza-card-img-area  { height: 100px; }
+    .pc-modern .pizza-card-body      { padding: 0.55rem 0.65rem 0.65rem; }
+    .pc-modern .pizza-card-name      { font-size: 0.78rem; }
+    .pc-modern .pizza-card-price     { font-size: 0.92rem; }
+    .pc-modern .pizza-card-order-btn { padding: 0.35rem 0.65rem; font-size: 0.68rem; }
+}

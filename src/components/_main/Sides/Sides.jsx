@@ -1,165 +1,118 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import '../../../../src/cardsui/cardsui.css';
+import '../../../assets/styles/modern-cards.css';
 import { GlobalContext } from "../../../context/GlobalContext";
 import SidesModalTps from "./SidesModalTps";
+import SafeImage from "../../common/SafeImage";
 
 function Sides({ data, cartFn }) {
     const globalctx = useContext(GlobalContext);
     const [cart, setCart] = globalctx.cart;
-    const [settings, setSettings] = globalctx.settings;
-    const [currentStoreCode, setCurrentStoreCode] = globalctx.currentStoreCode;
+    const [settings] = globalctx.settings;
+    const [currentStoreCode] = globalctx.currentStoreCode;
     const [showStorePopup, setShowStorePopup] = globalctx.showStorePopup;
 
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
     const [count, setCount] = useState(1);
     const [product, setProduct] = useState(null);
     const sPlacementRef = useRef(null);
-
     const user = useSelector((state) => state?.user);
 
-    // Count Deacrease
-    const countDec = () => {
-        if (count > 1) {
-            setCount((count) => count - 1);
-        }
-    };
-    // Count Increase
-    const countInc = () => {
-        if (count < 10) {
-            setCount((count) => count + 1);
-        }
-    };
+    const countDec = () => { if (count > 1) setCount(c => c - 1); };
+    const countInc = () => { if (count < 10) setCount(c => c + 1); };
 
-    // Handle Sides - Add To Cart Button
     const handleSides = () => {
-        if (currentStoreCode === undefined || currentStoreCode === null) {
-            setShowStorePopup(true)
-            return false;
-        }
-
+        if (!currentStoreCode) { setShowStorePopup(true); return; }
         let combinationData = {};
         if (sPlacementRef.current) {
             const selectedCode = sPlacementRef.current.value;
-            combinationData = data?.combination?.find(
-                (code) => code.lineCode === selectedCode
-            );
+            combinationData = data?.combination?.find(c => c.lineCode === selectedCode) || {};
         }
-
         const totalPrice = combinationData?.price * count;
-        const obj = {
+        setProduct({
             id: uuidv4(),
             customerCode: user?.data?.customerCode,
             cashierCode: "#NA",
             productCode: data.sideCode,
             productName: data.sideName,
             productType: "side",
-            config: {
-                lineCode: combinationData?.lineCode,
-                sidesSize: combinationData?.size,
-                sidesType: data?.type,
-            },
+            config: { lineCode: combinationData?.lineCode, sidesSize: combinationData?.size, sidesType: data?.type },
             price: combinationData?.price,
             quantity: count,
             amount: totalPrice,
             taxPer: 0,
             pizzaSize: "",
             comments: "",
-        };
-        setProduct(obj);
+        });
         setCount(1);
-        sPlacementRef.current.value = data?.combination?.[0]?.lineCode;
+        if (sPlacementRef.current) sPlacementRef.current.value = data?.combination?.[0]?.lineCode;
     };
 
-    // Create Cart if Cart Key Not Present
-    useEffect(() => {
-        cartFn.createCart(setCart);
-    }, [setCart]);
-
-    // Add to Cart - Logic
+    useEffect(() => { cartFn.createCart(setCart); }, [setCart]);
     useEffect(() => {
         if (product !== null) {
             let ct = JSON.parse(localStorage.getItem("cart"));
             ct.product.push(product);
-            const cartProduct = ct.product;
-            cartFn.addCart(cartProduct, setCart, false, settings);
+            cartFn.addCart(ct.product, setCart, false, settings);
         }
     }, [product]);
 
+    const minPrice = data?.combination?.length
+        ? Math.min(...data.combination.map(c => Number(c.price)))
+        : null;
+
     return (
         <>
-            <div className="pizza-item">
-                <div className="card-image-container">
-                    <img
-                        src={data?.image}
-                        alt={data?.sideName}
-                        className="pizza-image"
-                        loading="lazy"
-                    />
+            <div className="mc-card">
+                <div className="mc-card__img-wrap">
+                    <SafeImage src={data.image} alt={data.sideName} className="mc-card__img" />
                 </div>
-                <div className="pizza-content">
-                    <h5 className="pizza-name">{data?.sideName}</h5>
-                    <div className="product-description">
-                        {data?.description}
-                    </div>
-                    <select
-                        className="form-select"
-                        ref={sPlacementRef}
-                    >
-                        {data?.combination?.map((combination) => (
-                            <option
-                                value={combination.lineCode}
-                                key={combination.lineCode}
-                            >
-                                {combination.size} - ${combination.price}
-                            </option>
-                        ))}
-                    </select>
-                    {/* Quantity + / - */}
-                    <div className="qty-controls"
-                        style={{ userSelect: "none" }}
-                    >
-                        <span className={`qty-btn minus ${count <= 1 ? "disabled" : ""}`} onClick={countDec}>-</span>
-                        <span className="qty-value ">{count}</span>
-                        <span className={`qty-btn plus ${count >= 10 ? "disabled" : ""}`} onClick={countInc}>+</span>
-                    </div>
-                    {/* Buttons */}
-                    {Number(data.hasToppings) === 1 &&
-                        Number(data.nooftoppings) > 0 ? (
-                        <button
-                            type="button"
-                            className="view-button"
-                            onClick={handleShow}
-                        >
-                            Customize
-                        </button>
-                    ) : (
-                        <button
-                            type="button"
-                            className="view-button"
-                            onClick={handleSides}
-                        >
-                            Add to Cart
-                        </button>
+                <div className="mc-card__body">
+                    <h5 className="mc-card__name">{data?.sideName}</h5>
+                    {data?.description && <p className="mc-card__desc">{data.description}</p>}
+                    {minPrice != null && (
+                        <div className="mc-card__price">
+                            {data.combination?.length > 1 ? 'From ' : ''}${minPrice.toFixed(2)}
+                        </div>
                     )}
+                    {/* Variant selector */}
+                    {data?.combination?.length > 1 && (
+                        <select className="mc-card__select" ref={sPlacementRef}>
+                            {data.combination.map(c => (
+                                <option value={c.lineCode} key={c.lineCode}>
+                                    {c.size} — ${Number(c.price).toFixed(2)}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                    {data?.combination?.length === 1 && (
+                        <select style={{ display: 'none' }} ref={sPlacementRef}>
+                            <option value={data.combination[0].lineCode}>{data.combination[0].size}</option>
+                        </select>
+                    )}
+                    {/* Footer */}
+                    <div className="mc-card__footer">
+                        <div className="mc-card__qty" style={{ userSelect: 'none' }}>
+                            <button className={`mc-card__qty-btn${count <= 1 ? ' disabled' : ''}`} onClick={countDec}>−</button>
+                            <span className="mc-card__qty-val">{count}</span>
+                            <button className={`mc-card__qty-btn${count >= 10 ? ' disabled' : ''}`} onClick={countInc}>+</button>
+                        </div>
+                        {Number(data.hasToppings) === 1 && Number(data.nooftoppings) > 0 ? (
+                            <button className="mc-card__add mc-card__add--outline" onClick={handleShow}>Customize</button>
+                        ) : (
+                            <button className="mc-card__add" onClick={handleSides}>Add to Cart</button>
+                        )}
+                    </div>
                 </div>
             </div>
-
             <SidesModalTps
-                show={show}
-                handleShow={handleShow}
-                handleClose={handleClose}
-                data={data}
-                count={count}
-                sPlacementRef={sPlacementRef}
-                setProduct={setProduct}
-                setCount={setCount}
-                product={product}
+                show={show} handleShow={handleShow} handleClose={handleClose}
+                data={data} count={count} sPlacementRef={sPlacementRef}
+                setProduct={setProduct} setCount={setCount} product={product}
             />
         </>
     );

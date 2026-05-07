@@ -11,7 +11,7 @@ const SpecialPizzaList = () => {
                 <Header />
                 <Tabs />
                 <SpecialMenuList zzzz/>
-                <Footer />
+
             </div>
         </>
     )

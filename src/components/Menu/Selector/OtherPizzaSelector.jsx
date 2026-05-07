@@ -4,6 +4,7 @@ import CartFunction from '../../cart';
 
 function OtherPizzaSelector({ otherPizzas, topping }) {
     const cartFn = new CartFunction();
+    if (!otherPizzas || otherPizzas.length === 0) return null;
     return (
         <>
             <div className="section pt-1" id="signaturemenucard">

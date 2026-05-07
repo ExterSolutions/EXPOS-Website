@@ -76,7 +76,7 @@ function Cancel() {
                     <Unauthorized />
                 </>
             )}
-            <Footer />
+
         </>
     );
 }

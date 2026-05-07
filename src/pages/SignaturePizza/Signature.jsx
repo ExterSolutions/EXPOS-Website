@@ -164,12 +164,26 @@ const Signature = () => {
                 setSpicy(res?.data?.spices?.code);
                 setSauce(res?.data?.sauce?.code);
                 setCook(res?.data?.cook?.code);
-                let indianToppings = res?.data?.topping_as_free?.map((el) => {
-                    return el?.code;
-                });
-                let IndTops = [];
-                signatureData?.toppings?.freeToppings?.map((el) => {
-                    if (indianToppings.includes(el?.toppingsCode)) {
+                // Guard: if any of these fields are null/undefined, default to empty array so
+                // .map() and .includes() never throw a TypeError that gets silently swallowed
+                // by the catch block — which would leave selectedToppings stuck on all-Indian.
+                const freeCodes  = (res?.data?.topping_as_free || []).map((el) => el?.code);
+                const twoCodes   = (res?.data?.topping_as_2   || []).map((el) => el?.code);
+                const oneCodes   = (res?.data?.topping_as_1   || []).map((el) => el?.code);
+
+                // Build a flat map of ALL available toppings from ingredients so we can do
+                // cross-category lookups (e.g. a topping in topping_as_1 that the ingredients
+                // API places under countAsTwo will still be found).
+                const allIngToppings = [
+                    ...(signatureData?.toppings?.countAsOne  || []),
+                    ...(signatureData?.toppings?.countAsTwo  || []),
+                    ...(signatureData?.toppings?.freeToppings || []),
+                ];
+
+                // ── Indian / free toppings ────────────────────────────────────────────────
+                const IndTops = [];
+                (signatureData?.toppings?.freeToppings || []).forEach((el) => {
+                    if (freeCodes.includes(el?.toppingsCode)) {
                         IndTops.push({
                             code: el?.toppingsCode,
                             name: el?.toppingsName,
@@ -178,46 +192,48 @@ const Signature = () => {
                             size: "whole",
                         });
                     }
-                    return el;
                 });
-                const twoToppings = res?.data?.topping_as_2?.map((el) => el?.code);
+
+                // ── Count-as-Two (premium) toppings ──────────────────────────────────────
                 const TwoTops = [];
-                signatureData?.toppings?.countAsTwo?.map((el) => {
-                    if (twoToppings.includes(el?.toppingsCode)) {
-                        const matchingToppingTwo = res?.data?.topping_as_2?.find(
-                            (tps) => el?.toppingsCode === tps.code
-                        );
-                        if (matchingToppingTwo) {
-                            TwoTops.push({
-                                code: el?.toppingsCode,
-                                name: el?.toppingsName,
-                                price: matchingToppingTwo?.price,
-                                type: "two",
-                                size: "whole",
-                            });
-                        }
+                twoCodes.forEach((code) => {
+                    const matchingIngredient = allIngToppings.find(
+                        (t) => t?.toppingsCode === code
+                    );
+                    const matchingRecipe = (res?.data?.topping_as_2 || []).find(
+                        (tps) => tps?.code === code
+                    );
+                    if (matchingIngredient && matchingRecipe) {
+                        TwoTops.push({
+                            code: matchingIngredient.toppingsCode,
+                            name: matchingIngredient.toppingsName,
+                            price: matchingRecipe?.price,
+                            type: "two",
+                            size: "whole",
+                        });
                     }
-                    return el;
                 });
-                const oneToppings = res?.data?.topping_as_1?.map((el) => el?.code);
+
+                // ── Count-as-One (regular) toppings ──────────────────────────────────────
                 const OneTops = [];
-                signatureData?.toppings?.countAsOne?.map((el) => {
-                    if (oneToppings.includes(el?.toppingsCode)) {
-                        const matchingToppingOne = res?.data?.topping_as_1?.find(
-                            (tps) => el?.toppingsCode === tps?.code
-                        );
-                        if (matchingToppingOne) {
-                            OneTops.push({
-                                code: el?.toppingsCode,
-                                name: el?.toppingsName,
-                                price: matchingToppingOne?.price,
-                                type: "one",
-                                size: "whole",
-                            });
-                        }
+                oneCodes.forEach((code) => {
+                    const matchingIngredient = allIngToppings.find(
+                        (t) => t?.toppingsCode === code
+                    );
+                    const matchingRecipe = (res?.data?.topping_as_1 || []).find(
+                        (tps) => tps?.code === code
+                    );
+                    if (matchingIngredient && matchingRecipe) {
+                        OneTops.push({
+                            code: matchingIngredient.toppingsCode,
+                            name: matchingIngredient.toppingsName,
+                            price: matchingRecipe?.price,
+                            type: "one",
+                            size: "whole",
+                        });
                     }
-                    return el;
                 });
+
                 setToppingsFree(IndTops);
                 setToppingsOne(OneTops);
                 setToppingsTwo(TwoTops);
@@ -225,6 +241,7 @@ const Signature = () => {
                 setDefaultToppingsOne(OneTops);
                 setDefaultToppingsTwo(TwoTops);
                 setSelectedToppings([...IndTops, ...TwoTops, ...OneTops]);
+
                 return res;
             }
         } catch (error) {
@@ -1041,7 +1058,7 @@ const Signature = () => {
                 </button>
             </div>
 
-            <Footer />
+
         </div>
     );
 };

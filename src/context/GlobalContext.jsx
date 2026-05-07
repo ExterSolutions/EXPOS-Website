@@ -97,13 +97,39 @@ export const GlobalProvider = ({ children }) => {
     const storedStore = localStorage.getItem("currentStore");
     const savedSelected = localStorage.getItem("selectedStore");
 
-    return {
-      city: storedCity ? JSON.parse(storedCity) : null,
-      storeCode: storedStoreCode || null,
-      store: storedStore ? JSON.parse(storedStore) : null,
-      storeDetail: savedSelected ? JSON.parse(savedSelected) : null
-    };
+    if (storedCity || storedStoreCode) {
+      return {
+        city: storedCity ? JSON.parse(storedCity) : null,
+        storeCode: storedStoreCode || null,
+        store: storedStore ? JSON.parse(storedStore) : null,
+        storeDetail: savedSelected ? JSON.parse(savedSelected) : null
+      };
+    }
+
+    // 3. DEV ONLY: Pre-seed from .env.local so the store popup is skipped locally.
+    //    VITE_DEV_STORE_CODE is only set in .env.local — never in .env — so this
+    //    block is completely dead in production.
+    const devStoreCode = import.meta.env.VITE_DEV_STORE_CODE;
+    const devCity = import.meta.env.VITE_DEV_STORE_CITY;
+    if (devStoreCode && devCity) {
+      const cityOption = {
+        value: devCity,
+        label: devCity,
+        stores: [{ code: devStoreCode, storeLocation: devCity }],
+      };
+      const storeOption = { value: devStoreCode, label: devCity };
+      const storeDetail = { code: devStoreCode, city: devCity, storeLocation: devCity };
+      // Persist so subsequent renders (and useStorePopup) pick it up from localStorage
+      localStorage.setItem("currentCity", JSON.stringify(cityOption));
+      localStorage.setItem("currentStoreCode", devStoreCode);
+      localStorage.setItem("currentStore", JSON.stringify(storeOption));
+      localStorage.setItem("selectedStore", JSON.stringify(storeDetail));
+      return { city: cityOption, storeCode: devStoreCode, store: storeOption, storeDetail };
+    }
+
+    return { city: null, storeCode: null, store: null, storeDetail: null };
   };
+
 
   const storedData = getStoredData();
 

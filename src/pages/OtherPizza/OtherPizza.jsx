@@ -48,7 +48,7 @@ const OtherPizzaList = () => {
                     </div>
                     <OtherPizza toppingsData={toppingsData} />
                 </div>
-                <Footer />
+
             </div>
         </>
     );

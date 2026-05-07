@@ -477,7 +477,7 @@ const EditSpecialOfferPage = () => {
         toggleSummaryModal={toggleSummaryModal}
       />
 
-      <Footer />
+
     </div>
   );
 };

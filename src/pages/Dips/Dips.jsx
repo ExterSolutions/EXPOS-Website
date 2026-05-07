@@ -31,7 +31,7 @@ const Dips = () => {
                 </div>
                 <DipsMenu searchQuery={searchQuery} searchCode={selectedCode} />
             </div>
-            <Footer />
+
         </div>
     )
 }

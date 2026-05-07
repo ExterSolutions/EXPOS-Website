@@ -333,7 +333,7 @@ function ContactUs() {
                     </div>
                 </div>
             </div>
-            <Footer />
+
         </>
     );
 }

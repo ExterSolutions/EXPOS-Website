@@ -803,7 +803,7 @@ function CreateYourOwn() {
                     />
                 </section>
             )}
-            <Footer />
+
         </div>
     );
 }
