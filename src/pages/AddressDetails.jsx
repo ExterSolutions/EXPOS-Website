@@ -150,6 +150,19 @@ function AddressDetails() {
         fetchData();
     }, []);
 
+    // Once cities are fetched, enrich selectedCity with cityCode if stale localStorage lacked it
+    useEffect(() => {
+        if (cities.length > 0 && selectedCity && !selectedCity.cityCode) {
+            const match = cities.find(c => c.value === selectedCity.value);
+            if (match?.cityCode) {
+                const enriched = { ...selectedCity, cityCode: match.cityCode };
+                setSelectedCity(enriched);
+                setCurrentCity(enriched);
+                localStorage.setItem('currentCity', JSON.stringify(enriched));
+            }
+        }
+    }, [cities, selectedCity]);
+
     useEffect(() => {
         setSelectedCity(currentCity)
         setSelectedStore(currentStore)
@@ -369,7 +382,7 @@ function AddressDetails() {
                 mobileNumber: values?.phoneno,
                 address: values?.address,
                 zipCode: values.postalcode,
-                cityCode: selectedCity?.cityCode || currentCity?.cityCode || "",
+                cityCode: selectedCity?.cityCode || currentCity?.cityCode || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode || "",
                 storeCode: currentStoreCode,
                 products: cart?.product,
                 subTotal: cart?.subtotal,

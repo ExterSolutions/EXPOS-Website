@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { io } from "socket.io-client";
 
-const socketBaseUrl = import.meta.env.VITE_SOCKET_BASE;
+const socketBaseUrl = import.meta.env.VITE_SOCKET_BASE_URL;
 
 // Create a context for Socket.io
 const SocketContext = createContext(null);
