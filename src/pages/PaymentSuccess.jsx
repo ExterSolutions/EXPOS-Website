@@ -116,6 +116,16 @@ const PaymentSuccess = () => {
             if (rawMeta) {
                 try {
                     const meta = JSON.parse(rawMeta);
+                    // ── Pre-send validation ───────────────────────────────────────────
+                    console.log('[🔔 PaymentSuccess] ✅ pendingOrderMeta parsed OK:');
+                    console.log('  orderCode    =', meta.orderCode);
+                    console.log('  orderNumber  =', meta.orderNumber);
+                    console.log('  storeCode    =', meta.storeCode, meta.storeCode ? '✅' : '❌ EMPTY — bell will be dropped on cashier!');
+                    console.log('  customerName =', meta.customerName);
+                    console.log('  deliveryType =', meta.deliveryType);
+                    console.log('  grandTotal   =', meta.grandTotal);
+                    console.log('  status       =', meta.status);
+                    // ─────────────────────────────────────────────────────────────────
                     await notifySocketServer(meta);
                 } catch (e) {
                     console.error('[🔔 PaymentSuccess] ❌ Could not parse pendingOrderMeta:', e);
