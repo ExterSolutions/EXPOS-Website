@@ -100,9 +100,20 @@ function PickupOrder() {
 
     // Sync selectedStore when storeDetails or currentStoreCode changes
     useEffect(() => {
-        if (!selectedStore && currentStoreCode && storeDetails.length > 0) {
-            const preSelected = storeDetails.find(d => d.code === currentStoreCode);
-            if (preSelected) setSelectedStore(preSelected);
+        if (storeDetails.length === 0) return;
+        if (selectedStore) return; // already have one, don't override
+
+        // Try to match by currentStoreCode
+        const preSelected = currentStoreCode
+            ? storeDetails.find(d => d.code === currentStoreCode)
+            : null;
+
+        if (preSelected) {
+            setSelectedStore(preSelected);
+        } else {
+            // Fallback: use the GlobalContext store (always set by store-picker popup)
+            const globalStore = globalctx.selectedStore[0];
+            if (globalStore) setSelectedStore(globalStore);
         }
     }, [storeDetails, currentStoreCode]);
 
