@@ -59,6 +59,19 @@ const PaymentSuccess = () => {
         setLoading(true);
 
         const notifySocketServer = async (meta) => {
+            const socketBase = import.meta.env.VITE_SOCKET_BASE_URL;
+            console.log('[🔔 PaymentSuccess] notifySocketServer called');
+            console.log('[🔔 PaymentSuccess] VITE_SOCKET_BASE_URL =', socketBase);
+            console.log('[🔔 PaymentSuccess] order meta =', JSON.stringify(meta, null, 2));
+
+            if (!socketBase) {
+                console.error('[🔔 PaymentSuccess] ❌ VITE_SOCKET_BASE_URL is undefined — socket call will fail!');
+                return;
+            }
+            if (!meta.storeCode) {
+                console.error('[🔔 PaymentSuccess] ❌ storeCode is empty — cashier will filter this out!');
+            }
+
             try {
                 const params = new URLSearchParams({
                     orderCode:    meta.orderCode    || '',
@@ -71,24 +84,40 @@ const PaymentSuccess = () => {
                     grandTotal:   meta.grandTotal   || '0',
                     status:       meta.status       || 'pending',
                 });
-                // Safety-net: directly hit the socket server's HTTP endpoint.
-                // If the Stripe webhook already fired, the cashier's duplicate-check
-                // (orderCode) prevents a double bell.
-                await fetch(`${import.meta.env.VITE_SOCKET_BASE_URL}/order/place/customer?${params.toString()}`);
+                const url = `${socketBase}/order/place/customer?${params.toString()}`;
+                console.log('[🔔 PaymentSuccess] Calling socket server →', url);
+
+                const res = await fetch(url);
+                const json = await res.json().catch(() => ({}));
+                console.log('[🔔 PaymentSuccess] Socket server responded:', res.status, json);
+
+                if (res.ok) {
+                    console.log('[🔔 PaymentSuccess] ✅ Socket server notified successfully — cashier bell should ring');
+                } else {
+                    console.error('[🔔 PaymentSuccess] ❌ Socket server returned error:', res.status, json);
+                }
             } catch (err) {
-                console.warn('[PaymentSuccess] Socket safety-net call failed:', err);
+                console.error('[🔔 PaymentSuccess] ❌ Fetch to socket server threw an error:', err);
             }
         };
 
         const run = async () => {
+            console.log('[🔔 PaymentSuccess] run() started — reading pendingOrderMeta from localStorage');
             const rawMeta = localStorage.getItem('pendingOrderMeta');
+            console.log('[🔔 PaymentSuccess] raw pendingOrderMeta =', rawMeta);
+
             if (rawMeta) {
                 try {
-                    await notifySocketServer(JSON.parse(rawMeta));
+                    const meta = JSON.parse(rawMeta);
+                    await notifySocketServer(meta);
                 } catch (e) {
-                    console.warn('[PaymentSuccess] Could not parse pendingOrderMeta:', e);
+                    console.error('[🔔 PaymentSuccess] ❌ Could not parse pendingOrderMeta:', e);
                 }
+            } else {
+                console.warn('[🔔 PaymentSuccess] ⚠️ No pendingOrderMeta found — socket notification skipped');
+                console.warn('[🔔 PaymentSuccess] All localStorage keys:', Object.keys(localStorage));
             }
+
             localStorage.removeItem('OrderID');
             localStorage.removeItem('sessionId');
             localStorage.removeItem('pendingOrderMeta');
@@ -97,9 +126,11 @@ const PaymentSuccess = () => {
             cartFn.createCart(setCart);
             setPaymentStatus('success');
             setLoading(false);
+            console.log('[🔔 PaymentSuccess] run() complete — page should show success');
         };
 
         // Small delay so the Stripe webhook has a chance to fire first
+        console.log('[🔔 PaymentSuccess] Scheduling socket safety-net in 1500ms...');
         setTimeout(run, 1500);
     }, []);
 
