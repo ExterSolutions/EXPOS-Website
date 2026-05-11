@@ -198,7 +198,7 @@ function PickupOrder() {
 
         try {
             const response = await orderPlace(payload);
-            if (socket) socket.emit("order-place", response.data);
+            // Bell triggered via Stripe webhook after payment — not here (see WebhookController).
             localStorage.setItem("OrderID", response.orderCode);
             localStorage.setItem("sessionId", response.sessionId);
 

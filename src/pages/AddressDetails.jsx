@@ -402,9 +402,12 @@ function AddressDetails() {
             const cartFn = new CartFunction();
             cartFn.clearCart(setCart);
 
-            // Emit socket event
-            const socketOrderData = orderResponse.data;
-            socket.emit("order-place", socketOrderData);
+            // NOTE: We do NOT emit a socket event here.
+            // The bell is triggered by the Stripe webhook AFTER payment is confirmed:
+            //   Stripe → Laravel WebhookController → GET /order/place/customer on socket server
+            //   → socket broadcasts "order-by-client" → cashier POS bell rings.
+            // Emitting here (before payment) would ring the bell for unpaid orders,
+            // and socket events are not queued — a missed event is gone forever.
 
             // Store order details
             localStorage.setItem("OrderID", orderResponse.orderCode);
