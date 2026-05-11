@@ -166,13 +166,18 @@ function PickupOrder() {
 
     const handlePickupOrder = async () => {
         setBusyLoader(true);
+
+        // cityCode: prefer from selectedStore (API-fetched), fall back to GlobalContext store (store-picker)
+        const resolvedCityCode = selectedStore?.cityCode || globalctx.selectedStore[0]?.cityCode || "";
+        console.log('[🛒 PickupOrder] cityCode resolved =', resolvedCityCode, '| selectedStore.cityCode =', selectedStore?.cityCode, '| globalStore.cityCode =', globalctx.selectedStore[0]?.cityCode);
+
         const payload = {
             customerCode: user?.data?.customerCode,
             deliveryType: selectedType,
             customerName: user?.data?.fullName,
             mobileNumber: user?.data?.mobileNumber,
             products: cart?.product,
-            cityCode: selectedStore?.cityCode || "",
+            cityCode: resolvedCityCode,
             discount_code: appliedCoupon?.code,
             storeCode: selectedStore?.code,
             subTotal: cart?.subtotal,
@@ -184,16 +189,6 @@ function PickupOrder() {
             deliveryCharges: 0,
             extraDeliveryCharges: 0,
             grandTotal: grand_total,
-            // subTotal: cart?.subtotal,
-            // discountAmount: discountAmount,
-            // appliedCoupons: appliedCoupon ? [appliedCoupon.code] : [],
-            // taxPer: taxPercent,
-            // taxAmount: taxAmount,
-            // deliveryCharges: 0,
-            // grandTotal: grand_total,
-            // storeCode: selectedStore?.code,
-            // successUrl: `${window.location.origin}/payment/success`,
-            // cancelUrl: `${window.location.origin}/payment/cancel`,
         };
 
         try {
