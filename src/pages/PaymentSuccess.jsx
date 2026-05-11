@@ -6,6 +6,13 @@ import CartFunction from '../components/cart';
 import { GlobalContext } from '../context/GlobalContext';
 import { useSiteData } from '../components/_main/Header/hooks/useSiteData';
 
+// ── MODULE-LEVEL: fires at JS parse time, before React mounts ──────────────
+console.log('[🔔 PaymentSuccess MODULE] JS loaded at', new Date().toISOString());
+console.log('[🔔 PaymentSuccess MODULE] VITE_SOCKET_BASE_URL =', import.meta.env.VITE_SOCKET_BASE_URL);
+console.log('[🔔 PaymentSuccess MODULE] pendingOrderMeta in localStorage =',
+    localStorage.getItem('pendingOrderMeta'));
+// ───────────────────────────────────────────────────────────────────────────
+
 const PaymentSuccess = () => {
 
     const navigate = useNavigate();
