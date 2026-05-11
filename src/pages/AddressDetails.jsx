@@ -76,6 +76,7 @@ function AddressDetails() {
     const [currentStoreCode, setCurrentStoreCode] = globalctx.currentStoreCode;
     const [currentCity, setCurrentCity] = globalctx.currentCity;
     const [currentStore, setCurrentStore] = globalctx.currentStore;
+    const [globalSelectedStore] = globalctx.selectedStore; // has cityCode from store-picker popup
 
     const [postalCodeOp, setPostalCodeOp] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -382,7 +383,11 @@ function AddressDetails() {
                 mobileNumber: values?.phoneno,
                 address: values?.address,
                 zipCode: values.postalcode,
-                cityCode: selectedCity?.cityCode || currentCity?.cityCode || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode || "",
+                cityCode: selectedCity?.cityCode
+                    || currentCity?.cityCode
+                    || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode
+                    || globalSelectedStore?.cityCode  // fallback: store-picker already resolved this
+                    || "",
                 storeCode: currentStoreCode,
                 products: cart?.product,
                 subTotal: cart?.subtotal,
