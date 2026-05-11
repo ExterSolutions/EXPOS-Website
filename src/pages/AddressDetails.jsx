@@ -409,9 +409,20 @@ function AddressDetails() {
             // Emitting here (before payment) would ring the bell for unpaid orders,
             // and socket events are not queued — a missed event is gone forever.
 
-            // Store order details
+            // Store order details + full context for socket safety-net in PaymentSuccess
             localStorage.setItem("OrderID", orderResponse.orderCode);
             localStorage.setItem("sessionId", orderResponse.sessionId);
+            localStorage.setItem("pendingOrderMeta", JSON.stringify({
+                orderCode: orderResponse.orderCode,
+                orderNumber: orderResponse.orderNumber,
+                storeCode: currentStoreCode,
+                customerName: custFullName,
+                phoneNumber: values?.phoneno,
+                deliveryType: "delivery",
+                orderFrom: "online",
+                grandTotal: Number(cart?.grandtotal || 0).toFixed(2),
+                status: "pending",
+            }));
 
             // Update state with API response
             setOrderResponse(orderResponse);

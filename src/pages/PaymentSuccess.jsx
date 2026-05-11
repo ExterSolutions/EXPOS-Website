@@ -57,15 +57,50 @@ const PaymentSuccess = () => {
 
     useEffect(() => {
         setLoading(true);
-        setTimeout(() => {
+
+        const notifySocketServer = async (meta) => {
+            try {
+                const params = new URLSearchParams({
+                    orderCode:    meta.orderCode    || '',
+                    orderNumber:  meta.orderNumber  || '',
+                    storeCode:    meta.storeCode    || '',
+                    customerName: meta.customerName || '',
+                    phoneNumber:  meta.phoneNumber  || '',
+                    deliveryType: meta.deliveryType || 'pickup',
+                    orderFrom:    meta.orderFrom    || 'online',
+                    grandTotal:   meta.grandTotal   || '0',
+                    status:       meta.status       || 'pending',
+                });
+                // Safety-net: directly hit the socket server's HTTP endpoint.
+                // If the Stripe webhook already fired, the cashier's duplicate-check
+                // (orderCode) prevents a double bell.
+                await fetch(`${import.meta.env.VITE_SOCKET_BASE_URL}/order/place/customer?${params.toString()}`);
+            } catch (err) {
+                console.warn('[PaymentSuccess] Socket safety-net call failed:', err);
+            }
+        };
+
+        const run = async () => {
+            const rawMeta = localStorage.getItem('pendingOrderMeta');
+            if (rawMeta) {
+                try {
+                    await notifySocketServer(JSON.parse(rawMeta));
+                } catch (e) {
+                    console.warn('[PaymentSuccess] Could not parse pendingOrderMeta:', e);
+                }
+            }
             localStorage.removeItem('OrderID');
             localStorage.removeItem('sessionId');
-            localStorage.removeItem("cart");
+            localStorage.removeItem('pendingOrderMeta');
+            localStorage.removeItem('cart');
             setCart({ product: [] });
             cartFn.createCart(setCart);
             setPaymentStatus('success');
             setLoading(false);
-        }, 1500);
+        };
+
+        // Small delay so the Stripe webhook has a chance to fire first
+        setTimeout(run, 1500);
     }, []);
 
 

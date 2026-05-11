@@ -199,8 +199,20 @@ function PickupOrder() {
         try {
             const response = await orderPlace(payload);
             // Bell triggered via Stripe webhook after payment — not here (see WebhookController).
+            // Store order details + context so PaymentSuccess.jsx can call socket as fallback.
             localStorage.setItem("OrderID", response.orderCode);
             localStorage.setItem("sessionId", response.sessionId);
+            localStorage.setItem("pendingOrderMeta", JSON.stringify({
+                orderCode: response.orderCode,
+                orderNumber: response.orderNumber,
+                storeCode: selectedStore?.code,
+                customerName: user?.data?.fullName,
+                phoneNumber: user?.data?.mobileNumber,
+                deliveryType: selectedType,
+                orderFrom: "online",
+                grandTotal: grand_total,
+                status: "pending",
+            }));
 
             // Clear the cart immediately since the order is now placed backend
             const cartFn = new CartFunction();
