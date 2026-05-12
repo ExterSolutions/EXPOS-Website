@@ -93,17 +93,17 @@ function AddressDetails() {
 
     // Timer / flow states
     const [showOrderButtons, setShowOrderButtons] = useState(false);
-    const [timerKey,         setTimerKey]         = useState(0);   // increment to restart CountdownTimer
-    const [showTimer,        setShowTimer]        = useState(false);
-    const [isQuoteExpired,   setIsQuoteExpired]   = useState(false); // shows "Quote expired. Refreshing…" banner
+    const [timerKey, setTimerKey] = useState(0);   // increment to restart CountdownTimer
+    const [showTimer, setShowTimer] = useState(false);
+    const [isQuoteExpired, setIsQuoteExpired] = useState(false); // shows "Quote expired. Refreshing…" banner
 
     // Nash delivery quote hook
     const nashQuote = useNashQuote();
 
     // API response states
     const [orderResponse, setOrderResponse] = useState(null);
-    const [paymentUrl,    setPaymentUrl]    = useState("");
-    const [apiPricing,    setApiPricing]    = useState(null);
+    const [paymentUrl, setPaymentUrl] = useState("");
+    const [apiPricing, setApiPricing] = useState(null);
 
     const [initialValues, setInitialValues] = useState({
         firstname: user?.data?.firstName,
@@ -331,14 +331,14 @@ function AddressDetails() {
             // Use the already-fetched Nash delivery fee from the hook.
             // Auto-fetch runs automatically when address+postalcode are filled (see useEffect below).
             // If hook hasn't loaded yet, fall back to 0 — cashier can adjust on acceptance.
-            const deliveryFee     = nashQuote.deliveryFee || 0;
+            const deliveryFee = nashQuote.deliveryFee || 0;
 
             // NOW CALL ORDER PLACE API
             const baseUrl = window.location.origin;
             let custFullName = values.firstname + " " + values.lastname;
 
             // Grand total = cart total + Nash delivery fee
-            const cartTotal      = Number(cart?.grandtotal || 0);
+            const cartTotal = Number(cart?.grandtotal || 0);
             const finalGrandTotal = Number(cartTotal + deliveryFee).toFixed(2);
 
             const orderPayload = {
@@ -481,6 +481,7 @@ function AddressDetails() {
     // mid-payment. The hook's refresh() handles the post-expiry re-fetch instead.
     useEffect(() => {
         const addr   = formik.values.address   || '';
+        const city   = formik.values.city       || '';
         const postal = formik.values.postalcode || '';
         const phone  = formik.values.phoneno   || '';
 
@@ -488,17 +489,18 @@ function AddressDetails() {
 
         const t = setTimeout(() => {
             nashQuote.fetchQuote({
-                address:     addr,
-                postalcode:  postal,
-                phoneno:     phone,
-                storeCode:   currentStoreCode,
-                orderValue:  cart?.subtotal || 0,
+                address:    addr,
+                city:       city,
+                postalcode: postal,
+                phoneno:    phone,
+                storeCode:  currentStoreCode,
+                orderValue: cart?.subtotal || 0,
             });
         }, 900);
 
         return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formik.values.address, formik.values.postalcode, currentStoreCode, readOnly]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formik.values.address, formik.values.city, formik.values.postalcode, currentStoreCode, readOnly]);
 
 
     if (loading) return <LoadingLayout />;
@@ -786,58 +788,34 @@ function AddressDetails() {
                                             </li>
                                         )}
 
-                                        {/* Delivery Charges — always visible for delivery orders */}
-                                        {(() => {
-                                            // Priority: confirmed backend pricing > Nash pre-order quote > cart > pending
-                                            const confirmedFee  = apiPricing?.deliveryCharges;
-                                            const estimatedFee  = nashQuote.data?.delivery_fee_cents != null
-                                                ? nashQuote.data.delivery_fee_cents / 100
-                                                : null;
-                                            const cartFee       = cart?.deliveryCharges;
-                                            const resolvedFee   = confirmedFee ?? estimatedFee ?? cartFee;
-
-                                            if (nashQuote.loading) {
-                                                // Shimmer while fetching
-                                                return (
-                                                    <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <span className="ttl">Delivery Charges</span>
-                                                        <span style={{
-                                                            display: 'inline-block', width: '70px', height: '16px',
-                                                            borderRadius: '4px',
-                                                            background: 'linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%)',
-                                                            backgroundSize: '200% 100%',
-                                                            animation: 'shimmer 1.4s infinite linear',
-                                                        }} />
-                                                    </li>
-                                                );
-                                            }
-
-                                            if (resolvedFee != null) {
-                                                // We have a number (even $0.00 is valid — e.g. free delivery)
-                                                return (
-                                                    <li>
-                                                        <span className="ttl">
-                                                            Delivery Charges
-                                                            {estimatedFee != null && !confirmedFee && (
-                                                                <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>
-                                                                    (est. via {nashQuote.data?.provider || 'courier'})
-                                                                </span>
-                                                            )}
-                                                        </span>
-                                                        <span className="stts">$ {Number(resolvedFee).toFixed(2)}</span>
-                                                    </li>
-                                                );
-                                            }
-
-                                            // No address yet — show pending placeholder
-                                            return (
-                                                <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <span className="ttl">Delivery Charges</span>
-                                                    <span style={{ fontSize: '12px', color: '#aaa', fontStyle: 'italic' }}>
-                                                        Enter address ↑
+                                        {/* Delivery Charges — shimmer while loading, confirmed value once fetched */}
+                                        {nashQuote.loading ? (
+                                            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span className="ttl">Delivery Charges</span>
+                                                <span style={{
+                                                    display: 'inline-block', width: '70px', height: '16px',
+                                                    borderRadius: '4px', background: 'linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%)',
+                                                    backgroundSize: '200% 100%',
+                                                    animation: 'shimmer 1.4s infinite linear',
+                                                }} />
+                                            </li>
+                                        ) : (() => {
+                                            const fee = apiPricing?.deliveryCharges
+                                                ?? (nashQuote.data?.delivery_fee_cents ? nashQuote.data.delivery_fee_cents / 100 : null)
+                                                ?? cart?.deliveryCharges;
+                                            return fee && Number(fee) > 0 ? (
+                                                <li>
+                                                    <span className="ttl">
+                                                        Delivery Charges
+                                                        {nashQuote.data && !apiPricing && (
+                                                            <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>
+                                                                (est. via {nashQuote.data.provider || 'courier'})
+                                                            </span>
+                                                        )}
                                                     </span>
+                                                    <span className="stts">$ {Number(fee).toFixed(2)}</span>
                                                 </li>
-                                            );
+                                            ) : null;
                                         })()}
 
                                         {/* Extra Delivery Charges - Only if > 0 */}
@@ -862,11 +840,6 @@ function AddressDetails() {
                                             }} />
                                         ) : (
                                             <span className="odr-stts total-font-size">
-                                                {/* Show "+ delivery" hint when we don't have the fee yet */}
-                                                {!apiPricing && !nashQuote.data && !cart?.deliveryCharges
-                                                    ? <span style={{ fontSize: '12px', color: '#888', fontStyle: 'italic', marginRight: '4px' }}>(+ delivery)</span>
-                                                    : null
-                                                }
                                                 $ {apiPricing?.grandTotal
                                                     ? Number(apiPricing.grandTotal).toFixed(2)
                                                     : nashQuote.deliveryFee > 0

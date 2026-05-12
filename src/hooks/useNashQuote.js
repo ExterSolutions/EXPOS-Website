@@ -6,7 +6,7 @@ import { getDeliveryQuote } from '../services';
  *
  * Usage:
  *   const q = useNashQuote();
- *   q.fetchQuote({ address, postalcode, phoneno, storeCode, orderValue });
+ *   q.fetchQuote({ address, city, postalcode, phoneno, storeCode, orderValue });
  *   // later, on timer expiry:
  *   q.refresh();
  */
@@ -21,6 +21,7 @@ export function useNashQuote() {
 
     const fetchQuote = useCallback(async ({
         address,
+        city   = '',
         postalcode,
         phoneno,
         storeCode,
@@ -29,15 +30,24 @@ export function useNashQuote() {
         if (!address || !postalcode || !storeCode) return;
 
         // Store params so refresh() can re-use them
-        lastParamsRef.current = { address, postalcode, phoneno, storeCode, orderValue };
+        lastParamsRef.current = { address, city, postalcode, phoneno, storeCode, orderValue };
 
         setLoading(true);
         setError(null);
 
         try {
-            const phone    = phoneno ? `+1${phoneno.replace(/\D/g, '')}` : undefined;
-            const dropoff  = `${address}, ${postalcode}`.replace(/\s+/g, ' ').trim();
+            const phone = phoneno ? `+1${phoneno.replace(/\D/g, '')}` : undefined;
 
+            // Build a full geocodable address: "123 Main St, Toronto, ON, M5V 2T6, Canada"
+            // City and province are critical — without them Nash geocodes to the wrong region.
+            const parts = [address.trim()];
+            if (city)       parts.push(city.trim());
+            parts.push('ON');           // province — all Exter stores are in Ontario
+            parts.push(postalcode.trim());
+            parts.push('Canada');
+            const dropoff = parts.filter(Boolean).join(', ');
+
+            console.log('[useNashQuote] dropoff_address →', dropoff);
             const response = await getDeliveryQuote({
                 dropoff_address: dropoff,
                 ...(phone ? { dropoff_phone: phone } : {}),
