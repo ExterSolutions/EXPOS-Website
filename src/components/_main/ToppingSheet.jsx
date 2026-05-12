@@ -3,6 +3,7 @@
 // all pizza customization screens (Signature, Create Your Own, etc.)
 import { useEffect, useRef } from "react";
 import { IoMdClose } from "react-icons/io";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 /**
  * ToppingSheet — slides up from the bottom on mobile, centered modal on desktop.
@@ -64,15 +65,8 @@ const ToppingSheet = ({
         return () => document.removeEventListener("keydown", handleKey);
     }, [isOpen, onClose]);
 
-    // Lock body scroll when open
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-        return () => { document.body.style.overflow = ""; };
-    }, [isOpen]);
+    // Robust iOS-compatible body scroll lock (position:fixed trick)
+    useBodyScrollLock(isOpen);
 
     if (!isOpen) return null;
 
@@ -159,7 +153,7 @@ const ToppingSheet = ({
                 </p>
 
                 {/* Topping grid */}
-                <div className="topping-sheet__body">
+                <div className="topping-sheet__body" style={{ touchAction: 'pan-y' }}>
                     {activeTab === "two" && (
                         <div className="topping-sheet__list">
                             {Ingredients?.toppings?.countAsTwo?.map((data, index) => (

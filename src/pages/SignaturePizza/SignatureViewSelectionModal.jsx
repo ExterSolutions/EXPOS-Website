@@ -34,7 +34,7 @@ function SignatureViewSelectionModal({
                     Details
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body className="primary-background-color" style={{ overflowY: "auto", width: "100%", maxHeight: "calc(100vh - 300px)" }}>
+            <Modal.Body className="primary-background-color" style={{ overflowY: "auto", width: "100%", maxHeight: "calc(100dvh - 300px)" }}>
                 <Container className="card-background-color">
                     <div className="px-3 row">
                         <div className="scrollable-content" >

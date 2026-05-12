@@ -22219,7 +22219,7 @@ body {
   z-index: 1050;
   background: var(--bs-body-bg, #fff);
   border-radius: 20px 20px 0 0;
-  max-height: 88vh;
+  max-height: 88dvh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.18);
@@ -22238,7 +22238,7 @@ body {
     bottom: auto;
     transform: translate(-50%, -50%);
     width: min(680px, 94vw);
-    max-height: 80vh;
+    max-height: 80dvh;
     border-radius: 18px;
     padding-bottom: 0; /* reset mobile safe-area padding */
     animation: modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -22509,9 +22509,12 @@ body {
 }
 
 .option-sheet__body {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  touch-action: pan-y;
   padding: 0 0 env(safe-area-inset-bottom, 0);
 }
 

@@ -10,6 +10,7 @@
 //   onSelect     (id) => void
 import { useEffect, useRef } from "react";
 import { IoMdClose } from "react-icons/io";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect }) => {
     const sheetRef = useRef(null);
@@ -21,12 +22,8 @@ const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect 
         return () => document.removeEventListener("keydown", handleKey);
     }, [isOpen, onClose]);
 
-    // Lock body scroll
-    useEffect(() => {
-        if (isOpen) document.body.style.overflow = "hidden";
-        else document.body.style.overflow = "";
-        return () => { document.body.style.overflow = ""; };
-    }, [isOpen]);
+    // Robust iOS-compatible body scroll lock
+    useBodyScrollLock(isOpen);
 
     if (!isOpen) return null;
 
@@ -62,7 +59,7 @@ const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect 
                 </div>
 
                 {/* Option list */}
-                <div className="option-sheet__body">
+                <div className="option-sheet__body" style={{ touchAction: 'pan-y' }}>
                     {options.map((opt) => {
                         const isActive = opt.id === selected;
                         return (
