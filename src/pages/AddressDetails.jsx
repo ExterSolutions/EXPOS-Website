@@ -395,16 +395,15 @@ function AddressDetails() {
 
             // Update state with API response
             setOrderResponse(orderResponse);
-            setPaymentUrl(orderResponse.paymentUrl);
             setApiPricing(orderResponse.pricing);
 
-            // Lock form and start 3-minute price-lock countdown
-            setReadOnly(true);
-            setShowOrderButtons(true);
-            startPriceLock();
-
-            toast.success("Order created successfully!");
+            toast.success("Order placed! Redirecting to payment…");
             setLoading(false);
+
+            // ── Go directly to Stripe payment ──────────────────────────────
+            // No intermediate timer screen — redirect immediately so the
+            // customer pays before the Nash quote window expires.
+            window.location.href = orderResponse.paymentUrl;
 
         } catch (error) {
             setLoading(false);
