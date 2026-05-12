@@ -21977,6 +21977,12 @@ body {
   }
 }
 
+/* Looping shimmer — used by delivery fee + grand total loading placeholders */
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
 .shimmer-bg {
   background: linear-gradient(
     90deg,

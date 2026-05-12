@@ -13,11 +13,12 @@ import { useSocket } from "../context/SocketContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import {
     cancelOrder,
-    getDeliveryQuote,
     getPostalcodeList,
     getStoreLocationByCity,
     orderPlace
 } from "../services";
+import { useNashQuote } from '../hooks/useNashQuote';
+import { CountdownTimer } from '../components/CountdownTimer';
 
 
 const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
@@ -90,17 +91,19 @@ function AddressDetails() {
     const [stores, setStores] = useState([]);
     const [selectedCity, setSelectedCity] = useState(null);
 
-    // NEW STATES FOR TIMER AND CANCEL LOGIC
+    // Timer / flow states
     const [showOrderButtons, setShowOrderButtons] = useState(false);
-    const [timer, setTimer] = useState(180); // 3 minutes in seconds
-    const [timerActive, setTimerActive] = useState(false);
-    const timerInterval = useRef(null);
+    const [timerKey,         setTimerKey]         = useState(0);   // increment to restart CountdownTimer
+    const [showTimer,        setShowTimer]        = useState(false);
+    const [isQuoteExpired,   setIsQuoteExpired]   = useState(false); // shows "Quote expired. Refreshing…" banner
 
-    // NEW STATES FOR API RESPONSE
+    // Nash delivery quote hook
+    const nashQuote = useNashQuote();
+
+    // API response states
     const [orderResponse, setOrderResponse] = useState(null);
-    const [paymentUrl, setPaymentUrl] = useState("");
-    const [apiPricing, setApiPricing] = useState(null);
-    const [nashQuote, setNashQuote] = useState(null);     // Nash delivery quote (fetched before order placement)
+    const [paymentUrl,    setPaymentUrl]    = useState("");
+    const [apiPricing,    setApiPricing]    = useState(null);
 
     const [initialValues, setInitialValues] = useState({
         firstname: user?.data?.firstName,
@@ -176,58 +179,40 @@ function AddressDetails() {
         setStores(storeOptions);
     }, [currentCity, currentStore])
 
-    // Delivery charges are handled by Nash on the backend.
-    // The orderPlace response (apiPricing) returns the Nash-calculated fee
-    // which is already displayed in the Order Summary section below.
-
-    // START TIMER FUNCTION
-    const startTimer = () => {
-        setTimer(180);
-        setTimerActive(true);
-
-        timerInterval.current = setInterval(() => {
-            setTimer((prevTimer) => {
-                if (prevTimer <= 1) {
-                    // Timer expired
-                    handleTimerExpiry();
-                    return 0;
-                }
-                return prevTimer - 1;
-            });
-        }, 1000);
+    // Delivery charges are fetched live from Nash via useNashQuote hook.
+    // startTimer / stopTimer replaced by CountdownTimer component + timerKey state.
+    const startPriceLock = () => {
+        setTimerKey((k) => k + 1); // CountdownTimer resets when key changes
+        setShowTimer(true);
     };
 
-    // STOP TIMER FUNCTION
-    const stopTimer = () => {
-        if (timerInterval.current) {
-            clearInterval(timerInterval.current);
-            timerInterval.current = null;
-        }
-        setTimerActive(false);
-        setTimer(180);
-    };
+    const stopPriceLock = () => setShowTimer(false);
 
-    // HANDLE TIMER EXPIRY
+    // HANDLE TIMER EXPIRY  — cancel stale order, re-fetch quote, show expired banner
     const handleTimerExpiry = async () => {
         const orderCode = localStorage.getItem("OrderID");
-
         if (orderCode) {
             try {
                 await cancelOrder(orderCode);
                 localStorage.removeItem("OrderID");
                 localStorage.removeItem("sessionId");
-            } catch (error) {
-                // Silently ignore cancellation errors during timer expiry as it's automatic
-            }
+            } catch (_) { /* silent */ }
         }
 
-        stopTimer();
+        stopPriceLock();
         setShowOrderButtons(false);
         setReadOnly(false);
         setOrderResponse(null);
         setPaymentUrl("");
         setApiPricing(null);
-        setNashQuote(null);
+
+        // Show "Quote expired. Refreshing delivery charges…" and re-fetch
+        setIsQuoteExpired(true);
+        try {
+            await nashQuote.refresh(); // re-uses last address params
+        } finally {
+            setIsQuoteExpired(false);
+        }
     };
 
     // HANDLE CANCEL ORDER BUTTON
@@ -273,7 +258,7 @@ function AddressDetails() {
         setReadOnly(false);
         if (showOrderButtons) {
             setShowOrderButtons(false);
-            stopTimer();
+            stopPriceLock();
         }
     };
 
@@ -293,14 +278,7 @@ function AddressDetails() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // CLEANUP TIMER ON UNMOUNT
-    useEffect(() => {
-        return () => {
-            if (timerInterval.current) {
-                clearInterval(timerInterval.current);
-            }
-        };
-    }, []);
+    // CountdownTimer manages its own cleanup — nothing extra needed on unmount.
 
     // Handle city selection
     const handleCityChange = (selectedOption) => {
@@ -350,39 +328,17 @@ function AddressDetails() {
         try {
             setLoading(true);
 
-            // ── Fetch Nash delivery quote BEFORE placing the order ─────────────────
-            // This gives us the real delivery fee so we can:
-            //   1. Show it to the customer in the order summary
-            //   2. Include it in the Stripe session amount (so customer pays the right total)
-            // The quote endpoint (POST /customer/delivery/quote) is separate from the
-            // cashier endpoint (POST /cashier/nash/delivery-quote) — zero impact on cashier.
-            let deliveryFee = 0;
-            let quoteData = null;
-            try {
-                const quoteResponse = await getDeliveryQuote({
-                    dropoff_address: `${values.address}, ${values.postalcode}`,
-                    dropoff_phone: values.phoneno ? `+1${values.phoneno.replace(/\D/g, '')}` : undefined,
-                    store_code: currentStoreCode,
-                    order_value: cart?.subtotal || 0,
-                });
-                if (quoteResponse?.success && quoteResponse?.data?.delivery_fee_cents > 0) {
-                    deliveryFee = quoteResponse.data.delivery_fee_cents / 100;
-                    quoteData = quoteResponse.data;
-                    setNashQuote(quoteResponse.data);
-                }
-            } catch (quoteErr) {
-                // Non-fatal — if the quote fails we still place the order.
-                // The delivery fee will be $0 and the cashier can adjust manually.
-                console.warn('[Delivery Quote] Could not fetch Nash quote:', quoteErr?.message);
-            }
-            // ─────────────────────────────────────────────────────────────────────
+            // Use the already-fetched Nash delivery fee from the hook.
+            // Auto-fetch runs automatically when address+postalcode are filled (see useEffect below).
+            // If hook hasn't loaded yet, fall back to 0 — cashier can adjust on acceptance.
+            const deliveryFee     = nashQuote.deliveryFee || 0;
 
             // NOW CALL ORDER PLACE API
             const baseUrl = window.location.origin;
             let custFullName = values.firstname + " " + values.lastname;
 
             // Grand total = cart total + Nash delivery fee
-            const cartTotal = Number(cart?.grandtotal || 0);
+            const cartTotal      = Number(cart?.grandtotal || 0);
             const finalGrandTotal = Number(cartTotal + deliveryFee).toFixed(2);
 
             const orderPayload = {
@@ -442,10 +398,10 @@ function AddressDetails() {
             setPaymentUrl(orderResponse.paymentUrl);
             setApiPricing(orderResponse.pricing);
 
-            // Set readonly and show buttons
+            // Lock form and start 3-minute price-lock countdown
             setReadOnly(true);
             setShowOrderButtons(true);
-            startTimer();
+            startPriceLock();
 
             toast.success("Order created successfully!");
             setLoading(false);
@@ -518,6 +474,31 @@ function AddressDetails() {
     useEffect(() => {
         postalCodeList();
     }, [formik.values.postalcode]);
+
+    // ── Auto-fetch Nash delivery quote when address + postal code are ready ───────────
+    // Debounced 900ms so we don't spam the Nash API while the user is typing.
+    // Only runs when the form is NOT locked (readOnly=false) so we don't re-fetch
+    // mid-payment. The hook's refresh() handles the post-expiry re-fetch instead.
+    useEffect(() => {
+        const addr   = formik.values.address   || '';
+        const postal = formik.values.postalcode || '';
+        const phone  = formik.values.phoneno   || '';
+
+        if (readOnly || addr.length < 10 || postal.length < 5 || !currentStoreCode) return;
+
+        const t = setTimeout(() => {
+            nashQuote.fetchQuote({
+                address:     addr,
+                postalcode:  postal,
+                phoneno:     phone,
+                storeCode:   currentStoreCode,
+                orderValue:  cart?.subtotal || 0,
+            });
+        }, 900);
+
+        return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formik.values.address, formik.values.postalcode, currentStoreCode, readOnly]);
 
 
     if (loading) return <LoadingLayout />;
@@ -724,18 +705,22 @@ function AddressDetails() {
                                             <button
                                                 className="py-2 fw-bold btn btn-lg"
                                                 type="submit"
+                                                disabled={nashQuote.loading}
                                                 style={{
-                                                    background: 'var(--primary, #2d7a2d)',
+                                                    background: nashQuote.loading ? '#aaa' : 'var(--primary, #2d7a2d)',
                                                     color: '#fff',
                                                     borderRadius: '10px',
                                                     fontSize: '1rem',
+                                                    transition: 'background 0.3s',
                                                 }}
                                             >
-                                                🚚 Confirm Address &amp; Place Order
+                                                {nashQuote.loading ? '⏳ Calculating delivery…' : '🔒 Confirm & Pay'}
                                             </button>
-                                            <small className="text-muted text-center mt-2">
-                                                Your delivery charges will be calculated at checkout
-                                            </small>
+                                            {!nashQuote.loading && !nashQuote.data && (
+                                                <small className="text-muted text-center mt-2">
+                                                    Enter your address above to see the delivery fee
+                                                </small>
+                                            )}
                                         </div>}
                                         {readOnly && !showOrderButtons && <div className="d-flex gap-4 mb-2">
                                             <button
@@ -801,22 +786,32 @@ function AddressDetails() {
                                             </li>
                                         )}
 
-                                        {/* Delivery Charges — show Nash quote pre-placement, confirmed pricing post-placement */}
-                                        {(() => {
+                                        {/* Delivery Charges — shimmer while loading, confirmed value once fetched */}
+                                        {nashQuote.loading ? (
+                                            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span className="ttl">Delivery Charges</span>
+                                                <span style={{
+                                                    display: 'inline-block', width: '70px', height: '16px',
+                                                    borderRadius: '4px', background: 'linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%)',
+                                                    backgroundSize: '200% 100%',
+                                                    animation: 'shimmer 1.4s infinite linear',
+                                                }} />
+                                            </li>
+                                        ) : (() => {
                                             const fee = apiPricing?.deliveryCharges
-                                                ?? (nashQuote?.delivery_fee_cents ? nashQuote.delivery_fee_cents / 100 : null)
+                                                ?? (nashQuote.data?.delivery_fee_cents ? nashQuote.data.delivery_fee_cents / 100 : null)
                                                 ?? cart?.deliveryCharges;
                                             return fee && Number(fee) > 0 ? (
                                                 <li>
                                                     <span className="ttl">
                                                         Delivery Charges
-                                                        {nashQuote && !apiPricing && (
-                                                            <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>(est.)</span>
+                                                        {nashQuote.data && !apiPricing && (
+                                                            <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>
+                                                                (est. via {nashQuote.data.provider || 'courier'})
+                                                            </span>
                                                         )}
                                                     </span>
-                                                    <span className="stts">
-                                                        $ {Number(fee).toFixed(2)}
-                                                    </span>
+                                                    <span className="stts">$ {Number(fee).toFixed(2)}</span>
                                                 </li>
                                             ) : null;
                                         })()}
@@ -831,25 +826,49 @@ function AddressDetails() {
                                             </li>
                                         )}
                                     </ul>
-                                    <div className="ttl-all" id="font-size" >
+                                    <div className="ttl-all" id="font-size">
                                         <span className="ttlnm">Grand Total</span>
-                                        <span className="odr-stts total-font-size" >
-                                            $ {apiPricing?.grandTotal
-                                                ? Number(apiPricing.grandTotal).toFixed(2)
-                                                : nashQuote?.delivery_fee_cents
-                                                    // Pre-placement: cart total + estimated delivery
-                                                    ? Number(Number(cart?.grandtotal || 0) + nashQuote.delivery_fee_cents / 100).toFixed(2)
-                                                    : cart?.grandtotal
-                                                        ? Number(cart.grandtotal).toFixed(2)
-                                                        : (0.0).toFixed(2)}
-                                        </span>
+                                        {nashQuote.loading && !apiPricing ? (
+                                            <span style={{
+                                                display: 'inline-block', width: '90px', height: '22px',
+                                                borderRadius: '4px', background: 'linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%)',
+                                                backgroundSize: '200% 100%',
+                                                animation: 'shimmer 1.4s infinite linear',
+                                                verticalAlign: 'middle',
+                                            }} />
+                                        ) : (
+                                            <span className="odr-stts total-font-size">
+                                                $ {apiPricing?.grandTotal
+                                                    ? Number(apiPricing.grandTotal).toFixed(2)
+                                                    : nashQuote.deliveryFee > 0
+                                                        ? Number(Number(cart?.grandtotal || 0) + nashQuote.deliveryFee).toFixed(2)
+                                                        : cart?.grandtotal
+                                                            ? Number(cart.grandtotal).toFixed(2)
+                                                            : (0.0).toFixed(2)}
+                                            </span>
+                                        )}
                                     </div>
-                                    {readOnly && showOrderButtons && (
+                                    {/* Quote-expired banner */}
+                                    {isQuoteExpired && (
+                                        <div style={{
+                                            marginTop: '10px', padding: '10px 14px',
+                                            borderRadius: '8px', background: '#fff3cd',
+                                            border: '1px solid #ffc107', color: '#856404',
+                                            fontSize: '13px', textAlign: 'center',
+                                        }}>
+                                            ⚠️ Quote expired. Refreshing delivery charges…
+                                        </div>
+                                    )}
+
+                                    {readOnly && showOrderButtons && showTimer && (
                                         <div className="mt-3">
                                             <div className="text-center mb-3">
-                                                <div className="fw-bold text-danger">
-                                                    Time remaining: {formatTimer(timer)}
-                                                </div>
+                                                <CountdownTimer
+                                                    durationSeconds={180}
+                                                    resetKey={timerKey}
+                                                    onExpire={handleTimerExpiry}
+                                                    label="Price locked for"
+                                                />
                                             </div>
                                             <div className="d-flex gap-2 justify-content-end">
                                                 <button
@@ -864,7 +883,7 @@ function AddressDetails() {
                                                     type="button"
                                                     onClick={handleContinueToPayment}
                                                 >
-                                                    Continue to Payment
+                                                    Proceed to Payment →
                                                 </button>
                                             </div>
                                         </div>
@@ -957,12 +976,15 @@ function AddressDetails() {
                         </strong>
                     </div>
 
-                    {readOnly && showOrderButtons && (
+                    {readOnly && showOrderButtons && showTimer && (
                         <div className="col-12 mt-1">
                             <div className="text-center mb-2">
-                                <div className="fw-bold text-danger">
-                                    Time remaining: {formatTimer(timer)}
-                                </div>
+                                <CountdownTimer
+                                    durationSeconds={180}
+                                    resetKey={timerKey}
+                                    onExpire={handleTimerExpiry}
+                                    label="Price locked for"
+                                />
                             </div>
                             <div className="d-flex gap-2">
                                 <button
@@ -977,7 +999,7 @@ function AddressDetails() {
                                     type="button"
                                     onClick={handleContinueToPayment}
                                 >
-                                    Continue to Payment
+                                    Proceed to Payment
                                 </button>
                             </div>
                         </div>
