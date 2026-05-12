@@ -57,6 +57,14 @@ export function useNashQuote() {
 
             if (response?.success && response?.data) {
                 const fee = (response.data.delivery_fee_cents || 0) / 100;
+                // Log for debugging — shows what pickup address the backend resolved
+                console.log('[useNashQuote] ✅ Quote received', {
+                    pickup:  response.data._debug_pickup_address  || '(not returned)',
+                    dropoff: response.data._debug_dropoff_address || dropoff,
+                    store:   response.data._debug_store_code      || storeCode,
+                    fee:     `$${fee.toFixed(2)}`,
+                    provider: response.data.provider,
+                });
                 setData(response.data);
                 setDeliveryFee(fee);
                 setFetchedAt(Date.now());
