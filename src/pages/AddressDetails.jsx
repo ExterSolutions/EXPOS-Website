@@ -505,41 +505,119 @@ function AddressDetails() {
 
     if (loading) return <LoadingLayout />;
 
-    return (
-        <div className="relative" style={{ paddingBottom: "80px" }}>
-            <div
-                className="container-fluid container-lg d-flex justify-content-start align-items-start flex-column p-0 m-0"
-                style={{ backgroundColor: "#ffffff" }}
-            >
-                <div className="row justify-content-start checkout_pg">
-                    <div className="subTitleColor mb-2">Address Details For Checkout :</div>
-                </div>
+    /* ── Shared delivery-fee resolution (used in both columns) ── */
+    const confirmedFee  = apiPricing?.deliveryCharges;
+    const estimatedFee  = nashQuote.data?.delivery_fee_cents != null
+        ? nashQuote.data.delivery_fee_cents / 100 : null;
+    const cartFee       = cart?.deliveryCharges;
+    const resolvedFee   = confirmedFee ?? estimatedFee ?? cartFee;
 
-                <div className="row">
-                    <div className="col-xl-7 col-lg-7 col-md-7 col-sm-12">
-                        <div className="row g-3">
-                            <div className='col-12'>
-                                <div className="d-flex justify-content-start align-items-center flex-row gap-3">
-                                    <div>
-                                        <strong className="">Payment Mode : </strong>
-                                    </div>
-                                    <div>
-                                        <span className="fw-bolder text-success">
-                                            Online Payment
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='col-12'>
-                                <div className="fs-6 fw-bold text-secondary">Choose your nearest Store:</div>
-                            </div>
-                            {/* City Dropdown — locked to current city, prices vary per city */}
-                            <div className='col-md-12 col-lg-6'>
-                                <label htmlFor="city-select" className="form-label d-flex align-items-center gap-2">
-                                    City:
-                                    <small className="text-muted fw-normal" style={{ fontSize: '0.75rem' }}>
-                                        🔒 Fixed to your selected city
-                                    </small>
+    const grandTotal = apiPricing?.grandTotal
+        ? Number(apiPricing.grandTotal)
+        : nashQuote.deliveryFee > 0
+            ? Number(cart?.grandtotal || 0) + nashQuote.deliveryFee
+            : Number(cart?.grandtotal || 0);
+
+    /* ── Reusable: Order Summary lines ── */
+    const SummaryLines = () => (
+        <>
+            {/* Sub Total */}
+            <div className="chk-line">
+                <span>Sub Total</span>
+                <span>$ {apiPricing?.subTotal
+                    ? Number(apiPricing.subTotal).toFixed(2)
+                    : cart?.subtotal ? cart.subtotal : '0.00'}</span>
+            </div>
+
+            {/* Tax */}
+            {(apiPricing?.taxAmount || cart?.taxAmount) && Number(apiPricing?.taxAmount || cart?.taxAmount) > 0 && (
+                <div className="chk-line">
+                    <span>Tax ({apiPricing?.taxPer || cart?.taxPer || 0}%)</span>
+                    <span>$ {Number(apiPricing?.taxAmount || cart?.taxAmount).toFixed(2)}</span>
+                </div>
+            )}
+
+            {/* Discount */}
+            {apiPricing?.discountAmount && Number(apiPricing.discountAmount) > 0 && (
+                <div className="chk-line chk-line--discount">
+                    <span>Discount</span>
+                    <span>− $ {Number(apiPricing.discountAmount).toFixed(2)}</span>
+                </div>
+            )}
+
+            {/* Convenience Fee */}
+            {(apiPricing?.convinenceCharges || cart?.convinenceCharges) && Number(apiPricing?.convinenceCharges || cart?.convinenceCharges) > 0 && (
+                <div className="chk-line">
+                    <span>Convenience Fee ({apiPricing?.convinencePer || cart?.convinencePer || 0}%)</span>
+                    <span>$ {Number(apiPricing?.convinenceCharges || cart?.convinenceCharges).toFixed(2)}</span>
+                </div>
+            )}
+
+            {/* Delivery — always visible */}
+            <div className="chk-line chk-line--delivery">
+                <span>
+                    Delivery Charges
+                    {estimatedFee != null && !confirmedFee && (
+                        <span className="chk-est-badge">est. · {nashQuote.data?.provider || 'courier'}</span>
+                    )}
+                </span>
+                {nashQuote.loading ? (
+                    <span className="chk-shimmer" style={{ width: 60 }} />
+                ) : resolvedFee != null ? (
+                    <span>$ {Number(resolvedFee).toFixed(2)}</span>
+                ) : (
+                    <span className="chk-pending-fee">Enter address ↑</span>
+                )}
+            </div>
+
+            {/* Extra Delivery */}
+            {apiPricing?.extraDeliveryCharges && Number(apiPricing.extraDeliveryCharges) > 0 && (
+                <div className="chk-line">
+                    <span>Extra Delivery</span>
+                    <span>$ {Number(apiPricing.extraDeliveryCharges).toFixed(2)}</span>
+                </div>
+            )}
+        </>
+    );
+
+    return (
+        <div className="chk-page">
+
+            {/* ── Page Header ─────────────────────────────────────────── */}
+            <div className="chk-header">
+                <div className="chk-header__inner">
+                    <div>
+                        <h1 className="chk-header__title">🔒 Secure Checkout</h1>
+                        <p className="chk-header__sub">Delivery Order · Online Payment</p>
+                    </div>
+                    <div className="chk-header__trust">
+                        <span className="chk-trust-badge">🛡️ SSL Encrypted</span>
+                        <span className="chk-trust-badge">💳 Secure Payment</span>
+                    </div>
+                </div>
+                <div className="chk-progress">
+                    <div className="chk-progress__step chk-progress__step--active">① Address</div>
+                    <div className="chk-progress__divider">›</div>
+                    <div className="chk-progress__step">② Review</div>
+                    <div className="chk-progress__divider">›</div>
+                    <div className="chk-progress__step">③ Payment</div>
+                </div>
+            </div>
+
+            {/* ── Two-column layout ────────────────────────────────────── */}
+            <div className="chk-layout">
+
+                {/* ── LEFT: Form ─────────────────────────────────────── */}
+                <div className="chk-form-col">
+
+                    {/* Store selector card */}
+                    <div className="chk-card">
+                        <div className="chk-card__header">🏪 Choose Your Store</div>
+                        <div className="chk-store-row">
+                            <div className="chk-field-wrap">
+                                <label htmlFor="city-select" className="chk-label">
+                                    City
+                                    <span className="chk-locked-chip">🔒 Fixed</span>
                                 </label>
                                 <Select
                                     id="city-select"
@@ -551,465 +629,281 @@ function AddressDetails() {
                                     isDisabled={true}
                                     menuPortalTarget={document.body}
                                     styles={{
-                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                        container: (base) => ({ ...base, width: '100%' }),
-                                        control: (base) => ({
-                                            ...base,
-                                            width: '100%',
-                                            backgroundColor: '#f5f5f5',
-                                            cursor: 'not-allowed',
-                                            opacity: 0.75,
-                                        }),
-                                        menu: (base) => ({ ...base, width: '100%' }),
-                                        singleValue: (base) => ({ ...base, color: '#666' }),
+                                        menuPortal: (b) => ({ ...b, zIndex: 9999 }),
+                                        container: (b) => ({ ...b, width: '100%' }),
+                                        control: (b) => ({ ...b, width: '100%', backgroundColor: '#f5f5f5', cursor: 'not-allowed', opacity: 0.75, borderRadius: '10px', minHeight: '44px' }),
+                                        menu: (b) => ({ ...b, width: '100%' }),
+                                        singleValue: (b) => ({ ...b, color: '#666' }),
                                     }}
                                     aria-label="City Select"
                                 />
                             </div>
-                            {/* Store Dropdown — changeable to get correct tax/pricing breakdown */}
-                            <div className='col-md-12 col-lg-6'>
-                                <label htmlFor="store-select" className="form-label">Store:</label>
+                            <div className="chk-field-wrap">
+                                <label htmlFor="store-select" className="chk-label">Store</label>
                                 <Select
                                     id="store-select"
                                     options={stores}
                                     value={selectedStore}
                                     onChange={handleStoreChange}
-                                    placeholder={
-                                        selectedCity ? "Select a store..." : "Select a city first..."
-                                    }
+                                    placeholder={selectedCity ? "Select a store..." : "Select a city first..."}
                                     menuPortalTarget={document.body}
                                     styles={{
-                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                        container: (base) => ({ ...base, width: '100%' }),
-                                        control: (base) => ({ ...base, width: '100%' }),
-                                        menu: (base) => ({ ...base, width: '100%' }),
+                                        menuPortal: (b) => ({ ...b, zIndex: 9999 }),
+                                        container: (b) => ({ ...b, width: '100%' }),
+                                        control: (b) => ({ ...b, width: '100%', borderRadius: '10px', minHeight: '44px' }),
+                                        menu: (b) => ({ ...b, width: '100%' }),
                                     }}
                                     isSearchable
                                     isDisabled={!selectedCity}
                                     aria-label="Store Select"
                                 />
                             </div>
-
-                            <div className="col-lg-12 col-md-12 col-sm-12">
-                                <div className="mb-1">
-                                    <small>Select your recent delivery address or enter a new one...</small>
-                                </div>
-                                <form onSubmit={formik.handleSubmit}>
-                                    <div className="row g-2">
-                                        <div className="col-12 pb-3 Franborder-bottom">
-                                            <div className="card">
-                                                <div className="card-body">
-                                                    <div className="row">
-                                                        <div className="col-lg-8 col-md-7 col-12 text-wrap pb-2">
-                                                            <span className="fw-bolder text-secondary delivery_addressTxt">
-                                                                {user?.data?.address}, {user?.data?.city}, {user?.data?.zipcode}
-                                                            </span>
-                                                        </div>
-                                                        <div className="col-lg-4 col-md-5 col-12 text-start text-md-end">
-                                                            <button
-                                                                className="btn btn-sm btn-secondary shadow-sm fw-bold"
-                                                                type="button"
-                                                                onClick={handleUseAddress}
-                                                                disabled={readOnly}
-                                                                style={{
-                                                                    fontSize: "0.82rem",
-                                                                }}
-                                                            >
-                                                                Use This Address
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Address */}
-                                        <div className="col-lg-12 col-md-12 col-sm-12">
-                                            <label className="form-label">
-                                                Address <small className="text-danger">*</small>
-                                            </label>
-                                            <input
-                                                className="form-control mb-1"
-                                                type="text"
-                                                name="address"
-                                                disabled={readOnly}
-                                                value={formik.values.address}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            />
-                                        </div>
-
-                                        {formik.touched.address && formik.errors.address ? (
-                                            <div className="text-danger mt-1 mb-1">
-                                                {formik.errors.address}
-                                            </div>
-                                        ) : null}
-
-                                        {/* City */}
-                                        <div className="col-lg-12 col-md-12 col-sm-12">
-                                            <label className="form-label">
-                                                City <small className="text-danger">*</small>
-                                            </label>
-                                            <input
-                                                className="form-control mb-1"
-                                                type="text"
-                                                name="city"
-                                                disabled={readOnly}
-                                                value={formik.values.city}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            />
-                                            {formik.touched.city && formik.errors.city ? (
-                                                <div className="text-danger my-1">
-                                                    {formik.errors.city}
-                                                </div>
-                                            ) : null}
-                                        </div>
-
-                                        {/* Postal Code */}
-                                        <div className="col-lg-2 col-md-3 col-sm-12">
-                                            <label className="form-label">
-                                                Postal Code <small className="text-danger">*</small>
-                                            </label>
-                                            <input
-                                                className="form-control mb-1"
-                                                type="text"
-                                                id="postalcode"
-                                                name="postalcode"
-                                                list="options"
-                                                disabled={readOnly}
-                                                placeholder=""
-                                                onChange={formik.handleChange}
-                                                value={formik.values.postalcode}
-                                                autoComplete="off"
-                                            />
-                                            <datalist id="options">
-                                                {postalCodeOp?.map((option) => {
-                                                    const formattedZip = option.zipcode.slice(0, 3) + ' ' + option.zipcode.slice(3);
-                                                    return (
-                                                        <option
-                                                            key={option.code}
-                                                            value={formattedZip}
-                                                        />
-                                                    );
-                                                })}
-                                            </datalist>
-
-                                            {formik.touched.postalcode &&
-                                                formik.errors.postalcode ? (
-                                                <div className="text-danger my-1">
-                                                    {formik.errors.postalcode}
-                                                </div>
-                                            ) : null}
-                                        </div>
-
-                                        {!readOnly && <div className="d-grid mt-3 mb-2">
-                                            <button
-                                                className="py-2 fw-bold btn btn-lg"
-                                                type="submit"
-                                                disabled={nashQuote.loading}
-                                                style={{
-                                                    background: nashQuote.loading ? '#aaa' : 'var(--primary, #2d7a2d)',
-                                                    color: '#fff',
-                                                    borderRadius: '10px',
-                                                    fontSize: '1rem',
-                                                    transition: 'background 0.3s',
-                                                }}
-                                            >
-                                                {nashQuote.loading ? '⏳ Calculating delivery…' : '🔒 Confirm & Pay'}
-                                            </button>
-                                            {!nashQuote.loading && !nashQuote.data && (
-                                                <small className="text-muted text-center mt-2">
-                                                    Enter your address above to see the delivery fee
-                                                </small>
-                                            )}
-                                        </div>}
-                                        {readOnly && !showOrderButtons && <div className="d-flex gap-4 mb-2">
-                                            <button
-                                                className="py-2 fw-bold btn btn-md regBtn"
-                                                type="button"
-                                                onClick={handleChangeAddress}
-                                            >
-                                                Change address
-                                            </button>
-                                        </div>}
-                                    </div>
-                                </form>
-                            </div>
                         </div>
                     </div>
-                    <div className="col-xl-5 col-lg-5 col-md-5 col-sm-12 px-2 summary-unfixed-box">
-                        <div className="row">
-                            <div className="col-lg-12 col-md-12 col-sm-12 mb-2">
-                                <div className="block-stl10 odr-summary mb-0">
-                                    <h3>Order Summary :</h3>
-                                    <ul className="list-unstyled">
-                                        {/* Sub Total - Always show */}
-                                        <li>
-                                            <span className="ttl">Sub Total</span>
-                                            <span className="stts">
-                                                $ {apiPricing?.subTotal
-                                                    ? Number(apiPricing.subTotal).toFixed(2)
-                                                    : cart?.subtotal
-                                                        ? cart.subtotal
-                                                        : (0.0).toFixed(2)}
-                                            </span>
-                                        </li>
 
-                                        {/* Tax Amount - Only if > 0 */}
-                                        {(apiPricing?.taxAmount || cart?.taxAmount) && Number(apiPricing?.taxAmount || cart?.taxAmount) > 0 && (
-                                            <li>
-                                                <span className="ttl">
-                                                    Tax Amount ({apiPricing?.taxPer || cart?.taxPer || 0}%)
-                                                </span>
-                                                <span className="stts">
-                                                    $ {Number(apiPricing?.taxAmount || cart?.taxAmount).toFixed(2)}
-                                                </span>
-                                            </li>
-                                        )}
+                    {/* Address form card */}
+                    <div className="chk-card">
+                        <div className="chk-card__header">📍 Delivery Address</div>
 
-                                        {/* Discount Amount - Only if > 0 */}
-                                        {apiPricing?.discountAmount && Number(apiPricing.discountAmount) > 0 && (
-                                            <li>
-                                                <span className="ttl">Discount</span>
-                                                <span className="stts">
-                                                    $ {Number(apiPricing.discountAmount).toFixed(2)}
-                                                </span>
-                                            </li>
-                                        )}
+                        {/* Saved address shortcut */}
+                        {user?.data?.address && (
+                            <div className="chk-saved-addr">
+                                <div className="chk-saved-addr__text">
+                                    📌 {user.data.address}, {user.data.city}, {user.data.zipcode}
+                                </div>
+                                <button
+                                    className="chk-saved-addr__btn"
+                                    type="button"
+                                    onClick={handleUseAddress}
+                                    disabled={readOnly}
+                                >
+                                    Use This Address
+                                </button>
+                            </div>
+                        )}
 
-                                        {/* Convenience Charges - Only if > 0 */}
-                                        {(apiPricing?.convinenceCharges || cart?.convinenceCharges) && Number(apiPricing?.convinenceCharges || cart?.convinenceCharges) > 0 && (
-                                            <li>
-                                                <span className="ttl">Convenience Fee ({apiPricing?.convinencePer || cart?.convinencePer || 0}%)</span>
-                                                <span className="stts">
-                                                    $ {Number(apiPricing?.convinenceCharges || cart?.convinenceCharges).toFixed(2)}
-                                                </span>
-                                            </li>
-                                        )}
+                        <form onSubmit={formik.handleSubmit}>
+                            <div className="chk-field-grid">
 
-                                        {/* Delivery Charges — shimmer while loading, confirmed value once fetched */}
-                                        {nashQuote.loading ? (
-                                            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span className="ttl">Delivery Charges</span>
-                                                <span style={{
-                                                    display: 'inline-block', width: '70px', height: '16px',
-                                                    borderRadius: '4px', background: 'linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%)',
-                                                    backgroundSize: '200% 100%',
-                                                    animation: 'shimmer 1.4s infinite linear',
-                                                }} />
-                                            </li>
-                                        ) : (() => {
-                                            const fee = apiPricing?.deliveryCharges
-                                                ?? (nashQuote.data?.delivery_fee_cents ? nashQuote.data.delivery_fee_cents / 100 : null)
-                                                ?? cart?.deliveryCharges;
-                                            return fee && Number(fee) > 0 ? (
-                                                <li>
-                                                    <span className="ttl">
-                                                        Delivery Charges
-                                                        {nashQuote.data && !apiPricing && (
-                                                            <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>
-                                                                (est. via {nashQuote.data.provider || 'courier'})
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                    <span className="stts">$ {Number(fee).toFixed(2)}</span>
-                                                </li>
-                                            ) : null;
-                                        })()}
-
-                                        {/* Extra Delivery Charges - Only if > 0 */}
-                                        {apiPricing?.extraDeliveryCharges && Number(apiPricing.extraDeliveryCharges) > 0 && (
-                                            <li>
-                                                <span className="ttl">Extra Delivery Charges</span>
-                                                <span className="stts">
-                                                    $ {Number(apiPricing.extraDeliveryCharges).toFixed(2)}
-                                                </span>
-                                            </li>
-                                        )}
-                                    </ul>
-                                    <div className="ttl-all" id="font-size">
-                                        <span className="ttlnm">Grand Total</span>
-                                        {nashQuote.loading && !apiPricing ? (
-                                            <span style={{
-                                                display: 'inline-block', width: '90px', height: '22px',
-                                                borderRadius: '4px', background: 'linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%)',
-                                                backgroundSize: '200% 100%',
-                                                animation: 'shimmer 1.4s infinite linear',
-                                                verticalAlign: 'middle',
-                                            }} />
-                                        ) : (
-                                            <span className="odr-stts total-font-size">
-                                                $ {apiPricing?.grandTotal
-                                                    ? Number(apiPricing.grandTotal).toFixed(2)
-                                                    : nashQuote.deliveryFee > 0
-                                                        ? Number(Number(cart?.grandtotal || 0) + nashQuote.deliveryFee).toFixed(2)
-                                                        : cart?.grandtotal
-                                                            ? Number(cart.grandtotal).toFixed(2)
-                                                            : (0.0).toFixed(2)}
-                                            </span>
-                                        )}
+                                {/* Street Address */}
+                                <div className="chk-field chk-field--full">
+                                    <label className="chk-label">
+                                        Street Address <span className="chk-required">*</span>
+                                    </label>
+                                    <div className="chk-input-wrap">
+                                        <span className="chk-input-icon">📍</span>
+                                        <input
+                                            className={`chk-input${formik.touched.address && formik.errors.address ? ' chk-input--error' : ''}`}
+                                            type="text"
+                                            name="address"
+                                            placeholder="e.g. 123 Main Street"
+                                            disabled={readOnly}
+                                            value={formik.values.address}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                        />
                                     </div>
-                                    {/* Quote-expired banner */}
-                                    {isQuoteExpired && (
-                                        <div style={{
-                                            marginTop: '10px', padding: '10px 14px',
-                                            borderRadius: '8px', background: '#fff3cd',
-                                            border: '1px solid #ffc107', color: '#856404',
-                                            fontSize: '13px', textAlign: 'center',
-                                        }}>
-                                            ⚠️ Quote expired. Refreshing delivery charges…
-                                        </div>
-                                    )}
-
-                                    {readOnly && showOrderButtons && showTimer && (
-                                        <div className="mt-3">
-                                            <div className="text-center mb-3">
-                                                <CountdownTimer
-                                                    durationSeconds={180}
-                                                    resetKey={timerKey}
-                                                    onExpire={handleTimerExpiry}
-                                                    label="Price locked for"
-                                                />
-                                            </div>
-                                            <div className="d-flex gap-2 justify-content-end">
-                                                <button
-                                                    className="py-2 fw-bold btn btn-md btn-danger"
-                                                    type="button"
-                                                    onClick={handleCancelOrder}
-                                                >
-                                                    Cancel Order
-                                                </button>
-                                                <button
-                                                    className="py-2 fw-bold btn btn-md btn-success"
-                                                    type="button"
-                                                    onClick={handleContinueToPayment}
-                                                >
-                                                    Proceed to Payment →
-                                                </button>
-                                            </div>
-                                        </div>
+                                    {formik.touched.address && formik.errors.address && (
+                                        <span className="chk-error-msg">{formik.errors.address}</span>
                                     )}
                                 </div>
+
+                                {/* City */}
+                                <div className="chk-field">
+                                    <label className="chk-label">
+                                        City <span className="chk-required">*</span>
+                                    </label>
+                                    <input
+                                        className={`chk-input${formik.touched.city && formik.errors.city ? ' chk-input--error' : ''}`}
+                                        type="text"
+                                        name="city"
+                                        placeholder="e.g. Brampton"
+                                        disabled={readOnly}
+                                        value={formik.values.city}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                    {formik.touched.city && formik.errors.city && (
+                                        <span className="chk-error-msg">{formik.errors.city}</span>
+                                    )}
+                                </div>
+
+                                {/* Postal Code */}
+                                <div className="chk-field">
+                                    <label className="chk-label">
+                                        Postal Code <span className="chk-required">*</span>
+                                    </label>
+                                    <input
+                                        className={`chk-input${formik.touched.postalcode && formik.errors.postalcode ? ' chk-input--error' : ''}`}
+                                        type="text"
+                                        id="postalcode"
+                                        name="postalcode"
+                                        list="postal-options"
+                                        placeholder="e.g. L6X 4L9"
+                                        disabled={readOnly}
+                                        value={formik.values.postalcode}
+                                        onChange={formik.handleChange}
+                                        autoComplete="off"
+                                    />
+                                    <datalist id="postal-options">
+                                        {postalCodeOp?.map((option) => {
+                                            const formatted = option.zipcode.slice(0, 3) + ' ' + option.zipcode.slice(3);
+                                            return <option key={option.code} value={formatted} />;
+                                        })}
+                                    </datalist>
+                                    {formik.touched.postalcode && formik.errors.postalcode && (
+                                        <span className="chk-error-msg">{formik.errors.postalcode}</span>
+                                    )}
+                                </div>
+
                             </div>
-                        </div>
+
+                            {/* Quote hint */}
+                            {!readOnly && !nashQuote.loading && !nashQuote.data && (
+                                <div className="chk-quote-hint">
+                                    💡 Enter your address above — delivery fee will calculate automatically
+                                </div>
+                            )}
+
+                            {/* Confirm & Pay button */}
+                            {!readOnly && (
+                                <button
+                                    type="submit"
+                                    id="chk-confirm-btn"
+                                    className={`chk-cta-btn${nashQuote.loading ? ' chk-cta-btn--loading' : ''}`}
+                                    disabled={nashQuote.loading}
+                                >
+                                    {nashQuote.loading
+                                        ? <><span className="chk-spinner" /> Calculating delivery fee…</>
+                                        : '🔒 Confirm & Pay'}
+                                </button>
+                            )}
+
+                            {/* Change address button */}
+                            {readOnly && !showOrderButtons && (
+                                <button
+                                    type="button"
+                                    className="chk-change-btn"
+                                    onClick={handleChangeAddress}
+                                >
+                                    ✏️ Change Address
+                                </button>
+                            )}
+                        </form>
                     </div>
                 </div>
 
-            </div>
-
-            {/* summary fixed box on mobile screen only*/}
-            <div className="summary-fixed-box">
-                <h3>Order Summary :</h3>
-                <div className="row">
-                    {/* Sub Total - Always show */}
-                    <div className="col-12 filled-bx">
-                        <span className="">Sub Total</span>
-                        <span className="">
-                            $ {apiPricing?.subTotal
-                                ? Number(apiPricing.subTotal).toFixed(2)
-                                : cart?.subtotal
-                                    ? cart.subtotal
-                                    : (0.0).toFixed(2)}
-                        </span>
-                    </div>
-
-                    {/* Tax Amount - Only if > 0 */}
-                    {apiPricing?.taxAmount && Number(apiPricing.taxAmount) > 0 && (
-                        <div className="col-12 filled-bx">
-                            <span className="">
-                                Tax Amount ({apiPricing?.taxPer || 0}%)
-                            </span>
-                            <span className="">
-                                $ {Number(apiPricing.taxAmount).toFixed(2)}
-                            </span>
+                {/* ── RIGHT: Order Summary ────────────────────────────── */}
+                <div className="chk-summary-col">
+                    <div className="chk-summary-card">
+                        <div className="chk-summary-card__header">
+                            <span>ORDER SUMMARY</span>
+                            {cart?.totalQuantity > 0 && (
+                                <span className="chk-summary-badge">{cart.totalQuantity} item{cart.totalQuantity !== 1 ? 's' : ''}</span>
+                            )}
                         </div>
-                    )}
 
-                    {/* Discount Amount - Only if > 0 */}
-                    {apiPricing?.discountAmount && Number(apiPricing.discountAmount) > 0 && (
-                        <div className="col-12 filled-bx">
-                            <span className="">Discount</span>
-                            <span className="">
-                                $ {Number(apiPricing.discountAmount).toFixed(2)}
-                            </span>
+                        <div className="chk-summary-lines">
+                            <SummaryLines />
                         </div>
-                    )}
 
-                    {/* Convenience Charges - Only if > 0 */}
-                    {apiPricing?.convinenceCharges && Number(apiPricing.convinenceCharges) > 0 && (
-                        <div className="col-12 filled-bx">
-                            <span className="">Convenience Charges ({apiPricing?.convinencePer || 0}%)</span>
-                            <span className="">
-                                $ {Number(apiPricing.convinenceCharges).toFixed(2)}
-                            </span>
+                        <div className="chk-summary-total">
+                            <span>Grand Total</span>
+                            {nashQuote.loading && !apiPricing ? (
+                                <span className="chk-shimmer" style={{ width: 80, height: 26 }} />
+                            ) : (
+                                <span className="chk-summary-total__amount">
+                                    {!apiPricing && !nashQuote.data && !cart?.deliveryCharges && (
+                                        <span className="chk-plus-delivery">+ delivery</span>
+                                    )}
+                                    $ {grandTotal.toFixed(2)}
+                                </span>
+                            )}
                         </div>
-                    )}
 
-                    {/* Delivery Charges - Only if > 0 */}
-                    {apiPricing?.deliveryCharges && Number(apiPricing.deliveryCharges) > 0 && (
-                        <div className="col-12 filled-bx">
-                            <span className="">Delivery Charges</span>
-                            <span className="">
-                                $ {Number(apiPricing.deliveryCharges).toFixed(2)}
-                            </span>
-                        </div>
-                    )}
+                        {/* Quote-expired banner */}
+                        {isQuoteExpired && (
+                            <div className="chk-expired-banner">
+                                ⚠️ Quote expired. Refreshing delivery charges…
+                            </div>
+                        )}
 
-                    {/* Extra Delivery Charges - Only if > 0 */}
-                    {apiPricing?.extraDeliveryCharges && Number(apiPricing.extraDeliveryCharges) > 0 && (
-                        <div className="col-12 filled-bx">
-                            <span className="">Extra Delivery Charges</span>
-                            <span className="">
-                                $ {Number(apiPricing.extraDeliveryCharges).toFixed(2)}
-                            </span>
-                        </div>
-                    )}
-
-                    {/* Grand Total - Always show */}
-                    <div className="col-12 filled-bx">
-                        <strong className="text-grey">Grand Total</strong>
-                        <strong className="text-grey">
-                            $ {apiPricing?.grandTotal
-                                ? Number(apiPricing.grandTotal).toFixed(2)
-                                : cart?.grandtotal
-                                    ? Number(cart.grandtotal).toFixed(2)
-                                    : (0.0).toFixed(2)}
-                        </strong>
-                    </div>
-
-                    {readOnly && showOrderButtons && showTimer && (
-                        <div className="col-12 mt-1">
-                            <div className="text-center mb-2">
+                        {/* Price-lock timer + action buttons */}
+                        {readOnly && showOrderButtons && showTimer && (
+                            <div className="chk-timer-section">
+                                <div className="chk-timer-section__label">Price locked for:</div>
                                 <CountdownTimer
                                     durationSeconds={180}
                                     resetKey={timerKey}
                                     onExpire={handleTimerExpiry}
                                     label="Price locked for"
                                 />
+                                <div className="chk-action-row">
+                                    <button
+                                        className="chk-btn-cancel"
+                                        type="button"
+                                        onClick={handleCancelOrder}
+                                    >
+                                        Cancel Order
+                                    </button>
+                                    <button
+                                        className="chk-btn-pay"
+                                        type="button"
+                                        onClick={handleContinueToPayment}
+                                    >
+                                        Proceed to Payment →
+                                    </button>
+                                </div>
                             </div>
-                            <div className="d-flex gap-2">
-                                <button
-                                    className="btn btn-sm btn-danger flex-fill"
-                                    type="button"
-                                    onClick={handleCancelOrder}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="btn btn-sm regBtn flex-fill"
-                                    type="button"
-                                    onClick={handleContinueToPayment}
-                                >
-                                    Proceed to Payment
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
+
             </div>
+
+            {/* ── Mobile sticky CTA bar ───────────────────────────────── */}
+            {!readOnly && (
+                <div className="chk-mobile-bar">
+                    <div className="chk-mobile-bar__total">
+                        <span className="chk-mobile-bar__label">Total</span>
+                        <span className="chk-mobile-bar__amount">
+                            {nashQuote.loading ? '…' : `$ ${grandTotal.toFixed(2)}`}
+                            {!apiPricing && !nashQuote.data && (
+                                <span className="chk-mobile-bar__hint"> + delivery</span>
+                            )}
+                        </span>
+                    </div>
+                    <button
+                        className={`chk-mobile-bar__btn${nashQuote.loading ? ' chk-mobile-bar__btn--loading' : ''}`}
+                        form="chk-confirm-form"
+                        onClick={() => formik.handleSubmit()}
+                        disabled={nashQuote.loading}
+                        type="button"
+                    >
+                        {nashQuote.loading ? '⏳ Calculating…' : '🔒 Confirm & Pay'}
+                    </button>
+                </div>
+            )}
+
+            {/* Mobile timer + action buttons (when price locked) */}
+            {readOnly && showOrderButtons && showTimer && (
+                <div className="chk-mobile-bar chk-mobile-bar--timer">
+                    <CountdownTimer
+                        durationSeconds={180}
+                        resetKey={timerKey}
+                        onExpire={handleTimerExpiry}
+                        label="Price locked for"
+                    />
+                    <div className="chk-action-row chk-action-row--mobile">
+                        <button className="chk-btn-cancel" type="button" onClick={handleCancelOrder}>Cancel</button>
+                        <button className="chk-btn-pay" type="button" onClick={handleContinueToPayment}>Pay →</button>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
 
 export default AddressDetails;
+
