@@ -2,6 +2,21 @@
 
 @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Arizonia&family=Roboto:wght@100;300;400;500;700;900&family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap);
 
+/* ── Smooth scrolling — desktop & mobile ── */
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+/* Native momentum scrolling on iOS for any scrollable container */
+* {
+    -webkit-overflow-scrolling: touch;
+}
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+}
+
+
 .section-header h3,
 .side-section-header h3 {
   font-size: 24px;
