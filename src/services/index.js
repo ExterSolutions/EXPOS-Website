@@ -224,6 +224,12 @@ export const orderPlace = async (payload, page, search, authToken) => {
   return response;
 };
 
+export const getDeliveryQuote = async (payload) => {
+  const { data: response } = await http.post("customer/delivery/quote", payload);
+  return response;
+};
+
+
 export const cancelOrder = async (orderCode) => {
   const { data } = await http.get(`customer/order/cancel/${orderCode}`);
   return data;

@@ -13,6 +13,7 @@ import { useSocket } from "../context/SocketContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import {
     cancelOrder,
+    getDeliveryQuote,
     getPostalcodeList,
     getStoreLocationByCity,
     orderPlace
@@ -99,6 +100,7 @@ function AddressDetails() {
     const [orderResponse, setOrderResponse] = useState(null);
     const [paymentUrl, setPaymentUrl] = useState("");
     const [apiPricing, setApiPricing] = useState(null);
+    const [nashQuote, setNashQuote] = useState(null);     // Nash delivery quote (fetched before order placement)
 
     const [initialValues, setInitialValues] = useState({
         firstname: user?.data?.firstName,
@@ -225,6 +227,7 @@ function AddressDetails() {
         setOrderResponse(null);
         setPaymentUrl("");
         setApiPricing(null);
+        setNashQuote(null);
     };
 
     // HANDLE CANCEL ORDER BUTTON
@@ -253,6 +256,7 @@ function AddressDetails() {
             setOrderResponse(null);
             setPaymentUrl("");
             setApiPricing(null);
+            setNashQuote(null);
 
         } catch (error) {
             toast.error(
@@ -346,34 +350,40 @@ function AddressDetails() {
         try {
             setLoading(true);
 
-            // const storeResponse = await zipcodeServicable({
-            //     zipcode: cleanPostalCode,
-            //     storeCode: currentStoreCode
-            // });
-
-            // if (!storeResponse?.deliverable) {
-            //     setLoading(false);
-            //     return handleUndeliverable(
-            //         "Postal Code is Undeliverable with selected store",
-            //         "Postal code cannot be delivered. Please change the postal code or store and try again"
-            //     );
-            // }
-
-            // const deliveryResponse = await deliverable(payload);
-            // if (!deliveryResponse?.deliverable) {
-            // setLoading(false);
-            //     return handleUndeliverable(
-            //         "Postal Code is Undeliverable",
-            //         "Postal code cannot be delivered. Please change the postal code and try again"
-            //     );
-            // }
-
-            // Set tax rates for reference
-            // setTaxRates(deliveryResponse?.taxRates);
+            // ── Fetch Nash delivery quote BEFORE placing the order ─────────────────
+            // This gives us the real delivery fee so we can:
+            //   1. Show it to the customer in the order summary
+            //   2. Include it in the Stripe session amount (so customer pays the right total)
+            // The quote endpoint (POST /customer/delivery/quote) is separate from the
+            // cashier endpoint (POST /cashier/nash/delivery-quote) — zero impact on cashier.
+            let deliveryFee = 0;
+            let quoteData = null;
+            try {
+                const quoteResponse = await getDeliveryQuote({
+                    dropoff_address: `${values.address}, ${values.postalcode}`,
+                    dropoff_phone: values.phoneno ? `+1${values.phoneno.replace(/\D/g, '')}` : undefined,
+                    store_code: currentStoreCode,
+                    order_value: cart?.subtotal || 0,
+                });
+                if (quoteResponse?.success && quoteResponse?.data?.delivery_fee_cents > 0) {
+                    deliveryFee = quoteResponse.data.delivery_fee_cents / 100;
+                    quoteData = quoteResponse.data;
+                    setNashQuote(quoteResponse.data);
+                }
+            } catch (quoteErr) {
+                // Non-fatal — if the quote fails we still place the order.
+                // The delivery fee will be $0 and the cashier can adjust manually.
+                console.warn('[Delivery Quote] Could not fetch Nash quote:', quoteErr?.message);
+            }
+            // ─────────────────────────────────────────────────────────────────────
 
             // NOW CALL ORDER PLACE API
             const baseUrl = window.location.origin;
             let custFullName = values.firstname + " " + values.lastname;
+
+            // Grand total = cart total + Nash delivery fee
+            const cartTotal = Number(cart?.grandtotal || 0);
+            const finalGrandTotal = Number(cartTotal + deliveryFee).toFixed(2);
 
             const orderPayload = {
                 deviceType: "web",
@@ -386,17 +396,15 @@ function AddressDetails() {
                 cityCode: selectedCity?.cityCode
                     || currentCity?.cityCode
                     || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode
-                    || globalSelectedStore?.cityCode  // fallback: store-picker already resolved this
+                    || globalSelectedStore?.cityCode
                     || "",
                 storeCode: currentStoreCode,
                 products: cart?.product,
                 subTotal: cart?.subtotal,
                 discountAmount: cart?.discountAmount,
-                //taxPer: deliveryResponse?.taxRates?.tax_percent || 0,
-                // taxAmount: Number((cart?.subtotal || 0) * (deliveryResponse?.taxRates?.tax_percent || 0) * 0.01).toFixed(2),
-                deliveryCharges: 0,          // Calculated by Nash on backend
-                extraDeliveryCharges: 0,      // Set by Nash backend
-                grandTotal: Number(cart?.grandtotal || 0).toFixed(2),
+                deliveryCharges: deliveryFee,           // Nash delivery fee (from quote)
+                extraDeliveryCharges: 0,
+                grandTotal: finalGrandTotal,            // cart total + delivery fee → Stripe charges this
                 successUrl: `${baseUrl}/payment/success`,
                 cancelUrl: `${baseUrl}/payment/cancel`,
             };
@@ -425,7 +433,7 @@ function AddressDetails() {
                 phoneNumber: values?.phoneno,
                 deliveryType: "delivery",
                 orderFrom: "online",
-                grandTotal: Number(cart?.grandtotal || 0).toFixed(2),
+                grandTotal: orderResponse?.pricing?.grandTotal || finalGrandTotal,  // use backend-confirmed total
                 status: "pending",
             }));
 
@@ -793,15 +801,25 @@ function AddressDetails() {
                                             </li>
                                         )}
 
-                                        {/* Delivery Charges - Only if > 0 */}
-                                        {(apiPricing?.deliveryCharges || cart?.deliveryCharges) && Number(apiPricing?.deliveryCharges || cart?.deliveryCharges) > 0 && (
-                                            <li>
-                                                <span className="ttl">Delivery Charges</span>
-                                                <span className="stts">
-                                                    $ {Number(apiPricing?.deliveryCharges || cart?.deliveryCharges).toFixed(2)}
-                                                </span>
-                                            </li>
-                                        )}
+                                        {/* Delivery Charges — show Nash quote pre-placement, confirmed pricing post-placement */}
+                                        {(() => {
+                                            const fee = apiPricing?.deliveryCharges
+                                                ?? (nashQuote?.delivery_fee_cents ? nashQuote.delivery_fee_cents / 100 : null)
+                                                ?? cart?.deliveryCharges;
+                                            return fee && Number(fee) > 0 ? (
+                                                <li>
+                                                    <span className="ttl">
+                                                        Delivery Charges
+                                                        {nashQuote && !apiPricing && (
+                                                            <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>(est.)</span>
+                                                        )}
+                                                    </span>
+                                                    <span className="stts">
+                                                        $ {Number(fee).toFixed(2)}
+                                                    </span>
+                                                </li>
+                                            ) : null;
+                                        })()}
 
                                         {/* Extra Delivery Charges - Only if > 0 */}
                                         {apiPricing?.extraDeliveryCharges && Number(apiPricing.extraDeliveryCharges) > 0 && (
@@ -818,9 +836,12 @@ function AddressDetails() {
                                         <span className="odr-stts total-font-size" >
                                             $ {apiPricing?.grandTotal
                                                 ? Number(apiPricing.grandTotal).toFixed(2)
-                                                : cart?.grandtotal
-                                                    ? Number(cart.grandtotal).toFixed(2)
-                                                    : (0.0).toFixed(2)}
+                                                : nashQuote?.delivery_fee_cents
+                                                    // Pre-placement: cart total + estimated delivery
+                                                    ? Number(Number(cart?.grandtotal || 0) + nashQuote.delivery_fee_cents / 100).toFixed(2)
+                                                    : cart?.grandtotal
+                                                        ? Number(cart.grandtotal).toFixed(2)
+                                                        : (0.0).toFixed(2)}
                                         </span>
                                     </div>
                                     {readOnly && showOrderButtons && (
