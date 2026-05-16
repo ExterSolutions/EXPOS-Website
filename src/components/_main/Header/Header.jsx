@@ -1,5 +1,5 @@
 // components/Header.js
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FaBars, FaEdit, FaGlassCheers, FaMapMarkerAlt, FaPizzaSlice, FaSearch, FaTag, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { FaCartShopping } from "react-icons/fa6";
 import { GiPizzaSlice } from 'react-icons/gi';
@@ -9,11 +9,11 @@ import { PiHamburgerFill } from 'react-icons/pi';
 import { SiCoffeescript } from 'react-icons/si';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import '../../../assets/styles/new/header/search-dropdown.css';
-// import '../../../assets/styles/ultimateheader.css';
+import { toast } from 'react-toastify';
 import { GlobalContext } from '../../../context/GlobalContext';
 import SearchDropdown from './SearchDropdown';
 import StoreSelectModal from '../StoreSelectModal';
+import OrderTypeModal from '../OrderTypeModal';
 import { GiFullPizza } from "react-icons/gi";
 // Import custom hooks
 import { useStickyHeader } from './hooks/useStickyHeader';
@@ -40,6 +40,26 @@ const Header = () => {
     const [openMobileMenu, setOpenMobileMenu] = globalCtx.mobileMenu;
     const [selectedStore] = globalCtx.selectedStore ?? [null];
     const [logoError, setLogoError] = useState(false);
+    // ── Order-type gate ──────────────────────────────────────────────────────────────
+    const [selectedType, setSelectedType] = globalCtx.selectedType;
+    const [showOrderTypeModal, setShowOrderTypeModal] = globalCtx.showOrderTypeModal;
+    const [pendingStoreForOrderType] = globalCtx.pendingStoreForOrderType;
+
+    // Listen for cart-revalidation custom events and show toasts
+    useEffect(() => {
+        const handler = (e) => toast.warn(e.detail, { autoClose: 5000 });
+        window.addEventListener('cart-revalidation-toast', handler);
+        return () => window.removeEventListener('cart-revalidation-toast', handler);
+    }, []);
+
+    // Handle order-type selection from the modal
+    const handleOrderTypeSelect = (type) => {
+        setSelectedType(type);
+        localStorage.setItem('selectedType', type);
+        setShowOrderTypeModal(false);
+        setShowStorePopup(false); // close the underlying store popup too
+        toast.success(type === 'pickup' ? '🏪 Pickup selected!' : '🚚 Delivery selected!');
+    };
 
     const { user } = useSelector((state) => state);
 
@@ -242,27 +262,33 @@ const Header = () => {
                                 color: 'var(--primary, #E63946)',
                                 background: 'rgba(230,57,70,0.04)',
                                 minWidth: 0,
-                                maxWidth: 260,
+                                maxWidth: 300,
                             }}
                         >
                             <FaMapMarkerAlt size={13} className="flex-shrink-0" />
 
-                            {/* Text block: minWidth:0 is the key — without it, flex won't truncate */}
+                            {/* Text block */}
                             <div style={{ flex: 1, minWidth: 0, lineHeight: 1.35 }}>
                                 <div className="fw-bold text-truncate">
                                     {selectedStore.storeLocation || selectedStore.city}
                                 </div>
-                                {/* {selectedStore.city && selectedStore.city !== selectedStore.storeLocation && (
-                                    <div className="text-truncate" style={{ opacity: 0.7 }}>
-                                        {selectedStore.city}
-                                    </div>
-                                )} */}
                                 {selectedStore.storeAddress && (
                                     <div className="text-truncate" style={{ opacity: 0.6 }}>
                                         {selectedStore.storeAddress}
                                     </div>
                                 )}
                             </div>
+
+                            {/* ── Order-type pill ──────────────────────────────── */}
+                            <button
+                                type="button"
+                                className={`otm-pill otm-pill--${selectedType || 'pickup'}`}
+                                onClick={() => setShowOrderTypeModal(true)}
+                                title={`Switch order type (currently ${selectedType || 'pickup'})`}
+                            >
+                                {selectedType === 'delivery' ? '🚚' : '🏪'}
+                                {' '}{selectedType === 'delivery' ? 'Delivery' : 'Pickup'}
+                            </button>
 
                             <button
                                 type="button"
@@ -440,6 +466,20 @@ const Header = () => {
                     required={!selectedStore}
                 />
             )}
+            {/* Order-type gate modal */}
+            <OrderTypeModal
+                isOpen={showOrderTypeModal}
+                storeName={
+                    pendingStoreForOrderType?.storeLocation ||
+                    selectedStore?.storeLocation ||
+                    selectedStore?.city ||
+                    ''
+                }
+                currentType={selectedType}
+                dismissible={!!selectedStore} // non-dismissible on first pick; dismissible when re-opening from pill
+                onSelect={handleOrderTypeSelect}
+                onDismiss={() => setShowOrderTypeModal(false)}
+            />
         </header>
     );
 };

@@ -1,9 +1,10 @@
 /**
  * FlexDealList.jsx
  *
- * Entirely separate V3 Flex Deals listing page.
- * Fetches from GET /api/v3/deals (showOnClient=1 filter is backend-enforced).
- * No overlap with existing Special Offers or Toppings Deals flows.
+ * V3 Flex Deals listing page.
+ * Fetches from GET /api/v3/deals?cityCode=...&deliveryType=...
+ * Backend filters by deliveryType: 'pickup' → pickupdeal + all-type;
+ *                                  'delivery' → deliverydeal + all-type.
  */
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -32,7 +33,7 @@ const getDisplayPrice = (deal) => {
     return { amount: Number(deal.price ?? 0), fromLabel: false };
 };
 
-// ── Deal Card ────────────────────────────────────────────────────────────────
+// ── Deal Card ─────────────────────────────────────────────────────────────────
 
 const FlexDealCard = ({ deal, onClick }) => {
     const { amount, fromLabel } = getDisplayPrice(deal);
@@ -87,22 +88,24 @@ const FlexDealCard = ({ deal, onClick }) => {
     );
 };
 
-// ── Main Page ────────────────────────────────────────────────────────────────
+// ── Main Page ─────────────────────────────────────────────────────────────────
 
 const FlexDealList = () => {
     const navigate = useNavigate();
     const globalCtx = useContext(GlobalContext);
     const [currentCity] = globalCtx.currentCity;
+    const [selectedType, setSelectedType] = globalCtx.selectedType;
 
     const [deals, setDeals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Re-fetch when city or order type changes
     useEffect(() => {
         const cityCode = currentCity?.cityCode ?? currentCity?.code ?? null;
         setLoading(true);
         setError(null);
-        getFlexDeals(cityCode)
+        getFlexDeals(cityCode, selectedType)
             .then((res) => {
                 if (res?.status === 200 && Array.isArray(res.data)) {
                     setDeals(res.data);
@@ -115,11 +118,21 @@ const FlexDealList = () => {
                 setError('Unable to load deals. Please try again.');
             })
             .finally(() => setLoading(false));
-    }, [currentCity]);
+    }, [currentCity, selectedType]);
 
     const handleCardClick = (dealCode) => {
         navigate(`/flex-deals/${dealCode}`);
     };
+
+    // Switch order type inline — also updates global state + localStorage
+    const handleTypeSwitch = (type) => {
+        setSelectedType(type);
+        localStorage.setItem('selectedType', type);
+    };
+
+    const emptyMsg = selectedType === 'delivery'
+        ? 'No delivery deals available right now. Check back soon!'
+        : 'No pickup deals available right now. Check back soon!';
 
     return (
         <div className="fd-page">
@@ -135,6 +148,24 @@ const FlexDealList = () => {
                             🔥 {deals.length} deal{deals.length !== 1 ? 's' : ''} available
                         </span>
                     )}
+                </div>
+
+                {/* ── Order-type switcher ───────────────────────────────────── */}
+                <div className="fd-type-switcher" role="group" aria-label="Order type">
+                    <button
+                        id="fd-type-pickup"
+                        className={`fd-type-btn ${selectedType !== 'delivery' ? 'fd-type-btn--active' : ''}`}
+                        onClick={() => handleTypeSwitch('pickup')}
+                    >
+                        🏪 Pickup
+                    </button>
+                    <button
+                        id="fd-type-delivery"
+                        className={`fd-type-btn ${selectedType === 'delivery' ? 'fd-type-btn--active' : ''}`}
+                        onClick={() => handleTypeSwitch('delivery')}
+                    >
+                        🚚 Delivery
+                    </button>
                 </div>
 
                 {/* Loading */}
@@ -156,7 +187,14 @@ const FlexDealList = () => {
                 {!loading && !error && deals.length === 0 && (
                     <div className="fd-empty">
                         <span className="fd-empty__icon">🎉</span>
-                        <p className="fd-empty__text">No Flex Deals available right now. Check back soon!</p>
+                        <p className="fd-empty__text">{emptyMsg}</p>
+                        <button
+                            className="fd-type-btn fd-type-btn--active"
+                            style={{ marginTop: 12 }}
+                            onClick={() => handleTypeSwitch(selectedType === 'delivery' ? 'pickup' : 'delivery')}
+                        >
+                            View {selectedType === 'delivery' ? '🏪 Pickup' : '🚚 Delivery'} deals instead
+                        </button>
                     </div>
                 )}
 
@@ -169,7 +207,6 @@ const FlexDealList = () => {
                     </div>
                 )}
             </div>
-
 
         </div>
     );

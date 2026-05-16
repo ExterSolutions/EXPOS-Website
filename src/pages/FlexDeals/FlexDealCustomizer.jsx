@@ -384,6 +384,7 @@ const FlexDealCustomizer = () => {
             productCode: deal.code,
             productName: deal.name,
             productType: 'flex_deal',
+            dealType: deal.dealType || null,   // for cart revalidation on order-type change
             dealFormat: 'v3',
             pizzaSize: selectedSize?.size || '',
             quantity,

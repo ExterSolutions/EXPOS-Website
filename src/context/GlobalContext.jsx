@@ -268,6 +268,9 @@ export const GlobalProvider = ({ children }) => {
   });
   const [payloadEdit, setPayloadEdit] = useState();
   const [showStorePopup, setShowStorePopup] = useState(false);
+  // ── Order-type gate (shown after store selection) ─────────────────────────
+  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
+  const [pendingStoreForOrderType, setPendingStoreForOrderType] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [url, setUrl] = useState(null);
   const [productType, setProductType] = useState();
@@ -302,6 +305,29 @@ export const GlobalProvider = ({ children }) => {
       cartFn.updateCartTotals(cart, setCart, settings, selectedStore);
     }
   }, [selectedStore, settings]);
+
+  // Cart revalidation: strip flex deal items that are incompatible with the new order type.
+  // e.g. if user switches to Delivery, remove any pickupdeal-only items from cart.
+  useEffect(() => {
+    if (!selectedType || !cart?.product?.length) return;
+    const invalid = cart.product.filter((item) => {
+      if (item.productType !== 'flex_deal') return false;
+      if (selectedType === 'delivery' && item.dealType === 'pickupdeal') return true;
+      if (selectedType === 'pickup'   && item.dealType === 'deliverydeal') return true;
+      return false;
+    });
+    if (invalid.length > 0) {
+      const stripped = cart.product.filter((item) => !invalid.includes(item));
+      const cf = new CartFunction();
+      cf.addCart(stripped, setCart, false, settings);
+      // Import toast lazily to avoid circular dep — use a custom event instead
+      invalid.forEach((item) => {
+        const msg = `"${item.productName}" removed — only valid for ${item.dealType === 'pickupdeal' ? 'pickup' : 'delivery'} orders.`;
+        window.dispatchEvent(new CustomEvent('cart-revalidation-toast', { detail: msg }));
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType]);
 
   // FIX FOR STALE LOCALSTORAGE: Aggressively sync the state out to localStorage
   // This ensures that legacy components invoking cartFn.addCart without passing selectedStore 
@@ -415,6 +441,9 @@ export const GlobalProvider = ({ children }) => {
     scrollToSignature: [scrollToSignature, setScrollToSignature],
     selectedType: [selectedType, setSelectedType],
     showStorePopup: [showStorePopup, setShowStorePopup],
+    // ── Order-type gate ───────────────────────────────────────────────────────
+    showOrderTypeModal: [showOrderTypeModal, setShowOrderTypeModal],
+    pendingStoreForOrderType: [pendingStoreForOrderType, setPendingStoreForOrderType],
     currentLatitude: [currentLatitude, setCurrentLatitude],
     currentLogitude: [currentLogitude, setCurrentLogitude],
     mobileMenu: [openMobileMenu, setOpenMobileMenu],

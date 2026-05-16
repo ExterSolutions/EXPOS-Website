@@ -386,8 +386,10 @@ const getV3BaseUrl = () => {
  * Backend already filters showOnClient=1 when cashier param is absent.
  * @param {string} [cityCode] - optional city filter
  */
-export const getFlexDeals = async (cityCode) => {
-  const params = cityCode ? { cityCode } : {};
+export const getFlexDeals = async (cityCode, deliveryType) => {
+  const params = {};
+  if (cityCode) params.cityCode = cityCode;
+  if (deliveryType) params.deliveryType = deliveryType;
   const { data: response } = await http.get(`${getV3BaseUrl()}/deals`, { params });
   return response;
 };

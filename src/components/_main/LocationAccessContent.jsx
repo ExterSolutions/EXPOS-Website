@@ -27,6 +27,9 @@ function LocationAccessContent({ currentTab, isModal, setShow, hasUserSelectedOp
     const [showStorePopup, setShowStorePopup] = globalctx.showStorePopup;
     const [currentLatitude, setCurrentLatitude] = globalctx.currentLatitude;
     const [currentLogitude, setCurrentLogitude] = globalctx.currentLogitude;
+    const [, setShowOrderTypeModal] = globalctx.showOrderTypeModal;
+    const [, setPendingStoreForOrderType] = globalctx.pendingStoreForOrderType;
+    const { updateSelectedStore } = globalctx;
 
     // Check if location is already selected
     useEffect(() => {
@@ -39,6 +42,14 @@ function LocationAccessContent({ currentTab, isModal, setShow, hasUserSelectedOp
             }, 500);
         }
     }, [isModal, setShow, isOrderMethodSelection]);
+
+    // Helper: trigger the order-type gate instead of closing the popup
+    const triggerOrderTypeGate = (storeDetail) => {
+        setPendingStoreForOrderType(storeDetail);
+        setShowOrderTypeModal(true);
+        // NOTE: setShow(false) / setShowStorePopup(false) is called
+        // by the OrderTypeModal onSelect callback in Header.jsx
+    };
 
     // Fetch data from API
     const fetchData = async () => {
@@ -119,12 +130,14 @@ function LocationAccessContent({ currentTab, isModal, setShow, hasUserSelectedOp
     // Auto-select and close logic - only runs when user selects Delivery/Pickup AND there's only one location
     useEffect(() => {
         if (hasUserSelectedOption && hasAutoSelected && totalStoresCount === 1) {
-            // Auto-close only when user has selected Delivery/Pickup AND there's only one location
+            // Auto-gate: show order-type modal instead of just closing
             if (isModal) {
-                setTimeout(() => {
-                    setShow(false);
-                    toast.success(`Location selected: ${currentStore?.label}`);
-                }, 1000);
+                const storeDetail = {
+                    code: currentStoreCode,
+                    storeLocation: currentStore?.label || '',
+                    city: currentCity?.value || '',
+                };
+                setTimeout(() => triggerOrderTypeGate(storeDetail), 600);
             }
         }
     }, [hasUserSelectedOption, hasAutoSelected, totalStoresCount, isModal, setShow, currentStore]);
@@ -169,14 +182,14 @@ function LocationAccessContent({ currentTab, isModal, setShow, hasUserSelectedOp
                         localStorage.setItem('currentLatitude', lat);
                         localStorage.setItem('currentLogitude', long);
 
-                        toast.success(`Location selected: ${store.storeLocation}`);
-
-                        // Auto-close modal
-                        if (isModal) {
-                            setTimeout(() => {
-                                setShow(false);
-                            }, 1500);
-                        }
+                        // Trigger order-type gate instead of toast+close
+                        triggerOrderTypeGate({
+                            code: store.code,
+                            storeLocation: store.storeLocation,
+                            city: city.value,
+                            latitude: lat,
+                            longitude: long,
+                        });
                     }
                 } else {
                     // Multiple stores found - show selection
@@ -205,14 +218,14 @@ function LocationAccessContent({ currentTab, isModal, setShow, hasUserSelectedOp
                                 localStorage.setItem('currentStoreCode', nearestStore.code);
                                 localStorage.setItem('currentStore', JSON.stringify(storeOption));
 
-                                toast.success(`Location selected: ${nearestStore.storeLocation}`);
-
-                                // Auto-close modal
-                                if (isModal) {
-                                    setTimeout(() => {
-                                        setShow(false);
-                                    }, 1500);
-                                }
+                                // Trigger order-type gate instead of toast+close
+                                triggerOrderTypeGate({
+                                    code: nearestStore.code,
+                                    storeLocation: nearestStore.storeLocation,
+                                    city: city.value,
+                                    latitude: lat,
+                                    longitude: long,
+                                });
                             }
                         }
 
@@ -277,12 +290,12 @@ function LocationAccessContent({ currentTab, isModal, setShow, hasUserSelectedOp
         localStorage.setItem('currentLatitude', null);
         localStorage.setItem('currentLogitude', null);
 
-        // Auto-close if in modal and user has selected Delivery/Pickup
-        if (location.pathname === '/' && isModal && hasUserSelectedOption) {
-            setTimeout(() => {
-                setShow(false);
-            }, 1000);
-        }
+        // Trigger order-type gate (replaces the old auto-close-on-homepage logic)
+        triggerOrderTypeGate({
+            code: selectedOption.value,
+            storeLocation: selectedOption.label,
+            city: currentCity?.value || '',
+        });
 
         setScrollToSignature(true);
     };
