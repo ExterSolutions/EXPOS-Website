@@ -120,12 +120,8 @@ export default class CartFunction {
 
                 localStorage.setItem("cart", JSON.stringify(currentCart));
                 setCart(currentCart);
-                
-                if (isEdit !== null) {
-                    isEdit === true
-                        ? toast.success("Product Updated Successfully...")
-                        : toast.success("Product Added Successfully...");
-                }
+                // NOTE: Toast notifications are intentionally handled by
+                // the calling component, not here, to avoid duplicate toasts.
             }
         }
     }

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 import { GlobalContext } from "../../../context/GlobalContext";
 import '../../../assets/styles/modern-cards.css';
 import SafeImage from "../../common/SafeImage";
@@ -60,9 +61,11 @@ const Drink = ({ data, cartFn }) => {
                 pCode.quantity += product.quantity;
                 pCode.amount = (Number(pCode.amount) + Number(product.amount)).toFixed(2);
                 cartFn.addCart(ct.product, setCart, true, settings);
+                toast.success('Cart updated! 🛒');
             } else {
                 ct.product.push(product);
                 cartFn.addCart(ct.product, setCart, false, settings);
+                toast.success('Added to cart! 🛒');
             }
         }
     }, [product, cartFn, setCart, settings]);
