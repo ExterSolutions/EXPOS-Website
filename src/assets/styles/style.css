@@ -19273,6 +19273,13 @@ a:hover {
   padding: 0.5rem 1rem;
 }
 
+/* Mobile: tighten right padding so icons sit flush to the screen edge */
+@media (max-width: 767px) {
+  .header .middle-section {
+    padding: 0.4rem 0.35rem 0.4rem 0.75rem;
+  }
+}
+
 .header .middle-small {
   display: flex;
   align-items: center;
