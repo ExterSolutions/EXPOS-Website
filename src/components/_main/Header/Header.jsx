@@ -115,35 +115,8 @@ const Header = () => {
         setOpenMobileMenu(prev => !prev);
     };
 
-    // ── Generic initials avatar ──────────────────────────────────────────────
-    // Always show a branded initials circle — never a user-uploaded photo.
-    const initial = (
-        user?.data?.firstname?.[0] ||
-        user?.data?.email?.[0] ||
-        '?'
-    ).toUpperCase();
 
-    const UserAvatar = () => (
-        <div
-            aria-hidden="true"
-            style={{
-                width: 30, height: 30,
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--primary, #E63946), #ff6b35)',
-                color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 800, fontSize: '0.82rem',
-                flexShrink: 0,
-                lineHeight: 1,
-                userSelect: 'none',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
-            }}
-        >
-            {initial}
-        </div>
-    );
-
-
+    
     return (
         <header className="header shadow-sm">
 
@@ -226,16 +199,15 @@ const Header = () => {
                             <FaCartShopping className="text-primary" size={20} />
                         </button>
 
-                        {/* Profile avatar — shown when logged in */}
+                        {/* Profile icon — shown when logged in */}
                         {isAuthenticated && (
                             <button
                                 type="button"
-                                className="btn p-0 d-flex align-items-center"
+                                className="btn-search d-flex align-items-center"
                                 onClick={() => navigate('/my-account')}
                                 aria-label="My Account"
-                                style={{ background: 'transparent', border: 'none', flexShrink: 0, padding: '0.4rem' }}
                             >
-                                <UserAvatar />
+                                <FaUserCircle className="text-primary" size={22} />
                             </button>
                         )}
                     </div>
@@ -400,7 +372,7 @@ const Header = () => {
                             className="btn fw-semibold d-flex align-items-center"
                             aria-label="My Account"
                         >
-                            <UserAvatar />
+                            <FaUserCircle className="text-primary" size={24} />
                         </button>
                     )}
                 </div>
