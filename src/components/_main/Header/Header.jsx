@@ -115,6 +115,35 @@ const Header = () => {
         setOpenMobileMenu(prev => !prev);
     };
 
+    // ── Generic initials avatar ──────────────────────────────────────────────
+    // Always show a branded initials circle — never a user-uploaded photo.
+    const initial = (
+        user?.data?.firstname?.[0] ||
+        user?.data?.email?.[0] ||
+        '?'
+    ).toUpperCase();
+
+    const UserAvatar = () => (
+        <div
+            aria-hidden="true"
+            style={{
+                width: 30, height: 30,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, var(--primary, #E63946), #ff6b35)',
+                color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 800, fontSize: '0.82rem',
+                flexShrink: 0,
+                lineHeight: 1,
+                userSelect: 'none',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
+            }}
+        >
+            {initial}
+        </div>
+    );
+
+
     return (
         <header className="header shadow-sm">
 
@@ -173,6 +202,36 @@ const Header = () => {
                             onClick={() => setShowStorePopup && setShowStorePopup(true)}
                         >
                             <FaMapMarkerAlt size={20} className="text-primary" />
+                        </button>
+                    )}
+
+                    {/* Cart icon — mobile only */}
+                    <button
+                        type="button"
+                        className="btn-search position-relative"
+                        onClick={() => navigate('/cart')}
+                        aria-label="View Cart"
+                        style={{ padding: '0.6rem' }}
+                    >
+                        <span
+                            className="position-absolute top-0 start-100 translate-middle cart-count"
+                            style={{ fontSize: '0.55rem', minWidth: '16px', height: '16px', lineHeight: '16px', padding: '0 3px', borderRadius: '8px' }}
+                        >
+                            {cart?.product?.length ? (cart.product.length > 9 ? '9+' : cart.product.length) : 0}
+                        </span>
+                        <FaCartShopping className="text-primary" size={20} />
+                    </button>
+
+                    {/* Profile avatar — mobile only, shown when logged in */}
+                    {isAuthenticated && (
+                        <button
+                            type="button"
+                            className="btn p-0 d-flex align-items-center"
+                            onClick={() => navigate('/my-account')}
+                            aria-label="My Account"
+                            style={{ background: 'transparent', border: 'none', flexShrink: 0 }}
+                        >
+                            <UserAvatar />
                         </button>
                     )}
                 </div>
@@ -333,10 +392,10 @@ const Header = () => {
                         <button
                             type='button'
                             onClick={() => navigate("/my-account")}
-                            className="btn fw-semibold d-flex"
+                            className="btn fw-semibold d-flex align-items-center"
                             aria-label="My Account"
                         >
-                            <FaUserCircle className="text-primary" size={24} />
+                            <UserAvatar />
                         </button>
                     )}
                 </div>
