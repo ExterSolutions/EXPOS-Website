@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { GlobalContext } from "../../../context/GlobalContext";
 import '../../../assets/styles/modern-cards.css';
 import SafeImage from "../../common/SafeImage";
+import drinkFallback from '../../../assets/images/download/new/cat/drink.png';
 
 const Drink = ({ data, cartFn }) => {
     const navigate = useNavigate();
@@ -18,6 +19,11 @@ const Drink = ({ data, cartFn }) => {
     const [count, setCount] = useState(1);
     const [product, setProduct] = useState(null);
     const isJuice = data?.drinksType === "juice";
+
+    // Flavor variants — the API returns drinkType[] for multi-flavor drinks
+    const flavors = Array.isArray(data?.drinkType) ? data.drinkType : [];
+    const hasVariants = flavors.length > 1;
+    const [selectedFlavor, setSelectedFlavor] = useState(flavors[0] || '');
 
     const countDec = () => { if (count > 1) setCount(c => c - 1); };
     const countInc = () => { if (count < 10) setCount(c => c + 1); };
@@ -40,7 +46,7 @@ const Drink = ({ data, cartFn }) => {
             amount: totalPrice.toFixed(2),
             taxPer: 0,
             pizzaSize: "",
-            comments: "",
+            comments: selectedFlavor || "",
         });
         setCount(1);
     };
@@ -65,7 +71,12 @@ const Drink = ({ data, cartFn }) => {
         <div className="mc-card">
             {/* Image */}
             <div className="mc-card__img-wrap mc-card__img-wrap--contain">
-                <SafeImage src={data.image} alt={data.softDrinksName} className="mc-card__img mc-card__img--contain" />
+                <SafeImage
+                    src={data.image}
+                    alt={data.softDrinksName}
+                    className="mc-card__img mc-card__img--contain"
+                    fallback={drinkFallback}
+                />
             </div>
 
             {/* Body */}
@@ -76,19 +87,44 @@ const Drink = ({ data, cartFn }) => {
                     <div className="mc-card__price">${Number(data.price).toFixed(2)}</div>
                 )}
 
+                {/* Flavor selector — shown when drink has multiple variants */}
+                {hasVariants && (
+                    <select
+                        className="mc-card__select"
+                        value={selectedFlavor}
+                        onChange={(e) => setSelectedFlavor(e.target.value)}
+                        aria-label={`Choose flavor for ${data.softDrinksName}`}
+                    >
+                        {flavors.map((flavor, i) => (
+                            <option key={i} value={flavor}>{flavor}</option>
+                        ))}
+                    </select>
+                )}
+
                 {/* Footer */}
                 <div className="mc-card__footer">
+                    <div className="mc-card__qty" style={{ userSelect: 'none' }}>
+                        <button
+                            className={`mc-card__qty-btn${count <= 1 ? ' disabled' : ''}`}
+                            onClick={countDec}
+                            aria-label="Decrease quantity"
+                        >−</button>
+                        <span className="mc-card__qty-val">{count}</span>
+                        <button
+                            className={`mc-card__qty-btn${count >= 10 ? ' disabled' : ''}`}
+                            onClick={countInc}
+                            aria-label="Increase quantity"
+                        >+</button>
+                    </div>
                     {isJuice ? (
-                        <>
-                            <div className="mc-card__qty" style={{ userSelect: 'none' }}>
-                                <button className={`mc-card__qty-btn${count <= 1 ? ' disabled' : ''}`} onClick={countDec}>−</button>
-                                <span className="mc-card__qty-val">{count}</span>
-                                <button className={`mc-card__qty-btn${count >= 10 ? ' disabled' : ''}`} onClick={countInc}>+</button>
-                            </div>
-                            <button className="mc-card__add" onClick={handleAddToCart}>Add to Cart</button>
-                        </>
+                        <button className="mc-card__add" onClick={handleAddToCart}>Add</button>
+                    ) : hasVariants ? (
+                        <button className="mc-card__add" onClick={handleAddToCart}>Add</button>
                     ) : (
-                        <button className="mc-card__add mc-card__add--outline" style={{ width: '100%' }} onClick={handleNavigate}>
+                        <button
+                            className="mc-card__add mc-card__add--outline"
+                            onClick={handleNavigate}
+                        >
                             Customize
                         </button>
                     )}

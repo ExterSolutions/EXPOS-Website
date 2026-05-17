@@ -7,6 +7,8 @@ import SPNotFound from '../../../layouts/SPNotFound';
 import ResponsiveCart from '../Cart/ResponsiveCart';
 import CustomizeDrinkDropdown from './CustomizeDrinkDropdown';
 import DrinksViewSelectionModal from './DrinksViewSelectionModal';
+import SafeImage from '../../common/SafeImage';
+import drinkFallback from '../../../assets/images/download/new/cat/drink.png';
 
 function CustomizeDrinkContent({ loading, drinkData, settings, user, cartFn, setCart, currentStoreCode, setShowStorePopup }) {
     const [selectedDrinksTypeArr, setSelectedDrinksTypeArr] = useState([]);
@@ -101,10 +103,11 @@ function CustomizeDrinkContent({ loading, drinkData, settings, user, cartFn, set
                                             <div className={`p-3 card-background-color card-text-color`}>
                                                 <div className="row justify-content-start align-content-center p-0 m-0">
                                                     <div className="col-auto p-0 m-0 rounded-3 text-center">
-                                                        <img
+                                                        <SafeImage
                                                             className="pizzaImageBorderSM"
                                                             src={drinkData?.image}
-                                                            alt="drink-icon"
+                                                            alt={drinkData?.softDrinksName || 'drink'}
+                                                            fallback={drinkFallback}
                                                         />
                                                     </div>
                                                     <div className="col-7 p-0 m-0">
@@ -162,7 +165,12 @@ function CustomizeDrinkContent({ loading, drinkData, settings, user, cartFn, set
                                         <div className={`p-3 right-side-internal-div-new card-background-color card-text-color`}>
                                             <div className="row">
                                                 <div className="col-lg-6 p-3 rounded-3">
-                                                    <img className="pizzaImageBorder" src={drinkData?.image} alt="drink-icon" />
+                                                    <SafeImage
+                                                        className="pizzaImageBorder"
+                                                        src={drinkData?.image}
+                                                        alt={drinkData?.softDrinksName || 'drink'}
+                                                        fallback={drinkFallback}
+                                                    />
                                                 </div>
                                                 <div className="col-lg-6 p-4">
                                                     <div className="d-flex flex-column py-4">

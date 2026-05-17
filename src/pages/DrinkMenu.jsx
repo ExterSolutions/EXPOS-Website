@@ -42,7 +42,7 @@ function DrinkMenu({ searchQuery, searchCode }) {
     return (
         <div className="container">
             <div className="section mb-5" id='specialmenucard'>
-                <div className="pizza-grid signature-grid">
+                <div className="mc-grid">
                     {filteredDrinks.length > 0 ? (
                         filteredDrinks.map((data, idx) => (
                             <Drink
