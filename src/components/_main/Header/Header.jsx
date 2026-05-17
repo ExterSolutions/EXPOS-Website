@@ -307,8 +307,8 @@ const Header = () => {
                     )}
                 </div>
 
-                {/* Right Side Actions */}
-                <div className="d-flex align-items-center justify-content-end gap-2 my-2 my-md-0">
+                {/* Right Side Actions — desktop only (mobile has its own row above) */}
+                <div className="d-none d-md-flex align-items-center justify-content-end gap-2 my-md-0">
                     {/* Store badge — desktop only */}
                     {selectedStore && (
                         <div
