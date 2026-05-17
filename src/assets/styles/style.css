@@ -22231,7 +22231,8 @@ body {
   z-index: 1050;
   background: var(--bs-body-bg, #fff);
   border-radius: 20px 20px 0 0;
-  max-height: 88dvh;
+  max-height: 88vh;   /* Safari < 15.4 fallback */
+  max-height: 88dvh;  /* dynamic viewport — accounts for browser chrome on iOS/Android */
   display: flex;
   flex-direction: column;
   box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.18);
@@ -22250,6 +22251,7 @@ body {
     bottom: auto;
     transform: translate(-50%, -50%);
     width: min(680px, 94vw);
+    max-height: 80vh;   /* Safari < 15.4 fallback */
     max-height: 80dvh;
     border-radius: 18px;
     padding-bottom: 0; /* reset mobile safe-area padding */
@@ -22258,7 +22260,12 @@ body {
 }
 @media (max-width: 767px) {
   .topping-sheet {
-    bottom: 60px;
+    /* Clear BottomNav (60px) + cust-mobile-sticky Add-to-Cart bar (64px) + safe-area */
+    bottom: calc(
+      var(--bottom-nav-h, 60px) +
+      var(--cust-sticky-h, 64px) +
+      env(safe-area-inset-bottom, 0px)
+    );
   }
 }
 /* Drag handle — mobile only */

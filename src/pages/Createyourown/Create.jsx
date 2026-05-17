@@ -22,6 +22,7 @@ import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import CustomizeViewSelectionModal from "./CustomizeViewSelectionModal";
 import SidesSelector from "./SidesSelector";
 import { sortPizzaSizes } from "../../utils/pizzaUtils";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const CreatePizza = () => {
   // navigate
@@ -76,6 +77,10 @@ const CreatePizza = () => {
 
   // Healper Function
   const cartFn = new CartFunction();
+
+  // Lock body scroll on iOS when any inline sheet is open
+  // (OptionSheet + ToppingSheet handle their own lock internally)
+  useBodyScrollLock(openSheet === 'sides' || openSheet === 'drinks' || openSheet === 'dips');
 
   // get all ingredients data initially and maintaining initial states
   const fetchData = async () => {
