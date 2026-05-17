@@ -29,7 +29,7 @@ function SideSlider({ data, cartFn }) {
                 </h4>
                 <div className="row g-3 signature-grid">
                     {data?.sides?.map((side, index) => (
-                        <div className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={`side-grid-card-${data?.code}`}>
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={`side-grid-card-${data?.code}`}>
                             <Sides data={side} cartFn={cartFn} />
                         </div>
                     ))}

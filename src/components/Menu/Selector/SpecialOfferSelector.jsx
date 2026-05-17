@@ -14,7 +14,7 @@ function SpecialOfferSelector({ specialOffers }) {
             <div className="row g-3 signature-grid">
                 {specialOffers?.map((data) => {
                     return (
-                        <div className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
                             <SpecialOfferCard key={data.code} data={data} />
                         </div>
                     );

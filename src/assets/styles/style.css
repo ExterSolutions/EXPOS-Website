@@ -22983,7 +22983,7 @@ body {
 
 @media (max-width: 640px) {
   .pizza-grid {
-    grid-template-columns: repeat(2, 1fr); /* Exactly 2 cards per row */
+    grid-template-columns: repeat(1, 1fr); /* 1 card per row on mobile */
     gap: 12px;
     width: 100%;
     margin: 0 auto;
@@ -22992,7 +22992,7 @@ body {
 
   .pizza-card-wrapper {
     width: 100%;
-    max-width: 240px;
+    max-width: unset;
     margin: 0 auto;
     display: flex;
     justify-content: center;

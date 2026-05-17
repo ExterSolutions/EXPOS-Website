@@ -18,7 +18,7 @@ function DipsSelector({ dips }) {
                 <div className="row g-3 signature-grid">
                     {dips?.map((data) => {
                         return (
-                            <div className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
+                            <div className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
                                 <Dips key={data.dipsCode} data={data} cartFn={cartFn} />
                             </div>
                         )

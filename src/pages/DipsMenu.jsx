@@ -75,7 +75,7 @@ function DipsMenu({ searchQuery, searchCode }) {
                     {filteredDips.length > 0 ? (
                         filteredDips.map((data, index) => (
                             <div
-                                className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3"
+                                className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3"
                                 key={`dip-grid-card-${data?.code || data?.dipsCode || index}`}
                             >
                                 <Dips

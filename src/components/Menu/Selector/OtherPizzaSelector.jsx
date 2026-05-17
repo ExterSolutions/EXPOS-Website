@@ -17,7 +17,7 @@ function OtherPizzaSelector({ otherPizzas, topping }) {
                 <div className="row g-3 signature-grid">
                     {otherPizzas?.map((data) => {
                         return (
-                            <div className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
+                            <div className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
                                 <OtherPizzas data={data} key={data.code} cartFn={cartFn} toppingsData={topping} />
                             </div>
                         )
