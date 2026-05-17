@@ -63,40 +63,43 @@ const PizzaCarousel = ({
     return (
         <div className={`section pizza-carousel-section pc-modern pt-60${layout === 'horizontal' ? ' pc-horizontal' : ''}`}>
             <div className="container">
-                <div className="d-flex align-items-center justify-content-between pb-2">
-                    <div className="flex-grow-1 section-header">
-                        <span
-                            className="category-subtitle"
-                            style={{ color: colors?.primary }}
-                        >
-                            {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
-                        </span>
-                        <div className="d-flex align-items-center gap-2">
-                            <div className="section-title">{sectionTitle}</div>
+                <div className="pb-2">
+                    {/* Subtitle sits alone on its own line */}
+                    <span
+                        className="category-subtitle"
+                        style={{ color: colors?.primary, display: 'block', marginBottom: '2px' }}
+                    >
+                        {sectionSubTitle || "CHOOSE YOUR FLAVOR"}
+                    </span>
+
+                    {/* Title row — "Best Sellers" title + badge + "View All" all share one flex line */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: 0 }}>
+                            <div className="section-title" style={{ margin: 0 }}>{sectionTitle}</div>
                             {showBestSelling && (
                                 <span className="best-selling-badge">🏆 Best Sellers</span>
                             )}
                         </div>
+                        {viewAllLink && (
+                            <Link
+                                to={viewAllLink}
+                                style={{
+                                    flexShrink: 0,
+                                    fontSize: '0.78rem',
+                                    fontWeight: 700,
+                                    color: colors?.primary,
+                                    border: `1.5px solid ${colors?.primary}`,
+                                    borderRadius: '2rem',
+                                    padding: '0.28rem 0.75rem',
+                                    textDecoration: 'none',
+                                    whiteSpace: 'nowrap',
+                                    lineHeight: 1.5,
+                                }}
+                            >
+                                View All →
+                            </Link>
+                        )}
                     </div>
-                    {viewAllLink && (
-                        <Link
-                            to={viewAllLink}
-                            style={{
-                                flexShrink: 0,
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                color: colors?.primary,
-                                border: `1.5px solid ${colors?.primary}`,
-                                borderRadius: '2rem',
-                                padding: '0.28rem 0.75rem',
-                                textDecoration: 'none',
-                                whiteSpace: 'nowrap',
-                                lineHeight: 1.5,
-                            }}
-                        >
-                            View All →
-                        </Link>
-                    )}
                 </div>
             </div>
             <div className="pizza-grid" style={gridStyle}>
