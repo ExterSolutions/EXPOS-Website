@@ -141,37 +141,40 @@ const Header = () => {
             <div className={`middle-section bg-white ${isSticky ? "fixed-top-middle-mobile" : ""}`}>
                 {/* Mobile small row - hidden on md and above */}
                 <div className="middle-small d-md-none">
-                    <button
-                        className="navbar-toggler border-0"
-                        type="button"
-                        onClick={toggleMobileMenu}
-                        aria-label={`${openMobileMenu ? 'Close' : 'Open'} mobile menu`}
-                        aria-expanded={openMobileMenu}
-                    >
-                        <FaBars size={20} className="text-primary" />
-                    </button>
-                    <div onClick={() => { navigate("/") }}>
-                        {loading || logoError ? (
-                            <div className="logo-placeholder placeholder-glow">
-                                <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
-                            </div>
-                        ) : (
-                            <img
-                                src={siteData.logo}
-                                alt={`${siteData.site_name} Logo`}
-                                className='logo'
-                                onError={() => setLogoError(true)}
-                            />
-                        )}
+
+                    {/* ── LEFT: Brand group (hamburger + logo) ── */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <button
+                            className="navbar-toggler border-0"
+                            type="button"
+                            onClick={toggleMobileMenu}
+                            aria-label={`${openMobileMenu ? 'Close' : 'Open'} mobile menu`}
+                            aria-expanded={openMobileMenu}
+                        >
+                            <FaBars size={20} className="text-primary" />
+                        </button>
+                        <div onClick={() => { navigate("/") }} style={{ cursor: 'pointer' }}>
+                            {loading || logoError ? (
+                                <div className="logo-placeholder placeholder-glow">
+                                    <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
+                                </div>
+                            ) : (
+                                <img
+                                    src={siteData.logo}
+                                    alt={`${siteData.site_name} Logo`}
+                                    className='logo'
+                                    onError={() => setLogoError(true)}
+                                />
+                            )}
+                        </div>
                     </div>
 
-                    {/* Right-side icons — always flush to the right */}
-                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    {/* ── RIGHT: Action icons (search, location, cart, profile) ── */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <button className='btn-search' aria-label="Search" onClick={handleMobileSearchOpen}>
                             <FaSearch size={20} className="text-secondary" />
                         </button>
 
-                        {/* Location icon — opens store select modal on mobile */}
                         {selectedStore && (
                             <button
                                 className='btn-search'
@@ -182,7 +185,6 @@ const Header = () => {
                             </button>
                         )}
 
-                        {/* Cart icon */}
                         <button
                             type="button"
                             className="btn-search position-relative"
@@ -199,7 +201,6 @@ const Header = () => {
                             <FaCartShopping className="text-primary" size={20} />
                         </button>
 
-                        {/* Profile icon — shown when logged in */}
                         {isAuthenticated && (
                             <button
                                 type="button"
@@ -211,6 +212,7 @@ const Header = () => {
                             </button>
                         )}
                     </div>
+
                 </div>
 
 
