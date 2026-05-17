@@ -191,49 +191,54 @@ const Header = () => {
                             />
                         )}
                     </div>
-                    <button className='btn-search' aria-label="Search" onClick={handleMobileSearchOpen}>
-                        <FaSearch size={20} className="text-secondary" />
-                    </button>
-                    {/* Location icon — opens store select modal on mobile */}
-                    {selectedStore && (
-                        <button
-                            className='btn-search'
-                            aria-label="Change store"
-                            onClick={() => setShowStorePopup && setShowStorePopup(true)}
-                        >
-                            <FaMapMarkerAlt size={20} className="text-primary" />
+
+                    {/* Right-side icons — always flush to the right */}
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                        <button className='btn-search' aria-label="Search" onClick={handleMobileSearchOpen}>
+                            <FaSearch size={20} className="text-secondary" />
                         </button>
-                    )}
 
-                    {/* Cart icon — mobile only */}
-                    <button
-                        type="button"
-                        className="btn-search position-relative"
-                        onClick={() => navigate('/cart')}
-                        aria-label="View Cart"
-                        style={{ padding: '0.6rem' }}
-                    >
-                        <span
-                            className="position-absolute top-0 start-100 translate-middle cart-count"
-                            style={{ fontSize: '0.55rem', minWidth: '16px', height: '16px', lineHeight: '16px', padding: '0 3px', borderRadius: '8px' }}
-                        >
-                            {cart?.product?.length ? (cart.product.length > 9 ? '9+' : cart.product.length) : 0}
-                        </span>
-                        <FaCartShopping className="text-primary" size={20} />
-                    </button>
+                        {/* Location icon — opens store select modal on mobile */}
+                        {selectedStore && (
+                            <button
+                                className='btn-search'
+                                aria-label="Change store"
+                                onClick={() => setShowStorePopup && setShowStorePopup(true)}
+                            >
+                                <FaMapMarkerAlt size={20} className="text-primary" />
+                            </button>
+                        )}
 
-                    {/* Profile avatar — mobile only, shown when logged in */}
-                    {isAuthenticated && (
+                        {/* Cart icon */}
                         <button
                             type="button"
-                            className="btn p-0 d-flex align-items-center"
-                            onClick={() => navigate('/my-account')}
-                            aria-label="My Account"
-                            style={{ background: 'transparent', border: 'none', flexShrink: 0 }}
+                            className="btn-search position-relative"
+                            onClick={() => navigate('/cart')}
+                            aria-label="View Cart"
+                            style={{ padding: '0.6rem' }}
                         >
-                            <UserAvatar />
+                            <span
+                                className="position-absolute top-0 start-100 translate-middle cart-count"
+                                style={{ fontSize: '0.55rem', minWidth: '16px', height: '16px', lineHeight: '16px', padding: '0 3px', borderRadius: '8px' }}
+                            >
+                                {cart?.product?.length ? (cart.product.length > 9 ? '9+' : cart.product.length) : 0}
+                            </span>
+                            <FaCartShopping className="text-primary" size={20} />
                         </button>
-                    )}
+
+                        {/* Profile avatar — shown when logged in */}
+                        {isAuthenticated && (
+                            <button
+                                type="button"
+                                className="btn p-0 d-flex align-items-center"
+                                onClick={() => navigate('/my-account')}
+                                aria-label="My Account"
+                                style={{ background: 'transparent', border: 'none', flexShrink: 0, padding: '0.4rem' }}
+                            >
+                                <UserAvatar />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
 
