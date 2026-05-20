@@ -1,4 +1,3 @@
-import { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import fallbackImage from "../../../assets/images/default-pizza.jpg";
 import { useTheme } from '../../../context/ThemeContext';
@@ -15,26 +14,6 @@ const PizzaCarousel = ({
 }) => {
 
     const { theme, colors } = useTheme();
-    const gridRef = useRef(null);
-
-    // On mobile: auto-scroll to the second card so first card peeks from left
-    useEffect(() => {
-        const el = gridRef.current;
-        if (!el || !pizzas?.length || pizzas.length < 2) return;
-        if (window.innerWidth > 640) return; // desktop only uses grid, no scroll needed
-
-        // Wait one frame for layout to settle, then scroll to 2nd card
-        const raf = requestAnimationFrame(() => {
-            const firstCard = el.children[0];
-            if (firstCard) {
-                const cardWidth = firstCard.getBoundingClientRect().width;
-                const gap = 12;
-                el.scrollLeft = cardWidth + gap;
-            }
-        });
-        return () => cancelAnimationFrame(raf);
-    }, [pizzas]);
-
     if (!pizzas || !Array.isArray(pizzas) || pizzas.length === 0) {
         return (
             <div className="section pizza-carousel-section">
@@ -123,7 +102,7 @@ const PizzaCarousel = ({
                     </div>
                 </div>
             </div>
-            <div className="pizza-grid" style={gridStyle} ref={gridRef}>
+            <div className="pizza-grid" style={gridStyle}>
                 {displayPizzas.map((item, index) => {
                     let name =
                         item?.pizzaName ||
