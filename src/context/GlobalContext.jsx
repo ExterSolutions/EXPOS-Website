@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { LOGIN_SUCCESS } from "../redux/authProvider/actionType";
 import CartFunction from "../components/cart";
@@ -297,6 +297,74 @@ export const GlobalProvider = ({ children }) => {
     fetchSettings();
   }, []);
 
+  // ── Store Hours: compute isOpen from settings ─────────────────────────────
+  const storeOpen = useMemo(() => {
+    if (!settings || !Array.isArray(settings)) return true; // assume open until loaded
+
+    const find = (code) => settings.find((s) => s.shortCode === code)?.settingValue ?? null;
+    const openRaw  = find('open_time')  ?? find('opening_time')  ?? find('store_open_time');
+    const closeRaw = find('close_time') ?? find('closing_time') ?? find('store_close_time');
+
+    if (!openRaw || !closeRaw) return true; // shortCodes not configured → always open
+
+    const parseTime = (str) => {
+      const s = str.toString().trim().toUpperCase();
+      const ampm = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+      if (ampm) {
+        let h = parseInt(ampm[1], 10);
+        const m = parseInt(ampm[2], 10);
+        if (ampm[3] === 'PM' && h !== 12) h += 12;
+        if (ampm[3] === 'AM' && h === 12) h = 0;
+        return h * 60 + m;
+      }
+      const hhmm = s.match(/^(\d{1,2}):(\d{2})$/);
+      if (hhmm) return parseInt(hhmm[1], 10) * 60 + parseInt(hhmm[2], 10);
+      const compact = s.match(/^(\d{2})(\d{2})$/);
+      if (compact) return parseInt(compact[1], 10) * 60 + parseInt(compact[2], 10);
+      return null;
+    };
+
+    const openMin  = parseTime(openRaw);
+    const closeMin = parseTime(closeRaw);
+    if (openMin === null || closeMin === null) return true;
+
+    const now = new Date();
+    const current = now.getHours() * 60 + now.getMinutes();
+
+    if (closeMin > openMin) return current >= openMin && current < closeMin;
+    return current >= openMin || current < closeMin; // overnight
+  }, [settings]);
+
+  // Format hours string for display in banner
+  const storeHoursString = useMemo(() => {
+    if (!settings || !Array.isArray(settings)) return null;
+    const find = (code) => settings.find((s) => s.shortCode === code)?.settingValue ?? null;
+    const openRaw  = find('open_time')  ?? find('opening_time')  ?? find('store_open_time');
+    const closeRaw = find('close_time') ?? find('closing_time') ?? find('store_close_time');
+    if (!openRaw || !closeRaw) return null;
+    const fmt = (str) => {
+      const s = str.toString().trim().toUpperCase();
+      const ampm = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+      if (ampm) return str.trim();
+      const hhmm = s.match(/^(\d{1,2}):(\d{2})$/);
+      if (hhmm) {
+        let h = parseInt(hhmm[1], 10), m = parseInt(hhmm[2], 10);
+        const period = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 === 0 ? 12 : h % 12;
+        return `${h}:${m.toString().padStart(2,'0')} ${period}`;
+      }
+      return str;
+    };
+    return `${fmt(openRaw)} – ${fmt(closeRaw)}`;
+  }, [settings]);
+
+
+  // Sync storeOpen to window so cart.jsx (plain class) can access it without circular imports
+  useEffect(() => {
+    window.__storeOpen        = storeOpen;
+    window.__storeHoursString = storeHoursString;
+  }, [storeOpen, storeHoursString]);
+
   // Recalculate cart totals whenever store or settings change
   useEffect(() => {
     // GUARD: Only recalculate if we have settings (to avoid zeroing out charges on initial load)
@@ -441,16 +509,17 @@ export const GlobalProvider = ({ children }) => {
     scrollToSignature: [scrollToSignature, setScrollToSignature],
     selectedType: [selectedType, setSelectedType],
     showStorePopup: [showStorePopup, setShowStorePopup],
-    // ── Order-type gate ───────────────────────────────────────────────────────
     showOrderTypeModal: [showOrderTypeModal, setShowOrderTypeModal],
     pendingStoreForOrderType: [pendingStoreForOrderType, setPendingStoreForOrderType],
     currentLatitude: [currentLatitude, setCurrentLatitude],
     currentLogitude: [currentLogitude, setCurrentLogitude],
     mobileMenu: [openMobileMenu, setOpenMobileMenu],
-    // ── Store detail ──────────────────────────────────────────────────────────
     selectedStore: [selectedStore, setSelectedStore],
     updateSelectedStore,
     clearStoreSelection,
+    // ── Store hours ───────────────────────────────────────────────────────────
+    storeOpen,
+    storeHoursString,
   };
 
   return (

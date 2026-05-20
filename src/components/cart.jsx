@@ -45,6 +45,18 @@ export default class CartFunction {
     }
 
     addCart(cartProduct, setCart, isEdit, settings, selectedStore) {
+        // ── Store Hours Guard ──────────────────────────────────────────────────
+        // storeOpen is computed in GlobalContext from settings (open_time/close_time).
+        // We read it via a global flag set on window to avoid circular imports.
+        // If not configured (shortCodes missing), window.__storeOpen is undefined → allow.
+        if (window.__storeOpen === false) {
+            const hours = window.__storeHoursString
+                ? ` We're open ${window.__storeHoursString}.`
+                : '';
+            toast.error(`🔒 We're currently closed. Please order during our business hours.${hours}`);
+            return false;
+        }
+        // ────────────────────────────────────────────────────────────────────────
         if (localStorage.getItem("cart") && localStorage.getItem("cart") !== null) {
             if (cartProduct.length > 0) {
                 let sub = 0.0;

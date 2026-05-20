@@ -15,31 +15,36 @@ import { GlobalContext } from '../../context/GlobalContext';
 import { getFlexDeals } from '../../services';
 import '../../assets/styles/flex-deals.css';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Deal type helpers — robust "not exclusively the other type" logic ─────────
+//
+// Instead of trying to enumerate every possible "both" value the admin might set
+// (e.g. "both", "Both (Pickup & Delivery)", "all", "other", "all-type", ""),
+// we simply check: is it NOT exclusively a pickup-only or delivery-only deal?
+//
+// Pickup   tab shows: anything that is NOT exclusively 'deliverydeal' / 'delivery'
+// Delivery tab shows: anything that is NOT exclusively 'pickupdeal'  / 'pickup'
 
-// Deals visible under BOTH pickup and delivery tabs
-const isOtherDeal = (dealType) => {
-    const t = (dealType || '').toLowerCase().trim();
-    return t === 'other' || t === 'all' || t === 'all-type' || t === 'both' || t === '';
-};
+const PICKUP_ONLY   = ['pickupdeal', 'pickup'];
+const DELIVERY_ONLY = ['deliverydeal', 'delivery'];
 
 const isPickupDeal = (dealType) => {
     const t = (dealType || '').toLowerCase().trim();
-    return t === 'pickupdeal' || t === 'pickup' || isOtherDeal(t);
+    return !DELIVERY_ONLY.includes(t);   // show unless it's delivery-ONLY
 };
 
 const isDeliveryDeal = (dealType) => {
     const t = (dealType || '').toLowerCase().trim();
-    return t === 'deliverydeal' || t === 'delivery' || isOtherDeal(t);
+    return !PICKUP_ONLY.includes(t);     // show unless it's pickup-ONLY
 };
 
-// Badge label — "Other" deals show no badge (visible for both)
+// Badge — only show a label for exclusively pickup/delivery deals
 const getDealTypeLabel = (dealType) => {
     const t = (dealType || '').toLowerCase().trim();
-    if (t === 'pickupdeal' || t === 'pickup') return '🏪 Pickup only';
-    if (t === 'deliverydeal' || t === 'delivery') return '🚚 Delivery only';
-    return null;
+    if (PICKUP_ONLY.includes(t))   return '🏪 Pickup only';
+    if (DELIVERY_ONLY.includes(t)) return '🚚 Delivery only';
+    return null; // "Both" / "Other" — no badge needed
 };
+
 
 const getDisplayPrice = (deal) => {
     const validPrices = (deal.pizza_prices ?? []).filter(p => Number(p.price) > 0);
