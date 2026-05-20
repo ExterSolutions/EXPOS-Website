@@ -128,19 +128,31 @@ const FlexDealList = () => {
     // Fetch ALL deals without deliveryType param — filter client-side
     // This ensures "Other" deals always appear in both tabs
     useEffect(() => {
-        const cityCode = currentCity?.cityCode ?? currentCity?.code ?? null;
+        // Use city from context, fallback to .env VITE_CITY_CODE, then null (fetch all)
+        const cityCode = currentCity?.cityCode
+            ?? currentCity?.code
+            ?? import.meta.env.VITE_CITY_CODE
+            ?? null;
+
         setLoading(true);
         setError(null);
-        getFlexDeals(cityCode)          // ← no deliveryType sent
-            .then((res) => {
-                // Handle both response shapes:
-                //   { status: 200, data: [...] }  ← wrapped
-                //   [...]                          ← direct array
-                const list = Array.isArray(res?.data)
-                    ? res.data
-                    : Array.isArray(res)
-                        ? res
-                        : [];
+
+        // Helper to parse both response shapes the API may return:
+        //   { status: 200, data: [...] }  ← wrapped
+        //   [...]                          ← direct array
+        const parseList = (res) =>
+            Array.isArray(res?.data) ? res.data
+            : Array.isArray(res)     ? res
+            : [];
+
+        getFlexDeals(cityCode)
+            .then(async (res) => {
+                let list = parseList(res);
+                // If cityCode gave empty results, retry without it — fetch everything
+                if (list.length === 0 && cityCode) {
+                    const fallback = await getFlexDeals(null).catch(() => null);
+                    list = parseList(fallback);
+                }
                 setAllDeals(list);
             })
             .catch((err) => {
