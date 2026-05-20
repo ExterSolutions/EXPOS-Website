@@ -54,7 +54,7 @@
 }
 @media (min-width: 1024px) {
     .pc-modern.pc-horizontal .pizza-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(3, 1fr) !important;
     }
 }
 /* tighter side padding for horizontal sections */

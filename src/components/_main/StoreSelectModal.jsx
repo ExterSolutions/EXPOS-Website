@@ -4,6 +4,7 @@ import { FaCheckCircle, FaMapMarkerAlt, FaPhone, FaSpinner, FaTimes } from 'reac
 import { getStoreLocationByCity } from '../../services/index';
 import { GlobalContext } from '../../context/GlobalContext';
 import CartFunction from '../../components/cart';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 function setLocalStoreCookie(storeDetail) {
     try {
@@ -52,6 +53,9 @@ export default function StoreSelectModal({ onClose, required = false }) {
     const [hoveredCode, setHoveredCode] = useState(null);
 
     const currentCity = selectedStore?.city || '';
+
+    // Prevent background scroll while modal is open (iOS-safe)
+    useBodyScrollLock(true);
 
     useEffect(() => {
         (async () => {

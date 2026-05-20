@@ -59,7 +59,7 @@ const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect 
                 </div>
 
                 {/* Option list */}
-                <div className="option-sheet__body" style={{ touchAction: 'pan-y' }}>
+                <div className="option-sheet__body">
                     {options.map((opt) => {
                         const isActive = opt.id === selected;
                         return (

@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/_main/Header/Header';
 import Footer from '../../components/_main/Footer';
+import PageSEO from '../../components/_main/PageSEO';
 import { GlobalContext } from '../../context/GlobalContext';
 import { getFlexDeals } from '../../services';
 import '../../assets/styles/flex-deals.css';
@@ -136,6 +137,7 @@ const FlexDealList = () => {
 
     return (
         <div className="fd-page">
+            <PageSEO pageKey="flexDeals" />
             <Header />
             <div className="nav-margin" />
 

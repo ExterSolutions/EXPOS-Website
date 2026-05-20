@@ -13947,6 +13947,8 @@ body.menu-open {
 
 .auth-buttons {
   padding: 20px;
+  /* Push buttons above the BottomNav (60px) + iPhone home indicator */
+  padding-bottom: calc(20px + var(--bottom-nav-h, 60px) + env(safe-area-inset-bottom, 0px));
   margin-top: auto;
   background: #fff;
   border-top: 1px solid rgba(0, 0, 0, 0.07);
@@ -22227,19 +22229,25 @@ body {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  /* Sit just above the BottomNav on mobile */
+  bottom: calc(var(--bottom-nav-h, 60px) + env(safe-area-inset-bottom, 0px));
   z-index: 1050;
   background: var(--bs-body-bg, #fff);
   border-radius: 20px 20px 0 0;
-  max-height: 88vh;   /* Safari < 15.4 fallback */
-  max-height: 88dvh;  /* dynamic viewport — accounts for browser chrome on iOS/Android */
+  /*
+    Height = screen height minus the gap at the top we want visible (12%)
+    minus the bottom offset (BottomNav + safe area).
+    Use dvh so iOS Safari's dynamic toolbar is accounted for.
+  */
+  max-height: calc(88dvh - var(--bottom-nav-h, 60px) - env(safe-area-inset-bottom, 0px));
+  /* Fallback for older Safari that doesn't support dvh */
+  max-height: calc(88vh - var(--bottom-nav-h, 60px) - env(safe-area-inset-bottom, 0px));
+  max-height: calc(88dvh - var(--bottom-nav-h, 60px) - env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.18);
   animation: sheet-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
-
-  /* Safe area for devices with home indicator (iPhone notch etc.) */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* No padding-bottom here — the bottom offset handles the gap */
 }
 
 /* ── Desktop: centered modal ── */
@@ -22251,21 +22259,11 @@ body {
     bottom: auto;
     transform: translate(-50%, -50%);
     width: min(680px, 94vw);
-    max-height: 80vh;   /* Safari < 15.4 fallback */
+    max-height: 80vh;
     max-height: 80dvh;
     border-radius: 18px;
-    padding-bottom: 0; /* reset mobile safe-area padding */
+    padding-bottom: 0;
     animation: modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-}
-@media (max-width: 767px) {
-  .topping-sheet {
-    /* Clear BottomNav (60px) + cust-mobile-sticky Add-to-Cart bar (64px) + safe-area */
-    bottom: calc(
-      var(--bottom-nav-h, 60px) +
-      var(--cust-sticky-h, 64px) +
-      env(safe-area-inset-bottom, 0px)
-    );
   }
 }
 /* Drag handle — mobile only */
@@ -22392,8 +22390,13 @@ body {
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* contain prevents rubber-band from propagating to the page behind the sheet */
   overscroll-behavior: contain;
+  /* Must be in CSS (not just JSX style) to beat iOS gesture detection */
+  touch-action: pan-y;
   padding: 0.75rem 1.25rem;
+  /* Ensure inner content doesn't exceed the sheet on very small phones */
+  padding-bottom: 0.5rem;
 }
 
 /* Footer */

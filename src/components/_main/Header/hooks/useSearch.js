@@ -3,13 +3,27 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { searchProducts } from '../../../../services';
 import { GlobalContext } from '../../../../context/GlobalContext';
 
+// ── Shared helper: maps a search result item to its detail page URL ──────────
+const getItemPath = (item) => {
+    const type = (item?.productType || '').toLowerCase();
+    const searchParam = `?search=${encodeURIComponent(item.name)}&code=${item.code}`;
+    switch (type) {
+        case 'signature':  return `/signaturepizza/${item.code}`;
+        case 'other':      return `/otherpizza/${item.code}`;
+        case 'dips':       return `/dips${searchParam}`;
+        case 'drinks':     return `/drinks${searchParam}`;
+        case 'sides':      return `/sides${searchParam}`;
+        default:           return `/menu`;
+    }
+};
+
 export const useSearch = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const globalCtx = useContext(GlobalContext);
     const [selectedStore] = globalCtx?.selectedStore || [null];
     const cityCode = selectedStore?.cityCode || '';
-    
+
     // Get initial query from URL or navigation state
     const getInitialQuery = () => {
         const params = new URLSearchParams(location.search);
@@ -21,7 +35,7 @@ export const useSearch = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [showSearchDropdown, setShowSearchDropdown] = useState(false);
     const [showMobileSearch, setShowMobileSearch] = useState(false);
-    
+
     const searchRef = useRef(null);
     const mobileSearchRef = useRef(null);
 
@@ -48,36 +62,23 @@ export const useSearch = () => {
     const fetchSearchResults = async (query, code) => {
         try {
             const res = await searchProducts(query, code);
-            
-            // Log for debugging (user can check browser console)
             console.log(`[Search] Query: "${query}", City: "${code || 'Default'}"`, res);
-            
-            // Highly resilient response parsing
+
             let results = [];
-            
-            // 1. Direct array or res.data is array
             if (Array.isArray(res)) {
                 results = res;
             } else if (res && Array.isArray(res.data)) {
                 results = res.data;
-            } 
-            // 2. Double-nested in data.data or similar (e.g. { data: { data: [...] } })
-            else if (res?.data?.data && Array.isArray(res.data.data)) {
+            } else if (res?.data?.data && Array.isArray(res.data.data)) {
                 results = res.data.data;
-            }
-            // 3. Fallback for objects with results or products keys
-            else if (res?.results && Array.isArray(res.results)) {
+            } else if (res?.results && Array.isArray(res.results)) {
                 results = res.results;
             } else if (res?.products && Array.isArray(res.products)) {
                 results = res.products;
             }
-            // 4. Case where data contains the list directly but res is axios object
-            else if (res?.data && Array.isArray(res.data)) {
-                results = res.data;
-            }
 
             setSearchResults(results);
-            setShowSearchDropdown(true); // Always show so dropdown can render results or "No results found"
+            setShowSearchDropdown(true);
         } catch (error) {
             console.error('Search error:', error);
             setSearchResults([]);
@@ -85,7 +86,7 @@ export const useSearch = () => {
         }
     };
 
-    // Close dropdown on outside click for desktop
+    // Close dropdown on outside click — desktop
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -115,44 +116,21 @@ export const useSearch = () => {
         setSearchQuery(e.target.value);
     };
 
-    // Handle search submit - Navigate to first result's detail page if available
+    // Handle search submit (Enter key / submit button)
+    // Navigates directly to the first result's detail page
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        if (searchQuery.trim() && searchResults.length > 0) {
-            const item = searchResults[0];
-            const type = item?.productType || '';
-            const searchParam = `?search=${encodeURIComponent(item.name)}&code=${item.code}`;
-            let basePath;
+        if (!searchQuery.trim()) return;
 
-            switch (type.toLowerCase()) {
-                case 'signature':
-                    basePath = `/signaturepizza/${item?.code}`;
-                    break;
-                case 'other':
-                    basePath = `/otherpizza/${item?.code}`;
-                    break;
-                case 'dips':
-                    basePath = `/dips${searchParam}`;
-                    break;
-                case 'drinks':
-                    basePath = `/drinks${searchParam}`;
-                    break;
-                case 'sides':
-                    basePath = `/sides${searchParam}`;
-                    break;
-                default:
-                    basePath = '/menu';
-            }
+        setShowSearchDropdown(false);
+        setShowMobileSearch(false);
 
-            navigate(basePath, { state: { q: searchQuery.trim() } });
-            setShowSearchDropdown(false);
-            setShowMobileSearch(false);
-        } else if (searchQuery.trim()) {
+        if (searchResults.length > 0) {
+            navigate(getItemPath(searchResults[0]), { state: { q: searchQuery.trim() } });
+        } else {
             navigate(`/search-results?q=${encodeURIComponent(searchQuery.trim())}`, {
                 state: { results: searchResults, q: searchQuery.trim() }
             });
-            setShowSearchDropdown(false);
-            setShowMobileSearch(false);
         }
     };
 
@@ -161,17 +139,16 @@ export const useSearch = () => {
         setSearchQuery('');
         setSearchResults([]);
         setShowSearchDropdown(false);
-        
-        // Clear all relevant URL params to restore full data view
+
         const params = new URLSearchParams(location.search);
         params.delete('q');
         params.delete('search');
         params.delete('code');
-        
+
         const newSearch = params.toString();
         navigate({
             pathname: location.pathname,
-                search: newSearch ? `?${newSearch}` : ''
+            search: newSearch ? `?${newSearch}` : ''
         }, { replace: true });
     };
 
@@ -187,19 +164,16 @@ export const useSearch = () => {
         setSearchQuery('');
     };
 
-    // Handle search dropdown close
-    const handleSearchDropdownClose = () => {
-        setShowSearchDropdown(false);
-        setSearchQuery('');
-    };
-
-    // Handle search item click (for both desktop and mobile)
+    // Handle clicking a result item — navigate directly to the item's page.
+    // Uses navigate() instead of relying on <Link> to avoid iOS Safari race conditions
+    // where setState + Link navigation conflict and cancel each other.
     const handleSearchItemClick = (item) => {
         setShowSearchDropdown(false);
         setShowMobileSearch(false);
-        // If item provided, set its name in the search bar
-        if (item?.name) {
-            setSearchQuery(item.name);
+        setSearchQuery('');
+
+        if (item) {
+            navigate(getItemPath(item), { state: { q: item.name } });
         }
     };
 
@@ -220,4 +194,4 @@ export const useSearch = () => {
         handleMobileSearchClose,
         handleSearchItemClick
     };
-};
+};

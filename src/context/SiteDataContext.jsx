@@ -1,4 +1,8 @@
-// src/context/SiteDataContext.js
+// src/context/SiteDataContext.jsx
+//
+// Fetches site identity from the admin API (/feed/site) once and exposes it
+// app-wide.  PageSEO reads from here — zero manual config needed per client.
+//
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getSiteData } from '../services';
 
@@ -14,30 +18,70 @@ export const useSiteDataContext = () => {
 
 export const SiteDataProvider = ({ children }) => {
     const [siteData, setSiteData] = useState({
-        site_name: "",
-        logo: null,
-        contact_email: "",
-        contact_phone: "",
-        address: "",
-        favicon: null,
-        qrcode: null
+        // Identity
+        site_name:     '',
+        logo:          null,
+        favicon:       null,
+        qrcode:        null,
+        // Contact
+        contact_email: '',
+        contact_phone: '',
+        address:       '',
+        // SEO helpers derived from above (filled after fetch)
+        siteUrl:       window.location.origin,
+        city:          '',
+        province:      '',
+        country:       'CA',
+        // Coordinates — optional; populated if admin returns them
+        geo:           { lat: '', lng: '' },
+        twitterHandle: '',
     });
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError]     = useState(null);
 
     const fetchSiteData = async () => {
         try {
             setLoading(true);
             const response = await getSiteData();
             if (response.status && response.data) {
+                const d = response.data;
+
+                // ── Try to extract city / province from the address string ──────
+                // Expected format:  "123 Main St, Surrey, BC, Canada"  or similar
+                const addressStr = d.address || '';
+                let city = d.city || '';
+                let province = d.province || d.state || '';
+                let country = d.country || 'CA';
+
+                if (!city && addressStr) {
+                    // Heuristic: split by commas, city is usually second-to-last
+                    const parts = addressStr.split(',').map(p => p.trim()).filter(Boolean);
+                    if (parts.length >= 2) {
+                        city = parts[parts.length - 3] || parts[parts.length - 2] || '';
+                        // Province is often "BC" or "ON" — last part before country
+                        const provincePart = parts[parts.length - 2] || '';
+                        // Strip postal codes: "BC V3R 4P1" → "BC"
+                        province = provincePart.replace(/\b[A-Z]\d[A-Z]\s*\d[A-Z]\d\b/i, '').trim().split(' ')[0];
+                    }
+                }
+
                 setSiteData({
-                    site_name: response.data.site_name || "",
-                    logo: response.data.logo || null,
-                    contact_email: response.data.contact_email || "",
-                    contact_phone: response.data.contact_phone || "",
-                    address: response.data.address || "",
-                    favicon: response.data.favicon || null,
-                    qrcode: response.data.qrcode || null
+                    site_name:     d.site_name     || '',
+                    logo:          d.logo          || null,
+                    favicon:       d.favicon       || null,
+                    qrcode:        d.qrcode        || null,
+                    contact_email: d.contact_email || '',
+                    contact_phone: d.contact_phone || '',
+                    address:       addressStr,
+                    siteUrl:       d.site_url      || window.location.origin,
+                    city:          city,
+                    province:      province,
+                    country:       country,
+                    geo: {
+                        lat: d.latitude  || d.lat || '',
+                        lng: d.longitude || d.lng || d.long || '',
+                    },
+                    twitterHandle: d.twitter_handle || d.twitter || '',
                 });
             }
         } catch (err) {

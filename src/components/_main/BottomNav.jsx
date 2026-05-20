@@ -29,7 +29,7 @@ const BottomNav = () => {
             label: 'Menu',
             icon: <FaPizzaSlice size={20} />,
             action: () => navigate('/menu'),
-            active: ['/menu', '/signaturepizza', '/otherpizza', '/specialoffer', '/sides', '/dips', '/drinks', '/create-your-own'].includes(location.pathname),
+            active: ['/menu', '/signaturepizza', '/otherpizza', '/specialoffer', '/sides', '/dips', '/drinks', '/create-your-own', '/flex-deals'].some(p => location.pathname.startsWith(p)),
         },
         {
             label: 'Cart',

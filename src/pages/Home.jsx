@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Header from "../components/_main/Header/Header";
 import Footer from "../components/_main/Footer";
+import PageSEO from "../components/_main/PageSEO";
 import { useLocation, Link } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
 import CartFunction from "../components/cart";
@@ -242,6 +243,7 @@ const Home = () => {
 
     return (
         <div>
+            <PageSEO pageKey="home" />
             <Header />
             <div className="inner-nav"></div>
             <div className="container-fluid container-lg px-0">

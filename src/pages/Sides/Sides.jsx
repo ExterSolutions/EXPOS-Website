@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import SidesMenu from "../SidesMenu";
 
 const Sides = () => {
@@ -19,6 +20,7 @@ const Sides = () => {
 
     return (
         <div style={{ position: "relative" }}>
+            <PageSEO pageKey="sides" />
             <Header />
             <div className="nav-margin"></div>
             <div className="container py-2">

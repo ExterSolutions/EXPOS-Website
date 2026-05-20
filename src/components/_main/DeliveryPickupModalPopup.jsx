@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import {GlobalContext} from '../../context/GlobalContext';
 import LocationAccessContent from './LocationAccessContent';
 import { useTheme } from '../../context/ThemeContext';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 function DeliveryPickupModalPopup({ setShow }) {
     const [currentTab, setCurrentTab] = useState('pickup');
@@ -14,6 +15,9 @@ function DeliveryPickupModalPopup({ setShow }) {
     const [currentCity, setCurrentCity] = globalCtx.currentCity;
     const [currentStore, setCurrentStore] = globalCtx.currentStore;
     const navigate = useNavigate();
+
+    // Prevent background scroll while this modal is open (iOS-safe)
+    useBodyScrollLock(true);
 
     const handleTabChange = (tabName) => {
         setCurrentTab(tabName);

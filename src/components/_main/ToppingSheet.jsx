@@ -153,7 +153,7 @@ const ToppingSheet = ({
                 </p>
 
                 {/* Topping grid */}
-                <div className="topping-sheet__body" style={{ touchAction: 'pan-y' }}>
+                <div className="topping-sheet__body">
                     {activeTab === "two" && (
                         <div className="topping-sheet__list">
                             {Ingredients?.toppings?.countAsTwo?.map((data, index) => (

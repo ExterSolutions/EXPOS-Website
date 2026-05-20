@@ -169,9 +169,14 @@ const Header = () => {
                         </div>
                     </div>
 
-                    {/* ── RIGHT: Action icons (search, location, cart, profile) ── */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <button className='btn-search' aria-label="Search" onClick={handleMobileSearchOpen}>
+                    {/* ── RIGHT: Action icons (search, location, profile) ── */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                            className='btn-search'
+                            aria-label="Search"
+                            onClick={handleMobileSearchOpen}
+                            style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
                             <FaSearch size={20} className="text-secondary" />
                         </button>
 
@@ -180,26 +185,13 @@ const Header = () => {
                                 className='btn-search'
                                 aria-label="Change store"
                                 onClick={() => setShowStorePopup && setShowStorePopup(true)}
+                                style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
                                 <FaMapMarkerAlt size={20} className="text-primary" />
                             </button>
                         )}
 
-                        <button
-                            type="button"
-                            className="btn-search position-relative"
-                            onClick={() => navigate('/cart')}
-                            aria-label="View Cart"
-                            style={{ padding: '0.6rem' }}
-                        >
-                            <span
-                                className="position-absolute top-0 start-100 translate-middle cart-count"
-                                style={{ fontSize: '0.55rem', minWidth: '16px', height: '16px', lineHeight: '16px', padding: '0 3px', borderRadius: '8px' }}
-                            >
-                                {cart?.product?.length ? (cart.product.length > 9 ? '9+' : cart.product.length) : 0}
-                            </span>
-                            <FaCartShopping className="text-primary" size={20} />
-                        </button>
+                        {/* Cart is in the BottomNav on mobile — no need to duplicate it here */}
 
                         {isAuthenticated && (
                             <button
@@ -207,6 +199,7 @@ const Header = () => {
                                 className="btn-search d-flex align-items-center"
                                 onClick={() => navigate('/my-account')}
                                 aria-label="My Account"
+                                style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
                                 <FaUserCircle className="text-primary" size={22} />
                             </button>
@@ -441,39 +434,17 @@ const Header = () => {
                             <li className="nav-item">
                                 <a href="https://web.exter.ca/" className="nav-link active">Home</a>
                             </li>
-                            <li className="nav-item dropdown position-static" ref={dropdownRef}>
-                                <button
-                                    className="nav-link btn bg-transparent border-0"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setMenuOpen((prev) => !prev);
+                            <li className="nav-item">
+                                <Link
+                                    to="/"
+                                    className="nav-link"
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        setIsOpen(false);
                                     }}
                                 >
                                     Menu
-                                </button>
-                                <ul
-                                    className={`dropdown-menu category-dropdown ${menuOpen ? "show" : ""}`}
-                                    style={{ display: menuOpen ? "block" : "none" }}
-                                >
-                                    <div className="dropdown-grid">
-                                        {circleMenuItems.map((item) => (
-                                            <div key={item.id} className="dropdown-card">
-                                                <Link
-                                                    to={`/${item.id}`}
-                                                    className="dropdown-item-grid"
-                                                    onClick={() => {
-                                                        setMenuOpen(false);
-                                                        setIsOpen(false);
-                                                    }}
-                                                >
-                                                    <div className="icon-circle">{item.icon}</div>
-                                                    <span className="item-name">{item.name}</span>
-                                                </Link>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </ul>
+                                </Link>
                             </li>
                             {/* <li className="nav-item">
                                 <Link to="/stores" className="nav-link">Stores</Link>

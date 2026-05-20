@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from '../components/_main/Header/Header';
 import Footer from '../components/_main/Footer';
+import PageSEO from '../components/_main/PageSEO';
 import MenuContent from '../components/Menu/MenuContent';
 import LoadingLayout from '../layouts/LoadingLayout';
 import { getDips, getDrinks, getOtherPizza, getSides } from '../services';
@@ -40,6 +41,7 @@ function Menu() {
 
     return (
         <div className="menu-page-wrapper">
+            <PageSEO pageKey="menu" />
             <Header />
             <main style={{ flex: 1 }}>
                 {/* <div className="new-block primary-background-color" id="create-your-own-new"> 
@@ -55,7 +57,7 @@ function Menu() {
                 {/* </section>
                  </div> */}
             </main>
-
+            <Footer />
         </div>
     );
 }

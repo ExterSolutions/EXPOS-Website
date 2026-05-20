@@ -1,13 +1,13 @@
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import Tabs from "../../components/Tabs/Tabs";
 import { useEffect, useState } from "react";
 import { getToppings } from "../../services";
 import SignaturePizza from "../SignaturePizza";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useContext } from "react";
-import { settingApi } from "../../services";
-// import "../../assets/styles/new/homepage/pizza/specialoffer.css";
+import { settingApi } from "../../services";;
 
 const SignaturePizzaList = () => {
   const [toppingsData, setToppingsData] = useState(null);
@@ -35,6 +35,7 @@ const SignaturePizzaList = () => {
   }, []);
   return (
     <>
+      <PageSEO pageKey="signaturePizza" />
       <div style={{ position: "relative" }}>
         <Header />
         <div className="nav-margin"></div>

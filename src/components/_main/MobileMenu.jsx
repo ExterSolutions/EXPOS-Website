@@ -1,5 +1,6 @@
 
 import { useContext, useEffect } from 'react';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import {
     FaGlassCheers,
     FaHome,
@@ -46,17 +47,8 @@ const MobileMenu = () => {
         return () => document.removeEventListener('keydown', handleEscape);
     }, [openMobileMenu, setOpenMobileMenu]);
 
-    useEffect(() => {
-        if (openMobileMenu) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
-
-        return () => {
-            document.body.classList.remove('menu-open');
-        };
-    }, [openMobileMenu]);
+    // iOS-safe body scroll lock (position:fixed approach beats overflow:hidden on Safari)
+    useBodyScrollLock(openMobileMenu);
 
     const handleLinkClick = (link) => {
         if (setOpenMobileMenu) {
@@ -140,12 +132,7 @@ const MobileMenu = () => {
                                 <span className="nav-text">Signature Pizzas</span>
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link to="/otherpizza" className={`nav-link ${isActive('/otherpizza') ? 'active' : ''}`} onClick={() => handleLinkClick('/otherpizza')}>
-                                <GiPizzaSlice />
-                                <span className="nav-text">Other Pizzas</span>
-                            </Link>
-                        </li>
+                        {/* Other Pizzas hidden from mobile sidebar */}
                         <li className="nav-item">
                             <Link to="/sides" className={`nav-link ${isActive('/sides') ? 'active' : ''}`} onClick={() => handleLinkClick('/sides')}>
                                 <PiHamburgerFill />
@@ -170,12 +157,7 @@ const MobileMenu = () => {
                                 <span className="nav-text">Create Your Own</span>
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link to="/menu" className={`nav-link ${isActive('/menu') ? 'active' : ''}`} onClick={() => handleLinkClick('/menu')}>
-                                <MdRestaurantMenu />
-                                <span className="nav-text">All Menu</span>
-                            </Link>
-                        </li>
+                        {/* All Menu hidden from mobile sidebar */}
 
                         {/* <li>
                             <Link

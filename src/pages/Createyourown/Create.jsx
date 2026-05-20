@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import OptionSheet from "../../components/_main/OptionSheet";
 import CartFunction from "../../components/cart";
 import { GlobalContext } from "../../context/GlobalContext";
@@ -691,6 +692,7 @@ const CreatePizza = () => {
         </>
       ) : (
         <div className="">
+          <PageSEO pageKey="createYourOwn" />
           <Header />
           <div className="nav-margin"></div>
 

@@ -1,4 +1,4 @@
-// src/main.jsx or src/index.js
+// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -16,18 +16,20 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <SiteDataProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <GlobalProvider>
-            <ThemeProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </ThemeProvider>
-          </GlobalProvider>
-        </PersistGate>
-      </Provider>
-    </SiteDataProvider>
+    <HelmetProvider>
+      <SiteDataProvider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <GlobalProvider>
+              <ThemeProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </ThemeProvider>
+            </GlobalProvider>
+          </PersistGate>
+        </Provider>
+      </SiteDataProvider>
+    </HelmetProvider>
   </React.StrictMode>
 );
