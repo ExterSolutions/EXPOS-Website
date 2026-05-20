@@ -21694,7 +21694,26 @@ body {
   font-size: 1.2rem;
   font-weight: 800;
   flex-shrink: 0;
+  white-space: nowrap;
   margin-left: 0.75rem;
+}
+
+/* Mobile: reduce strip padding so price never gets clipped */
+@media (max-width: 575px) {
+  .offer-hero-strip {
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+  }
+  .offer-hero-strip__name {
+    font-size: 0.88rem;
+  }
+  .offer-hero-strip__price {
+    font-size: 1.05rem;
+  }
+  /* Reduce inner padding on CYO page on mobile so content fits */
+  #create-your-own-new .p-3 {
+    padding: 0.6rem !important;
+  }
 }
 
 .offer-section-label {
@@ -21713,8 +21732,11 @@ body {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
-  padding-bottom: 0.25rem;
+  overflow-y: visible;
+  padding-bottom: 0.5rem;
   scrollbar-width: none;
+  width: 100%;          /* Must have width so overflow-x:auto actually clips and scrolls */
+  -webkit-overflow-scrolling: touch;
 }
 .size-pill-scroll::-webkit-scrollbar {
   display: none;
