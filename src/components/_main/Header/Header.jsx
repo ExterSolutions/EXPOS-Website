@@ -432,7 +432,11 @@ const Header = () => {
                     >
                         <ul className="navbar-nav gap-4 fs-6 fw-semibold align-items-center">
                             <li className="nav-item">
-                                <a href="https://web.exter.ca/" className="nav-link active">Home</a>
+                                <Link
+                                    to="/"
+                                    className="nav-link active"
+                                    onClick={() => { setMenuOpen(false); setIsOpen(false); }}
+                                >Home</Link>
                             </li>
                             <li className="nav-item">
                                 <Link
