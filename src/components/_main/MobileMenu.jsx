@@ -105,17 +105,14 @@ const MobileMenu = () => {
                 <nav className="sidebar-nav">
                     <ul>
                         <li className="nav-item">
-                            <a
-                                href="https://web.exter.ca/"
+                            <Link
+                                to="/"
                                 className={`nav-link ${isActive('/') ? 'active' : ''}`}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleLinkClick('https://web.exter.ca/');
-                                }}
+                                onClick={() => handleLinkClick('/')}
                             >
                                 <FaHome />
                                 <span className="nav-text">Home</span>
-                            </a>
+                            </Link>
                         </li>
 
 

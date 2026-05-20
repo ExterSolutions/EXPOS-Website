@@ -133,11 +133,15 @@ const FlexDealList = () => {
         setError(null);
         getFlexDeals(cityCode)          // ← no deliveryType sent
             .then((res) => {
-                if (res?.status === 200 && Array.isArray(res.data)) {
-                    setAllDeals(res.data);
-                } else {
-                    setAllDeals([]);
-                }
+                // Handle both response shapes:
+                //   { status: 200, data: [...] }  ← wrapped
+                //   [...]                          ← direct array
+                const list = Array.isArray(res?.data)
+                    ? res.data
+                    : Array.isArray(res)
+                        ? res
+                        : [];
+                setAllDeals(list);
             })
             .catch((err) => {
                 console.error('FlexDealList fetch error:', err);
