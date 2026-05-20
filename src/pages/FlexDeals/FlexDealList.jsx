@@ -1,10 +1,10 @@
 /**
  * FlexDealList.jsx
  *
- * V3 Flex Deals listing page.
- * Fetches from GET /api/v3/deals?cityCode=...&deliveryType=...
- * Backend filters by deliveryType: 'pickup' → pickupdeal + all-type;
- *                                  'delivery' → deliverydeal + all-type.
+ * Fetches ALL deals once (no deliveryType filter sent to API).
+ * Filters client-side so:
+ *   Pickup tab   → pickupdeal + other
+ *   Delivery tab → deliverydeal + other
  */
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,11 +15,29 @@ import { GlobalContext } from '../../context/GlobalContext';
 import { getFlexDeals } from '../../services';
 import '../../assets/styles/flex-deals.css';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
+// Deals visible under BOTH pickup and delivery tabs
+const isOtherDeal = (dealType) => {
+    const t = (dealType || '').toLowerCase().trim();
+    return t === 'other' || t === 'all' || t === 'all-type' || t === 'both' || t === '';
+};
+
+const isPickupDeal = (dealType) => {
+    const t = (dealType || '').toLowerCase().trim();
+    return t === 'pickupdeal' || t === 'pickup' || isOtherDeal(t);
+};
+
+const isDeliveryDeal = (dealType) => {
+    const t = (dealType || '').toLowerCase().trim();
+    return t === 'deliverydeal' || t === 'delivery' || isOtherDeal(t);
+};
+
+// Badge label — "Other" deals show no badge (visible for both)
 const getDealTypeLabel = (dealType) => {
-    if (dealType === 'pickupdeal') return '🏪 Pickup only';
-    if (dealType === 'deliverydeal') return '🚚 Delivery only';
+    const t = (dealType || '').toLowerCase().trim();
+    if (t === 'pickupdeal' || t === 'pickup') return '🏪 Pickup only';
+    if (t === 'deliverydeal' || t === 'delivery') return '🚚 Delivery only';
     return null;
 };
 
@@ -46,9 +64,13 @@ const FlexDealCard = ({ deal, onClick }) => {
         !deal.image.endsWith('pizza.jpg');
 
     return (
-        <div className="fd-card" onClick={() => onClick(deal.code)} role="button" tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onClick(deal.code)}>
-            {/* Image */}
+        <div
+            className="fd-card"
+            onClick={() => onClick(deal.code)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onClick(deal.code)}
+        >
             <div className="fd-card__image-wrap">
                 {hasRealImage ? (
                     <img
@@ -66,7 +88,6 @@ const FlexDealCard = ({ deal, onClick }) => {
                 {typeLabel && <span className="fd-card__type-badge">{typeLabel}</span>}
             </div>
 
-            {/* Body */}
             <div className="fd-card__body">
                 <h3 className="fd-card__name">{deal.name}</h3>
                 {deal.description ? (
@@ -80,7 +101,10 @@ const FlexDealCard = ({ deal, onClick }) => {
                         {fromLabel && <span className="fd-card__price-label">from </span>}
                         ${amount.toFixed(2)}
                     </div>
-                    <button className="fd-card__cta" onClick={(e) => { e.stopPropagation(); onClick(deal.code); }}>
+                    <button
+                        className="fd-card__cta"
+                        onClick={(e) => { e.stopPropagation(); onClick(deal.code); }}
+                    >
                         Customize
                     </button>
                 </div>
@@ -97,21 +121,22 @@ const FlexDealList = () => {
     const [currentCity] = globalCtx.currentCity;
     const [selectedType, setSelectedType] = globalCtx.selectedType;
 
-    const [deals, setDeals] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [allDeals, setAllDeals] = useState([]);
+    const [loading, setLoading]   = useState(true);
+    const [error, setError]       = useState(null);
 
-    // Re-fetch when city or order type changes
+    // Fetch ALL deals without deliveryType param — filter client-side
+    // This ensures "Other" deals always appear in both tabs
     useEffect(() => {
         const cityCode = currentCity?.cityCode ?? currentCity?.code ?? null;
         setLoading(true);
         setError(null);
-        getFlexDeals(cityCode, selectedType)
+        getFlexDeals(cityCode)          // ← no deliveryType sent
             .then((res) => {
                 if (res?.status === 200 && Array.isArray(res.data)) {
-                    setDeals(res.data);
+                    setAllDeals(res.data);
                 } else {
-                    setDeals([]);
+                    setAllDeals([]);
                 }
             })
             .catch((err) => {
@@ -119,13 +144,19 @@ const FlexDealList = () => {
                 setError('Unable to load deals. Please try again.');
             })
             .finally(() => setLoading(false));
-    }, [currentCity, selectedType]);
+    }, [currentCity]); // re-fetch only on city change, NOT on tab switch
 
-    const handleCardClick = (dealCode) => {
-        navigate(`/flex-deals/${dealCode}`);
-    };
+    // Client-side filter:
+    //   Pickup   → pickupdeal + other
+    //   Delivery → deliverydeal + other
+    const deals = allDeals.filter(deal =>
+        selectedType === 'delivery'
+            ? isDeliveryDeal(deal.dealType)
+            : isPickupDeal(deal.dealType)
+    );
 
-    // Switch order type inline — also updates global state + localStorage
+    const handleCardClick = (dealCode) => navigate(`/flex-deals/${dealCode}`);
+
     const handleTypeSwitch = (type) => {
         setSelectedType(type);
         localStorage.setItem('selectedType', type);
@@ -152,7 +183,7 @@ const FlexDealList = () => {
                     )}
                 </div>
 
-                {/* ── Order-type switcher ───────────────────────────────────── */}
+                {/* Order-type switcher */}
                 <div className="fd-type-switcher" role="group" aria-label="Order type">
                     <button
                         id="fd-type-pickup"
@@ -185,7 +216,7 @@ const FlexDealList = () => {
                     </div>
                 )}
 
-                {/* Empty */}
+                {/* No deals for this tab */}
                 {!loading && !error && deals.length === 0 && (
                     <div className="fd-empty">
                         <span className="fd-empty__icon">🎉</span>
@@ -209,7 +240,6 @@ const FlexDealList = () => {
                     </div>
                 )}
             </div>
-
         </div>
     );
 };
