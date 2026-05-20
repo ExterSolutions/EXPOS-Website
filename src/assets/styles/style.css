@@ -23060,11 +23060,12 @@ html, body {
 
 @media (max-width: 640px) {
   .pizza-carousel-section {
-    padding-left: 0.875rem;
-    padding-right: 0.875rem;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
   }
 
-  /* Horizontal snap-scroll carousel on mobile — only the grid scrolls edge-to-edge */
+  /* Horizontal snap-scroll carousel on mobile */
   .pizza-carousel-section .pizza-grid {
     display: flex !important;
     flex-direction: row !important;
@@ -23074,20 +23075,18 @@ html, body {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 12px !important;
-    padding: 4px 0.875rem 16px !important;
-    /* Break out of section padding so cards go edge-to-edge */
-    margin-left: -0.875rem;
-    margin-right: -0.875rem;
-    width: calc(100% + 1.75rem) !important;
+    padding: 4px 16px 16px !important;
+    /* No grid-template-columns on mobile — flex handles it */
     grid-template-columns: none !important;
-    scrollbar-width: none;
+    scrollbar-width: none; /* Firefox */
+    width: 100%;
   }
 
   .pizza-carousel-section .pizza-grid::-webkit-scrollbar {
-    display: none;
+    display: none; /* Chrome/Safari */
   }
 
-  /* Each card is 78% wide — next card peeks from right */
+  /* Each card snaps and is 78% wide so next card peeks */
   .pizza-carousel-section .pizza-grid .pizza-card-wrapper,
   .pizza-carousel-section .pizza-grid > a {
     flex: 0 0 78%;
@@ -23095,6 +23094,12 @@ html, body {
     width: 78% !important;
     scroll-snap-align: start;
     margin: 0 !important;
+  }
+
+  /* Section header keeps side padding */
+  .pizza-carousel-section .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
