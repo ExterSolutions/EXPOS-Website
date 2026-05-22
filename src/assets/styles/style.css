@@ -2859,7 +2859,9 @@ a:hover {
 }
 
 #wrapper {
-  overflow: hidden;
+  /* overflow: hidden was blocking vertical page scroll — fixed to only clip horizontal */
+  overflow-x: hidden;
+  overflow-y: visible;
   width: 100%;
 }
 

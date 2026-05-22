@@ -80,15 +80,23 @@ function Sides({ data, cartFn }) {
                         </div>
                     )}
                     {/* Variant selector */}
-                    {data?.combination?.length > 1 && (
-                        <select className="mc-card__select" ref={sPlacementRef}>
-                            {data.combination.map(c => (
-                                <option value={c.lineCode} key={c.lineCode}>
-                                    {c.size} — ${Number(c.price).toFixed(2)}
-                                </option>
-                            ))}
-                        </select>
-                    )}
+                    {data?.combination?.length > 1 && (() => {
+                        const variantLabel = data.variantType === 'flavour' ? 'Select Flavour'
+                            : data.variantType === 'portion' ? 'Select Portion'
+                            : 'Select Size';
+                        return (
+                            <div className="mc-card__variant-wrap">
+                                <span className="mc-card__variant-label">{variantLabel}</span>
+                                <select className="mc-card__select" ref={sPlacementRef}>
+                                    {data.combination.map(c => (
+                                        <option value={c.lineCode} key={c.lineCode}>
+                                            {c.size} — ${Number(c.price).toFixed(2)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        );
+                    })()}
                     {data?.combination?.length === 1 && (
                         <select style={{ display: 'none' }} ref={sPlacementRef}>
                             <option value={data.combination[0].lineCode}>{data.combination[0].size}</option>

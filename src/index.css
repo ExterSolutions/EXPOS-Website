@@ -34,8 +34,10 @@ body {
   /* place-items: center; */
   /* min-width: 320px; */
   min-height: 100vh;
-  /* Prevent rubber-band scroll bleed on iOS when modals/sheets are open */
-  overscroll-behavior: none;
+  /* Prevent rubber-band scroll bleed on iOS when modals/sheets are open.
+     'contain' still blocks cross-document scroll chaining but DOES allow
+     the page itself to scroll — 'none' was blocking scroll on some devices. */
+  overscroll-behavior: contain;
   /* Smooth momentum scrolling on iOS for the body */
   -webkit-overflow-scrolling: touch;
 }

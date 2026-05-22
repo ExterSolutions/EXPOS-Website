@@ -113,6 +113,19 @@
 }
 
 /* ── Variant select ────────────────────────────────────────────────────────── */
+.mc-card__variant-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.1rem;
+}
+.mc-card__variant-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #ff6b35;
+}
 .mc-card__select {
     appearance: none;
     -webkit-appearance: none;
