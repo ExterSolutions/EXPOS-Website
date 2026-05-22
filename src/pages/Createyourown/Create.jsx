@@ -44,7 +44,7 @@ const CreatePizza = () => {
   const [pizzaSizeArr, setPizzaSizeArr] = useState([]);
   const [Ingredients, setIngredients] = useState([]);
   const [sidesIngredients, setSidesIngredients] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // start as true to show spinner until data loads
   const [Crust, setCrust] = useState(null);
   const [CrustType, setCrustType] = useState(null);
   const [Cheese, setCheese] = useState(null);

@@ -18,6 +18,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Scroll lock (used by useBodyScrollLock hook) ──────────────────────────
+   Applied by adding class="scroll-locked" to <html> when a sheet/modal is open.
+   Removes overflow from html so the background page does NOT scroll behind modals.
+   Safe: does NOT use position:fixed on body (which collapses page height to zero).
+   ───────────────────────────────────────────────────────────────────────────── */
+html.scroll-locked,
+html.scroll-locked body {
+  overflow: hidden !important;
+  /* Prevent iOS rubber-band scroll behind the sheet */
+  touch-action: none;
+}
+
 a {
   font-weight: 500;
   /* color: #646cff; */

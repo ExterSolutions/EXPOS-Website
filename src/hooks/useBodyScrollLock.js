@@ -1,63 +1,51 @@
 /**
- * useBodyScrollLock
+ * useBodyScrollLock  —  v3 (class-based, ref-counted, bulletproof)
  *
- * Prevents the background page from scrolling while a sheet/modal is open.
+ * Strategy: add/remove a CSS class `.scroll-locked` on <html>.
+ * The class is defined in index.css as:
  *
- * iOS Safari problem:
- *   Setting `document.body.style.overflow = "hidden"` does NOT prevent body
- *   scroll on iOS — the page keeps sliding behind the modal.
+ *   html.scroll-locked,
+ *   html.scroll-locked body { overflow: hidden !important; }
  *
- * Fix:
- *   We snapshot `window.scrollY`, pin the body with `position: fixed; top: -scrollY`,
- *   then restore both on unlock so the user ends up at the same scroll position.
+ * Why NOT position:fixed on body:
+ *   - position:fixed removes body from normal flow → page collapses to 0 height
+ *   - If navigation occurs while locked, body stays fixed forever
+ *   - Causes white blank screens and permanent scroll breakage
+ *
+ * Why a ref-counter:
+ *   - Multiple sheets can be open simultaneously (e.g. parent + child sheet)
+ *   - We only unlock when ALL sheets have closed (counter reaches 0)
  *
  * Usage:
- *   useBodyScrollLock(isOpen);   // auto-locks when isOpen=true, auto-unlocks on false
+ *   useBodyScrollLock(isOpen);  // auto-locks when true, auto-unlocks on false
  */
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+
+// Module-level counter — shared across all hook instances on the page
+let lockCount = 0;
+
+function lock() {
+    lockCount++;
+    document.documentElement.classList.add("scroll-locked");
+}
+
+function unlock() {
+    lockCount = Math.max(0, lockCount - 1);
+    if (lockCount === 0) {
+        document.documentElement.classList.remove("scroll-locked");
+    }
+}
 
 export function useBodyScrollLock(isLocked) {
-    // Store the scroll position when we lock so we can restore it on unlock.
-    const scrollRef = useRef(0);
-
     useEffect(() => {
-        if (!isLocked) {
-            // ── Unlock ─────────────────────────────────────────────────────
-            // Only restore if we had actually locked (body.style.position is fixed)
-            if (document.body.style.position === "fixed") {
-                document.body.style.position = "";
-                document.body.style.top = "";
-                document.body.style.left = "";
-                document.body.style.right = "";
-                document.body.style.overflowY = "";
-                // Restore exact scroll position
-                window.scrollTo(0, scrollRef.current);
-            }
-            return;
-        }
+        if (!isLocked) return;
 
-        // ── Lock ───────────────────────────────────────────────────────────
-        scrollRef.current = window.scrollY;
+        // Lock on mount / when isLocked becomes true
+        lock();
 
-        // Position the body so its visible top matches the current scroll.
-        // This prevents a jarring jump when we add position:fixed.
-        document.body.style.position   = "fixed";
-        document.body.style.top        = `-${scrollRef.current}px`;
-        document.body.style.left       = "0";
-        document.body.style.right      = "0";
-        // Keep overflow-y: scroll to prevent layout-shift from losing the scrollbar
-        document.body.style.overflowY  = "scroll";
-
+        // Unlock on cleanup (unmount or isLocked becoming false)
         return () => {
-            // Cleanup in case component unmounts while still locked
-            if (document.body.style.position === "fixed") {
-                document.body.style.position  = "";
-                document.body.style.top       = "";
-                document.body.style.left      = "";
-                document.body.style.right     = "";
-                document.body.style.overflowY = "";
-                window.scrollTo(0, scrollRef.current);
-            }
+            unlock();
         };
     }, [isLocked]);
 }
