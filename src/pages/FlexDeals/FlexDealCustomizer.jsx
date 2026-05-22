@@ -20,6 +20,7 @@ import CartFunction from '../../components/cart';
 import FlexDealPizzaSheet from './FlexDealPizzaSheet';
 import { calcExtraCharge, allToppingNames } from './FlexDealPizzaSheet';
 import '../../assets/styles/flex-deals.css';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 const cartFn = new CartFunction();
 
@@ -251,19 +252,9 @@ const FlexDealCustomizer = () => {
     const [quantity, setQuantity] = useState(1);
 
     // Lock body scroll when the pizza picker sheet is open
-    useEffect(() => {
-        if (picker) {
-            document.body.style.overflow = 'hidden';
-            document.body.style.touchAction = 'none';
-        } else {
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-        }
-        return () => {
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-        };
-    }, [picker]);
+    // Using useBodyScrollLock (handles iOS position:fixed trick) instead of
+    // direct overflow:hidden which gets stuck on navigation.
+    useBodyScrollLock(!!picker);
 
     // Fetch deal
     useEffect(() => {
