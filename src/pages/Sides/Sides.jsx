@@ -34,7 +34,8 @@ const Sides = () => {
                     <SidesMenu searchQuery={searchQuery} searchCode={selectedCode} />
                 </div>
             </div>
-
+            {/* Spacer so last card isn't hidden behind the fixed bottom nav on mobile */}
+            <div className="d-md-none" style={{ height: "calc(var(--bottom-nav-h, 60px) + env(safe-area-inset-bottom, 16px) + 16px)" }} />
         </div>
     );
 };

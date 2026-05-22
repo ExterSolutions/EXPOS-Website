@@ -23746,3 +23746,32 @@ html, body {
     .chk-mobile-bar { display: none; }
     .chk-page { padding-bottom: 0; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GLOBAL MOBILE BOTTOM-NAV CLEARANCE
+   Ensures NO page content is ever hidden behind the fixed bottom nav bar.
+   The bottom nav is ~60px tall + iOS safe-area inset.
+   Applied to all main page section containers on mobile (< 768px).
+   Pages with their own sticky bars (Create Your Own, Checkout etc.)
+   already have custom padding rules — those are untouched.
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+    /* Sides, Drinks, Dips, OtherPizza, SignaturePizza, Menu pages etc. */
+    #sidesmenucard,
+    #drinkmenucard,
+    #dipsmenucard,
+    #other-pizza-new,
+    #signature-pizza-new,
+    .section#sidesmenucard,
+    .page-bottom-spacer {
+        padding-bottom: calc(var(--bottom-nav-h, 60px) + env(safe-area-inset-bottom, 16px) + 24px) !important;
+    }
+
+    /* Generic container that is the last element inside a page on mobile */
+    .container.py-2:last-child,
+    .container.py-3:last-child,
+    .container.py-4:last-child {
+        padding-bottom: calc(var(--bottom-nav-h, 60px) + env(safe-area-inset-bottom, 16px) + 24px) !important;
+    }
+}
+
