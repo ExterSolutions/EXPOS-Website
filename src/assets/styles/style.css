@@ -23065,9 +23065,12 @@ body {
    Targets iPhone 13 (390px), Samsung S25 (384px) and similar
    ═══════════════════════════════════════════════════════════ */
 
-/* Root overflow fix */
-html, body {
-  overflow-x: hidden !important;
+/* Root overflow fix.
+   IMPORTANT: Do NOT set overflow-x:hidden on html — when both html AND body
+   have overflow-x:hidden the browser loses its scroll root and vertical
+   scrolling breaks on every page. Only body gets overflow-x:hidden. */
+body {
+  overflow-x: hidden;
   max-width: 100vw;
 }
 
