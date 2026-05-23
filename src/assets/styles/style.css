@@ -2859,8 +2859,9 @@ a:hover {
 }
 
 #wrapper {
-  /* overflow: hidden was blocking vertical page scroll — fixed to only clip horizontal */
-  overflow-x: hidden;
+  /* overflow-x:clip prevents horizontal bleed without creating a scroll container
+     or triggering viewport propagation (unlike overflow-x:hidden) */
+  overflow-x: clip;
   overflow-y: visible;
   width: 100%;
 }
@@ -23066,16 +23067,19 @@ body {
    ═══════════════════════════════════════════════════════════ */
 
 /* Root overflow fix.
-   IMPORTANT: Do NOT set overflow-x:hidden on html — when both html AND body
-   have overflow-x:hidden the browser loses its scroll root and vertical
-   scrolling breaks on every page. Only body gets overflow-x:hidden. */
+   WHY clip NOT hidden:
+   CSS spec 'viewport propagation' — when html has overflow:visible (default),
+   body's overflow-x:hidden propagates UP to the viewport, which kills
+   vertical scrolling on Chrome, Firefox and Safari.
+   overflow-x:clip does NOT propagate, does NOT create a scroll container.
+   It simply clips overflowing content visually. Safe for all browsers. */
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100vw;
 }
 
 #root {
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100vw;
 }
 
