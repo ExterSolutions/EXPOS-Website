@@ -54,10 +54,8 @@ export default function StoreSelectModal({ onClose, required = false }) {
 
     const currentCity = selectedStore?.city || '';
 
-    // Prevent background scroll while modal is open.
-    // Only lock when modal is 'required' (blocking first-time store selection).
-    // Optional store-change modal should NOT lock scroll — it can appear behind content.
-    useBodyScrollLock(required);
+    // Prevent background scroll while modal is open (iOS-safe)
+    useBodyScrollLock(true);
 
     useEffect(() => {
         (async () => {

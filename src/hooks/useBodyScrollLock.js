@@ -1,56 +1,62 @@
 /**
- * useBodyScrollLock  —  v4 (ref-based, StrictMode-safe, HMR-safe)
+ * useBodyScrollLock
  *
- * Adds/removes "scroll-locked" class on <html> when a modal/sheet is open.
+ * Prevents the background page from scrolling while a sheet/modal is open.
  *
- * Key improvements over v3:
- * - Uses a ref to track whether THIS instance has locked, not a module-level counter.
- *   This means React StrictMode double-invocation and HMR hot-reloads can't corrupt the count.
- * - The module-level counter is still used to handle MULTIPLE simultaneous locks correctly,
- *   but we also guard against double-lock from the same instance (StrictMode safety).
+ * iOS Safari problem:
+ *   Setting `document.body.style.overflow = "hidden"` does NOT prevent body
+ *   scroll on iOS — the page keeps sliding behind the modal.
  *
- * CSS (in index.css):
- *   html.scroll-locked,
- *   html.scroll-locked body { overflow: hidden !important; touch-action: none; }
+ * Fix:
+ *   We snapshot `window.scrollY`, pin the body with `position: fixed; top: -scrollY`,
+ *   then restore both on unlock so the user ends up at the same scroll position.
+ *
+ * Usage:
+ *   useBodyScrollLock(isOpen);   // auto-locks when isOpen=true, auto-unlocks on false
  */
 import { useEffect, useRef } from "react";
 
-// Shared counter — tracks how many active locks exist across all hook instances
-let lockCount = 0;
-
-function applyLock() {
-    lockCount++;
-    document.documentElement.classList.add("scroll-locked");
-}
-
-function releaseLock() {
-    lockCount = Math.max(0, lockCount - 1);
-    if (lockCount === 0) {
-        document.documentElement.classList.remove("scroll-locked");
-    }
-}
-
 export function useBodyScrollLock(isLocked) {
-    // Track whether this particular hook instance is currently holding a lock.
-    // This prevents double-locks from StrictMode double-invocation and HMR.
-    const hasLock = useRef(false);
+    // Store the scroll position when we lock so we can restore it on unlock.
+    const scrollRef = useRef(0);
 
     useEffect(() => {
-        if (isLocked && !hasLock.current) {
-            // Acquire lock
-            hasLock.current = true;
-            applyLock();
-        } else if (!isLocked && hasLock.current) {
-            // Release lock
-            hasLock.current = false;
-            releaseLock();
+        if (!isLocked) {
+            // ── Unlock ─────────────────────────────────────────────────────
+            // Only restore if we had actually locked (body.style.position is fixed)
+            if (document.body.style.position === "fixed") {
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.left = "";
+                document.body.style.right = "";
+                document.body.style.overflowY = "";
+                // Restore exact scroll position
+                window.scrollTo(0, scrollRef.current);
+            }
+            return;
         }
 
+        // ── Lock ───────────────────────────────────────────────────────────
+        scrollRef.current = window.scrollY;
+
+        // Position the body so its visible top matches the current scroll.
+        // This prevents a jarring jump when we add position:fixed.
+        document.body.style.position   = "fixed";
+        document.body.style.top        = `-${scrollRef.current}px`;
+        document.body.style.left       = "0";
+        document.body.style.right      = "0";
+        // Keep overflow-y: scroll to prevent layout-shift from losing the scrollbar
+        document.body.style.overflowY  = "scroll";
+
         return () => {
-            // Always release on cleanup if we were holding a lock
-            if (hasLock.current) {
-                hasLock.current = false;
-                releaseLock();
+            // Cleanup in case component unmounts while still locked
+            if (document.body.style.position === "fixed") {
+                document.body.style.position  = "";
+                document.body.style.top       = "";
+                document.body.style.left      = "";
+                document.body.style.right     = "";
+                document.body.style.overflowY = "";
+                window.scrollTo(0, scrollRef.current);
             }
         };
     }, [isLocked]);

@@ -25,7 +25,6 @@ import { toast } from 'react-toastify';
 import OptionSheet from '../../components/_main/OptionSheet';
 import { getAllIngredients, fetchSignaturePizzaDefaults, getSignaturePizza, getToppings } from '../../services';
 import ToppingsSelector from '../SpecialOfferNew/components/ToppingsSelector';
-import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 // ── Option config (mirrors PizzaCustomizerAccordion) ─────────────────────────
 const OPTION_CONFIG = {
@@ -201,9 +200,16 @@ const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, sett
     const [openSheet, setOpenSheet] = useState(null);
     const [toppingSheetOpen, setToppingSheetOpen] = useState(false);
 
-    // Lock scroll when any sub-sheet (option picker or toppings) is open.
-    // useBodyScrollLock properly restores scroll even if navigation occurs while open.
-    useBodyScrollLock(!!openSheet || toppingSheetOpen);
+    // Lock scroll when any sub-sheet (option picker or toppings) is open
+    useEffect(() => {
+        const anyOpen = !!openSheet || toppingSheetOpen;
+        document.body.style.overflow = anyOpen ? 'hidden' : '';
+        document.body.style.touchAction = anyOpen ? 'none' : '';
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
+        };
+    }, [openSheet, toppingSheetOpen]);
 
     const makeSheetHandler = (optionKey, field) => (id) => {
         const cfg = OPTION_CONFIG[optionKey];
@@ -452,9 +458,15 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
     const [tab, setTab] = useState(existingSlot?.type === 'cyo' ? 'cyo' : 'signature');
     const freeAllowance = group?.free_toppings ?? group?.slot_config?.free_toppings ?? 0;
 
-    // Lock body scroll for the entire duration this sheet is mounted.
-    // useBodyScrollLock uses position:fixed trick (iOS-safe) and auto-restores on unmount.
-    useBodyScrollLock(true);
+    // Lock body scroll for the entire duration this sheet is mounted
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
+        };
+    }, []);
 
     // ── Shared data (loaded once) ────────────────────────────────────────────
     const [ingredients, setIngredients] = useState(null);
