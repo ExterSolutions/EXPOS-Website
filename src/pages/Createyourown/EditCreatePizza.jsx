@@ -97,7 +97,7 @@ const EditCreatePizza = () => {
   const premiumToppingCount =
     Number(
       settingsData.find((item) => item.shortCode === "non-regular-toppings-count")?.settingValue
-    ) || 1;
+    ) || 2;
 
   // Healper Function
   const cartFn = new CartFunction();

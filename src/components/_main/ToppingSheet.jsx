@@ -50,11 +50,13 @@ const ToppingSheet = ({
     nonRegularTitle = "Premium Toppings",
     regularTitle = "Regular Toppings",
     indianStyleTitle = "Indian Toppings",
+    premiumToppingCount = 2,
 }) => {
     const sheetRef = useRef(null);
 
-    // count selected per tab for badge display
-    const premiumCount = ToppingsTwo?.length || 0;
+    // Each premium topping counts as `premiumToppingCount` slots (default 2).
+    // Regular and Indian toppings always count as 1 each.
+    const premiumCount = (ToppingsTwo?.length || 0) * premiumToppingCount;
     const regularCount = ToppingsOne?.length || 0;
     const indianCount  = ToppingsFree?.length || 0;
 

@@ -140,7 +140,7 @@ const CreatePizza = () => {
     Number(
       settingsData.find((item) => item.shortCode === "non-regular-toppings-count")
         ?.settingValue
-    ) || 1;
+    ) || 2;
 
   const toggleAccordion = (accordionName) => {
     setActiveAccordion(
@@ -859,7 +859,7 @@ const CreatePizza = () => {
                         <span className="topping-trigger-btn__label">Choose Toppings</span>
                         {(ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length) > 0 && (
                           <span className="topping-trigger-btn__count">
-                            {ToppingsTwo.length + ToppingsOne.length + ToppingsFree.length} selected
+                            {(ToppingsTwo.length * (premiumToppingCount || 2)) + ToppingsOne.length + ToppingsFree.length} selected
                           </span>
                         )}
                         <span className="topping-trigger-btn__arrow">›</span>
@@ -892,6 +892,7 @@ const CreatePizza = () => {
                       nonRegularTitle={nonRegularToppingsTitle}
                       regularTitle={regularToppingsTitle}
                       indianStyleTitle={indianStyleToppingsTitle}
+                      premiumToppingCount={premiumToppingCount}
                     />
 
                     {/* ── Sides / Drinks / Dips trigger buttons ── */}
