@@ -19,22 +19,26 @@ export const useSiteDataContext = () => {
 export const SiteDataProvider = ({ children }) => {
     const [siteData, setSiteData] = useState({
         // Identity
-        site_name:     '',
-        logo:          null,
-        favicon:       null,
-        qrcode:        null,
+        site_name:      '',
+        logo:           null,
+        favicon:        null,
+        qrcode:         null,
         // Contact
-        contact_email: '',
-        contact_phone: '',
-        address:       '',
+        contact_email:  '',
+        contact_phone:  '',
+        address:        '',
         // SEO helpers derived from above (filled after fetch)
-        siteUrl:       window.location.origin,
-        city:          '',
-        province:      '',
-        country:       'CA',
+        siteUrl:        window.location.origin,
+        city:           '',
+        province:       '',
+        country:        'CA',
         // Coordinates — optional; populated if admin returns them
-        geo:           { lat: '', lng: '' },
-        twitterHandle: '',
+        geo:            { lat: '', lng: '' },
+        twitterHandle:  '',
+        // Business details for JSON-LD schema
+        opening_hours:  null,   // array of { day, opens, closes } from admin
+        price_range:    '',     // e.g. '$$'
+        serves_cuisine: [],     // e.g. ['Pizza', 'Indian']
     });
     const [loading, setLoading] = useState(true);
     const [error, setError]     = useState(null);
@@ -66,22 +70,26 @@ export const SiteDataProvider = ({ children }) => {
                 }
 
                 setSiteData({
-                    site_name:     d.site_name     || '',
-                    logo:          d.logo          || null,
-                    favicon:       d.favicon       || null,
-                    qrcode:        d.qrcode        || null,
-                    contact_email: d.contact_email || '',
-                    contact_phone: d.contact_phone || '',
-                    address:       addressStr,
-                    siteUrl:       d.site_url      || window.location.origin,
-                    city:          city,
-                    province:      province,
-                    country:       country,
+                    site_name:      d.site_name     || '',
+                    logo:           d.logo          || null,
+                    favicon:        d.favicon       || null,
+                    qrcode:         d.qrcode        || null,
+                    contact_email:  d.contact_email || '',
+                    contact_phone:  d.contact_phone || '',
+                    address:        addressStr,
+                    siteUrl:        d.site_url      || window.location.origin,
+                    city:           city,
+                    province:       province,
+                    country:        country,
                     geo: {
                         lat: d.latitude  || d.lat || '',
                         lng: d.longitude || d.lng || d.long || '',
                     },
-                    twitterHandle: d.twitter_handle || d.twitter || '',
+                    twitterHandle:  d.twitter_handle || d.twitter || '',
+                    // Business details for JSON-LD — use admin values when available
+                    opening_hours:  d.opening_hours  || null,
+                    price_range:    d.price_range    || d.priceRange || '',
+                    serves_cuisine: d.serves_cuisine || d.servesCuisine || [],
                 });
             }
         } catch (err) {

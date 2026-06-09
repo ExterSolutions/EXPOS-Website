@@ -132,16 +132,21 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
     const { siteData } = useSiteDataContext();
 
     // Pull live values from admin data
-    const name    = siteData.site_name  || 'Our Pizza Restaurant';
-    const city    = siteData.city       || '';
-    const phone   = siteData.contact_phone || '';
-    const address = siteData.address    || '';
-    const logo    = siteData.logo       || '';
-    const siteUrl = siteData.siteUrl    || window.location.origin;
-    const geo     = siteData.geo        || { lat: '', lng: '' };
-    const province = siteData.province  || '';
-    const country  = siteData.country   || 'CA';
+    const name          = siteData.site_name    || 'Our Pizza Restaurant';
+    const city          = siteData.city         || '';
+    const phone         = siteData.contact_phone || '';
+    const address       = siteData.address      || '';
+    const logo          = siteData.logo         || '';
+    const siteUrl       = siteData.siteUrl      || window.location.origin;
+    const geo           = siteData.geo          || { lat: '', lng: '' };
+    const province      = siteData.province     || '';
+    const country       = siteData.country      || 'CA';
     const twitterHandle = siteData.twitterHandle || '';
+    const openingHours  = siteData.opening_hours || null;
+    const priceRange    = siteData.price_range   || '';
+    const servesCuisine = siteData.serves_cuisine && siteData.serves_cuisine.length > 0
+        ? siteData.serves_cuisine
+        : null; // omit from schema if admin hasn't set it;
 
     const tpl = PAGE_TEMPLATES[pageKey] || PAGE_TEMPLATES.home;
 
@@ -159,8 +164,8 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
         url:           siteUrl,
         telephone:     phone,
         image:         logo,
-        servesCuisine: ['Pizza', 'Indian', 'Canadian', 'Tandoori', 'Halal'],
-        priceRange:    '$$',
+        ...(servesCuisine && { servesCuisine }),
+        ...(priceRange    && { priceRange }),
         ...(address && {
             address: {
                 '@type':         'PostalAddress',
@@ -177,14 +182,15 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
                 longitude:  geo.lng,
             },
         }),
-        openingHoursSpecification: [
-            {
+        // Use opening hours from admin if available, otherwise omit entirely
+        ...(openingHours && Array.isArray(openingHours) && openingHours.length > 0 && {
+            openingHoursSpecification: openingHours.map(h => ({
                 '@type':   'OpeningHoursSpecification',
-                dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-                opens:     '11:00',
-                closes:    '23:00',
-            },
-        ],
+                dayOfWeek: Array.isArray(h.day) ? h.day : [h.day],
+                opens:     h.opens,
+                closes:    h.closes,
+            })),
+        }),
         potentialAction: {
             '@type':  'OrderAction',
             target:   `${siteUrl}/menu`,
