@@ -5,10 +5,13 @@ export const useDynamicSEO = (data) => {
         if (!data) return;
 
         // 1. Title
-        document.title = data.site_name || "Loading..";
+        if (data.site_name) {
+            document.title = data.site_name;
+        }
 
         // 2. Meta Tags
         const updateMeta = (nameOrProperty, value) => {
+            if (!value) return;
             const isProperty = nameOrProperty.startsWith('og:');
             const selector = isProperty ? `meta[property="${nameOrProperty}"]` : `meta[name="${nameOrProperty}"]`;
             let el = document.querySelector(selector);
@@ -24,15 +27,23 @@ export const useDynamicSEO = (data) => {
         updateMeta('description', desc);
         updateMeta('og:title', data.site_name);
         updateMeta('og:description', desc);
-        updateMeta('og:image', data.fevicon);
+        updateMeta('og:image', data.favicon);
 
-        // 3. Favicon (The reliable way)
-        const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'shortcut icon';
-        // Cache busting is key here
-        link.href = `${data.favicon}?v=${new Date().getTime()}`;
-        if (!document.querySelector("link[rel*='icon']")) document.head.appendChild(link);
+        // 3. Favicon — only update when the admin URL is actually loaded
+        //    Use a dedicated element (id="dynamic-favicon") so we never
+        //    mutate the static fallback icons from public/index.html.
+        if (data.favicon) {
+            let link = document.getElementById('dynamic-favicon');
+            if (!link) {
+                link = document.createElement('link');
+                link.id = 'dynamic-favicon';
+                link.rel = 'shortcut icon';
+                link.type = 'image/x-icon';
+                document.head.appendChild(link);
+            }
+            // Cache-bust so the browser always fetches the latest icon
+            link.href = `${data.favicon}?v=${new Date().getTime()}`;
+        }
 
     }, [data]);
 };
