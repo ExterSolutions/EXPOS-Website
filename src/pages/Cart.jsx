@@ -32,7 +32,9 @@ function Cart() {
 
     const handleCheckout = async () => {
         // Block checkout when kitchen is closed
+        console.log('[KitchenClosed][Cart] handleCheckout called — storeOpen =', storeOpen);
         if (storeOpen === false) {
+            console.log('[KitchenClosed][Cart] 🔴 BLOCKED — showing modal');
             setShowKitchenClosed(true);
             return;
         }

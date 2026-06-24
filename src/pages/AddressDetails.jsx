@@ -319,7 +319,9 @@ function AddressDetails() {
 
     const onSubmit = async (values) => {
         // Block ordering when kitchen is closed
+        console.log('[KitchenClosed][AddressDetails] onSubmit called — storeOpen =', storeOpen);
         if (storeOpen === false) {
+            console.log('[KitchenClosed][AddressDetails] 🔴 BLOCKED — showing modal');
             setShowKitchenClosed(true);
             return;
         }

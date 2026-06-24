@@ -180,7 +180,9 @@ function PickupOrder() {
 
     const handlePickupOrder = async () => {
         // Block ordering when kitchen is closed
+        console.log('[KitchenClosed][PickupOrder] handlePickupOrder called — storeOpen =', storeOpen);
         if (storeOpen === false) {
+            console.log('[KitchenClosed][PickupOrder] 🔴 BLOCKED — showing modal');
             setShowKitchenClosed(true);
             return;
         }
@@ -350,7 +352,9 @@ function PickupOrder() {
                                     className="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm"
                                     disabled={!selectedStore || Number(cart?.subtotal || 0) === 0}
                                     onClick={() => {
+                                        console.log('[KitchenClosed][PickupOrder] Proceed btn clicked — storeOpen =', storeOpen);
                                         if (storeOpen === false) {
+                                            console.log('[KitchenClosed][PickupOrder] 🔴 BLOCKED — showing modal');
                                             setShowKitchenClosed(true);
                                             return;
                                         }

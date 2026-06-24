@@ -308,7 +308,7 @@ export const GlobalProvider = ({ children }) => {
   // IMPORTANT: always compare in the STORE'S timezone, not the browser's local time.
   const storeOpen = useMemo(() => {
 
-    // ── Helper: parse "HH:MM AM/PM" or "HH:MM" → minutes since midnight ──
+    // ── Helper: parse "HH:MM AM/PM" or "HH:MM:SS" → minutes since midnight ──
     const parseTime = (str) => {
       if (!str) return null;
       const s = str.toString().trim().toUpperCase();
@@ -335,50 +335,101 @@ export const GlobalProvider = ({ children }) => {
         const h = parseInt(parts.find(p => p.type === 'hour')?.value ?? '0', 10);
         const m = parseInt(parts.find(p => p.type === 'minute')?.value ?? '0', 10);
         return h * 60 + m;
-      } catch {
-        // Bad timezone string — fall back to browser local time
+      } catch (e) {
+        console.warn('[KitchenClosed] Bad timezone string, falling back to browser local time:', tz, e);
         const now = new Date();
         return now.getHours() * 60 + now.getMinutes();
       }
     };
 
+    console.group('%c[KitchenClosed] storeOpen recompute', 'color:#e65100;font-weight:bold');
+    console.log('[KitchenClosed] selectedStore =', selectedStore);
+    console.log('[KitchenClosed] settings (array len) =', Array.isArray(settings) ? settings.length : settings);
+
     // ── Primary: use selectedStore hours (storelocation table) ──
     if (selectedStore) {
       const openRaw  = selectedStore.start_time;
       const closeRaw = selectedStore.end_time;
-      const tz       = selectedStore.timeZone || selectedStore.timezone; // API returns 'timeZone'
+      const tz       = selectedStore.timeZone || selectedStore.timezone;
+
+      console.log('[KitchenClosed] store start_time =', openRaw, '| end_time =', closeRaw, '| timeZone =', tz);
 
       if (openRaw && closeRaw) {
         const openMin  = parseTime(openRaw);
         const closeMin = parseTime(closeRaw);
+        console.log('[KitchenClosed] openMin =', openMin, '| closeMin =', closeMin);
+
         if (openMin !== null && closeMin !== null) {
           const current = tz ? currentMinutesInTz(tz) : (() => {
             const now = new Date(); return now.getHours() * 60 + now.getMinutes();
           })();
-          if (closeMin > openMin) return current >= openMin && current < closeMin;
-          return current >= openMin || current < closeMin; // overnight
+          console.log('[KitchenClosed] current minutes in store TZ =', current,
+            `(${Math.floor(current/60)}:${String(current%60).padStart(2,'0')})`);
+
+          let result;
+          if (closeMin > openMin) {
+            result = current >= openMin && current < closeMin;
+          } else {
+            result = current >= openMin || current < closeMin; // overnight
+          }
+          console.log('[KitchenClosed] → storeOpen =', result, result ? '✅ OPEN' : '🔴 CLOSED');
+          console.groupEnd();
+          return result;
+        } else {
+          console.warn('[KitchenClosed] parseTime failed — openMin or closeMin is null. Check time format.');
         }
+      } else {
+        console.warn('[KitchenClosed] selectedStore exists but start_time/end_time are missing:', {
+          start_time: openRaw, end_time: closeRaw,
+          all_keys: Object.keys(selectedStore),
+        });
       }
+    } else {
+      console.warn('[KitchenClosed] selectedStore is null/undefined — no store selected yet');
     }
 
     // ── Fallback: global settings shortcodes ──
-    if (!settings || !Array.isArray(settings)) return true; // not loaded yet → assume open
+    console.log('[KitchenClosed] Falling back to global settings shortcodes...');
+    if (!settings || !Array.isArray(settings)) {
+      console.warn('[KitchenClosed] settings not loaded yet → assuming OPEN');
+      console.groupEnd();
+      return true;
+    }
 
     const find = (code) => settings.find((s) => s.shortCode === code)?.settingValue ?? null;
     const openRaw  = find('open_time')  ?? find('opening_time')  ?? find('store_open_time');
     const closeRaw = find('close_time') ?? find('closing_time')  ?? find('store_close_time');
-    if (!openRaw || !closeRaw) return true; // not configured → always open
+    console.log('[KitchenClosed] settings shortcodes → open_time =', openRaw, '| close_time =', closeRaw);
+
+    if (!openRaw || !closeRaw) {
+      console.warn('[KitchenClosed] open_time/close_time shortcodes not found in settings → assuming OPEN');
+      console.log('[KitchenClosed] Available shortcodes:', settings.map(s => s.shortCode));
+      console.groupEnd();
+      return true;
+    }
 
     const openMin  = parseTime(openRaw);
     const closeMin = parseTime(closeRaw);
-    if (openMin === null || closeMin === null) return true;
+    if (openMin === null || closeMin === null) {
+      console.warn('[KitchenClosed] parseTime failed on settings values → assuming OPEN');
+      console.groupEnd();
+      return true;
+    }
 
     const now = new Date();
     const current = now.getHours() * 60 + now.getMinutes();
-    if (closeMin > openMin) return current >= openMin && current < closeMin;
-    return current >= openMin || current < closeMin;
+    let result;
+    if (closeMin > openMin) {
+      result = current >= openMin && current < closeMin;
+    } else {
+      result = current >= openMin || current < closeMin;
+    }
+    console.log('[KitchenClosed] (settings fallback) → storeOpen =', result, result ? '✅ OPEN' : '🔴 CLOSED');
+    console.groupEnd();
+    return result;
 
   }, [selectedStore, settings]);
+
 
   // Format hours string for display in the Kitchen Closed modal and banner
   const storeHoursString = useMemo(() => {
