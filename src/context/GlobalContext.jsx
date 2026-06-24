@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { LOGIN_SUCCESS } from "../redux/authProvider/actionType";
 import CartFunction from "../components/cart";
-import { settingApi } from "../services";
+import { settingApi, getStoreLocationByCity } from "../services";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -296,6 +296,41 @@ export const GlobalProvider = ({ children }) => {
     };
     fetchSettings();
   }, []);
+
+  // ── Auto-enrich selectedStore with hours if missing (stale localStorage) ──
+  useEffect(() => {
+    if (!selectedStore?.code) return;
+    // Already has hours — nothing to do
+    if (typeof selectedStore.isStoreOpen === 'boolean' && selectedStore.start_time) return;
+
+    console.log('[KitchenClosed] selectedStore missing hours — enriching from API...');
+    const enrichStore = async () => {
+      try {
+        const res = await getStoreLocationByCity();
+        const groups = Array.isArray(res?.data) ? res.data : [];
+        // Find the matching store across all city groups
+        for (const group of groups) {
+          const match = (group.storeLocations ?? []).find(s => s.code === selectedStore.code);
+          if (match) {
+            const enriched = {
+              ...selectedStore,
+              timezone: match.timezone || selectedStore.timezone || '',
+              start_time: match.start_time || '',
+              end_time: match.end_time || '',
+              isStoreOpen: match.isStoreOpen ?? true,
+            };
+            console.log('[KitchenClosed] enriched selectedStore =', enriched);
+            setSelectedStore(enriched);
+            localStorage.setItem("selectedStore", JSON.stringify(enriched));
+            break;
+          }
+        }
+      } catch (err) {
+        console.error("[KitchenClosed] Failed to enrich store hours:", err);
+      }
+    };
+    enrichStore();
+  }, [selectedStore?.code]); // only re-run when store code changes
 
   // ── Store Hours: compute isOpen from selectedStore (storelocation table) ─────
   //
