@@ -22,17 +22,17 @@ function Cart() {
     const [isAuthenticated, setIsAuthenticated] = globalCtx.auth;
     const [cart, setCart] = globalCtx.cart;
     const [regUser, setRegUser] = globalCtx.regUser;
+    const storeOpen = globalCtx.storeOpen; // reactive — updates as soon as settings load
     const [loading, setLoading] = useState(false);
     const [showKitchenClosed, setShowKitchenClosed] = useState(false);
     const user = useSelector((state) => state.user);
-
 
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleCheckout = async () => {
         // Block checkout when kitchen is closed
-        if (window.__storeOpen === false) {
+        if (storeOpen === false) {
             setShowKitchenClosed(true);
             return;
         }

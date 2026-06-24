@@ -80,6 +80,7 @@ function AddressDetails() {
     const [currentCity, setCurrentCity] = globalctx.currentCity;
     const [currentStore, setCurrentStore] = globalctx.currentStore;
     const [globalSelectedStore] = globalctx.selectedStore; // has cityCode from store-picker popup
+    const storeOpen = globalctx.storeOpen; // reactive — no race condition
 
     const [postalCodeOp, setPostalCodeOp] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -318,7 +319,7 @@ function AddressDetails() {
 
     const onSubmit = async (values) => {
         // Block ordering when kitchen is closed
-        if (window.__storeOpen === false) {
+        if (storeOpen === false) {
             setShowKitchenClosed(true);
             return;
         }

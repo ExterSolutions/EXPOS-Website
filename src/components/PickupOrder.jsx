@@ -26,6 +26,7 @@ function PickupOrder() {
     const [currentStoreCode] = globalctx.currentStoreCode;
     const [currentCity] = globalctx.currentCity || [null];
     const [selectedType] = globalctx.selectedType;
+    const storeOpen = globalctx.storeOpen; // reactive — no race condition
     const [taxPercent, setTaxPercent] = useState(0);
     const [taxAmount, setTaxAmount] = useState(0);
     const [convinencePer, setConvinencePer] = useState(0);
@@ -179,7 +180,7 @@ function PickupOrder() {
 
     const handlePickupOrder = async () => {
         // Block ordering when kitchen is closed
-        if (window.__storeOpen === false) {
+        if (storeOpen === false) {
             setShowKitchenClosed(true);
             return;
         }
@@ -349,7 +350,7 @@ function PickupOrder() {
                                     className="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm"
                                     disabled={!selectedStore || Number(cart?.subtotal || 0) === 0}
                                     onClick={() => {
-                                        if (window.__storeOpen === false) {
+                                        if (storeOpen === false) {
                                             setShowKitchenClosed(true);
                                             return;
                                         }
