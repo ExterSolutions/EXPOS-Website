@@ -297,17 +297,20 @@ export const GlobalProvider = ({ children }) => {
     fetchSettings();
   }, []);
 
-  // ── Store Hours: compute isOpen from settings ─────────────────────────────
+  // ── Store Hours: compute isOpen from selectedStore (storelocation table) ─────
+  //
+  // The storelocation API returns: start_time, end_time, timezone
+  // e.g. start_time="11:00 AM", end_time="10:00 PM", timezone="America/Vancouver"
+  //
+  // Fallback: if selectedStore has no hours, try global settings shortcodes
+  // (open_time / close_time) — kept for backward compat.
+  //
+  // IMPORTANT: always compare in the STORE'S timezone, not the browser's local time.
   const storeOpen = useMemo(() => {
-    if (!settings || !Array.isArray(settings)) return true; // assume open until loaded
 
-    const find = (code) => settings.find((s) => s.shortCode === code)?.settingValue ?? null;
-    const openRaw  = find('open_time')  ?? find('opening_time')  ?? find('store_open_time');
-    const closeRaw = find('close_time') ?? find('closing_time') ?? find('store_close_time');
-
-    if (!openRaw || !closeRaw) return true; // shortCodes not configured → always open
-
+    // ── Helper: parse "HH:MM AM/PM" or "HH:MM" → minutes since midnight ──
     const parseTime = (str) => {
+      if (!str) return null;
       const s = str.toString().trim().toUpperCase();
       const ampm = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
       if (ampm) {
@@ -317,12 +320,54 @@ export const GlobalProvider = ({ children }) => {
         if (ampm[3] === 'AM' && h === 12) h = 0;
         return h * 60 + m;
       }
-      const hhmm = s.match(/^(\d{1,2}):(\d{2})$/);
+      const hhmm = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
       if (hhmm) return parseInt(hhmm[1], 10) * 60 + parseInt(hhmm[2], 10);
-      const compact = s.match(/^(\d{2})(\d{2})$/);
-      if (compact) return parseInt(compact[1], 10) * 60 + parseInt(compact[2], 10);
       return null;
     };
+
+    // ── Helper: get current H*60+M in a given IANA timezone ──
+    const currentMinutesInTz = (tz) => {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric', minute: 'numeric', hour12: false,
+          timeZone: tz,
+        }).formatToParts(new Date());
+        const h = parseInt(parts.find(p => p.type === 'hour')?.value ?? '0', 10);
+        const m = parseInt(parts.find(p => p.type === 'minute')?.value ?? '0', 10);
+        return h * 60 + m;
+      } catch {
+        // Bad timezone string — fall back to browser local time
+        const now = new Date();
+        return now.getHours() * 60 + now.getMinutes();
+      }
+    };
+
+    // ── Primary: use selectedStore hours (storelocation table) ──
+    if (selectedStore) {
+      const openRaw  = selectedStore.start_time;
+      const closeRaw = selectedStore.end_time;
+      const tz       = selectedStore.timeZone || selectedStore.timezone; // API returns 'timeZone'
+
+      if (openRaw && closeRaw) {
+        const openMin  = parseTime(openRaw);
+        const closeMin = parseTime(closeRaw);
+        if (openMin !== null && closeMin !== null) {
+          const current = tz ? currentMinutesInTz(tz) : (() => {
+            const now = new Date(); return now.getHours() * 60 + now.getMinutes();
+          })();
+          if (closeMin > openMin) return current >= openMin && current < closeMin;
+          return current >= openMin || current < closeMin; // overnight
+        }
+      }
+    }
+
+    // ── Fallback: global settings shortcodes ──
+    if (!settings || !Array.isArray(settings)) return true; // not loaded yet → assume open
+
+    const find = (code) => settings.find((s) => s.shortCode === code)?.settingValue ?? null;
+    const openRaw  = find('open_time')  ?? find('opening_time')  ?? find('store_open_time');
+    const closeRaw = find('close_time') ?? find('closing_time')  ?? find('store_close_time');
+    if (!openRaw || !closeRaw) return true; // not configured → always open
 
     const openMin  = parseTime(openRaw);
     const closeMin = parseTime(closeRaw);
@@ -330,17 +375,22 @@ export const GlobalProvider = ({ children }) => {
 
     const now = new Date();
     const current = now.getHours() * 60 + now.getMinutes();
-
     if (closeMin > openMin) return current >= openMin && current < closeMin;
-    return current >= openMin || current < closeMin; // overnight
-  }, [settings]);
+    return current >= openMin || current < closeMin;
 
-  // Format hours string for display in banner
+  }, [selectedStore, settings]);
+
+  // Format hours string for display in the Kitchen Closed modal and banner
   const storeHoursString = useMemo(() => {
+    // Primary: selectedStore hours
+    if (selectedStore?.start_time && selectedStore?.end_time) {
+      return `${selectedStore.start_time} – ${selectedStore.end_time}`;
+    }
+    // Fallback: global settings
     if (!settings || !Array.isArray(settings)) return null;
     const find = (code) => settings.find((s) => s.shortCode === code)?.settingValue ?? null;
     const openRaw  = find('open_time')  ?? find('opening_time')  ?? find('store_open_time');
-    const closeRaw = find('close_time') ?? find('closing_time') ?? find('store_close_time');
+    const closeRaw = find('close_time') ?? find('closing_time')  ?? find('store_close_time');
     if (!openRaw || !closeRaw) return null;
     const fmt = (str) => {
       const s = str.toString().trim().toUpperCase();
@@ -356,7 +406,8 @@ export const GlobalProvider = ({ children }) => {
       return str;
     };
     return `${fmt(openRaw)} – ${fmt(closeRaw)}`;
-  }, [settings]);
+  }, [selectedStore, settings]);
+
 
 
   // Sync storeOpen to window so cart.jsx (plain class) can access it without circular imports
