@@ -353,6 +353,15 @@ export const GlobalProvider = ({ children }) => {
       const tz       = selectedStore.timeZone || selectedStore.timezone;
 
       console.log('[KitchenClosed] store start_time =', openRaw, '| end_time =', closeRaw, '| timeZone =', tz);
+      console.log('[KitchenClosed] server isStoreOpen =', selectedStore.isStoreOpen);
+
+      // ── Highest priority: server-computed isStoreOpen (correct timezone) ──
+      if (typeof selectedStore.isStoreOpen === 'boolean') {
+        console.log('[KitchenClosed] → using SERVER isStoreOpen =', selectedStore.isStoreOpen,
+          selectedStore.isStoreOpen ? '✅ OPEN' : '🔴 CLOSED');
+        console.groupEnd();
+        return selectedStore.isStoreOpen;
+      }
 
       if (openRaw && closeRaw) {
         const openMin  = parseTime(openRaw);

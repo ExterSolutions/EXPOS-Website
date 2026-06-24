@@ -85,6 +85,11 @@ export default function StoreSelectModal({ onClose, required = false }) {
             latitude: apiStore.latitude || '',
             longitude: apiStore.longitude || '',
             province: apiStore.province, // Pass province for tax calculation
+            // Store hours for kitchen-closed check
+            timezone: apiStore.timezone || '',
+            start_time: apiStore.start_time || '',
+            end_time: apiStore.end_time || '',
+            isStoreOpen: apiStore.isStoreOpen ?? true,
         };
 
         const currentCityName = currentCity?.value || currentCity?.city || '';
