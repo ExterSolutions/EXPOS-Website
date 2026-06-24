@@ -8,6 +8,7 @@ import PickupOrder from "../components/PickupOrder";
 import {GlobalContext} from "../context/GlobalContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import AddressDetails from "./AddressDetails";
+import PageSEO from "../components/_main/PageSEO";
 
 // Developer: Shreyas Mahamuni, Working Date: 23-12-2023
 
@@ -39,7 +40,7 @@ function CheckoutPage() {
 
     return (
         <div className="relative">
-
+            <PageSEO pageKey="checkout" />
             <Header />
             {loading === true ? (
                 <>

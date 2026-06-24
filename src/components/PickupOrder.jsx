@@ -6,6 +6,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import CartFunction from "./cart";
 import { useSocket } from "../context/SocketContext";
 import { applyCoupon, getStoreLocationByCity, orderPlace, settingApi } from "../services";
+import KitchenClosedModal from "./common/KitchenClosedModal";
 
 function PickupOrder() {
     const socket = useSocket();
@@ -17,6 +18,7 @@ function PickupOrder() {
     const [storeDetails, setStoreDetails] = useState([]);
     const [isShowConfirmPickup, setIsShowConfirmPickup] = useState(false);
     const [selectedStore, setSelectedStore] = useState(globalctx.selectedStore[0]);
+    const [showKitchenClosed, setShowKitchenClosed] = useState(false);
 
     const [cart, setCart] = globalctx.cart;
     const [currentLatitude] = globalctx.currentLatitude;
@@ -176,6 +178,11 @@ function PickupOrder() {
     };
 
     const handlePickupOrder = async () => {
+        // Block ordering when kitchen is closed
+        if (window.__storeOpen === false) {
+            setShowKitchenClosed(true);
+            return;
+        }
         setBusyLoader(true);
 
         // cityCode: prefer from selectedStore (API-fetched), fall back to GlobalContext store (store-picker)
@@ -238,6 +245,7 @@ function PickupOrder() {
 
     return (
         <div className="container py-4">
+            <KitchenClosedModal isOpen={showKitchenClosed} onClose={() => setShowKitchenClosed(false)} />
             {!isShowConfirmPickup ? (
                 <div className="row">
                     <div className="col-lg-8">
@@ -340,7 +348,13 @@ function PickupOrder() {
                                 <button
                                     className="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm"
                                     disabled={!selectedStore || Number(cart?.subtotal || 0) === 0}
-                                    onClick={() => setIsShowConfirmPickup(true)}
+                                    onClick={() => {
+                                        if (window.__storeOpen === false) {
+                                            setShowKitchenClosed(true);
+                                            return;
+                                        }
+                                        setIsShowConfirmPickup(true);
+                                    }}
                                 >
                                     Proceed to Checkout
                                 </button>

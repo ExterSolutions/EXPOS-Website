@@ -19,6 +19,7 @@ import {
 } from "../services";
 import { useNashQuote } from '../hooks/useNashQuote';
 import { CountdownTimer } from '../components/CountdownTimer';
+import KitchenClosedModal from '../components/common/KitchenClosedModal';
 
 
 const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
@@ -104,6 +105,7 @@ function AddressDetails() {
     const [orderResponse, setOrderResponse] = useState(null);
     const [paymentUrl, setPaymentUrl] = useState("");
     const [apiPricing, setApiPricing] = useState(null);
+    const [showKitchenClosed, setShowKitchenClosed] = useState(false);
 
     const [initialValues, setInitialValues] = useState({
         firstname: user?.data?.firstName,
@@ -315,6 +317,12 @@ function AddressDetails() {
     };
 
     const onSubmit = async (values) => {
+        // Block ordering when kitchen is closed
+        if (window.__storeOpen === false) {
+            setShowKitchenClosed(true);
+            return;
+        }
+
         const cleanPostalCode = values.postalcode.replace(/\s/g, '');
         const payload = {
             zipcode: cleanPostalCode,
@@ -581,6 +589,7 @@ function AddressDetails() {
 
     return (
         <div className="chk-page">
+            <KitchenClosedModal isOpen={showKitchenClosed} onClose={() => setShowKitchenClosed(false)} />
 
             {/* ── Page Header ─────────────────────────────────────────── */}
             <div className="chk-header">

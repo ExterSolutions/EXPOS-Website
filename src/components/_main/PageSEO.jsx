@@ -1,16 +1,14 @@
 /**
  * src/components/_main/PageSEO.jsx
  *
- * Fully dynamic SEO component — pulls site name, phone, address, logo, city etc.
- * DIRECTLY from the admin API via SiteDataContext.
- *
- * NO manual configuration needed per client. Just deploy and it works. ✅
+ * Fully dynamic SEO component — pulls EVERY value from the admin API
+ * via SiteDataContext. Zero hardcoded brand, location, or locale values.
  *
  * Usage:
  *   <PageSEO pageKey="home" />
  *   <PageSEO pageKey="signaturePizza" />
  *
- * Optional overrides (all optional — use when a specific page needs custom text):
+ * Optional overrides (all optional — use when a page needs custom text):
  *   <PageSEO pageKey="home" titleOverride="..." descriptionOverride="..." />
  */
 
@@ -18,14 +16,13 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useSiteDataContext } from '../../context/SiteDataContext';
 
-// ── Per-page keyword & description templates ─────────────────────────────────
-// Uses {name} and {city} placeholders — filled at runtime from admin data.
+// ── Per-page keyword & description templates ──────────────────────────────────
+// {name}, {city}, {cuisine} are runtime placeholders filled from admin data.
 const PAGE_TEMPLATES = {
     home: {
-        titleTpl:       '{name} | Best Pizza in {city} — Delivery & Pickup',
-        descriptionTpl: 'Order the best pizza in {city} from {name}. Tandoori pizza, paneer pizza, butter chicken pizza, signature pizzas & more. Hot fresh delivery or pickup. Order online now!',
+        titleTpl:       '{name} | Best {cuisine}Pizza in {city} — Delivery & Pickup',
+        descriptionTpl: 'Order the best pizza in {city} from {name}. {cuisine}pizza, signature pizzas & more. Hot fresh delivery or pickup. Order online now!',
         keywords: [
-            // Local high-intent
             'best pizza in {city}',
             'pizza near me {city}',
             'pizza delivery {city}',
@@ -36,7 +33,6 @@ const PAGE_TEMPLATES = {
             'pizza delivery near me',
             'pizza takeout {city}',
             'best pizza restaurant near me',
-            // Cuisine-specific
             'tandoori pizza {city}',
             'shahi paneer pizza',
             'butter chicken pizza {city}',
@@ -47,7 +43,6 @@ const PAGE_TEMPLATES = {
             'chicken tikka pizza',
             'masala pizza {city}',
             'vegetarian pizza {city}',
-            // Generic high-volume
             'pizza near me',
             'best pizza near me',
             'pizza online order',
@@ -56,10 +51,8 @@ const PAGE_TEMPLATES = {
             'fast pizza delivery',
             'pizza open now {city}',
             'pizza tonight {city}',
-            // Canadian market
             'pizza {city} Canada',
             'best Canadian pizza',
-            'pizza poutine {city}',
         ],
     },
     menu: {
@@ -140,7 +133,6 @@ const PAGE_TEMPLATES = {
             'best value pizza {city}',
             'pizza bundle deal',
             'pizza party deal {city}',
-            'pizza under 20 dollars {city}',
         ],
     },
     sides: {
@@ -201,61 +193,125 @@ const PAGE_TEMPLATES = {
             'pizza basket {city}',
         ],
     },
+    checkout: {
+        titleTpl:       'Checkout | {name} — Secure Order in {city}',
+        descriptionTpl: 'Complete your pizza order at {name} in {city}. Choose pickup or delivery, enter your address, and pay securely online. Fast, easy, and delicious.',
+        keywords: [
+            'pizza checkout {city}',
+            'order pizza online {city}',
+            'pizza delivery checkout',
+            'pizza pickup checkout {city}',
+            'secure pizza order',
+        ],
+    },
+    otherPizza: {
+        titleTpl:       'Popular Pizzas | {name} — Order Online in {city}',
+        descriptionTpl: 'Order our most popular pizzas at {name} in {city}. From classic favourites to bold new flavours — fresh made, fast delivery or easy pickup. Order online now.',
+        keywords: [
+            'popular pizza {city}',
+            'best pizza near me',
+            'classic pizza {city}',
+            'pizza delivery {city}',
+            'pizza pickup {city}',
+            'most loved pizza {city}',
+            'pizza flavours {city}',
+            'hot pizza near me',
+            'online pizza order {city}',
+        ],
+    },
 };
 
-// Fill {name} and {city} placeholders
-const fill = (str, name, city) =>
-    str.replace(/\{name\}/g, name).replace(/\{city\}/g, city);
+// ── Template filler ───────────────────────────────────────────────────────────
+// Replaces {name}, {city}, {cuisine} with live admin values.
+const fill = (str, name, city, cuisine) =>
+    str
+        .replace(/\{name\}/g,    name)
+        .replace(/\{city\}/g,    city)
+        .replace(/\{cuisine\}/g, cuisine);
 
-// ── Component ────────────────────────────────────────────────────────────────
+// ── Derive OG locale from admin country + language ────────────────────────────
+// e.g. country='CA', language='en' → 'en_CA'
+//      country='US', language='es' → 'es_US'
+// Falls back to 'en_CA' only when BOTH are missing from admin.
+const buildOgLocale = (country, language) => {
+    const lang = (language || '').toLowerCase().slice(0, 2) || 'en';
+    const cntry = (country  || '').toUpperCase().slice(0, 2) || 'CA';
+    return `${lang}_${cntry}`;
+};
+
+// ── Component ─────────────────────────────────────────────────────────────────
 const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
-    const location = useLocation();
+    const location  = useLocation();
     const { siteData } = useSiteDataContext();
 
-    // Pull live values from admin data
-    const name          = siteData.site_name    || 'Our Pizza Restaurant';
-    const city          = siteData.city         || '';
+    // ── Pull every value from admin data — NO hardcoded brand/city/locale ─────
+    const name          = siteData.site_name     || '';
+    const city          = siteData.city          || '';
     const phone         = siteData.contact_phone || '';
-    const address       = siteData.address      || '';
-    const logo          = siteData.logo         || '';
-    const siteUrl       = siteData.siteUrl      || window.location.origin;
-    const geo           = siteData.geo          || { lat: '', lng: '' };
-    const province      = siteData.province     || '';
-    const country       = siteData.country      || 'CA';
+    const address       = siteData.address       || '';
+    const postalCode    = siteData.postal_code   || '';
+    const logo          = siteData.logo          || '';
+    const favicon       = siteData.favicon       || '';
+    const siteUrl       = siteData.siteUrl       || window.location.origin;
+    const geo           = siteData.geo           || { lat: '', lng: '' };
+    const province      = siteData.province      || '';
+    const country       = siteData.country       || '';
+    const language      = siteData.language      || '';
     const twitterHandle = siteData.twitterHandle || '';
     const openingHours  = siteData.opening_hours || null;
     const priceRange    = siteData.price_range   || '';
-    const servesCuisine = siteData.serves_cuisine && siteData.serves_cuisine.length > 0
+    const cuisineList   = Array.isArray(siteData.serves_cuisine) && siteData.serves_cuisine.length > 0
         ? siteData.serves_cuisine
-        : null; // omit from schema if admin hasn't set it;
+        : null;
+
+    // Derive cuisine prefix for template placeholders
+    // e.g. ['Pizza', 'Indian'] → 'Indian ' (used in "{cuisine}pizza")
+    const cuisinePrefix = cuisineList && cuisineList.length > 1
+        ? cuisineList.filter(c => c.toLowerCase() !== 'pizza').join(' / ') + ' '
+        : '';
+
+    // OG locale: fully derived from admin country + language fields
+    const ogLocale = buildOgLocale(country, language);
+
+    // HTML lang attribute: from admin language field
+    const htmlLang = (language || '').toLowerCase().slice(0, 2) || 'en';
 
     const tpl = PAGE_TEMPLATES[pageKey] || PAGE_TEMPLATES.home;
 
-    const title       = titleOverride       || fill(tpl.titleTpl,       name, city);
-    const description = descriptionOverride || fill(tpl.descriptionTpl, name, city);
-    const keywords    = tpl.keywords.map(k => fill(k, name, city)).join(', ');
+    const title       = titleOverride       || fill(tpl.titleTpl,       name, city, cuisinePrefix);
+    const description = descriptionOverride || fill(tpl.descriptionTpl, name, city, cuisinePrefix);
+    const keywords    = tpl.keywords.map(k  => fill(k, name, city, cuisinePrefix)).join(', ');
 
+    // ── Canonical URL — built from admin siteUrl + current pathname ───────────
+    // siteUrl comes from d.site_url in the API (e.g. "https://brampton.exter.ca")
+    // Falls back to window.location.origin — correct for any deployment
     const canonicalUrl = `${siteUrl}${location.pathname}`;
 
-    // ── LocalBusiness JSON-LD — powers Google Maps "pizza near me" results ───
+    // ── LocalBusiness JSON-LD — 100% from admin API ───────────────────────────
     const localBusinessSchema = {
-        '@context':    'https://schema.org',
-        '@type':       'Restaurant',
-        name,
-        url:           siteUrl,
-        telephone:     phone,
-        image:         logo,
-        ...(servesCuisine && { servesCuisine }),
-        ...(priceRange    && { priceRange }),
+        '@context': 'https://schema.org',
+        '@type':    'Restaurant',
+        // Core identity — all from admin
+        ...(name     && { name }),
+        ...(siteUrl  && { url: siteUrl }),
+        ...(phone    && { telephone: phone }),
+        ...(logo     && { image: logo }),
+        ...(cuisineList && { servesCuisine: cuisineList }),
+        ...(priceRange  && { priceRange }),
+
+        // Address block — only included when admin has set address
         ...(address && {
             address: {
-                '@type':         'PostalAddress',
-                streetAddress:   address,
-                addressLocality: city,
-                addressRegion:   province,
-                addressCountry:  country,
+                '@type':          'PostalAddress',
+                streetAddress:    address,
+                ...(city        && { addressLocality: city }),
+                ...(province    && { addressRegion:   province }),
+                ...(postalCode  && { postalCode }),
+                ...(country     && { addressCountry:  country }),
             },
         }),
+
+        // Geo coordinates — only included when admin has set lat/lng
         ...(geo.lat && geo.lng && {
             geo: {
                 '@type':    'GeoCoordinates',
@@ -263,7 +319,8 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
                 longitude:  geo.lng,
             },
         }),
-        // Use opening hours from admin if available, otherwise omit entirely
+
+        // Opening hours — only included when admin has configured them
         ...(openingHours && Array.isArray(openingHours) && openingHours.length > 0 && {
             openingHoursSpecification: openingHours.map(h => ({
                 '@type':   'OpeningHoursSpecification',
@@ -272,6 +329,8 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
                 closes:    h.closes,
             })),
         }),
+
+        // Order action — targets the menu page of this deployment
         potentialAction: {
             '@type':  'OrderAction',
             target:   `${siteUrl}/menu`,
@@ -283,53 +342,57 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
         '@context': 'https://schema.org',
         '@type':    'BreadcrumbList',
         itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+            { '@type': 'ListItem', position: 1, name: name || 'Home', item: siteUrl },
             ...(location.pathname !== '/' ? [{
-                '@type':    'ListItem',
-                position:   2,
-                name:       title.split('|')[0].trim(),
-                item:       canonicalUrl,
+                '@type':  'ListItem',
+                position: 2,
+                name:     title.split('|')[0].trim(),
+                item:     canonicalUrl,
             }] : []),
         ],
     };
 
     return (
         <Helmet>
+            {/* ── HTML lang — from admin language field ── */}
+            <html lang={htmlLang} />
+
             {/* ── Basic ── */}
-            <html lang="en" />
             <title>{title}</title>
-            <meta name="description"         content={description} />
-            <meta name="keywords"            content={keywords} />
-            <meta name="robots"              content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-            <meta name="author"              content={name} />
-            <link rel="canonical"            href={canonicalUrl} />
+            <meta name="description"  content={description} />
+            <meta name="keywords"     content={keywords} />
+            <meta name="robots"       content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+            {name && <meta name="author" content={name} />}
 
-            {/* ── Favicon (from admin) ── */}
-            {siteData.favicon && <link rel="icon" href={siteData.favicon} />}
+            {/* ── Canonical URL — siteUrl from admin, path from router ── */}
+            <link rel="canonical" href={canonicalUrl} />
 
-            {/* ── Geo / Local targeting ── */}
-            {province && <meta name="geo.region"    content={`${country}-${province}`} />}
-            {city     && <meta name="geo.placename" content={city} />}
-            {geo.lat  && <meta name="geo.position"  content={`${geo.lat};${geo.lng}`} />}
-            {geo.lat  && <meta name="ICBM"          content={`${geo.lat}, ${geo.lng}`} />}
+            {/* ── Favicon — from admin ── */}
+            {favicon && <link rel="icon" href={favicon} />}
 
-            {/* ── Open Graph ── */}
-            <meta property="og:type"         content="website" />
-            <meta property="og:site_name"    content={name} />
-            <meta property="og:title"        content={title} />
-            <meta property="og:description"  content={description} />
-            <meta property="og:url"          content={canonicalUrl} />
-            {logo && <meta property="og:image" content={logo} />}
-            <meta property="og:locale"       content="en_CA" />
+            {/* ── Geo / Local targeting — all conditional on admin data ── */}
+            {province && country && <meta name="geo.region"    content={`${country}-${province}`} />}
+            {city               && <meta name="geo.placename" content={city} />}
+            {geo.lat && geo.lng && <meta name="geo.position"  content={`${geo.lat};${geo.lng}`} />}
+            {geo.lat && geo.lng && <meta name="ICBM"          content={`${geo.lat}, ${geo.lng}`} />}
+
+            {/* ── Open Graph — locale derived from admin country+language ── */}
+            <meta property="og:type"        content="website" />
+            {name    && <meta property="og:site_name"   content={name} />}
+            <meta property="og:title"       content={title} />
+            <meta property="og:description" content={description} />
+            <meta property="og:url"         content={canonicalUrl} />
+            {logo    && <meta property="og:image"       content={logo} />}
+            <meta property="og:locale"      content={ogLocale} />
 
             {/* ── Twitter Card ── */}
             <meta name="twitter:card"        content="summary_large_image" />
-            {twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+            {twitterHandle && <meta name="twitter:site"  content={twitterHandle} />}
             <meta name="twitter:title"       content={title} />
             <meta name="twitter:description" content={description} />
             {logo && <meta name="twitter:image" content={logo} />}
 
-            {/* ── Structured Data: LocalBusiness ── */}
+            {/* ── Structured Data: LocalBusiness (Restaurant) ── */}
             <script type="application/ld+json">
                 {JSON.stringify(localBusinessSchema)}
             </script>

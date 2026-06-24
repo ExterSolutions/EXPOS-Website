@@ -6,6 +6,7 @@ import OtherPizza from "../OtherPizza";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useContext } from "react";
 import { settingApi } from "../../services";
+import PageSEO from "../../components/_main/PageSEO";
 
 const OtherPizzaList = () => {
     const [toppingsData, setToppingsData] = useState(null);
@@ -37,6 +38,7 @@ const OtherPizzaList = () => {
     return (
         <>
             <div style={{ position: "relative" }}>
+                <PageSEO pageKey="otherPizza" />
                 <Header />
                 <div className="nav-margin"></div>
                 <div className="container py-2">

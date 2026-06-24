@@ -3,48 +3,82 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!--
         SEO NOTE:
-        All meta tags (title, description, og:*, twitter:*, favicon, JSON-LD)
-        are injected DYNAMICALLY by React Helmet (PageSEO.jsx) from the admin API.
-        Do NOT add static brand/identity values here — they will appear in Google
-        for every client and cannot be overridden by a bot that doesn't run JS.
+        All dynamic meta tags (title, description, og:*, twitter:*, favicon, JSON-LD)
+        are injected by React Helmet Async (PageSEO.jsx) from the admin API.
+        Static values below are intentional baseline defaults only.
     -->
 
-    <!-- Favicon placeholder — overridden at runtime by useDynamicSEO.js from admin -->
-    <link id="dynamic-favicon" rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="manifest" href="/manifest.json">
+    <!-- ── Performance: preconnect to key origins ───────────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- MS / Android theme colour — safe generic defaults -->
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
+    <!-- ── Favicon (overridden at runtime by useDynamicSEO.js) ─────────── -->
+    <link id="dynamic-favicon" rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
 
-    <!--
-        Title & description placeholders — React Helmet replaces these on load.
-        Kept intentionally blank so Google does not index stale brand content.
-    -->
+    <!-- ── Theme / browser chrome colour ─────────────────────────────────── -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- ── Mobile web app meta ───────────────────────────────────────────── -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- ── Robots (baseline — PageSEO overrides per-page) ───────────────── -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- ── Title & description placeholders ─────────────────────────────── -->
+    <!--  React Helmet replaces these on every page navigation.              -->
+    <!--  Kept blank so Google never indexes stale / generic content.        -->
     <title>Loading…</title>
-    <meta name="description" content="">
+    <meta name="description" content="" />
 
-    <!-- Open Graph placeholders — filled by PageSEO.jsx -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="">
-    <meta property="og:description" content="">
-    <meta property="og:image" content="">
-    <meta property="og:url" content="">
+    <!-- ── Open Graph placeholders — filled by PageSEO.jsx ─────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="" />
+    <meta property="og:description" content="" />
+    <meta property="og:image" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:locale" content="en_CA" />
 
-    <!-- Twitter Card placeholders — filled by PageSEO.jsx -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="">
-    <meta property="twitter:description" content="">
-    <meta property="twitter:image" content="">
+    <!-- ── Twitter Card placeholders — filled by PageSEO.jsx ────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="" />
+    <meta name="twitter:description" content="" />
+    <meta name="twitter:image" content="" />
 </head>
 
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <!-- ── No-JS fallback — also crawled by bots that don't execute JS ── -->
+        <noscript>
+            <style>
+                .noscript-banner {
+                    font-family: sans-serif;
+                    text-align: center;
+                    padding: 40px 20px;
+                    background: #f5f5f5;
+                    color: #333;
+                }
+                .noscript-banner h1 { font-size: 1.5rem; margin-bottom: 8px; }
+                .noscript-banner p  { font-size: 1rem; color: #555; }
+            </style>
+            <div class="noscript-banner" role="alert">
+                <h1>Pizza Ordering &mdash; Please Enable JavaScript</h1>
+                <p>
+                    Our online ordering system requires JavaScript.
+                    Please enable it in your browser settings to place an order, browse the menu, and more.
+                </p>
+            </div>
+        </noscript>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
 </body>
 

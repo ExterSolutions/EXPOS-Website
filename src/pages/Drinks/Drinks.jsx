@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 import DrinkMenu from "../DrinkMenu";
+import PageSEO from "../../components/_main/PageSEO";
 
 const Drinks = () => {
   const [searchParams] = useSearchParams();
@@ -21,6 +22,7 @@ const Drinks = () => {
   return (
     <>
       <div style={{ position: "relative" }}>
+        <PageSEO pageKey="drinks" />
         <Header />
         <div className="nav-margin"></div>
         <div className="container py-2">

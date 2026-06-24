@@ -1,7 +1,11 @@
 // src/context/SiteDataContext.jsx
 //
-// Fetches site identity from the admin API (/feed/site) once and exposes it
-// app-wide.  PageSEO reads from here — zero manual config needed per client.
+// Fetches site identity from the admin API (/feed/site) once on mount.
+// PageSEO reads from here — zero manual config per client deployment.
+//
+// Every field defaults to '' / null / [] — never to a hardcoded brand value.
+// The only safe default is country: '' (not 'CA') so the schema only includes
+// country when the admin has actually configured it.
 //
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getSiteData } from '../services';
@@ -18,30 +22,42 @@ export const useSiteDataContext = () => {
 
 export const SiteDataProvider = ({ children }) => {
     const [siteData, setSiteData] = useState({
-        // Identity
+        // ── Identity ──────────────────────────────────────────────────────────
         site_name:      '',
         logo:           null,
         favicon:        null,
         qrcode:         null,
-        // Contact
+
+        // ── Contact ──────────────────────────────────────────────────────────
         contact_email:  '',
         contact_phone:  '',
         address:        '',
-        // SEO helpers derived from above (filled after fetch)
+        postal_code:    '',   // for LocalBusiness schema postalCode field
+
+        // ── Location — all empty until API responds ───────────────────────────
+        // NOTE: no 'CA' default for country — omit the field unless admin set it
         siteUrl:        window.location.origin,
         city:           '',
         province:       '',
-        country:        'CA',
-        // Coordinates — optional; populated if admin returns them
+        country:        '',
+
+        // ── Language — drives html lang="" + og:locale ────────────────────────
+        language:       '',   // e.g. 'en', 'fr', 'es'
+
+        // ── Coordinates — populated only when admin provides them ─────────────
         geo:            { lat: '', lng: '' },
+
+        // ── Social ───────────────────────────────────────────────────────────
         twitterHandle:  '',
-        // Business details for JSON-LD schema
-        opening_hours:  null,   // array of { day, opens, closes } from admin
+
+        // ── Business details for JSON-LD schema ───────────────────────────────
+        opening_hours:  null,   // [{ day, opens, closes }] from admin
         price_range:    '',     // e.g. '$$'
-        serves_cuisine: [],     // e.g. ['Pizza', 'Indian']
+        serves_cuisine: [],     // e.g. ['Pizza', 'Indian', 'Halal']
     });
+
     const [loading, setLoading] = useState(true);
-    const [error, setError]     = useState(null);
+    const [error,   setError]   = useState(null);
 
     const fetchSiteData = async () => {
         try {
@@ -50,50 +66,71 @@ export const SiteDataProvider = ({ children }) => {
             if (response.status && response.data) {
                 const d = response.data;
 
-                // ── Try to extract city / province from the address string ──────
-                // Expected format:  "123 Main St, Surrey, BC, Canada"  or similar
+                // ── Resolve city / province / country ──────────────────────────
+                // Prefer explicit fields from API; fall back to parsing address.
                 const addressStr = d.address || '';
-                let city = d.city || '';
-                let province = d.province || d.state || '';
-                let country = d.country || 'CA';
+                let city     = d.city     || d.store_city     || '';
+                let province = d.province || d.state          || d.store_province || '';
+                let country  = d.country  || d.store_country  || '';
 
-                if (!city && addressStr) {
-                    // Heuristic: split by commas, city is usually second-to-last
+                if ((!city || !province) && addressStr) {
+                    // Heuristic: "123 Main St, Surrey, BC V3R 4P1, Canada"
                     const parts = addressStr.split(',').map(p => p.trim()).filter(Boolean);
                     if (parts.length >= 2) {
-                        city = parts[parts.length - 3] || parts[parts.length - 2] || '';
-                        // Province is often "BC" or "ON" — last part before country
-                        const provincePart = parts[parts.length - 2] || '';
-                        // Strip postal codes: "BC V3R 4P1" → "BC"
-                        province = provincePart.replace(/\b[A-Z]\d[A-Z]\s*\d[A-Z]\d\b/i, '').trim().split(' ')[0];
+                        if (!city)     city     = parts[parts.length - 3] || parts[parts.length - 2] || '';
+                        if (!province) {
+                            const provincePart = parts[parts.length - 2] || '';
+                            // Strip embedded postal codes: "BC V3R 4P1" → "BC"
+                            province = provincePart
+                                .replace(/\b[A-Z]\d[A-Z]\s*\d[A-Z]\d\b/i, '')
+                                .trim()
+                                .split(' ')[0];
+                        }
+                        if (!country) country = parts[parts.length - 1] || '';
                     }
                 }
 
+                // ── Resolve postal code ────────────────────────────────────────
+                const postalCode =
+                    d.postal_code  ||
+                    d.zip_code     ||
+                    d.zipcode      ||
+                    d.postcode     ||
+                    '';
+
+                // ── Resolve language ──────────────────────────────────────────
+                // Admin might send 'en', 'en-CA', or 'English'
+                const rawLang = d.language || d.site_language || d.lang || '';
+                // Normalise to ISO 639-1 two-letter code
+                const language = rawLang.toLowerCase().slice(0, 2);
+
                 setSiteData({
-                    site_name:      d.site_name     || '',
-                    logo:           d.logo          || null,
-                    favicon:        d.favicon       || null,
-                    qrcode:         d.qrcode        || null,
-                    contact_email:  d.contact_email || '',
-                    contact_phone:  d.contact_phone || '',
+                    site_name:      d.site_name      || '',
+                    logo:           d.logo           || null,
+                    favicon:        d.favicon        || null,
+                    qrcode:         d.qrcode         || null,
+                    contact_email:  d.contact_email  || '',
+                    contact_phone:  d.contact_phone  || '',
                     address:        addressStr,
-                    siteUrl:        d.site_url      || window.location.origin,
-                    city:           city,
-                    province:       province,
-                    country:        country,
+                    postal_code:    postalCode,
+                    // Use admin's site_url if set; browser origin is always correct fallback
+                    siteUrl:        d.site_url       || window.location.origin,
+                    city,
+                    province,
+                    country,
+                    language,
                     geo: {
-                        lat: d.latitude  || d.lat || '',
-                        lng: d.longitude || d.lng || d.long || '',
+                        lat: d.latitude  || d.lat  || '',
+                        lng: d.longitude || d.lng  || d.long || '',
                     },
                     twitterHandle:  d.twitter_handle || d.twitter || '',
-                    // Business details for JSON-LD — use admin values when available
                     opening_hours:  d.opening_hours  || null,
                     price_range:    d.price_range    || d.priceRange || '',
                     serves_cuisine: d.serves_cuisine || d.servesCuisine || [],
                 });
             }
         } catch (err) {
-            console.error('Error fetching site data:', err);
+            console.error('[SiteDataContext] Failed to fetch site data:', err);
             setError(err.message);
         } finally {
             setLoading(false);

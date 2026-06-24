@@ -1,23 +1,59 @@
 /**
  * src/config/seo.js
  *
- * ✅ This file is NO LONGER needed for per-client configuration.
+ * ✅ This file is documentation only — no code runs from here.
  *
- * All SEO data (site name, phone, address, logo, city, coordinates)
- * is now pulled AUTOMATICALLY from the admin API via SiteDataContext.
+ * ALL SEO values are pulled AUTOMATICALLY from the admin API (/feed/site).
+ * Nothing is hardcoded — city, country, locale, language, name, address,
+ * coordinates, opening hours are all dynamic per deployment.
  *
- * To update SEO for any client:
- *   → Log in to the admin panel
- *   → Update: Site Name, Phone, Address, Logo under Settings → Site Data
- *   → The website will reflect changes instantly on next page load
+ * ──────────────────────────────────────────────────────────────────────────────
+ * HOW IT WORKS
+ * ──────────────────────────────────────────────────────────────────────────────
  *
- * Per-page keyword templates are managed in:
- *   → src/components/_main/PageSEO.jsx  (PAGE_TEMPLATES object)
+ *   Admin Panel  ──→  GET /feed/site  ──→  SiteDataContext  ──→  PageSEO
  *
- * To add SEO to a new page:
- *   import PageSEO from '../components/_main/PageSEO';
- *   <PageSEO pageKey="home" />
+ * SiteDataContext maps these admin API fields:
  *
- * Available pageKey values:
- *   home | menu | signaturePizza | createYourOwn | flexDeals | sides | drinks | dips | cart
+ *   Field              | Maps to siteData key   | Used in
+ *   ──────────────────────────────────────────────────────────────────────────
+ *   site_name          | site_name               | <title>, JSON-LD name
+ *   logo               | logo                    | og:image, JSON-LD image
+ *   favicon            | favicon                 | <link rel="icon">
+ *   address            | address                 | JSON-LD streetAddress
+ *   city               | city                    | {city} placeholder, geo tags
+ *   province / state   | province                | geo.region, addressRegion
+ *   country            | country                 | geo.region, addressCountry
+ *   postal_code / zip_code | postal_code         | JSON-LD postalCode
+ *   language / lang    | language                | <html lang="">, og:locale
+ *   latitude / lat     | geo.lat                 | geo tags, JSON-LD GeoCoordinates
+ *   longitude / lng    | geo.lng                 | geo tags, JSON-LD GeoCoordinates
+ *   contact_phone      | contact_phone           | JSON-LD telephone
+ *   twitter_handle     | twitterHandle           | twitter:site
+ *   site_url           | siteUrl                 | Canonical URL, JSON-LD url
+ *   opening_hours      | opening_hours           | JSON-LD openingHoursSpecification
+ *   price_range        | price_range             | JSON-LD priceRange
+ *   serves_cuisine     | serves_cuisine          | JSON-LD servesCuisine, {cuisine} placeholder
+ *
+ * ──────────────────────────────────────────────────────────────────────────────
+ * ADDING SEO TO A NEW PAGE
+ * ──────────────────────────────────────────────────────────────────────────────
+ *
+ *   1. Add a template to PAGE_TEMPLATES in PageSEO.jsx:
+ *        myPage: {
+ *            titleTpl:       '{name} | My Page in {city}',
+ *            descriptionTpl: 'Description using {name} and {city}.',
+ *            keywords: ['keyword {city}', ...],
+ *        }
+ *
+ *   2. In your page component:
+ *        import PageSEO from '../components/_main/PageSEO';
+ *        // inside JSX:
+ *        <PageSEO pageKey="myPage" />
+ *
+ * ──────────────────────────────────────────────────────────────────────────────
+ * AVAILABLE pageKey VALUES
+ * ──────────────────────────────────────────────────────────────────────────────
+ *   home | menu | signaturePizza | createYourOwn | flexDeals |
+ *   sides | drinks | dips | cart | checkout | otherPizza
  */

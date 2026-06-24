@@ -14,6 +14,8 @@ import { deliverable, orderPlace } from "../services";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { motion } from "framer-motion";
 import emptyCartImg from "../assets/images/empty-cart.png";
+import KitchenClosedModal from "../components/common/KitchenClosedModal";
+import PageSEO from "../components/_main/PageSEO";
 
 function Cart() {
     const globalCtx = useContext(GlobalContext);
@@ -21,6 +23,7 @@ function Cart() {
     const [cart, setCart] = globalCtx.cart;
     const [regUser, setRegUser] = globalCtx.regUser;
     const [loading, setLoading] = useState(false);
+    const [showKitchenClosed, setShowKitchenClosed] = useState(false);
     const user = useSelector((state) => state.user);
 
 
@@ -28,6 +31,11 @@ function Cart() {
     const location = useLocation();
 
     const handleCheckout = async () => {
+        // Block checkout when kitchen is closed
+        if (window.__storeOpen === false) {
+            setShowKitchenClosed(true);
+            return;
+        }
         if (cart?.product?.length > 0) {
             if (isAuthenticated && user !== null) {
                 navigate("/checkout");
@@ -66,6 +74,8 @@ function Cart() {
     };
     return (
         <>
+            <PageSEO pageKey="cart" />
+            <KitchenClosedModal isOpen={showKitchenClosed} onClose={() => setShowKitchenClosed(false)} />
             <Header />
             {loading ? (
                 <LoadingLayout />

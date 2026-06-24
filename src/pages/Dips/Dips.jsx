@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Footer from "../../components/_main/Footer"
 import Header from "../../components/_main/Header/Header"
 import DipsMenu from "../DipsMenu"
+import PageSEO from "../../components/_main/PageSEO";
 
 const Dips = () => {
     const [searchParams] = useSearchParams();
@@ -20,6 +21,7 @@ const Dips = () => {
 
     return (
         <div style={{ position: "relative" }}>
+            <PageSEO pageKey="dips" />
             <Header />
             <div className="nav-margin"></div>
             <div className="container py-2">
