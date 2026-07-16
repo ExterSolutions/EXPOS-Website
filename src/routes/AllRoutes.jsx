@@ -1,51 +1,66 @@
 // src/routes/AllRoutes.jsx
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import ForgetPassword from "../components/_main/Auth/ForgetPassword.jsx";
-import UpdatePassword from "../components/_main/Auth/UpdatePassword.jsx";
-import CustomizeDrinks from "../components/_main/Drinks/CustomizeDrinks.jsx";
-import SearchResult from "../components/_main/SearchResult.jsx";
-import AboutUs from "../pages/About/About.jsx";
-import LoginPage from "../pages/Auth/LoginPage.jsx";
-import MyAccount from "../pages/Auth/MyAccount.jsx";
-import RegistrationPage from "../pages/Auth/RegistrationPage.jsx";
-import Cart from "../pages/Cart.jsx";
-import CheckoutPage from "../pages/CheckoutPage.jsx";
-import ContactUs from "../pages/ContactUs.jsx";
-import CreatePizza from "../pages/Createyourown/Create.jsx";
-import EditCreatePizza from "../pages/Createyourown/EditCreatePizza.jsx";
-import Dips from "../pages/Dips/Dips.jsx";
-import Drinks from "../pages/Drinks/Drinks.jsx";
-import Franchise from "../pages/Franchise/Franchise.jsx";
-import Home from "../pages/Home.jsx";
-import Menu from "../pages/Menu.jsx";
-import EditOther from "../pages/OtherPizza/EditOtherPizza.jsx";
-import Other from "../pages/OtherPizza/Other.jsx";
-import OtherPizzaList from "../pages/OtherPizza/OtherPizza.jsx";
-import Success from "../pages/Payment/Success.jsx";
-import PaymentCancel from "../pages/PaymentCancel.jsx";
-import PaymentSuccess from "../pages/PaymentSuccess.jsx";
-import PopularItem from "../pages/PopularItem/PopularItem.jsx";
-import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
-import RefundPolicy from "../pages/RefundPolicy.jsx";
-import Sides from "../pages/Sides/Sides.jsx";
-import EditSignature from "../pages/SignaturePizza/EditSignaturePizza.jsx";
-import Signature from "../pages/SignaturePizza/Signature.jsx";
-import SignaturePizzaList from "../pages/SignaturePizza/SignaturePizza.jsx";
-import EditSpecialOffer from "../pages/SpecialOffer/EditSpecialOffer.jsx";
-import SpecialOffer from "../pages/SpecialOffer/SpecialOffer.jsx";
-import SpecialOfferList from "../pages/SpecialOffer/SpecialOfferList.jsx";
-import Stores from "../pages/Stores.jsx";
-import TermsCondtions from "../pages/TermsCondtions.jsx";
-import SpecialOfferPage from "../pages/SpecialOfferNew/SpecialOfferPage.jsx";
-import EditSpecialOfferPage from "../pages/SpecialOfferNew/EditSpecialOfferPage.jsx";
-import SpecialOfferWithToppingsList from "../pages/SpecialOffer/SpecialOfferWithToppingsList.jsx";
-import FlexDealList from "../pages/FlexDeals/FlexDealList.jsx";
-import FlexDealCustomizer from "../pages/FlexDeals/FlexDealCustomizer.jsx";
 import ScrollToTop from "../ScrollToTop.jsx";
 import Sidebar from "../layouts/Sidebar";
 import MobileMenu from "../components/_main/MobileMenu";
 import { useDynamicSEO } from "../hooks/useDynamicSEO.js";
 import { useSiteDataContext } from "../context/SiteDataContext.jsx";
+import LoadingLayout from "../layouts/LoadingLayout.jsx";
+
+// ── Eagerly loaded — above-the-fold, highest priority ─────────────────────────
+import Home from "../pages/Home.jsx";
+import Menu from "../pages/Menu.jsx";
+
+// ── Lazily loaded — each page becomes its own JS chunk ────────────────────────
+// Auth
+const LoginPage          = lazy(() => import("../pages/Auth/LoginPage.jsx"));
+const RegistrationPage   = lazy(() => import("../pages/Auth/RegistrationPage.jsx"));
+const MyAccount          = lazy(() => import("../pages/Auth/MyAccount.jsx"));
+const ForgetPassword     = lazy(() => import("../components/_main/Auth/ForgetPassword.jsx"));
+const UpdatePassword     = lazy(() => import("../components/_main/Auth/UpdatePassword.jsx"));
+// Info pages
+const AboutUs            = lazy(() => import("../pages/About/About.jsx"));
+const ContactUs          = lazy(() => import("../pages/ContactUs.jsx"));
+const Stores             = lazy(() => import("../pages/Stores.jsx"));
+const Franchise          = lazy(() => import("../pages/Franchise/Franchise.jsx"));
+const SearchResult       = lazy(() => import("../components/_main/SearchResult.jsx"));
+// Legal
+const PrivacyPolicy      = lazy(() => import("../pages/PrivacyPolicy.jsx"));
+const TermsCondtions     = lazy(() => import("../pages/TermsCondtions.jsx"));
+const RefundPolicy       = lazy(() => import("../pages/RefundPolicy.jsx"));
+// Pizza
+const SignaturePizzaList = lazy(() => import("../pages/SignaturePizza/SignaturePizza.jsx"));
+const Signature          = lazy(() => import("../pages/SignaturePizza/Signature.jsx"));
+const EditSignature      = lazy(() => import("../pages/SignaturePizza/EditSignaturePizza.jsx"));
+const OtherPizzaList     = lazy(() => import("../pages/OtherPizza/OtherPizza.jsx"));
+const Other              = lazy(() => import("../pages/OtherPizza/Other.jsx"));
+const EditOther          = lazy(() => import("../pages/OtherPizza/EditOtherPizza.jsx"));
+const CreatePizza        = lazy(() => import("../pages/Createyourown/Create.jsx"));
+const EditCreatePizza    = lazy(() => import("../pages/Createyourown/EditCreatePizza.jsx"));
+// Deals
+const SpecialOfferList   = lazy(() => import("../pages/SpecialOffer/SpecialOfferList.jsx"));
+const SpecialOffer       = lazy(() => import("../pages/SpecialOffer/SpecialOffer.jsx"));
+const EditSpecialOffer   = lazy(() => import("../pages/SpecialOffer/EditSpecialOffer.jsx"));
+const SpecialOfferWithToppingsList = lazy(() => import("../pages/SpecialOffer/SpecialOfferWithToppingsList.jsx"));
+const SpecialOfferPage   = lazy(() => import("../pages/SpecialOfferNew/SpecialOfferPage.jsx"));
+const EditSpecialOfferPage = lazy(() => import("../pages/SpecialOfferNew/EditSpecialOfferPage.jsx"));
+const FlexDealList       = lazy(() => import("../pages/FlexDeals/FlexDealList.jsx"));
+const FlexDealCustomizer = lazy(() => import("../pages/FlexDeals/FlexDealCustomizer.jsx"));
+// Side items
+const Sides              = lazy(() => import("../pages/Sides/Sides.jsx"));
+const Dips               = lazy(() => import("../pages/Dips/Dips.jsx"));
+const Drinks             = lazy(() => import("../pages/Drinks/Drinks.jsx"));
+const CustomizeDrinks    = lazy(() => import("../components/_main/Drinks/CustomizeDrinks.jsx"));
+// Checkout
+const Cart               = lazy(() => import("../pages/Cart.jsx"));
+const CheckoutPage       = lazy(() => import("../pages/CheckoutPage.jsx"));
+const Success            = lazy(() => import("../pages/Payment/Success.jsx"));
+const PaymentCancel      = lazy(() => import("../pages/PaymentCancel.jsx"));
+const PaymentSuccess     = lazy(() => import("../pages/PaymentSuccess.jsx"));
+// Misc
+const PopularItem        = lazy(() => import("../pages/PopularItem/PopularItem.jsx"));
+
 
 const AllRoutes = () => {
     const { siteData } = useSiteDataContext();
@@ -57,11 +72,12 @@ const AllRoutes = () => {
             <ScrollToTop />
             <MobileMenu />
             <Sidebar />
+            <Suspense fallback={<LoadingLayout />}>
             <Routes>
                 <Route index path="/" element={<Home />} />
-                {/* <Route path="/stores" element={<Stores />} /> */}
-                {/* <Route path="/about-us" element={<AboutUs />} /> */}
-                {/* <Route path="/contact-us" element={<ContactUs />} /> */}
+                <Route path="/stores" element={<Stores />} />
+                <Route path="/about-us" element={<AboutUs />} />
+                <Route path="/contact-us" element={<ContactUs />} />
                 <Route path="/menu" element={<Menu />} />
                 {/* <Route path="/franchise" element={<Franchise />} /> */}
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -121,6 +137,7 @@ const AllRoutes = () => {
                 <Route path="/customer/payment/success" element={<Navigate to="/payment/success" replace />} />
                 <Route path="/customer/payment/cancel" element={<Navigate to="/payment/cancel" replace />} />
             </Routes>
+            </Suspense>
         </>
     );
 };

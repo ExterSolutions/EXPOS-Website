@@ -219,7 +219,90 @@ const PAGE_TEMPLATES = {
             'online pizza order {city}',
         ],
     },
+    aboutUs: {
+        titleTpl:       'About {name} | {cuisine}Pizza Restaurant in {city}',
+        descriptionTpl: 'Learn about {name}, your local {cuisine}pizza restaurant in {city}. Our story, our values, and our commitment to fresh, hot, delicious pizza made with love.',
+        keywords: [
+            'about {name}',
+            'pizza restaurant {city}',
+            'local pizza {city}',
+            'Indian pizza restaurant {city}',
+            'halal pizza {city}',
+            'pizza history {city}',
+            'best pizza restaurant {city}',
+        ],
+    },
+    contactUs: {
+        titleTpl:       'Contact {name} | Pizza Order Help in {city}',
+        descriptionTpl: 'Get in touch with {name} in {city}. Call us, email us, or send a message. We\'re happy to help with orders, feedback, or anything else.',
+        keywords: [
+            'contact {name}',
+            'pizza restaurant phone {city}',
+            'pizza order help {city}',
+            '{name} email',
+            'pizza customer service {city}',
+        ],
+    },
+    stores: {
+        titleTpl:       '{name} Store Locations | Pizza Near You in {city}',
+        descriptionTpl: 'Find your nearest {name} pizza location in {city}. View store addresses, hours, and directions. Multiple locations for convenient delivery and pickup.',
+        keywords: [
+            '{name} locations',
+            'pizza near me {city}',
+            'pizza store {city}',
+            'pizza restaurant locations {city}',
+            'find pizza {city}',
+            'pizza pickup location {city}',
+            'nearest pizza restaurant',
+        ],
+    },
 };
+
+// ── Additional page templates (deals + legal) ─────────────────────────────────
+// Merged here separately for readability — all fed into the same PAGE_TEMPLATES lookup.
+Object.assign(PAGE_TEMPLATES, {
+    specialOffer: {
+        titleTpl:       'Special Deals | {name} — Pizza Offers in {city}',
+        descriptionTpl: 'Don\'t miss today\'s special pizza deals at {name} in {city}. Limited-time offers on signature pizzas, combos & more. Order online for delivery or pickup.',
+        keywords: [
+            'pizza deals {city}',
+            'pizza special offer {city}',
+            'pizza discount near me',
+            'limited time pizza offer {city}',
+            'pizza combo deal {city}',
+            'pizza sale {city}',
+            'cheap pizza {city}',
+            'pizza promo {city}',
+        ],
+    },
+    specialOffersWithToppings: {
+        titleTpl:       'Customisable Pizza Deals | {name} in {city}',
+        descriptionTpl: 'Mix and match your favourite toppings on special deal pizzas at {name} in {city}. Build your own combo deal with premium toppings. Order online now.',
+        keywords: [
+            'pizza deal with toppings {city}',
+            'customisable pizza offer {city}',
+            'build your own deal pizza {city}',
+            'pizza combo with toppings',
+            'special pizza {city}',
+        ],
+    },
+    privacyPolicy: {
+        titleTpl:       'Privacy Policy | {name}',
+        descriptionTpl: 'Read the privacy policy for {name} in {city}. Learn how we collect, use, and protect your personal information when you order pizza online.',
+        keywords: ['{name} privacy policy', 'pizza restaurant privacy {city}'],
+    },
+    termsConditions: {
+        titleTpl:       'Terms & Conditions | {name}',
+        descriptionTpl: 'Read the terms and conditions for ordering pizza online from {name} in {city}. Understand your rights and our policies before placing your order.',
+        keywords: ['{name} terms and conditions', 'pizza order terms {city}'],
+    },
+    refundPolicy: {
+        titleTpl:       'Refund Policy | {name}',
+        descriptionTpl: 'Read {name}\'s refund and cancellation policy for online pizza orders in {city}. Find out how to request a refund or report an order issue.',
+        keywords: ['{name} refund policy', 'pizza refund {city}', 'pizza cancellation policy'],
+    },
+});
+
 
 // ── Template filler ───────────────────────────────────────────────────────────
 // Replaces {name}, {city}, {cuisine} with live admin values.
@@ -260,6 +343,7 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
     const twitterHandle = siteData.twitterHandle || '';
     const openingHours  = siteData.opening_hours || null;
     const priceRange    = siteData.price_range   || '';
+    const rating        = siteData.rating        || null;  // { value, count } — from admin if available
     const cuisineList   = Array.isArray(siteData.serves_cuisine) && siteData.serves_cuisine.length > 0
         ? siteData.serves_cuisine
         : null;
@@ -328,6 +412,28 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
                 opens:     h.opens,
                 closes:    h.closes,
             })),
+        }),
+
+        // Aggregate rating — only included when admin has set rating data
+        ...(rating && rating.value && rating.count && {
+            aggregateRating: {
+                '@type':       'AggregateRating',
+                ratingValue:   String(rating.value),
+                reviewCount:   String(rating.count),
+                bestRating:    '5',
+                worstRating:   '1',
+            },
+        }),
+
+        // hasMenu — links Google directly to the menu page
+        ...(siteUrl && { hasMenu: `${siteUrl}/menu` }),
+
+        // Tells Google this is a takeout/delivery restaurant, not bookable
+        acceptsReservations: false,
+
+        // Map link — helps Google verify physical location
+        ...(geo.lat && geo.lng && {
+            hasMap: `https://maps.google.com/?q=${geo.lat},${geo.lng}`,
         }),
 
         // Order action — targets the menu page of this deployment

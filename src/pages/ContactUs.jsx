@@ -11,6 +11,8 @@ import { sendContactUsEmail } from "../services";
 // import "../assets/styles/new/homepage/contact/contact-us.css";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { useTheme } from '../context/ThemeContext';
+import PageSEO from '../components/_main/PageSEO';
+import { useSiteDataContext } from '../context/SiteDataContext';
 
 
 // Validation Functions
@@ -74,6 +76,13 @@ function ContactUs() {
     const { theme, colors } = useTheme();
     const [loading, setLoading] = useState(false);
 
+    // ── Pull all contact info from admin API — zero hardcoding ────────────────
+    const { siteData } = useSiteDataContext();
+    const siteName    = siteData.site_name     || '';
+    const siteAddress = siteData.address       || '';
+    const sitePhone   = siteData.contact_phone || '';
+    const siteEmail   = siteData.contact_email || '';
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
@@ -121,15 +130,17 @@ function ContactUs() {
 
     return (
         <>
+            <PageSEO pageKey="contactUs" />
             <Header />
             <div className="contact-us-container">
 
                 {/* Header Section */}
                 <div className="contact-header text-center py-70">
                     <h1 className="contact-title">
-                        Contact <span className="brand-color "
-                            style={{ color: colors?.primary }}
-                        >Exter Pizza</span>
+                        Contact{' '}
+                        <span className="brand-color" style={{ color: colors?.primary }}>
+                            {siteName}
+                        </span>
                     </h1>
                     <p className="contact-subtitle">
                         We'd love to hear from you! Send us a message and we'll respond as
@@ -144,38 +155,52 @@ function ContactUs() {
                             <h2 className="info-title">Our Information</h2>
 
                             <div className="info-items">
-                                {/* Address */}
-                                <div className="info-item">
-                                    <div className="info-icon">
-                                        <FaMapMarkerAlt size={20} color="#f26724" />
+                                {/* Address — only shown when admin has configured it */}
+                                {siteAddress && (
+                                    <div className="info-item">
+                                        <div className="info-icon">
+                                            <FaMapMarkerAlt size={20} color={colors?.primary || '#f26724'} />
+                                        </div>
+                                        <div className="info-content">
+                                            <h3 className="info-label">Address</h3>
+                                            <p className="info-text">{siteAddress}</p>
+                                        </div>
                                     </div>
-                                    <div className="info-content">
-                                        <h3 className="info-label">Address</h3>
-                                        <p className="info-text">5 Coral Springs BIvd N E #11, Calgary AB T3J 4J1</p>
-                                    </div>
-                                </div>
+                                )}
 
-                                {/* Phone */}
-                                <div className="info-item">
-                                    <div className="info-icon">
-                                        <FaPhoneAlt size={20} color="#f26724" />
+                                {/* Phone — only shown when admin has configured it */}
+                                {sitePhone && (
+                                    <div className="info-item">
+                                        <div className="info-icon">
+                                            <FaPhoneAlt size={20} color={colors?.primary || '#f26724'} />
+                                        </div>
+                                        <div className="info-content">
+                                            <h3 className="info-label">Phone</h3>
+                                            <p className="info-text">
+                                                <a href={`tel:${sitePhone}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                                    {sitePhone}
+                                                </a>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="info-content">
-                                        <h3 className="info-label">Phone</h3>
-                                        <p className="info-text">+1 403 492 5500</p>
-                                    </div>
-                                </div>
+                                )}
 
-                                {/* Email */}
-                                <div className="info-item">
-                                    <div className="info-icon">
-                                        <FaEnvelope size={20} color="#f26724" />
+                                {/* Email — only shown when admin has configured it */}
+                                {siteEmail && (
+                                    <div className="info-item">
+                                        <div className="info-icon">
+                                            <FaEnvelope size={20} color={colors?.primary || '#f26724'} />
+                                        </div>
+                                        <div className="info-content">
+                                            <h3 className="info-label">Email</h3>
+                                            <p className="info-text">
+                                                <a href={`mailto:${siteEmail}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                                    {siteEmail}
+                                                </a>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="info-content">
-                                        <h3 className="info-label">Email</h3>
-                                        <p className="info-text">info@exter.ca</p>
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>

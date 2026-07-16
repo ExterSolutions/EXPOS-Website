@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Footer from "../components/_main/Footer";
 import Header from "../components/_main/Header/Header";
 import { termsPage } from "../services";
+import PageSEO from "../components/_main/PageSEO";
 
 function TermsCondtions() {
     const [termsData, setTermsData] = useState(null);
@@ -26,6 +27,7 @@ function TermsCondtions() {
 
     return (
         <>
+            <PageSEO pageKey="termsConditions" />
             <Header />
             <div className="container my-5">
                 <div className="mb-4 text-center">

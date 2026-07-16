@@ -1,7 +1,19 @@
-
 User-agent: *
-Disallow: /wp-admin/
-Disallow: /cgi-bin/
-Allow: /wp-admin/admin-ajax.php
+Allow: /
 
+# Block private / transactional routes from indexing
+Disallow: /cart
+Disallow: /checkout
+Disallow: /payment/
+Disallow: /order/
+Disallow: /login
+Disallow: /registration
+Disallow: /forget-password
+Disallow: /update-password
+Disallow: /my-account
+Disallow: /search-results
+
+# Sitemap URL is set per-deployment via VITE_SITE_URL in .env
+# The generate-sitemap.js prebuild script regenerates sitemap.xml with the correct URL.
+# For production deployment, this line should be:  Sitemap: https://<your-domain>/sitemap.xml
 Sitemap: https://web.exter.ca/sitemap.xml

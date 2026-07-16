@@ -62,7 +62,7 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
                             ) : (
                                 <img
                                     src={footerData?.logo}
-                                    alt="Logo"
+                                    alt={`${footerData?.site_name || 'Restaurant'} Logo`}
                                     className="footer-logo"
                                     onError={() => setLogoError(true)}
                                 />
@@ -118,15 +118,30 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
                                 <span className="footer-links-head">Navigate</span>
                                 <Link to="/" className="footer-link">Home</Link>
                                 <Link to="/menu" className="footer-link">Menu</Link>
-                                <Link to={isAuthenticated ? "/my-account" : "/login"} className="footer-link">
-                                    {isAuthenticated ? "My Account" : "Sign In"}
-                                </Link>
+                                <Link to="/signaturepizza" className="footer-link">Signature Pizza</Link>
+                                <Link to="/otherpizza" className="footer-link">Other Pizza</Link>
+                                <Link to="/specialoffer" className="footer-link">Special Offers</Link>
+                                <Link to="/flex-deals" className="footer-link">Flex Deals</Link>
+                                <Link to="/create-your-own" className="footer-link">Create Your Own</Link>
+                            </div>
+                            <div className="footer-links-col">
+                                <span className="footer-links-head">More</span>
+                                <Link to="/sides" className="footer-link">Sides</Link>
+                                <Link to="/dips" className="footer-link">Dips</Link>
+                                <Link to="/drinks" className="footer-link">Drinks</Link>
+                                <Link to="/about-us" className="footer-link">About Us</Link>
+                                <Link to="/contact-us" className="footer-link">Contact Us</Link>
+                                <Link to="/stores" className="footer-link">Our Stores</Link>
                             </div>
                             <div className="footer-links-col">
                                 <span className="footer-links-head">Legal</span>
                                 <Link to="/terms-conditions" className="footer-link">Terms</Link>
                                 <Link to="/privacy-policy" className="footer-link">Privacy</Link>
                                 <Link to="/refund-policy" className="footer-link">Refund Policy</Link>
+                                {isAuthenticated
+                                    ? <Link to="/my-account" className="footer-link">My Account</Link>
+                                    : <Link to="/login" className="footer-link">Sign In</Link>
+                                }
                             </div>
                         </div>
                     </div>
@@ -159,6 +174,7 @@ const Footer = ({ isdemo, showOnMobile = false }) => {
                             );
                         })()}
                     </span>
+                    <a href="/sitemap.xml" className="footer-link" style={{ fontSize: '0.7rem', opacity: 0.55 }} target="_blank" rel="noopener noreferrer">Sitemap</a>
                 </div>
             </div>
         </footer>

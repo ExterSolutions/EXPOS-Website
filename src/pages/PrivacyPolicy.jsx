@@ -1,11 +1,11 @@
 
-
 import { useEffect, useState } from 'react';
 // import '../assets/styles/privacypolicy.css';
 import Footer from '../components/_main/Footer';
 import Header from '../components/_main/Header/Header';
 import { privacyPage } from '../services';
 import { toast } from 'react-toastify';
+import PageSEO from '../components/_main/PageSEO';
 
 function PrivacyPolicy() {
     const [privacyData, setPrivacyData] = useState(null);
@@ -29,6 +29,7 @@ function PrivacyPolicy() {
 
     return (
         <>
+            <PageSEO pageKey="privacyPolicy" />
             <Header />
             <div className='container my-5'>
                 <div className="mb-4 text-center">

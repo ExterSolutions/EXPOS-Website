@@ -10,6 +10,7 @@ import StoreCard from "../components/_main/Stores/StoresCard";
 import { GlobalContext } from "../context/GlobalContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import { getStoreLocation, getStoreLocationByCity } from "../services";
+import PageSEO from "../components/_main/PageSEO";
 
 
 const containerStyle = {
@@ -153,6 +154,7 @@ const Stores = () => {
 
     return (
         <div id="location">
+            <PageSEO pageKey="stores" />
             <Header />
             <div className="d-flex align-items-center justify-content-between my-5">
                 <div className="flex-grow-1 section-header">

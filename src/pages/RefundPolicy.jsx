@@ -3,6 +3,7 @@ import Footer from "../components/_main/Footer";
 import Header from "../components/_main/Header/Header";
 import { refundPage } from '../services';
 import { toast } from 'react-toastify';
+import PageSEO from '../components/_main/PageSEO';
 
 const RefundPolicy = () => {
     const [refundData, setRefundData] = useState(null);
@@ -26,6 +27,7 @@ const RefundPolicy = () => {
 
     return (
         <>
+            <PageSEO pageKey="refundPolicy" />
             <Header />
             <div className="container my-5">
                 <div className="mb-4 text-center">

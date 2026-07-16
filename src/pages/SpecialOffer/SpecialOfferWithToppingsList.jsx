@@ -6,6 +6,7 @@ import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import { getSpecialOffersWithToppingsList, settingApi } from "../../services";
 import { toast } from "react-toastify";
+import PageSEO from "../../components/_main/PageSEO";
 /**
  * SpecialOfferWithToppingsList
  * ----------------------------
@@ -67,6 +68,7 @@ function SpecialOfferWithToppingsList() {
 
     return (
         <div style={{ position: "relative" }}>
+            <PageSEO pageKey="specialOffersWithToppings" />
             <Header />
             <div className="nav-margin"></div>
             <div className="container py-2">

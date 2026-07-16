@@ -27,7 +27,7 @@ export const useDynamicSEO = (data) => {
         updateMeta('description', desc);
         updateMeta('og:title', data.site_name);
         updateMeta('og:description', desc);
-        updateMeta('og:image', data.favicon);
+        updateMeta('og:image', data.logo || data.favicon); // logo preferred; favicon fallback only
 
         // 3. Favicon — only update when the admin URL is actually loaded
         //    Use a dedicated element (id="dynamic-favicon") so we never

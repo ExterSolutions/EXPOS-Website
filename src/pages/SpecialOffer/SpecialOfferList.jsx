@@ -6,6 +6,7 @@ import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import { specialIngredients } from "../../services";
 import { toast } from "react-toastify";
+import PageSEO from "../../components/_main/PageSEO";
 
 function SpecialOfferList() {
     const globalCtx = useContext(GlobalContext);
@@ -47,6 +48,7 @@ function SpecialOfferList() {
 
     return (
         <div style={{ position: "relative" }}>
+            <PageSEO pageKey="specialOffer" />
             <Header />
             <div className="nav-margin"></div>
             <div className="container py-2">

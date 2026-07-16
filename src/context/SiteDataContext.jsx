@@ -54,6 +54,10 @@ export const SiteDataProvider = ({ children }) => {
         opening_hours:  null,   // [{ day, opens, closes }] from admin
         price_range:    '',     // e.g. '$$'
         serves_cuisine: [],     // e.g. ['Pizza', 'Indian', 'Halal']
+
+        // ── Branding extras ──────────────────────────────────────────────────
+        tagline:        '',     // e.g. 'Fresh. Hot. Delivered.' — shown in header top bar
+        rating:         null,   // { value, count } — feeds aggregateRating JSON-LD
     });
 
     const [loading, setLoading] = useState(true);
@@ -127,6 +131,13 @@ export const SiteDataProvider = ({ children }) => {
                     opening_hours:  d.opening_hours  || null,
                     price_range:    d.price_range    || d.priceRange || '',
                     serves_cuisine: d.serves_cuisine || d.servesCuisine || [],
+                    tagline:        d.tagline        || d.site_tagline || '',
+                    // rating: { value, count } — only set when admin provides both
+                    rating: (d.rating_value && d.rating_count)
+                        ? { value: d.rating_value, count: d.rating_count }
+                        : (d.rating && d.rating.value && d.rating.count)
+                            ? d.rating
+                            : null,
                 });
             }
         } catch (err) {

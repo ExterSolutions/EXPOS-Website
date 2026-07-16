@@ -4,6 +4,9 @@ import pizzaImg from "../../assets/images/customizePizza.jpg";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
 import { aboutPage } from "../../services";
+import PageSEO from "../../components/_main/PageSEO";
+import { useSiteDataContext } from "../../context/SiteDataContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const HERO_STYLE = {
     backgroundSize: "cover",
@@ -37,6 +40,11 @@ const About = () => {
     const [aboutData, setAboutData] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // ── Site identity from admin API — zero hardcoding ──────────────────────
+    const { siteData } = useSiteDataContext();
+    const { colors }   = useTheme();
+    const siteName     = siteData.site_name || '';
+
     useEffect(() => {
         window.scrollTo(0, 0);
         const fetchData = async () => {
@@ -55,6 +63,7 @@ const About = () => {
 
     return (
         <div>
+            <PageSEO pageKey="aboutUs" />
             <Header />
 
             {/* --- HERO --- */}
@@ -68,7 +77,14 @@ const About = () => {
                     `,
                 }}
             >
-                <h1 style={TITLE_STYLE}>About Us</h1>
+                <h1 style={TITLE_STYLE}>
+                    About{siteName ? (
+                        <>
+                            {' '}
+                            <span style={{ color: colors?.primary || '#f26724' }}>{siteName}</span>
+                        </>
+                    ) : ' Us'}
+                </h1>
             </section>
 
             {/* --- CONTENT --- */}

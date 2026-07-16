@@ -133,7 +133,7 @@ const Header = () => {
                     </a>
                 </div>
                 <div className="top-bar__tagline">
-                    <span>🍕 Fresh. Hot. Delivered.</span>
+                    <span>🍕 {siteData.tagline || 'Fresh. Hot. Delivered.'}</span>
                 </div>
             </div>
 
@@ -153,20 +153,20 @@ const Header = () => {
                         >
                             <FaBars size={20} className="text-primary" />
                         </button>
-                        <div onClick={() => { navigate("/") }} style={{ cursor: 'pointer' }}>
-                            {loading || logoError ? (
-                                <div className="logo-placeholder placeholder-glow">
-                                    <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
-                                </div>
-                            ) : (
-                                <img
-                                    src={siteData.logo}
-                                    alt={`${siteData.site_name} Logo`}
-                                    className='logo'
-                                    onError={() => setLogoError(true)}
-                                />
-                            )}
-                        </div>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                        {loading || logoError ? (
+                            <div className="logo-placeholder placeholder-glow">
+                                <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
+                            </div>
+                        ) : (
+                            <img
+                                src={siteData.logo}
+                                alt={`${siteData.site_name} Logo`}
+                                className='logo'
+                                onError={() => setLogoError(true)}
+                            />
+                        )}
+                    </Link>
                     </div>
 
                     {/* ── RIGHT: Action icons (search, location, profile) ── */}
@@ -254,7 +254,7 @@ const Header = () => {
                 </div>
 
                 {/* Logo and Site Name */}
-                <div className="d-none d-md-flex align-items-center justify-content-center flex-fill" onClick={() => { navigate("/") }}>
+                <Link to="/" className="d-none d-md-flex align-items-center justify-content-center flex-fill" style={{ textDecoration: 'none' }}>
                     {loading || logoError ? (
                         <div className="d-flex align-items-center">
                             <div className="logo-placeholder placeholder-glow me-2">
@@ -277,7 +277,7 @@ const Header = () => {
                             </span>
                         </>
                     )}
-                </div>
+                </Link>
 
                 {/* Right Side Actions — desktop only (mobile has its own row above) */}
                 <div className="d-none d-md-flex align-items-center justify-content-end gap-2 my-md-0">
