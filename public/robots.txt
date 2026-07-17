@@ -16,4 +16,4 @@ Disallow: /search-results
 # Sitemap URL is set per-deployment via VITE_SITE_URL in .env
 # The generate-sitemap.js prebuild script regenerates sitemap.xml with the correct URL.
 # For production deployment, this line should be:  Sitemap: https://<your-domain>/sitemap.xml
-Sitemap: https://web.exter.ca/sitemap.xml
+Sitemap: https://surrey.singhflames.ca/sitemap.xml

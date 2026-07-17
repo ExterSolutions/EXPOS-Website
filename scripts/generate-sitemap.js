@@ -15,6 +15,8 @@
 import { writeFileSync, mkdirSync, readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import https from 'https';
+import http from 'http';
 
 // ── Resolve paths ─────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -105,12 +107,9 @@ console.log(`   → ${outPath}`);
 console.log(`   → ${routes.length} URLs written`);
 
 // ── Also patch robots.txt with the correct Sitemap: URL ──────────────────────
-// robots.txt is a static file — we replace the Sitemap: line with the real URL
-// so search engines can find the sitemap immediately without JavaScript.
 const robotsPath = resolve(ROOT, 'public', 'robots.txt');
 try {
     let robotsContent = readFileSync(robotsPath, 'utf-8');
-    // Replace any existing Sitemap: line (handles placeholder /sitemap.xml or old URLs)
     robotsContent = robotsContent.replace(
         /^Sitemap:.*$/m,
         `Sitemap: ${SITE_URL}/sitemap.xml`
@@ -119,4 +118,66 @@ try {
     console.log(`✅ robots.txt patched:  Sitemap: ${SITE_URL}/sitemap.xml`);
 } catch (err) {
     console.warn(`⚠️  Could not patch robots.txt: ${err.message}`);
+}
+
+// ── Download favicon from admin API → save as public/favicon.ico ─────────────
+// This ensures the browser tab favicon is correct even for:
+//   - First-time visitors (before localStorage cache is populated)
+//   - The sitemap.xml page (plain XML — JavaScript doesn’t run there)
+//
+// The admin API endpoint: GET /feed/site → data.favicon (URL)
+// We download whatever image URL the admin has set and save it as favicon.ico.
+const API_BASE  = (process.env.VITE_APP_BASE_URL || '').replace(/\/api\/v2$/, '');
+const FEED_URL  = API_BASE ? `${API_BASE}/api/v2/feed/site` : null;
+
+const downloadFavicon = (faviconUrl) => {
+    return new Promise((resolve, reject) => {
+        const client = faviconUrl.startsWith('https') ? https : http;
+        client.get(faviconUrl, (res) => {
+            if (res.statusCode === 301 || res.statusCode === 302) {
+                // Follow redirect
+                downloadFavicon(res.headers.location).then(resolve).catch(reject);
+                return;
+            }
+            const chunks = [];
+            res.on('data', chunk => chunks.push(chunk));
+            res.on('end', () => resolve(Buffer.concat(chunks)));
+            res.on('error', reject);
+        }).on('error', reject);
+    });
+};
+
+if (FEED_URL) {
+    try {
+        const client = FEED_URL.startsWith('https') ? https : http;
+        await new Promise((res, rej) => {
+            client.get(FEED_URL, { headers: { Accept: 'application/json' } }, (response) => {
+                let body = '';
+                response.on('data', d => body += d);
+                response.on('end', async () => {
+                    try {
+                        const json = JSON.parse(body);
+                        const faviconUrl = json?.data?.favicon || json?.favicon || null;
+                        if (faviconUrl) {
+                            const imgBuffer = await downloadFavicon(faviconUrl);
+                            const faviconPath = resolve(ROOT, 'public', 'favicon.ico');
+                            writeFileSync(faviconPath, imgBuffer);
+                            console.log(`✅ favicon.ico downloaded from admin API: ${faviconUrl}`);
+                        } else {
+                            console.log('⚠️  favicon not found in admin API response — using existing favicon.ico');
+                        }
+                        res();
+                    } catch (e) {
+                        console.warn(`⚠️  Could not parse admin API response for favicon: ${e.message}`);
+                        res();
+                    }
+                });
+                response.on('error', (e) => { console.warn(`⚠️  favicon API request failed: ${e.message}`); res(); });
+            }).on('error', (e) => { console.warn(`⚠️  favicon API request failed: ${e.message}`); res(); });
+        });
+    } catch (err) {
+        console.warn(`⚠️  favicon download skipped: ${err.message}`);
+    }
+} else {
+    console.log('⚠️  VITE_APP_BASE_URL not set — favicon.ico not downloaded from API');
 }

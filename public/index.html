@@ -16,9 +16,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- ── Favicon (overridden at runtime by useDynamicSEO.js) ─────────── -->
-    <link id="dynamic-favicon" rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <!-- ── Favicon ──────────────────────────────────────────────────────── -->
+    <!--
+        Strategy: 3 layers (see useDynamicSEO.js for full explanation)
+        - First-time visitors: transparent placeholder below (no Exter branding)
+        - Returning visitors:  correct favicon applied instantly from localStorage
+        - All visitors:        live admin API favicon applied within ~200ms
+        - Build time:          generate-sitemap.js downloads favicon → public/favicon.ico
+    -->
+    <link id="dynamic-favicon" rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" type="image/gif" />
     <link rel="manifest" href="/manifest.json" />
 
     <!-- ── Theme / browser chrome colour ─────────────────────────────────── -->
