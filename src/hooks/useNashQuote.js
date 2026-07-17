@@ -38,11 +38,25 @@ export function useNashQuote() {
         try {
             const phone = phoneno ? `+1${phoneno.replace(/\D/g, '')}` : undefined;
 
-            // Build a full geocodable address: "123 Main St, Toronto, ON, M5V 2T6, Canada"
-            // City and province are critical — without them Nash geocodes to the wrong region.
+            // Build a full geocodable address: "123 Main St, Surrey, BC, V3R 4P1, Canada"
+            // Province is derived from the first letter of the Canadian postal code:
+            //   V → BC (British Columbia)   T → AB (Alberta)
+            //   S → SK (Saskatchewan)       R → MB (Manitoba)
+            //   K/L/M/N/P → ON (Ontario)    G/H/J → QC (Quebec)
+            //   E → NB   B → NS   C → PE   A → NL   X → NT/NU   Y → YT
+            const POSTAL_TO_PROVINCE = {
+                A: 'NL', B: 'NS', C: 'PE', E: 'NB',
+                G: 'QC', H: 'QC', J: 'QC',
+                K: 'ON', L: 'ON', M: 'ON', N: 'ON', P: 'ON',
+                R: 'MB', S: 'SK', T: 'AB', V: 'BC',
+                X: 'NT', Y: 'YT',
+            };
+            const firstLetter = postalcode.trim().toUpperCase()[0] || '';
+            const province = POSTAL_TO_PROVINCE[firstLetter] || 'ON'; // 'ON' as safe fallback
+
             const parts = [address.trim()];
             if (city)       parts.push(city.trim());
-            parts.push('ON');           // province — all Exter stores are in Ontario
+            parts.push(province);
             parts.push(postalcode.trim());
             parts.push('Canada');
             const dropoff = parts.filter(Boolean).join(', ');

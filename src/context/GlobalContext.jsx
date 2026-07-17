@@ -6,11 +6,28 @@ import { settingApi, getStoreLocationByCity } from "../services";
 export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const dispatch = useDispatch();
+
+  // ── Dynamic root-domain helper ─────────────────────────────────────────────
+  // Returns the 2-part root domain for cross-subdomain cookies:
+  //   'surrey.singhflames.ca'  →  '.singhflames.ca'
+  //   'brampton.exter.ca'      →  '.exter.ca'
+  //   'localhost'              →  'localhost'   (no leading dot — exact match)
+  // This replaces the old hardcoded 'exter.ca' check so any customer domain works.
+  const getRootDomain = (hostname) => {
+    if (!hostname.includes('.') || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+      return hostname; // localhost or raw IP — no subdomain stripping
+    }
+    const parts = hostname.split('.');
+    // 'surrey.singhflames.ca' → ['surrey','singhflames','ca'] → '.singhflames.ca'
+    // 'exter.ca'              → ['exter','ca']               → '.exter.ca'
+    return '.' + parts.slice(-2).join('.');
+  };
+
   const getCookieData = () => {
     try {
       const cookies = document.cookie.split("; ");
       const hostname = window.location.hostname;
-      const rootDomain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
+      const rootDomain = getRootDomain(hostname);
 
       // 1. Check for Transfer Cookie (Root Domain - set during redirects)
       const transferPair = cookies.find((row) => row.startsWith("ext_store_transfer="));
@@ -173,7 +190,7 @@ export const GlobalProvider = ({ children }) => {
   // 2. Sync auth state to root-domain cookie for persistence across subdomains
   useEffect(() => {
     const hostname = window.location.hostname;
-    const domain = hostname.endsWith("exter.ca") ? ".exter.ca" : hostname;
+    const domain = getRootDomain(hostname);
 
     if (isAuthenticated && user && localStorage.getItem("token")) {
       try {
@@ -575,7 +592,7 @@ export const GlobalProvider = ({ children }) => {
     localStorage.removeItem("currentLogitude");
 
     const hostname = window.location.hostname;
-    const rootDomain = hostname.endsWith('exter.ca') ? '.exter.ca' : hostname;
+    const rootDomain = getRootDomain(hostname);
 
     // Clear root-domain transfer cookie
     document.cookie = `ext_store_transfer=; domain=${rootDomain}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
