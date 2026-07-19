@@ -2,9 +2,9 @@
 <browserconfig>
   <msapplication>
     <tile>
-      <square70x70logo src="/exter-ms-70x70.png"/>
-      <square150x150logo src="/exter-ms-150x150.png"/>
-      <square310x310logo src="/exter-ms-310x310.png"/>
+      <square70x70logo src="https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png"/>
+      <square150x150logo src="https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png"/>
+      <square310x310logo src="https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png"/>
       <TileColor>#ffffff</TileColor>
     </tile>
   </msapplication>
