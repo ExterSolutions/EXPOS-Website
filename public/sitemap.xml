@@ -1,87 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+       xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://surrey.singhflames.ca/</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/menu</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/signaturepizza</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/create-your-own</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/flex-deals</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/sides</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/dips</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/drinks</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/privacy-policy</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/terms-conditions</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/refund-policy</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/about-us</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/contact-us</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://surrey.singhflames.ca/stores</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png</image:loc>
+      <image:title>SinghFlames</image:title>
+      <image:caption>Site logo for https://surrey.singhflames.ca</image:caption>
+    </image:image>
   </url>
 </urlset>
