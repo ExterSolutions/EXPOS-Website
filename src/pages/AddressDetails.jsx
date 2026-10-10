@@ -365,7 +365,7 @@ function AddressDetails() {
                     || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode
                     || globalSelectedStore?.cityCode
                     || "",
-                storeCode: currentStoreCode,
+                storeCode: currentStoreCode === 'EXP' ? undefined : currentStoreCode,
                 products: cart?.product,
                 subTotal: cart?.subtotal,
                 discountAmount: cart?.discountAmount,
@@ -395,7 +395,7 @@ function AddressDetails() {
             localStorage.setItem("pendingOrderMeta", JSON.stringify({
                 orderCode: orderResponse.orderCode,
                 orderNumber: orderResponse.orderNumber,
-                storeCode: currentStoreCode,
+                storeCode: currentStoreCode === 'EXP' ? undefined : currentStoreCode,
                 customerName: custFullName,
                 phoneNumber: values?.phoneno,
                 deliveryType: "delivery",

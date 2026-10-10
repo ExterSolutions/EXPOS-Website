@@ -249,9 +249,9 @@ const Home = () => {
             <div className="container-fluid container-lg px-0">
                 <CategoryPizza />
                 {/* Top Deals — Flex Deals only (V3 API). Horizontal list cards, tiles link to /flex-deals/:code */}
-                <PizzaCarousel sectionSubTitle={`🔥 Craving Something Delicious?`} sectionTitle={`Top Deals`} pizzas={topDealsList} type="flex" redirectBase={'/flex-deals'} viewAllLink="/flex-deals" layout="horizontal" />
-                <PizzaCarousel sectionSubTitle={`Choose your Flavour`} sectionTitle={`Signature Pizzas`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} viewAllLink="/signaturepizza" layout="horizontal" />
-                <PizzaCarousel sectionSubTitle={`Our Customers Love These`} sectionTitle={`Best Sellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} showBestSelling={true} viewAllLink="/menu" layout="horizontal" />
+                <PizzaCarousel sectionSubTitle={`🔥 Hot Deals & Combos`} sectionTitle={`Top Deals`} pizzas={topDealsList} type="flex" redirectBase={'/flex-deals'} viewAllLink="/flex-deals" layout="horizontal" />
+                <PizzaCarousel sectionSubTitle={`🍕 Choose Your Flavour`} sectionTitle={`Signature Pizzas`} pizzas={signaturePizzaList} type="signature" redirectBase={'/signaturepizza'} viewAllLink="/signaturepizza" layout="horizontal" />
+                <PizzaCarousel sectionSubTitle={`⭐ Customer Favourites`} sectionTitle={`Best Sellers`} pizzas={PopulerPizzaList} type="menu" redirectBase={'/menu'} showBestSelling={true} viewAllLink="/menu" layout="horizontal" />
             </div>
             <div className="container-fluid px-0">
                 {/* <DownloadSection /> */}

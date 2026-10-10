@@ -65,7 +65,7 @@ export function useNashQuote() {
             const response = await getDeliveryQuote({
                 dropoff_address: dropoff,
                 ...(phone ? { dropoff_phone: phone } : {}),
-                store_code:  storeCode,
+                store_code: storeCode === 'EXP' ? undefined : storeCode,
                 order_value: orderValue,
             });
 

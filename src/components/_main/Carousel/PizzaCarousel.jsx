@@ -83,6 +83,7 @@ const PizzaCarousel = ({
                         {viewAllLink && (
                             <Link
                                 to={viewAllLink}
+                                className="section-view-all-btn"
                                 style={{
                                     flexShrink: 0,
                                     fontSize: '0.78rem',

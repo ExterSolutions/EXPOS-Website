@@ -12,9 +12,12 @@
 
 /* ── 2. Section header mobile ───────────────────────────────── */
 @media (max-width: 640px) {
-    .pizza-carousel-section .section-header    { margin-bottom: 0.6rem; }
-    .pizza-carousel-section .category-subtitle { font-size: 0.7rem; letter-spacing: 0.1em; margin-bottom: 0.15rem; display: block; }
-    .pizza-carousel-section .section-title     { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+    .pizza-carousel-section .section-header,
+    .category-section .section-header           { margin-bottom: 0.6rem; }
+    .pizza-carousel-section .category-subtitle,
+    .category-section .category-subtitle        { font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 0.2rem; display: block; font-weight: 800; text-transform: uppercase; }
+    .pizza-carousel-section .section-title,
+    .category-section .section-title            { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
 }
 
 /* ── 3. Grid — uniform tile sizes (grid layout) ──────────────── */
@@ -64,10 +67,14 @@
 }
 @media (max-width: 480px) {
     .category-section          { padding-top: 0.6rem; padding-bottom: 0; }
-    .category-image-wrapper    { width: 5rem; height: 5rem; }
-    .category-name             { font-size: 0.68rem; font-weight: 700; }
-    .category-section .section-title     { font-size: 1.2rem; }
-    .category-section .category-subtitle { font-size: 0.68rem; }
+    .category-image-wrapper    { width: 7.8rem; height: 7.8rem; }
+    .category-name             { font-size: 0.85rem; font-weight: 700; margin-top: 0.35rem; }
+    .category-section .section-title     { font-size: 1.25rem; }
+    .category-section .category-subtitle { font-size: 0.7rem; }
+}
+@media (max-width: 360px) {
+    .category-image-wrapper    { width: 7.2rem; height: 7.2rem; }
+    .category-name             { font-size: 0.8rem; }
 }
 
 /* ── 5. Overflow guard ──────────────────────────────────────── */

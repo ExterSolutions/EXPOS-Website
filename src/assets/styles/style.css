@@ -23165,23 +23165,34 @@ body {
 
 @media (max-width: 480px) {
   .category-image-wrapper {
-    width: 5.5rem;
-    height: 5.5rem;
+    width: 7.8rem;
+    height: 7.8rem;
   }
 
   .category-name {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
   }
 }
 
 @media (max-width: 390px) {
   .category-image-wrapper {
-    width: 4.8rem;
-    height: 4.8rem;
+    width: 7.5rem;
+    height: 7.5rem;
   }
 
   .category-name {
-    font-size: 0.65rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .category-image-wrapper {
+    width: 7.2rem;
+    height: 7.2rem;
+  }
+
+  .category-name {
+    font-size: 0.8rem;
   }
 }
 

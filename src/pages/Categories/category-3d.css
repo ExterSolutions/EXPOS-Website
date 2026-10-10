@@ -1,0 +1,284 @@
+/* ==========================================================================
+   MODERN 3D CATEGORY CAROUSEL STYLES
+   Squircle cards with floating 3D dish photography and ambient glow
+   ========================================================================== */
+
+.category-3d-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.category-3d-swiper {
+  padding: 12px 6px 38px !important;
+  margin: -12px -6px 0 !important;
+  overflow: visible !important;
+}
+
+/* Card Shell */
+.category-3d-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 1.25rem;
+  padding: 1rem 0.75rem 0.85rem;
+  min-height: 198px;
+  border: 1.5px solid #edf2f7;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+  overflow: visible;
+  text-decoration: none !important;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.category-3d-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(255, 107, 53, 0.18);
+  border-color: #ff6b35;
+  color: inherit;
+}
+
+/* Floating Badge */
+.category-3d-badge {
+  position: absolute;
+  top: -8px;
+  right: 10px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(255, 107, 53, 0.35);
+  z-index: 5;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Header (Title & Tagline) */
+.category-3d-header {
+  text-align: center;
+  width: 100%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.category-3d-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  transition: color 0.2s ease;
+}
+
+.category-3d-card:hover .category-3d-name {
+  color: #ff6b35;
+}
+
+.category-3d-tagline {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 0.25rem;
+  line-height: 1.2;
+}
+
+/* 3D Floating Image Stage */
+.category-3d-stage {
+  position: relative;
+  width: 100%;
+  height: 98px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.35rem 0 0.5rem;
+  perspective: 700px;
+}
+
+.category-3d-img {
+  max-width: 115px;
+  max-height: 96px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.14));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.35s ease;
+  transform: translateZ(12px);
+  display: block;
+}
+
+.category-3d-card:hover .category-3d-img {
+  transform: scale(1.1) translateY(-4px) translateZ(24px);
+  filter: drop-shadow(0 16px 20px rgba(255, 107, 53, 0.28));
+}
+
+/* Action Circle Button */
+.category-3d-btn {
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  border: none;
+  box-shadow: 0 4px 10px rgba(255, 107, 53, 0.32);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.category-3d-card:hover .category-3d-btn {
+  transform: scale(1.14);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.48);
+}
+
+/* Modern Swiper Pagination Bullets (Capsule Indicator) */
+.category-3d-wrap .swiper-pagination {
+  bottom: 4px !important;
+}
+
+.category-3d-wrap .swiper-pagination-bullet {
+  width: 7px;
+  height: 7px;
+  background: #cbd5e1;
+  opacity: 1;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  margin: 0 4px !important;
+}
+
+.category-3d-wrap .swiper-pagination-bullet-active {
+  width: 22px;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+}
+
+/* Mobile & Tablet Fine-tuning */
+@media (max-width: 480px) {
+  .category-3d-card {
+    min-height: 182px;
+    padding: 0.9rem 0.6rem 0.75rem;
+    border-radius: 1.15rem;
+  }
+  
+  .category-3d-name {
+    font-size: 0.85rem;
+  }
+  
+  .category-3d-tagline {
+    font-size: 0.63rem;
+  }
+  
+  .category-3d-stage {
+    height: 86px;
+    margin: 0.25rem 0 0.4rem;
+  }
+  
+  .category-3d-img {
+    max-width: 102px;
+    max-height: 86px;
+  }
+  
+  .category-3d-btn {
+    width: 1.85rem;
+    height: 1.85rem;
+    min-width: 1.85rem;
+    font-size: 0.68rem;
+  }
+  
+  .category-3d-badge {
+    font-size: 0.58rem;
+    padding: 2px 7px;
+    top: -7px;
+    right: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .category-3d-card {
+    min-height: 172px;
+    padding: 0.8rem 0.5rem 0.7rem;
+  }
+  
+  .category-3d-name {
+    font-size: 0.8rem;
+  }
+  
+  .category-3d-stage {
+    height: 78px;
+  }
+  
+  .category-3d-img {
+    max-width: 90px;
+    max-height: 78px;
+  }
+}
+
+/* ── Section Headers & Navigation Actions ──────────────────── */
+.category-section .category-subtitle,
+.pizza-carousel-section .category-subtitle {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.category-section .section-title,
+.pizza-carousel-section .section-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.section-view-all-btn {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 2rem;
+  padding: 0.28rem 0.8rem;
+  text-decoration: none !important;
+  white-space: nowrap;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.section-view-all-btn:hover {
+  transform: translateX(3px);
+  background: rgba(255, 107, 53, 0.08) !important;
+}
+
+@media (max-width: 640px) {
+  .category-section .section-title,
+  .pizza-carousel-section .section-title {
+    font-size: 1.25rem;
+  }
+  
+  .category-section .category-subtitle,
+  .pizza-carousel-section .category-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
+  }
+}
