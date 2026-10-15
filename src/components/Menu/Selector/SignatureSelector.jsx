@@ -1,32 +1,51 @@
-// import "../../../assets/styles/grid-cards.css";
-// import "../../../assets/styles/menu-cards/signatures.css";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaStar, FaArrowRight } from 'react-icons/fa';
 import SignaturePizzas from '../../_main/SignaturePizza/signturePizza';
 import CartFunction from '../../cart';
 
 function SignatureSelector({ signaturePizzas, topping }) {
     const cartFn = new CartFunction();
+    const navigate = useNavigate();
+
     if (!signaturePizzas || signaturePizzas.length === 0) return null;
+
     return (
-        <>
-            <div className="section pt-1" id="signaturemenucard">
-                <div className="d-flex align-items-center justify-content-between mb-3">
-                    <div className="flex-grow-1 section-header">
-                        <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
-                        <div className="section-title">Our Customers Top Picks</div>
-                    </div>
+        <section className="menu-section pt-4" id="signature-pizzas">
+            <div className="menu-section-header-wrapper d-flex align-items-end justify-content-between mb-4 flex-wrap gap-2">
+                <div>
+                    <span className="menu-section-pill-tag">
+                        <FaStar className="me-1 text-warning" /> CHEF'S SIGNATURE SPECIALS
+                    </span>
+                    <h2 className="menu-section-heading mt-1 mb-0">Signature Pizzas</h2>
+                    <p className="menu-section-subtext mb-0 mt-1">
+                        Customer favorites and specialty recipes loaded with gourmet ingredients.
+                    </p>
                 </div>
-                <div className="row g-3 signature-grid">
-                    {signaturePizzas?.map((data) => {
-                        return (
-                            <div className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
-                                <SignaturePizzas data={data} cartFn={cartFn} toppingsData={topping} />
-                            </div>
-                        )
-                    })}
-                </div>
+                <button
+                    className="menu-section-view-all-btn"
+                    onClick={() => navigate('/signaturepizza')}
+                >
+                    View All Signatures <FaArrowRight className="ms-1" size={12} />
+                </button>
             </div>
-        </>
-    )
+
+            <div className="row g-3 signature-grid" id="signaturemenucard">
+                {signaturePizzas.map((data) => (
+                    <div
+                        className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3"
+                        key={'signature-card-' + data?.code}
+                    >
+                        <SignaturePizzas
+                            data={data}
+                            cartFn={cartFn}
+                            toppingsData={topping}
+                        />
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
 }
 
-export default SignatureSelector
+export default SignatureSelector;
