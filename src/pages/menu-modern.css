@@ -71,7 +71,7 @@
 .menu-nav-sticky {
     position: sticky;
     top: 0;
-    z-index: 1025;
+    z-index: 1010;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -306,7 +306,7 @@
     /* Pinned category pills stick neatly below mobile top bar (70px) */
     .menu-nav-sticky {
         top: 70px !important;
-        z-index: 1028 !important;
+        z-index: 1015 !important;
         padding: 0.42rem 0;
         background: rgba(255, 255, 255, 0.98);
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);

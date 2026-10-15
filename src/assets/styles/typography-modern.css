@@ -266,3 +266,18 @@ p {
     }
 }
 
+/* ── Mobile Sidebar Drawer & Overlay Stacking Layer ───────── */
+.mobile-menu-wrapper {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.mobile-menu {
+    z-index: 99999 !important;
+}
+
+.overlay {
+    z-index: 99998 !important;
+}
+
+
