@@ -1,6 +1,6 @@
 // components/Header.js
 import { useContext, useEffect, useState } from 'react';
-import { FaBars, FaEdit, FaGlassCheers, FaMapMarkerAlt, FaPizzaSlice, FaSearch, FaTag, FaTimes, FaUserCircle } from 'react-icons/fa';
+import { FaBars, FaEdit, FaGlassCheers, FaHome, FaMapMarkerAlt, FaPhoneAlt, FaPizzaSlice, FaSearch, FaStore, FaTag, FaTimes, FaUser, FaUserCircle } from 'react-icons/fa';
 import { FaCartShopping } from "react-icons/fa6";
 import { GiPizzaSlice } from 'react-icons/gi';
 import { IoColorPalette } from 'react-icons/io5';
@@ -15,6 +15,7 @@ import SearchDropdown from './SearchDropdown';
 import StoreSelectModal from '../StoreSelectModal';
 import OrderTypeModal from '../OrderTypeModal';
 import { GiFullPizza } from "react-icons/gi";
+import './modern-navbar.css';
 // Import custom hooks
 import { useStickyHeader } from './hooks/useStickyHeader';
 import { useDropdown } from './hooks/useDropdown';
@@ -93,6 +94,11 @@ const Header = () => {
     const { showStorePopup, setShowStorePopup } = useStorePopup();
     const location = useLocation();
     const { handleOrderNowClick } = useOrderNow();
+
+    const isActive = (path) => {
+        if (path === '/') return location.pathname === '/';
+        return location.pathname.startsWith(path);
+    };
 
     // Hide 'Order Now' when user is already on a product/customisation page
     const HIDE_ORDER_NOW_PATHS = [
@@ -420,55 +426,77 @@ const Header = () => {
                 </div>
             )}
 
-            {/* NAVBAR - uses bg-primary (will be RED) */}
+            {/* MODERN DESKTOP NAVBAR */}
             <nav
                 ref={navbarRef}
-                className={`navbar navbar-expand-md navbar-dark ${isSticky ? "fixed-top animate-navbar" : ""}`}
+                className={`modern-desktop-navbar d-none d-md-block ${isSticky ? "fixed-top animate-navbar" : ""}`}
             >
-                <div className="container-fluid container-md justify-content-center">
-                    <div
-                        className={`collapse navbar-collapse justify-content-center ${isOpen ? "show animate-x" : ""}`}
-                        id="navbarContent"
-                    >
-                        <ul className="navbar-nav gap-4 fs-6 fw-semibold align-items-center">
-                            <li className="nav-item">
+                <div className="container-fluid container-md">
+                    <ul className="modern-nav-list">
+                        <li className="modern-nav-item">
+                            <Link
+                                to="/"
+                                className={`modern-nav-link ${isActive('/') ? 'active' : ''}`}
+                                onClick={() => { setMenuOpen(false); setIsOpen(false); }}
+                            >
+                                <span className="modern-nav-icon"><FaHome size={15} /></span>
+                                <span>Home</span>
+                            </Link>
+                        </li>
+                        <li className="modern-nav-item">
+                            <Link
+                                to="/menu"
+                                className={`modern-nav-link ${isActive('/menu') ? 'active' : ''}`}
+                                onClick={() => { setMenuOpen(false); setIsOpen(false); }}
+                            >
+                                <span className="modern-nav-icon"><GiPizzaSlice size={16} /></span>
+                                <span>Menu</span>
+                            </Link>
+                        </li>
+                        <li className="modern-nav-item">
+                            <Link
+                                to="/flex-deals"
+                                className={`modern-nav-link ${isActive('/flex-deals') ? 'active' : ''}`}
+                                onClick={() => { setMenuOpen(false); setIsOpen(false); }}
+                            >
+                                <span className="modern-nav-icon"><FaTag size={14} /></span>
+                                <span>Flex Deals</span>
+                                <span className="modern-nav-badge">Hot</span>
+                            </Link>
+                        </li>
+                        <li className="modern-nav-item">
+                            <Link
+                                to="/stores"
+                                className={`modern-nav-link ${isActive('/stores') ? 'active' : ''}`}
+                                onClick={() => { setMenuOpen(false); setIsOpen(false); }}
+                            >
+                                <span className="modern-nav-icon"><FaStore size={15} /></span>
+                                <span>Stores</span>
+                            </Link>
+                        </li>
+                        <li className="modern-nav-item">
+                            <Link
+                                to="/contact-us"
+                                className={`modern-nav-link ${isActive('/contact-us') ? 'active' : ''}`}
+                                onClick={() => { setMenuOpen(false); setIsOpen(false); }}
+                            >
+                                <span className="modern-nav-icon"><FaPhoneAlt size={14} /></span>
+                                <span>Contact Us</span>
+                            </Link>
+                        </li>
+                        {!isAuthenticated && (
+                            <li className="modern-nav-item">
                                 <Link
-                                    to="/"
-                                    className="nav-link active"
+                                    to="/login"
+                                    className="modern-nav-login"
                                     onClick={() => { setMenuOpen(false); setIsOpen(false); }}
-                                >Home</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    to="/"
-                                    className="nav-link"
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        setIsOpen(false);
-                                    }}
                                 >
-                                    Menu
+                                    <FaUser size={12} />
+                                    <span>Login</span>
                                 </Link>
                             </li>
-                            {/* <li className="nav-item">
-                                <Link to="/stores" className="nav-link">Stores</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/franchise" className="nav-link">Franchise</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/about-us" className="nav-link">About</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/contact-us" className="nav-link">Contact</Link>
-                            </li> */}
-                            <li className="nav-item">
-                                {!isAuthenticated && (
-                                    <Link to="/login" className="nav-link border border-white rounded-pill px-3">Login</Link>
-                                )}
-                            </li>
-                        </ul>
-                    </div>
+                        )}
+                    </ul>
                 </div>
             </nav>
             {/* Store Change Modal */}
