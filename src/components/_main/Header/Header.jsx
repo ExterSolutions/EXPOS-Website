@@ -1,6 +1,6 @@
 // components/Header.js
 import { useContext, useEffect, useState } from 'react';
-import { FaBars, FaEdit, FaGlassCheers, FaHome, FaMapMarkerAlt, FaPhoneAlt, FaPizzaSlice, FaSearch, FaStore, FaTag, FaTimes, FaUser, FaUserCircle } from 'react-icons/fa';
+import { FaBars, FaEdit, FaEnvelope, FaGlassCheers, FaHome, FaMapMarkerAlt, FaPhoneAlt, FaPizzaSlice, FaSearch, FaStore, FaTag, FaTimes, FaUser, FaUserCircle } from 'react-icons/fa';
 import { FaCartShopping } from "react-icons/fa6";
 import { GiPizzaSlice } from 'react-icons/gi';
 import { IoColorPalette } from 'react-icons/io5';
@@ -129,12 +129,12 @@ const Header = () => {
             <div className="top-bar d-none d-md-flex">
                 <div className="top-bar__contact">
                     <a href={`mailto:${siteData.contact_email}`} className="top-bar__link" aria-label="Email us">
-                        <i className="bi bi-envelope-fill top-bar__icon"></i>
+                        <FaEnvelope className="top-bar__icon" />
                         <span>{siteData.contact_email}</span>
                     </a>
                     <span className="top-bar__divider" aria-hidden="true"></span>
                     <a href={`tel:${siteData.contact_phone}`} className="top-bar__link" aria-label="Call us">
-                        <i className="bi bi-telephone-fill top-bar__icon"></i>
+                        <FaPhoneAlt className="top-bar__icon" />
                         <span>{siteData.contact_phone}</span>
                     </a>
                 </div>
@@ -145,84 +145,84 @@ const Header = () => {
 
             {/* MIDDLE SECTION */}
             <div className={`middle-section bg-white ${isSticky ? "fixed-top-middle-mobile" : ""}`}>
-                {/* Mobile small row - hidden on md and above */}
-                <div className="middle-small d-md-none">
+                <div className="middle-section-inner">
+                    {/* Mobile small row - hidden on md and above */}
+                    <div className="middle-small d-md-none w-100">
 
-                    {/* ── LEFT: Brand group (hamburger + logo) ── */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <button
-                            className="navbar-toggler border-0"
-                            type="button"
-                            onClick={toggleMobileMenu}
-                            aria-label={`${openMobileMenu ? 'Close' : 'Open'} mobile menu`}
-                            aria-expanded={openMobileMenu}
-                        >
-                            <FaBars size={20} className="text-primary" />
-                        </button>
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                        {loading || logoError ? (
-                            <div className="logo-placeholder placeholder-glow">
-                                <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
-                            </div>
-                        ) : (
-                            <img
-                                src={siteData.logo}
-                                alt={`${siteData.site_name} Logo`}
-                                className='logo'
-                                onError={() => setLogoError(true)}
-                            />
-                        )}
-                    </Link>
-                    </div>
+                        {/* ── LEFT: Brand group (hamburger + logo) ── */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <button
+                                className="navbar-toggler border-0"
+                                type="button"
+                                onClick={toggleMobileMenu}
+                                aria-label={`${openMobileMenu ? 'Close' : 'Open'} mobile menu`}
+                                aria-expanded={openMobileMenu}
+                            >
+                                <FaBars size={20} className="text-primary" />
+                            </button>
+                            <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                                {loading || logoError ? (
+                                    <div className="logo-placeholder placeholder-glow">
+                                        <span className="placeholder w-100 h-100 rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '45px', height: '45px' }}></span>
+                                    </div>
+                                ) : (
+                                    <img
+                                        src={siteData.logo}
+                                        alt={`${siteData.site_name} Logo`}
+                                        className='logo'
+                                        onError={() => setLogoError(true)}
+                                    />
+                                )}
+                            </Link>
+                        </div>
 
-                    {/* ── RIGHT: Action icons (search, location, profile) ── */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <button
-                            className='btn-search'
-                            aria-label="Search"
-                            onClick={handleMobileSearchOpen}
-                            style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                            <FaSearch size={20} className="text-secondary" />
-                        </button>
-
-                        {selectedStore && (
+                        {/* ── RIGHT: Action icons (search, location, profile) ── */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <button
                                 className='btn-search'
-                                aria-label="Change store"
-                                onClick={() => setShowStorePopup && setShowStorePopup(true)}
+                                aria-label="Search"
+                                onClick={handleMobileSearchOpen}
                                 style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
-                                <FaMapMarkerAlt size={20} className="text-primary" />
+                                <FaSearch size={20} className="text-secondary" />
                             </button>
-                        )}
 
-                        {/* Cart is in the BottomNav on mobile — no need to duplicate it here */}
+                            {selectedStore && (
+                                <button
+                                    className='btn-search'
+                                    aria-label="Change store"
+                                    onClick={() => setShowStorePopup && setShowStorePopup(true)}
+                                    style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <FaMapMarkerAlt size={20} className="text-primary" />
+                                </button>
+                            )}
 
-                        {isAuthenticated && (
-                            <button
-                                type="button"
-                                className="btn-search d-flex align-items-center"
-                                onClick={() => navigate('/my-account')}
-                                aria-label="My Account"
-                                style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            >
-                                <FaUserCircle className="text-primary" size={22} />
-                            </button>
-                        )}
+                            {/* Cart is in the BottomNav on mobile — no need to duplicate it here */}
+
+                            {isAuthenticated && (
+                                <button
+                                    type="button"
+                                    className="btn-search d-flex align-items-center"
+                                    onClick={() => navigate('/my-account')}
+                                    aria-label="My Account"
+                                    style={{ minWidth: 40, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <FaUserCircle className="text-primary" size={22} />
+                                </button>
+                            )}
+                        </div>
+
                     </div>
 
-                </div>
-
-
-                {/* Desktop Search - shown from md (tablet) and above */}
-                <div className='d-none d-md-block position-relative' ref={searchRef} style={{ minWidth: "250px", maxWidth: "300px", flex: "1" }}>
-                    <form onSubmit={handleSearchSubmit}>
-                        <div className="search-box flex-grow-1 position-relative">
-                            <div className="input-group shadow-sm rounded-pill">
+                    {/* Desktop Search - shown from md (tablet) and above */}
+                    <div className='d-none d-md-block desktop-search-wrapper' ref={searchRef}>
+                        <form onSubmit={handleSearchSubmit}>
+                            <div className="modern-search-input-wrap">
+                                <FaSearch className="modern-search-icon" size={15} />
                                 <input
                                     type="text"
-                                    className="form-control border-0 rounded-pill ps-3 pe-4"
+                                    className="modern-search-input"
                                     placeholder="Search products..."
                                     value={searchQuery}
                                     onChange={handleSearchChange}
@@ -232,150 +232,135 @@ const Header = () => {
                                         }
                                     }}
                                 />
-                                <button
-                                    type={searchQuery ? "button" : "submit"}
-                                    className="btn rounded-circle position-absolute end-0 top-0 bottom-0 me-2"
-                                    onClick={searchQuery ? handleClearSearch : undefined}
-                                    aria-label={searchQuery ? "Clear search" : "Search"}
-                                >
-                                    {searchQuery ? (
-                                        <FaTimes size={18} className="text-muted" />
-                                    ) : (
-                                        <FaSearch size={20} className='text-primary' />
-                                    )}
-                                </button>
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        className="modern-search-clear"
+                                        onClick={handleClearSearch}
+                                        aria-label="Clear search"
+                                    >
+                                        <FaTimes size={13} />
+                                    </button>
+                                )}
                             </div>
 
                             {/* Search Dropdown */}
                             {showSearchDropdown && (
-                                <div className="position-absolute w-100 mt-1 search-dropdown-container" style={{ zIndex: 1060 }}>
+                                <div className="position-absolute w-100 mt-2 search-dropdown-container" style={{ zIndex: 1060 }}>
                                     <SearchDropdown
                                         results={searchResults}
                                         onClose={handleSearchItemClick}
                                     />
                                 </div>
                             )}
-                        </div>
-                    </form>
-                </div>
+                        </form>
+                    </div>
 
-                {/* Logo and Site Name */}
-                <Link to="/" className="d-none d-md-flex align-items-center justify-content-center flex-fill" style={{ textDecoration: 'none' }}>
-                    {loading || logoError ? (
-                        <div className="d-flex align-items-center">
-                            <div className="logo-placeholder placeholder-glow me-2">
-                                <span className="placeholder rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '58px', height: '58px' }}></span>
-                            </div>
-                            <span className="fw-bold fs-5 text-primary align-middle">
-                                {loading ? "Loading..." : siteData.site_name}
-                            </span>
-                        </div>
-                    ) : (
-                        <>
-                            <img
-                                src={siteData.logo}
-                                alt={`${siteData.site_name} Logo`}
-                                className='logo'
-                                onError={() => setLogoError(true)}
-                            />
-                            <span className="fw-bold fs-5 text-primary ms-2 align-middle">
-                                {siteData.site_name}
-                            </span>
-                        </>
-                    )}
-                </Link>
-
-                {/* Right Side Actions — desktop only (mobile has its own row above) */}
-                <div className="d-none d-md-flex align-items-center justify-content-end gap-2 my-md-0">
-                    {/* Store badge — desktop only */}
-                    {selectedStore && (
-                        <div
-                            className="d-none d-md-flex align-items-center gap-2 px-3 py-2"
-                            style={{
-                                border: '1.5px solid var(--primary, #E63946)',
-                                borderRadius: '14px',
-                                fontSize: '0.72rem',
-                                color: 'var(--primary, #E63946)',
-                                background: 'rgba(230,57,70,0.04)',
-                                minWidth: 0,
-                                maxWidth: 300,
-                            }}
-                        >
-                            <FaMapMarkerAlt size={13} className="flex-shrink-0" />
-
-                            {/* Text block */}
-                            <div style={{ flex: 1, minWidth: 0, lineHeight: 1.35 }}>
-                                <div className="fw-bold text-truncate">
-                                    {selectedStore.storeLocation || selectedStore.city}
+                    {/* Logo and Site Name */}
+                    <Link to="/" className="d-none d-md-flex align-items-center justify-content-center desktop-brand-link">
+                        {loading || logoError ? (
+                            <div className="d-flex align-items-center">
+                                <div className="logo-placeholder placeholder-glow me-2">
+                                    <span className="placeholder rounded-circle" style={{ backgroundColor: "#e0e0e0", display: 'block', width: '52px', height: '52px' }}></span>
                                 </div>
-                                {selectedStore.storeAddress && (
-                                    <div className="text-truncate" style={{ opacity: 0.6 }}>
-                                        {selectedStore.storeAddress}
-                                    </div>
-                                )}
+                                <span className="desktop-brand-text">
+                                    {loading ? "Loading..." : siteData.site_name}
+                                </span>
                             </div>
+                        ) : (
+                            <>
+                                <img
+                                    src={siteData.logo}
+                                    alt={`${siteData.site_name} Logo`}
+                                    className='desktop-brand-logo'
+                                    onError={() => setLogoError(true)}
+                                />
+                                <span className="desktop-brand-text ms-2">
+                                    {siteData.site_name}
+                                </span>
+                            </>
+                        )}
+                    </Link>
 
-                            {/* ── Order-type pill ──────────────────────────────── */}
-                            <button
-                                type="button"
-                                className={`otm-pill otm-pill--${selectedType || 'pickup'}`}
-                                onClick={() => setShowOrderTypeModal(true)}
-                                title={`Switch order type (currently ${selectedType || 'pickup'})`}
-                            >
-                                {selectedType === 'delivery' ? '🚚' : '🏪'}
-                                {' '}{selectedType === 'delivery' ? 'Delivery' : 'Pickup'}
-                            </button>
-
-                            <button
-                                type="button"
+                    {/* Right Side Actions — desktop only (mobile has its own row above) */}
+                    <div className="d-none d-md-flex desktop-actions-wrapper">
+                        {/* Store badge — desktop only */}
+                        {selectedStore && (
+                            <div
+                                className="desktop-store-card"
                                 onClick={() => setShowStorePopup && setShowStorePopup(true)}
-                                className="btn btn-sm p-1 flex-shrink-0"
-                                style={{ color: 'var(--primary, #E63946)', lineHeight: 1 }}
-                                title="Change store"
+                                title="Click to change store"
                             >
-                                <FaEdit size={13} />
-                            </button>
-                        </div>
-                    )}
+                                <div className="store-card-icon-chip">
+                                    <FaMapMarkerAlt size={14} />
+                                </div>
 
-                    {
-                        !hideOrderNow && cart && cart?.product?.length <= 0 && (
+                                <div className="store-card-info">
+                                    <div className="store-card-title">
+                                        {selectedStore.storeLocation || selectedStore.city}
+                                    </div>
+                                    {selectedStore.storeAddress && (
+                                        <div className="store-card-sub">
+                                            {selectedStore.storeAddress}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Order-type pill */}
+                                <button
+                                    type="button"
+                                    className={`otm-pill otm-pill--${selectedType || 'pickup'}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowOrderTypeModal(true);
+                                    }}
+                                    title={`Switch order type (currently ${selectedType || 'pickup'})`}
+                                >
+                                    {selectedType === 'delivery' ? '🚚' : '🏪'}
+                                    {' '}{selectedType === 'delivery' ? 'Delivery' : 'Pickup'}
+                                </button>
+
+                                <div className="store-card-edit-btn" title="Change store">
+                                    <FaEdit size={13} />
+                                </div>
+                            </div>
+                        )}
+
+                        {!hideOrderNow && cart && cart?.product?.length <= 0 && (
                             <button
                                 type='button'
                                 onClick={handleOrderNowClick}
-                                className="btn btn-primary rounded-pill fw-semibold shadow-md order-now-mobile-btn bg-primary text-white d-none d-md-inline-block"
-                                style={{
-                                    backgroundColor: 'var(--primary)',
-                                    borderColor: 'var(--primary)'
-                                }}
+                                className="desktop-order-now-btn"
                             >
                                 Order Now
                             </button>
-                        )
-                    }
+                        )}
 
-                    <button
-                        type='button'
-                        onClick={() => navigate('/cart')}
-                        className="btn fw-semibold d-flex position-relative"
-                        aria-label="View Cart"
-                    >
-                        <span className="position-absolute top-0 start-100 translate-middle cart-count">
-                            {cart?.product.length ? cart?.product.length > 9 ? "9+" : cart?.product.length : (0)}
-                        </span>
-                        <FaCartShopping className="text-primary" size={20} />
-                    </button>
-
-                    {isAuthenticated && (
                         <button
                             type='button'
-                            onClick={() => navigate("/my-account")}
-                            className="btn fw-semibold d-flex align-items-center"
-                            aria-label="My Account"
+                            onClick={() => navigate('/cart')}
+                            className="desktop-action-icon-btn"
+                            aria-label="View Cart"
                         >
-                            <FaUserCircle className="text-primary" size={24} />
+                            <FaCartShopping size={18} />
+                            {Boolean(cart?.product?.length) && (
+                                <span className="desktop-cart-counter">
+                                    {cart?.product.length > 9 ? "9+" : cart?.product.length}
+                                </span>
+                            )}
                         </button>
-                    )}
+
+                        {isAuthenticated && (
+                            <button
+                                type='button'
+                                onClick={() => navigate("/my-account")}
+                                className="desktop-action-icon-btn"
+                                aria-label="My Account"
+                            >
+                                <FaUserCircle size={22} />
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 
