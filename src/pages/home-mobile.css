@@ -79,7 +79,7 @@
 
 /* ── 5. Overflow guard ──────────────────────────────────────── */
 @media (max-width: 640px) {
-    .container-fluid.container-lg { overflow-x: hidden; }
+    .container-fluid.container-lg { overflow-x: clip; }
 }
 
 /* ================================================================

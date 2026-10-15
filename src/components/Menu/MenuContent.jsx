@@ -76,7 +76,8 @@ function MenuContent({
         setActiveCategory(catId);
         const element = document.getElementById(targetId);
         if (element) {
-            const yOffset = -90;
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+            const yOffset = isMobile ? -118 : -85;
             const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
         }
@@ -85,7 +86,8 @@ function MenuContent({
     // Auto update active category pill based on scroll position
     useEffect(() => {
         const handleScroll = () => {
-            const scrollPos = window.scrollY + 120;
+            const isMobile = window.innerWidth < 768;
+            const scrollPos = window.scrollY + (isMobile ? 130 : 100);
             for (let i = categories.length - 1; i >= 0; i--) {
                 const cat = categories[i];
                 const el = document.getElementById(cat.targetId);
