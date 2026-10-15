@@ -1,15 +1,16 @@
-
 import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import '../../../../src/cardsui/cardsui.css';
-import {GlobalContext} from "../../../context/GlobalContext";
+import '../../../assets/styles/modern-cards.css';
+import SafeImage from "../../common/SafeImage";
+import dipsFallback from '../../../assets/images/download/new/cat/dips.png';
+import { GlobalContext } from "../../../context/GlobalContext";
 
 function Dips({ data, cartFn }) {
     const globalctx = useContext(GlobalContext);
     const [cart, setCart] = globalctx.cart;
     const [settings] = globalctx.settings;
-    const [currentStoreCode, setCurrentStoreCode] = globalctx.currentStoreCode;
+    const [currentStoreCode] = globalctx.currentStoreCode;
     const [showStorePopup, setShowStorePopup] = globalctx.showStorePopup;
 
     const [count, setCount] = useState(1);
@@ -26,13 +27,12 @@ function Dips({ data, cartFn }) {
     };
 
     const handleDips = (e) => {
-        e.preventDefault();
-        // alert(currentStoreCode)
+        if (e && e.preventDefault) e.preventDefault();
         if (currentStoreCode === undefined || currentStoreCode === null) {
             setShowStorePopup(true);
             return;
         }
-        const totalPrice = data?.price * count;
+        const totalPrice = Number(data?.price || 0) * count;
         const obj = {
             id: uuidv4(),
             customerCode: user?.data?.customerCode,
@@ -76,32 +76,54 @@ function Dips({ data, cartFn }) {
     }, [product, cartFn, setCart, settings]);
 
     return (
-        <div className="pizza-item">
+        <div className="mc-card">
             {/* Image */}
-            <div className="pizza-image-container">
-                <img
+            <div className="mc-card__img-wrap mc-card__img-wrap--contain">
+                <SafeImage
                     src={data?.image}
                     alt={data?.dipsName}
-                    className="pizza-image"
-                    loading="lazy" />
+                    className="mc-card__img mc-card__img--contain"
+                    fallback={dipsFallback}
+                />
             </div>
-            <div className="pizza-content">
-                <h5 className="pizza-name">{data?.dipsName}</h5>
-                <div className="product-description">
-                    {data?.description}
+
+            {/* Body */}
+            <div className="mc-card__body">
+                <h5 className="mc-card__name">{data?.dipsName}</h5>
+                {data?.description && (
+                    <p className="mc-card__desc">{data.description}</p>
+                )}
+
+                <div className="mc-card__price">
+                    ${Number(data?.price || 0).toFixed(2)}
                 </div>
 
-                <div className="card-price">${Number(data?.price).toFixed(2)}</div>
+                {/* Footer */}
+                <div className="mc-card__footer">
+                    <div className="mc-card__qty" style={{ userSelect: 'none' }}>
+                        <button
+                            type="button"
+                            className={`mc-card__qty-btn${count <= 1 ? " disabled" : ""}`}
+                            onClick={countDec}
+                            aria-label="Decrease quantity"
+                        >−</button>
+                        <span className="mc-card__qty-val">{count}</span>
+                        <button
+                            type="button"
+                            className={`mc-card__qty-btn${count >= 10 ? " disabled" : ""}`}
+                            onClick={countInc}
+                            aria-label="Increase quantity"
+                        >+</button>
+                    </div>
 
-                {/* Quantity Controls */}
-                <div className="qty-controls">
-                    <span className={`qty-btn minus ${count <= 1 ? "disabled" : ""}`} onClick={countDec}>-</span>
-                    <span className="qty-value ">{count}</span>
-                    <span className={`qty-btn plus ${count >= 10 ? "disabled" : ""}`} onClick={countInc}>+</span>
+                    <button
+                        type="button"
+                        className="mc-card__add"
+                        onClick={handleDips}
+                    >
+                        Add to Cart
+                    </button>
                 </div>
-
-                {/* Add to Cart */}
-                <button type="button" className="view-button" onClick={handleDips}>Add to Cart</button>
             </div>
         </div>
     );

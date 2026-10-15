@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPizzaSlice, FaArrowRight } from 'react-icons/fa';
+import '../../../assets/styles/modern-cards.css';
 import OtherPizzas from '../../_main/OtherPizza/otherPizza';
 import CartFunction from '../../cart';
 
@@ -30,19 +31,14 @@ function OtherPizzaSelector({ otherPizzas, topping }) {
                 </button>
             </div>
 
-            <div className="row g-3 signature-grid" id="othermenucard">
+            <div className="mc-grid" id="othermenucard">
                 {otherPizzas.map((data) => (
-                    <div
-                        className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3"
+                    <OtherPizzas
+                        data={data}
                         key={'other-pizza-card-' + data?.code}
-                    >
-                        <OtherPizzas
-                            data={data}
-                            key={data.code}
-                            cartFn={cartFn}
-                            toppingsData={topping}
-                        />
-                    </div>
+                        cartFn={cartFn}
+                        toppingsData={topping}
+                    />
                 ))}
             </div>
         </section>

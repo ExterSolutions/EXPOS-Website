@@ -408,158 +408,68 @@
         border-radius: 9999px;
     }
 
-    /* ── Pizza Cards (Signature & Classic) ── */
-    .menu-section .pizza-item {
-        padding: 0.85rem;
-        border-radius: 0.875rem;
-        min-height: auto;
-        gap: 0.45rem;
-    }
-
-    .menu-section .pizza-image {
-        width: 125px !important;
-        height: 125px !important;
-    }
-
-    .menu-section .pizza-name {
-        font-size: 0.95rem;
-        margin-bottom: 0.2rem;
-        text-align: center;
-    }
-
-    .menu-section .product-description {
-        font-size: 0.75rem;
-        text-align: center;
-        margin-bottom: 0.45rem;
-        min-height: auto;
-        -webkit-line-clamp: 2;
-        line-height: 1.35;
-    }
-
-    .menu-section .pizza-item .form-select {
-        height: 36px;
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        font-size: 12.5px;
-        font-weight: 600;
-        border-radius: 0.5rem;
-        border-color: #cbd5e1;
-    }
-
-    .menu-section .pizza-item .view-button-new,
-    .menu-section .pizza-item .customize-btn-new {
-        height: 36px !important;
-        font-size: 12.5px !important;
-        font-weight: 700 !important;
-        padding: 0 10px !important;
-        border-radius: 9999px !important;
-    }
-
-    .menu-section .pizza-badge {
-        font-size: 0.6rem;
-        padding: 0.15rem 0.5rem;
-    }
-
-    /* ── 2-Column Mobile Grid for Drinks ── */
-    #drinks .mc-grid {
+    /* ── 2-Column Mobile Grid for Drinks & Dips ── */
+    #drinks .mc-grid,
+    #dips .mc-grid,
+    #dipsmenucard.mc-grid {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.65rem !important;
     }
 
-    #drinks .mc-card__img-wrap {
+    #drinks .mc-card__img-wrap,
+    #dips .mc-card__img-wrap,
+    #dipsmenucard .mc-card__img-wrap {
         aspect-ratio: 1/1;
         height: 100px;
     }
 
-    #drinks .mc-card__img--contain {
+    #drinks .mc-card__img--contain,
+    #dips .mc-card__img--contain,
+    #dipsmenucard .mc-card__img--contain {
         padding: 0.5rem;
     }
 
-    #drinks .mc-card__body {
+    #drinks .mc-card__body,
+    #dips .mc-card__body,
+    #dipsmenucard .mc-card__body {
         padding: 0.55rem;
         gap: 0.25rem;
     }
 
-    #drinks .mc-card__name {
+    #drinks .mc-card__name,
+    #dips .mc-card__name,
+    #dipsmenucard .mc-card__name {
         font-size: 0.82rem;
     }
 
-    #drinks .mc-card__desc {
+    #drinks .mc-card__desc,
+    #dips .mc-card__desc,
+    #dipsmenucard .mc-card__desc {
         display: none;
     }
 
-    #drinks .mc-card__footer {
+    #drinks .mc-card__footer,
+    #dips .mc-card__footer,
+    #dipsmenucard .mc-card__footer {
         flex-direction: column;
         align-items: stretch;
         gap: 0.35rem;
         margin-top: 0.25rem;
     }
 
-    #drinks .mc-card__price {
+    #drinks .mc-card__price,
+    #dips .mc-card__price,
+    #dipsmenucard .mc-card__price {
         font-size: 0.95rem;
         text-align: center;
     }
 
-    #drinks .mc-card__actions {
-        width: 100%;
-    }
-
-    #drinks .mc-card__add {
+    #drinks .mc-card__add,
+    #dips .mc-card__add,
+    #dipsmenucard .mc-card__add {
         width: 100%;
         padding: 0.4rem 0.5rem;
         font-size: 0.74rem;
-    }
-
-    /* ── 2-Column Mobile Grid for Dips ── */
-    #dipsmenucard.signature-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.65rem !important;
-    }
-
-    #dipsmenucard.signature-grid > div {
-        width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    #dipsmenucard .pizza-item {
-        padding: 0.65rem !important;
-        min-height: auto !important;
-        border-radius: 0.75rem !important;
-    }
-
-    #dipsmenucard .pizza-image {
-        width: 80px !important;
-        height: 80px !important;
-    }
-
-    #dipsmenucard .pizza-name {
-        font-size: 0.82rem !important;
-        margin-bottom: 0.2rem !important;
-        text-align: center !important;
-    }
-
-    #dipsmenucard .product-description {
-        display: none !important;
-    }
-
-    #dipsmenucard .card-price {
-        font-size: 0.9rem !important;
-        margin-bottom: 0.3rem !important;
-        text-align: center !important;
-    }
-
-    #dipsmenucard .qty-controls {
-        margin-bottom: 0.35rem !important;
-        justify-content: center !important;
-    }
-
-    #dipsmenucard .view-button {
-        height: 32px !important;
-        font-size: 12px !important;
-        padding: 0 8px !important;
-        width: 100% !important;
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaStar, FaArrowRight } from 'react-icons/fa';
+import '../../../assets/styles/modern-cards.css';
 import SignaturePizzas from '../../_main/SignaturePizza/signturePizza';
 import CartFunction from '../../cart';
 
@@ -30,18 +31,14 @@ function SignatureSelector({ signaturePizzas, topping }) {
                 </button>
             </div>
 
-            <div className="row g-3 signature-grid" id="signaturemenucard">
+            <div className="mc-grid" id="signaturemenucard">
                 {signaturePizzas.map((data) => (
-                    <div
-                        className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3"
+                    <SignaturePizzas
+                        data={data}
                         key={'signature-card-' + data?.code}
-                    >
-                        <SignaturePizzas
-                            data={data}
-                            cartFn={cartFn}
-                            toppingsData={topping}
-                        />
-                    </div>
+                        cartFn={cartFn}
+                        toppingsData={topping}
+                    />
                 ))}
             </div>
         </section>

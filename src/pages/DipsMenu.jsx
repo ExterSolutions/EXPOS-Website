@@ -7,6 +7,7 @@ import CartFunction from "../components/cart";
 import { GlobalContext } from "../context/GlobalContext";
 import LoadingLayout from "../layouts/LoadingLayout";
 import { getDips } from "../services";
+import '../assets/styles/modern-cards.css';
 
 function DipsMenu({ searchQuery, searchCode }) {
     const [dipsData, setDipsData] = useState([]);
@@ -71,20 +72,16 @@ function DipsMenu({ searchQuery, searchCode }) {
     return (
         <div className="section" id="dipsmenucard">
             <div className="container" style={{ marginBottom: "40px" }}>
-                <div className="row g-3 signature-grid">
+                <div className="mc-grid">
                     {filteredDips.length > 0 ? (
                         filteredDips.map((data, index) => (
-                            <div
-                                className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3"
+                            <Dips
                                 key={`dip-grid-card-${data?.code || data?.dipsCode || index}`}
-                            >
-                                <Dips
-                                    data={data}
-                                    cartFn={cartFn}
-                                    reset={reset}
-                                    onReset={resetControls}
-                                />
-                            </div>
+                                data={data}
+                                cartFn={cartFn}
+                                reset={reset}
+                                onReset={resetControls}
+                            />
                         ))
                     ) : (
                         <p className="text-center col-12">No dips found.</p>

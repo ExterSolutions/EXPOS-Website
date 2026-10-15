@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../../assets/styles/modern-cards.css';
 import Dips from '../../_main/Dips/Dips';
 import CartFunction from '../../cart';
 
@@ -17,14 +18,13 @@ function DipsSelector({ dips }) {
                     </p>
                 </div>
             </div>
-            <div className="row g-2 g-sm-3 signature-grid" id="dipsmenucard">
+            <div className="mc-grid" id="dipsmenucard">
                 {dips.map((data) => (
-                    <div
-                        className="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3"
-                        key={'dips-card-' + data?.code}
-                    >
-                        <Dips key={data.dipsCode} data={data} cartFn={cartFn} />
-                    </div>
+                    <Dips
+                        key={'dips-card-' + (data?.dipsCode || data?.code)}
+                        data={data}
+                        cartFn={cartFn}
+                    />
                 ))}
             </div>
         </section>

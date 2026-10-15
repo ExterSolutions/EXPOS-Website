@@ -1,14 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-// import "../assets/styles/menu-cards/signatures.css";
+import '../assets/styles/modern-cards.css';
 import OtherPizzas from "../components/_main/OtherPizza/otherPizza";
-import {GlobalContext} from "../context/GlobalContext";
+import { GlobalContext } from "../context/GlobalContext";
 import DataNotFound from "../layouts/DataNotFound";
 import LoadingLayout from "../layouts/LoadingLayout";
 import { getAllIngredients, getOtherPizza } from "../services";
 
 function OtherPizza({ toppingsData }) {
-    // GlobalContext
     const globalCtx = useContext(GlobalContext);
     const currentStoreCode = globalCtx.currentStoreCode[0];
 
@@ -41,21 +40,20 @@ function OtherPizza({ toppingsData }) {
     if (otherData?.length === 0) return <DataNotFound />;
 
     return (
-        <>
-            <div className="section">
-                <div className="container-fluid container-lg mb-5">
-                    <div className="row g-3">
-                        {otherData?.map((data) => {
-                            return (
-                                <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3" key={"special-grid-card-" + data?.code}>
-                                    <OtherPizzas data={data} key={data.code} toppingsData={toppingsData} ingredients={ingredients} />
-                                </div>
-                            )
-                        })}
-                    </div >
+        <div className="section" id="othermenucard">
+            <div className="container-fluid container-lg mb-5">
+                <div className="mc-grid">
+                    {otherData?.map((data) => (
+                        <OtherPizzas
+                            data={data}
+                            key={"special-grid-card-" + data?.code}
+                            toppingsData={toppingsData}
+                            ingredients={ingredients}
+                        />
+                    ))}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
