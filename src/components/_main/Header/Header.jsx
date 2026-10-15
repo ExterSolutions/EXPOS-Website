@@ -126,7 +126,7 @@ const Header = () => {
     return (
         <header className="header shadow-sm">
 
-            <div className="top-bar d-none d-md-flex">
+            <div className="top-bar">
                 <div className="top-bar__contact">
                     <a href={`mailto:${siteData.contact_email}`} className="top-bar__link" aria-label="Email us">
                         <FaEnvelope className="top-bar__icon" />

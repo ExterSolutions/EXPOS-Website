@@ -522,3 +522,64 @@
     max-width: 250px;
   }
 }
+
+/* ── 8. Mobile Top Bar Optimization (< 768px) ────────────────────────────── */
+@media (max-width: 768px) {
+  .top-bar {
+    height: 34px !important;
+    padding: 0 0.75rem !important;
+    justify-content: center !important;
+    font-size: 0.73rem !important;
+    overflow: hidden !important;
+  }
+
+  .top-bar__contact {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  .top-bar__link {
+    font-size: 0.72rem !important;
+    padding: 2px 4px !important;
+    gap: 5px !important;
+    min-width: 0 !important;
+    max-width: 50% !important;
+  }
+
+  .top-bar__link span {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .top-bar__icon {
+    font-size: 0.75rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .top-bar__divider {
+    height: 12px !important;
+    margin: 0 2px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .top-bar__tagline {
+    display: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .top-bar {
+    padding: 0 0.4rem !important;
+  }
+  .top-bar__contact {
+    gap: 4px !important;
+  }
+  .top-bar__link {
+    font-size: 0.68rem !important;
+  }
+}
+
