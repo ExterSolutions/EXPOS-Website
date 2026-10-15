@@ -1,6 +1,6 @@
 // components/Header.js
 import { useContext, useEffect, useState } from 'react';
-import { FaBars, FaEdit, FaEnvelope, FaGlassCheers, FaHome, FaMapMarkerAlt, FaPhoneAlt, FaPizzaSlice, FaSearch, FaStore, FaTag, FaTimes, FaUser, FaUserCircle } from 'react-icons/fa';
+import { FaArrowRight, FaBars, FaEdit, FaEnvelope, FaGlassCheers, FaHome, FaMapMarkerAlt, FaPhoneAlt, FaPizzaSlice, FaSearch, FaStore, FaTag, FaTimes, FaUser, FaUserCircle } from 'react-icons/fa';
 import { FaCartShopping } from "react-icons/fa6";
 import { GiPizzaSlice } from 'react-icons/gi';
 import { IoColorPalette } from 'react-icons/io5';
@@ -332,7 +332,8 @@ const Header = () => {
                                 onClick={handleOrderNowClick}
                                 className="desktop-order-now-btn"
                             >
-                                Order Now
+                                <span>Order Now</span>
+                                <FaArrowRight size={11} className="desktop-order-now-arrow" />
                             </button>
                         )}
 
