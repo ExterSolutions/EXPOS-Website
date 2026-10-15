@@ -9,6 +9,7 @@ import { GlobalProvider } from './context/GlobalContext';
 import { ThemeProvider } from './context/ThemeContext';
 import App from './App';
 import './index.css';
+import './assets/styles/typography-modern.css';
 import { HelmetProvider } from 'react-helmet-async';
 import { SiteDataProvider } from './context/SiteDataContext';
 

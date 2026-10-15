@@ -6,11 +6,11 @@ function SideSlider({ data, cartFn }) {
     return (
         <div className="section" id="sidesmenucard">
             <div className="container">
-                <h4 className="text-center text-capitalize mb-4 py-3">
-                    <span className="sp-hr-left"></span>
-                    <span>{data?.type}</span>
-                    <span className="sp-hr-right"></span>
-                </h4>
+                <div className="page-header-modern mb-2">
+                    <span className="page-subtitle-modern">🍟 CRAVABLE SIDES</span>
+                    <h2 className="page-title-modern text-capitalize">{data?.type || 'Sides'}</h2>
+                    <p className="page-desc-modern">Delicious sides and appetizers made fresh to order.</p>
+                </div>
                 <div className="mc-grid">
                     {data?.sides?.map((side, index) => (
                         <Sides

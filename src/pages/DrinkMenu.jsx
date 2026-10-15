@@ -42,6 +42,13 @@ function DrinkMenu({ searchQuery, searchCode }) {
     return (
         <div className="container">
             <div className="section mb-5" id='specialmenucard'>
+                <div className="page-header-modern">
+                    <span className="page-subtitle-modern">🥤 ICE-COLD REFRESHMENTS</span>
+                    <h1 className="page-title-modern">Refreshing Drinks</h1>
+                    <p className="page-desc-modern">
+                        Coke, Sprite, Ginger Ale, juices, and cold bottled beverages.
+                    </p>
+                </div>
                 <div className="mc-grid">
                     {filteredDrinks.length > 0 ? (
                         filteredDrinks.map((data, idx) => (

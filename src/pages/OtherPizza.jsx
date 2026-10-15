@@ -42,6 +42,13 @@ function OtherPizza({ toppingsData }) {
     return (
         <div className="section" id="othermenucard">
             <div className="container-fluid container-lg mb-5">
+                <div className="page-header-modern">
+                    <span className="page-subtitle-modern">🍕 OVEN-FRESH FAVORITES</span>
+                    <h1 className="page-title-modern">Classic & Specialty Pizzas</h1>
+                    <p className="page-desc-modern">
+                        Traditional recipes prepared with fresh hand-stretched dough and quality toppings.
+                    </p>
+                </div>
                 <div className="mc-grid">
                     {otherData?.map((data) => (
                         <OtherPizzas

@@ -72,6 +72,13 @@ function DipsMenu({ searchQuery, searchCode }) {
     return (
         <div className="section" id="dipsmenucard">
             <div className="container" style={{ marginBottom: "40px" }}>
+                <div className="page-header-modern">
+                    <span className="page-subtitle-modern">🥣 FLAVOR BOOSTERS</span>
+                    <h1 className="page-title-modern">Signature Dips</h1>
+                    <p className="page-desc-modern">
+                        Creamy garlic, cheddar jalapeño, ranch, and sweet chili sauces.
+                    </p>
+                </div>
                 <div className="mc-grid">
                     {filteredDips.length > 0 ? (
                         filteredDips.map((data, index) => (

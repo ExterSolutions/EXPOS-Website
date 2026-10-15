@@ -196,7 +196,11 @@ const FlexDealList = () => {
             <div className="container">
                 {/* Section Header */}
                 <div className="fd-section-header">
-                    <h1 className="fd-section-title">Flex Deals</h1>
+                    <div>
+                        <span className="page-subtitle-modern">🔥 HOT DEALS & COMBOS</span>
+                        <h1 className="fd-section-title">Deals & Combos</h1>
+                        <p className="page-desc-modern">Special combo bundles curated for pickup and delivery.</p>
+                    </div>
                     {!loading && !error && deals.length > 0 && (
                         <span className="fd-section-badge">
                             🔥 {deals.length} deal{deals.length !== 1 ? 's' : ''} available

@@ -34,6 +34,13 @@ function SignaturePizza({ toppingsData }) {
             ) : (
                 <div className="section" id="signaturemenucard">
                     <div className="container-fluid container-lg mb-5">
+                        <div className="page-header-modern">
+                            <span className="page-subtitle-modern">⭐ CHEF'S SIGNATURE SPECIALS</span>
+                            <h1 className="page-title-modern">Signature Pizzas</h1>
+                            <p className="page-desc-modern">
+                                Customer favorites and specialty recipes loaded with gourmet ingredients.
+                            </p>
+                        </div>
                         <div className="mc-grid">
                             {signatureData?.map((data) => (
                                 <SignaturePizzas
