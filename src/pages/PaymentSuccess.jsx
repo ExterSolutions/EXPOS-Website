@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import CartFunction from '../components/cart';
 import { GlobalContext } from '../context/GlobalContext';
 import { useSiteData } from '../components/_main/Header/hooks/useSiteData';
+import PageSEO from '../components/_main/PageSEO';
 
 // ── MODULE-LEVEL: fires at JS parse time, before React mounts ──────────────
 console.log('[🔔 PaymentSuccess MODULE] JS loaded at', new Date().toISOString());
@@ -165,6 +166,7 @@ const PaymentSuccess = () => {
 
     return (
         <div className="container mt-5 mb-5 py-4">
+            <PageSEO pageKey="payment" titleOverride="Order Successful" noindex />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-8 col-lg-6">
                     <div className="card shadow-sm" style={{ overflow: 'visible' }}>

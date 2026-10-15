@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import CartFunction from "../../components/cart";
 import { GlobalContext } from "../../context/GlobalContext";
 import LoadingLayout from "../../layouts/LoadingLayout";
@@ -411,6 +412,11 @@ const SpecialOfferPage = () => {
 
   return (
     <div>
+      <PageSEO
+        pageKey="dealDetail"
+        titleOverride={offerData?.name ? `${offerData.name} | Special Deals` : undefined}
+        descriptionOverride={offerData?.description || undefined}
+      />
       <Header />
       <div className="nav-margin"></div>
       <div className="container py-4 has-sticky-cart-bar">

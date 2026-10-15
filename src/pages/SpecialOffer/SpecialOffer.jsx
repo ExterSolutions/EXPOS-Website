@@ -17,6 +17,7 @@ import pizzaimage from "../../assets/images/pz.png";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import DipsConfig from "../../components/_main/SpecialOffer/Configurations/DipsConfig";
 import DrinksConfig from "../../components/_main/SpecialOffer/Configurations/DrinksConfig";
 import SidesConfig from "../../components/_main/SpecialOffer/Configurations/SidesConfig";
@@ -741,6 +742,10 @@ function SpecialOffer() {
 
   return (
     <div>
+      <PageSEO
+        pageKey="dealDetail"
+        titleOverride={name ? `${name} | Special Deals` : undefined}
+      />
       <Header />
       <div className="nav-margin"></div>
 

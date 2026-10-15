@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 import Header from '../../components/_main/Header/Header';
 import Footer from '../../components/_main/Footer';
+import PageSEO from '../../components/_main/PageSEO';
 import { GlobalContext } from '../../context/GlobalContext';
 import { getFlexDealDetail } from '../../services';
 import CartFunction from '../../components/cart';
@@ -503,6 +504,11 @@ const FlexDealCustomizer = () => {
 
     return (
         <div className="fd-page">
+            <PageSEO
+                pageKey="dealDetail"
+                titleOverride={deal?.name ? `${deal.name} | Deals` : undefined}
+                descriptionOverride={deal?.description || undefined}
+            />
             <Header />
             <div className="nav-margin" />
 

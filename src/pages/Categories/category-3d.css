@@ -21,9 +21,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  border-radius: 1.25rem;
-  padding: 1rem 0.75rem 0.85rem;
-  min-height: 198px;
+  border-radius: 1.35rem;
+  padding: 1.05rem 0.75rem 0.9rem;
+  min-height: 206px;
   border: 1.5px solid #edf2f7;
   box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
   cursor: pointer;
@@ -37,9 +37,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.category-3d-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 30px rgba(255, 107, 53, 0.18);
+/* Hover and Active Swiper Slide Hero State (Matches Design Guide Mockup) */
+.category-3d-card:hover,
+.category-3d-swiper .swiper-slide-active .category-3d-card {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 34px rgba(255, 107, 53, 0.26), 0 4px 12px rgba(0, 0, 0, 0.04);
   border-color: #ff6b35;
   color: inherit;
 }
@@ -48,15 +50,15 @@
 .category-3d-badge {
   position: absolute;
   top: -8px;
-  right: 10px;
+  right: 12px;
   background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: #ffffff;
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.04em;
-  padding: 2px 8px;
+  padding: 2.5px 8.5px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(255, 107, 53, 0.35);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.38);
   z-index: 5;
   pointer-events: none;
   white-space: nowrap;
@@ -75,60 +77,80 @@
 .category-3d-name {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #1e293b;
+  color: #0f172a;
   margin: 0;
   line-height: 1.25;
   letter-spacing: -0.015em;
   transition: color 0.2s ease;
+  word-break: keep-all;
 }
 
-.category-3d-card:hover .category-3d-name {
+.category-3d-card:hover .category-3d-name,
+.category-3d-swiper .swiper-slide-active .category-3d-card .category-3d-name {
   color: #ff6b35;
 }
 
 .category-3d-tagline {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: #64748b;
   margin-top: 0.25rem;
   line-height: 1.2;
+  transition: color 0.2s ease;
+}
+
+.category-3d-card:hover .category-3d-tagline,
+.category-3d-swiper .swiper-slide-active .category-3d-card .category-3d-tagline {
+  color: #ea580c;
 }
 
 /* 3D Floating Image Stage */
 .category-3d-stage {
   position: relative;
   width: 100%;
-  height: 98px;
+  height: 104px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0.35rem 0 0.5rem;
-  perspective: 700px;
+  perspective: 800px;
 }
 
 .category-3d-img {
-  max-width: 115px;
-  max-height: 96px;
+  max-width: 125px;
+  max-height: 104px;
   width: auto;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.14));
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               filter 0.35s ease;
-  transform: translateZ(12px);
+  transform: translateZ(14px);
   display: block;
 }
 
-.category-3d-card:hover .category-3d-img {
-  transform: scale(1.1) translateY(-4px) translateZ(24px);
-  filter: drop-shadow(0 16px 20px rgba(255, 107, 53, 0.28));
+/* Compensate for transparent margin inside SignaturePizza-1.png so it pops like in the guide */
+.category-3d-card[data-cat="signaturepizza"] .category-3d-img {
+  transform: scale(1.15) translateZ(14px);
+}
+
+.category-3d-card:hover .category-3d-img,
+.category-3d-swiper .swiper-slide-active .category-3d-card .category-3d-img {
+  transform: scale(1.12) translateY(-4px) translateZ(26px);
+  filter: drop-shadow(0 16px 22px rgba(255, 107, 53, 0.3));
+}
+
+.category-3d-card[data-cat="signaturepizza"]:hover .category-3d-img,
+.category-3d-swiper .swiper-slide-active .category-3d-card[data-cat="signaturepizza"] .category-3d-img {
+  transform: scale(1.26) translateY(-4px) translateZ(26px);
+  filter: drop-shadow(0 16px 22px rgba(255, 107, 53, 0.3));
 }
 
 /* Action Circle Button */
 .category-3d-btn {
-  width: 2rem;
-  height: 2rem;
-  min-width: 2rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  min-width: 2.1rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: #ffffff;
@@ -143,7 +165,8 @@
   cursor: pointer;
 }
 
-.category-3d-card:hover .category-3d-btn {
+.category-3d-card:hover .category-3d-btn,
+.category-3d-swiper .swiper-slide-active .category-3d-card .category-3d-btn {
   transform: scale(1.14);
   box-shadow: 0 6px 16px rgba(255, 107, 53, 0.48);
 }
@@ -164,7 +187,7 @@
 }
 
 .category-3d-wrap .swiper-pagination-bullet-active {
-  width: 22px;
+  width: 24px;
   background: linear-gradient(135deg, #ff6b35, #f7931e);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
@@ -173,61 +196,62 @@
 /* Mobile & Tablet Fine-tuning */
 @media (max-width: 480px) {
   .category-3d-card {
-    min-height: 182px;
-    padding: 0.9rem 0.6rem 0.75rem;
-    border-radius: 1.15rem;
+    min-height: 196px;
+    padding: 0.95rem 0.65rem 0.85rem;
+    border-radius: 1.25rem;
   }
   
   .category-3d-name {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
+    line-height: 1.2;
   }
   
   .category-3d-tagline {
-    font-size: 0.63rem;
+    font-size: 0.65rem;
   }
   
   .category-3d-stage {
-    height: 86px;
-    margin: 0.25rem 0 0.4rem;
+    height: 96px;
+    margin: 0.25rem 0 0.45rem;
   }
   
   .category-3d-img {
-    max-width: 102px;
-    max-height: 86px;
+    max-width: 114px;
+    max-height: 96px;
   }
   
   .category-3d-btn {
-    width: 1.85rem;
-    height: 1.85rem;
-    min-width: 1.85rem;
-    font-size: 0.68rem;
+    width: 1.95rem;
+    height: 1.95rem;
+    min-width: 1.95rem;
+    font-size: 0.7rem;
   }
   
   .category-3d-badge {
     font-size: 0.58rem;
-    padding: 2px 7px;
-    top: -7px;
-    right: 8px;
+    padding: 2px 7.5px;
+    top: -8px;
+    right: 10px;
   }
 }
 
 @media (max-width: 360px) {
   .category-3d-card {
-    min-height: 172px;
-    padding: 0.8rem 0.5rem 0.7rem;
+    min-height: 184px;
+    padding: 0.85rem 0.55rem 0.75rem;
   }
   
   .category-3d-name {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
   }
   
   .category-3d-stage {
-    height: 78px;
+    height: 86px;
   }
   
   .category-3d-img {
-    max-width: 90px;
-    max-height: 78px;
+    max-width: 98px;
+    max-height: 86px;
   }
 }
 

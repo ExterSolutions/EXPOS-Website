@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSiteData } from '../components/_main/Header/hooks/useSiteData';
-import { useState } from 'react';
+import PageSEO from '../components/_main/PageSEO';
 
 function PaymentCancel() {
     const navigate = useNavigate();
@@ -26,6 +26,7 @@ function PaymentCancel() {
 
     return (
         <div className="container mt-5 mb-5 py-4">
+            <PageSEO pageKey="payment" titleOverride="Payment Cancelled" noindex />
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card">

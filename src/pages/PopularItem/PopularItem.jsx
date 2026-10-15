@@ -1,6 +1,7 @@
 
 import Footer from "../../components/_main/Footer";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import PopulerPizza from "./PopulerPizza";  
 import { useEffect, useState } from "react";
 import { getToppings } from "../../services";
@@ -23,6 +24,7 @@ const PopularItem = () => {
   return (
     <>
       <div style={{ position: "relative" }}>
+        <PageSEO pageKey="popularItems" />
         <Header />
         <div className="nav-margin"></div>
         <div className="d-flex align-items-center justify-content-between innder-page-header">

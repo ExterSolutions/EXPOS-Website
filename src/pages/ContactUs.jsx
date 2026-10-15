@@ -3,111 +3,97 @@ import Header from "../components/_main/Header/Header";
 import Footer from "../components/_main/Footer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { GlobalContext } from "../context/GlobalContext";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { sendContactUsEmail } from "../services";
-// import "../assets/styles/new/homepage/contact/contact-us.css";
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import {
+    FaMapMarkerAlt,
+    FaPhoneAlt,
+    FaEnvelope,
+    FaPaperPlane,
+    FaCommentDots,
+    FaExternalLinkAlt,
+    FaStore,
+    FaBolt,
+    FaExclamationCircle
+} from "react-icons/fa";
 import { useTheme } from '../context/ThemeContext';
 import PageSEO from '../components/_main/PageSEO';
 import { useSiteDataContext } from '../context/SiteDataContext';
+import "./contact-us.css";
 
-
-// Validation Functions
-const getCharacterValidationError = (str) => {
-    return `Your password must have at least 1 ${str}`;
-};
+// ── Validation Schema ──────────────────────────────────────────────────────────
 const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
-
-const canadianPostalCode = Yup.string().test(
-    "is-canadian-postal-code",
-    "Invalid Canadian Postal Code",
-    (value) => {
-        if (!value) return true;
-        const postalCodeRegex = /^[A-Za-z]\d[A-Za-z]\d[A-Za-z]\d$/;
-        const { theme, colors } = useTheme();
-        return postalCodeRegex.test(value);
-    }
-);
 
 const ValidateSchema = Yup.object({
     firstname: Yup.string()
         .required("First name is required")
         .matches(
             /^[A-Za-z\ ]+$/,
-            "First name should only contain alphabetic characters, spaces"
+            "First name should only contain alphabetic characters and spaces"
         )
-        .min(3, "First name must be at least 3 characters")
+        .min(2, "First name must be at least 2 characters")
         .max(50, "First name cannot be longer than 50 characters"),
     lastname: Yup.string()
         .required("Last name is required")
         .matches(
             /^[A-Za-z\ ]+$/,
-            "Last name should only contain alphabetic characters, spaces"
+            "Last name should only contain alphabetic characters and spaces"
         )
-        .min(3, "Last name must be at least 3 characters")
+        .min(2, "Last name must be at least 2 characters")
         .max(50, "Last name cannot be longer than 50 characters"),
     phoneno: Yup.string()
         .required("Phone number is required")
         .matches(
             canadianPhoneNumberRegExp,
-            "Invalid Canadian phone number format."
+            "Enter a 10-digit phone number (e.g. 6041234567)"
         ),
     email: Yup.string()
-        .email("Invalid email address...")
+        .email("Invalid email address")
         .matches(
             /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-            "Invalid Email Address"
+            "Please enter a valid email address"
         )
         .required("Email is required"),
     message: Yup.string()
         .required("Message is required")
-        .min(3, "Message must be at least 3 characters")
+        .min(5, "Message must be at least 5 characters")
         .max(800, "Message cannot be longer than 800 characters"),
 });
 
 function ContactUs() {
-    const globalctx = useContext(GlobalContext);
-    const [user, setUser] = globalctx.user;
-    const [isAuthenticated, setIsAuthenticated] = globalctx.auth;
-    const [regUser, setRegUser] = globalctx.regUser;
-    const { theme, colors } = useTheme();
+    const { colors } = useTheme();
     const [loading, setLoading] = useState(false);
 
-    // ── Pull all contact info from admin API — zero hardcoding ────────────────
+    // ── Pull dynamic site contact info from admin API ──────────────────────────
     const { siteData } = useSiteDataContext();
-    const siteName    = siteData.site_name     || '';
+    const siteName    = siteData.site_name     || 'Our Restaurant';
     const siteAddress = siteData.address       || '';
     const sitePhone   = siteData.contact_phone || '';
     const siteEmail   = siteData.contact_email || '';
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const location = useLocation();
+    const brandPrimary = colors?.primary || '#f26724';
 
     const onSubmit = async (values, { resetForm }) => {
-        let payload = {
-            firstName: values.firstname,
-            lastName: values.lastname,
-            mobileNumber: values.phoneno,
-            email: values.email,
-            message: values.message,
+        const payload = {
+            firstName: values.firstname.trim(),
+            lastName: values.lastname.trim(),
+            mobileNumber: values.phoneno.trim(),
+            email: values.email.trim(),
+            message: values.message.trim(),
         };
+
         setLoading(true);
-        await sendContactUsEmail(payload)
-            .then((res) => {
-                toast.success(res.message);
-                setLoading(false);
-                resetForm();
-            })
-            .catch((err) => {
-                if (err.response.status === 400 || err.response.status === 500) {
-                    toast.error(err.response.data.message);
-                }
-                setLoading(false);
-            });
+        try {
+            const res = await sendContactUsEmail(payload);
+            toast.success(res?.message || "Thank you! Your message has been sent successfully.");
+            resetForm();
+        } catch (err) {
+            const errorMsg = err?.response?.data?.message || "Unable to send message. Please try again or call us directly.";
+            toast.error(errorMsg);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const formik = useFormik({
@@ -128,238 +114,322 @@ function ContactUs() {
         window.scrollTo(0, 0);
     }, []);
 
+    // Format phone for display if 10 digits
+    const formattedPhone = sitePhone.length === 10
+        ? `(${sitePhone.slice(0, 3)}) ${sitePhone.slice(3, 6)}-${sitePhone.slice(6)}`
+        : sitePhone;
+
     return (
-        <>
+        <div className="contact-us-page" style={{ '--contact-primary': brandPrimary }}>
             <PageSEO pageKey="contactUs" />
             <Header />
-            <div className="contact-us-container">
 
-                {/* Header Section */}
-                <div className="contact-header text-center py-70">
+            {/* ── Hero Banner Section ────────────────────────────────────────── */}
+            <section className="contact-hero">
+                <div className="contact-hero-content">
+                    <div className="contact-badge">
+                        <FaCommentDots className="contact-badge-icon" />
+                        <span>We're Here For You</span>
+                    </div>
                     <h1 className="contact-title">
-                        Contact{' '}
-                        <span className="brand-color" style={{ color: colors?.primary }}>
-                            {siteName}
-                        </span>
+                        Get in Touch with <span className="brand-accent">{siteName}</span>
                     </h1>
                     <p className="contact-subtitle">
-                        We'd love to hear from you! Send us a message and we'll respond as
-                        soon as possible.
+                        Have a question about our menu, need custom catering, or want to share your feedback?
+                        Send us a message or reach out directly.
                     </p>
                 </div>
+            </section>
 
-                <div className="contact-content-grid">
-                    {/* Left Side: Contact Information */}
-                    <div className="contact-info-side">
-                        <div className="info-card">
-                            <h2 className="info-title">Our Information</h2>
+            {/* ── Main 2-Column Content ─────────────────────────────────────── */}
+            <main className="contact-main-wrapper">
+                <div className="contact-grid">
 
-                            <div className="info-items">
-                                {/* Address — only shown when admin has configured it */}
+                    {/* ── Left Column: Contact Info Cards ──────────────────────── */}
+                    <div className="contact-info-column">
+                        <div className="contact-info-card">
+                            <div className="info-header">
+                                <span className="info-header-tag">Direct Contact</span>
+                                <h2 className="info-title">Let's Connect</h2>
+                                <p className="info-desc">
+                                    Our team is happy to assist you during business hours. Choose the most convenient way to reach us.
+                                </p>
+                            </div>
+
+                            <div className="info-items-list">
+                                {/* Address Card */}
                                 {siteAddress && (
-                                    <div className="info-item">
-                                        <div className="info-icon">
-                                            <FaMapMarkerAlt size={20} color={colors?.primary || '#f26724'} />
+                                    <a
+                                        href={`https://maps.google.com/?q=${encodeURIComponent(siteAddress)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="info-row"
+                                        title="View on Google Maps"
+                                    >
+                                        <div className="info-icon-box">
+                                            <FaMapMarkerAlt />
                                         </div>
-                                        <div className="info-content">
-                                            <h3 className="info-label">Address</h3>
-                                            <p className="info-text">{siteAddress}</p>
+                                        <div className="info-details">
+                                            <div className="info-label">Visit Our Location</div>
+                                            <p className="info-val">{siteAddress}</p>
+                                            <span className="info-action-hint">
+                                                Get Directions <FaExternalLinkAlt size={10} />
+                                            </span>
                                         </div>
-                                    </div>
+                                    </a>
                                 )}
 
-                                {/* Phone — only shown when admin has configured it */}
+                                {/* Phone Card */}
                                 {sitePhone && (
-                                    <div className="info-item">
-                                        <div className="info-icon">
-                                            <FaPhoneAlt size={20} color={colors?.primary || '#f26724'} />
+                                    <a
+                                        href={`tel:${sitePhone}`}
+                                        className="info-row"
+                                        title="Call our store"
+                                    >
+                                        <div className="info-icon-box">
+                                            <FaPhoneAlt />
                                         </div>
-                                        <div className="info-content">
-                                            <h3 className="info-label">Phone</h3>
-                                            <p className="info-text">
-                                                <a href={`tel:${sitePhone}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                                                    {sitePhone}
-                                                </a>
-                                            </p>
+                                        <div className="info-details">
+                                            <div className="info-label">Phone Support</div>
+                                            <p className="info-val">{formattedPhone}</p>
+                                            <span className="info-action-hint">
+                                                Tap to call now
+                                            </span>
                                         </div>
-                                    </div>
+                                    </a>
                                 )}
 
-                                {/* Email — only shown when admin has configured it */}
+                                {/* Email Card */}
                                 {siteEmail && (
-                                    <div className="info-item">
-                                        <div className="info-icon">
-                                            <FaEnvelope size={20} color={colors?.primary || '#f26724'} />
+                                    <a
+                                        href={`mailto:${siteEmail}`}
+                                        className="info-row"
+                                        title="Send an email"
+                                    >
+                                        <div className="info-icon-box">
+                                            <FaEnvelope />
                                         </div>
-                                        <div className="info-content">
-                                            <h3 className="info-label">Email</h3>
-                                            <p className="info-text">
-                                                <a href={`mailto:${siteEmail}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                                                    {siteEmail}
-                                                </a>
-                                            </p>
+                                        <div className="info-details">
+                                            <div className="info-label">Email Inquiries</div>
+                                            <p className="info-val">{siteEmail}</p>
+                                            <span className="info-action-hint">
+                                                Write to us
+                                            </span>
                                         </div>
-                                    </div>
+                                    </a>
                                 )}
+
+                                {/* Store Locations Link */}
+                                <Link to="/stores" className="info-row" title="Explore all store locations">
+                                    <div className="info-icon-box">
+                                        <FaStore />
+                                    </div>
+                                    <div className="info-details">
+                                        <div className="info-label">Store Directory</div>
+                                        <p className="info-val">Find All Locations & Hours</p>
+                                        <span className="info-action-hint">
+                                            View store list →
+                                        </span>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Fast Response Assurance */}
+                        <div className="response-promise-box">
+                            <div className="promise-icon">⚡</div>
+                            <div>
+                                <h4 className="promise-title">Fast Response Guarantee</h4>
+                                <p className="promise-sub">
+                                    Online messages are typically reviewed and answered within 1–2 hours during operating hours.
+                                </p>
                             </div>
                         </div>
                     </div>
 
+                    {/* ── Right Column: Interactive Form ──────────────────────── */}
+                    <div className="contact-form-column">
+                        <div className="contact-form-card">
+                            <div className="form-header">
+                                <span className="form-header-badge">Online Inquiry</span>
+                                <h2 className="form-title">Send Us a Message</h2>
+                                <p className="form-subtitle">
+                                    Fill out the quick form below and our team will get in touch as soon as possible.
+                                </p>
+                            </div>
 
-                    {/* Right Side: Contact Form */}
-                    <div className="contact-form-side">
-                        <div className="form-card">
-                            <h2 className="form-title">Send us a Message</h2>
-
-                            <form onSubmit={formik.handleSubmit} className="contact-form">
+                            <form onSubmit={formik.handleSubmit} className="contact-form" noValidate>
                                 {/* Name Row */}
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="firstname" className="form-label">
-                                            First Name
+                                <div className="form-grid-row">
+                                    <div className="form-field-group">
+                                        <label htmlFor="firstname" className="field-label">
+                                            <span>First Name <span className="required-dot">*</span></span>
                                         </label>
-                                        <input
-                                            type="text"
-                                            id="firstname"
-                                            name="firstname"
-                                            value={formik.values.firstname}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            className={`form-input ${formik.touched.firstname && formik.errors.firstname
-                                                ? "error"
-                                                : ""
-                                                }`}
-                                            placeholder="Enter your first name"
-                                        />
-                                        {formik.touched.firstname && formik.errors.firstname ? (
-                                            <div className="error-message">
-                                                {formik.errors.firstname}
+                                        <div className="input-container">
+                                            <input
+                                                type="text"
+                                                id="firstname"
+                                                name="firstname"
+                                                value={formik.values.firstname}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                className={`modern-input ${formik.touched.firstname && formik.errors.firstname ? "field-error" : ""}`}
+                                                placeholder="e.g. John"
+                                                autoComplete="given-name"
+                                            />
+                                        </div>
+                                        {formik.touched.firstname && formik.errors.firstname && (
+                                            <div className="field-error-text">
+                                                <FaExclamationCircle size={12} />
+                                                <span>{formik.errors.firstname}</span>
                                             </div>
-                                        ) : null}
+                                        )}
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="lastname" className="form-label">
-                                            Last Name <span className="required">*</span>
+                                    <div className="form-field-group">
+                                        <label htmlFor="lastname" className="field-label">
+                                            <span>Last Name <span className="required-dot">*</span></span>
                                         </label>
-                                        <input
-                                            type="text"
-                                            id="lastname"
-                                            name="lastname"
-                                            value={formik.values.lastname}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            className={`form-input ${formik.touched.lastname && formik.errors.lastname
-                                                ? "error"
-                                                : ""
-                                                }`}
-                                            placeholder="Enter your last name"
-                                        />
-                                        {formik.touched.lastname && formik.errors.lastname ? (
-                                            <div className="error-message">
-                                                {formik.errors.lastname}
+                                        <div className="input-container">
+                                            <input
+                                                type="text"
+                                                id="lastname"
+                                                name="lastname"
+                                                value={formik.values.lastname}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                className={`modern-input ${formik.touched.lastname && formik.errors.lastname ? "field-error" : ""}`}
+                                                placeholder="e.g. Doe"
+                                                autoComplete="family-name"
+                                            />
+                                        </div>
+                                        {formik.touched.lastname && formik.errors.lastname && (
+                                            <div className="field-error-text">
+                                                <FaExclamationCircle size={12} />
+                                                <span>{formik.errors.lastname}</span>
                                             </div>
-                                        ) : null}
+                                        )}
                                     </div>
                                 </div>
 
                                 {/* Contact Row */}
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="phoneno" className="form-label">
-                                            Mobile Number
+                                <div className="form-grid-row">
+                                    <div className="form-field-group">
+                                        <label htmlFor="phoneno" className="field-label">
+                                            <span>Phone Number <span className="required-dot">*</span></span>
                                         </label>
-                                        <input
-                                            type="tel"
-                                            id="phoneno"
-                                            name="phoneno"
-                                            value={formik.values.phoneno}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            className={`form-input ${formik.touched.phoneno && formik.errors.phoneno
-                                                ? "error"
-                                                : ""
-                                                }`}
-                                            placeholder="(123) 456-7890"
-                                        />
-                                        {formik.touched.phoneno && formik.errors.phoneno ? (
-                                            <div className="error-message">
-                                                {formik.errors.phoneno}
+                                        <div className="input-container">
+                                            <input
+                                                type="tel"
+                                                id="phoneno"
+                                                name="phoneno"
+                                                value={formik.values.phoneno}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                className={`modern-input ${formik.touched.phoneno && formik.errors.phoneno ? "field-error" : ""}`}
+                                                placeholder="e.g. 6041234567"
+                                                autoComplete="tel"
+                                            />
+                                        </div>
+                                        {formik.touched.phoneno && formik.errors.phoneno && (
+                                            <div className="field-error-text">
+                                                <FaExclamationCircle size={12} />
+                                                <span>{formik.errors.phoneno}</span>
                                             </div>
-                                        ) : null}
+                                        )}
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="email" className="form-label">
-                                            Email <span className="required">*</span>
+                                    <div className="form-field-group">
+                                        <label htmlFor="email" className="field-label">
+                                            <span>Email Address <span className="required-dot">*</span></span>
                                         </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            value={formik.values.email}
+                                        <div className="input-container">
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                value={formik.values.email}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                className={`modern-input ${formik.touched.email && formik.errors.email ? "field-error" : ""}`}
+                                                placeholder="e.g. john@example.com"
+                                                autoComplete="email"
+                                            />
+                                        </div>
+                                        {formik.touched.email && formik.errors.email && (
+                                            <div className="field-error-text">
+                                                <FaExclamationCircle size={12} />
+                                                <span>{formik.errors.email}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Message Field */}
+                                <div className="form-field-group full-width">
+                                    <label htmlFor="message" className="field-label">
+                                        <span>Your Message <span className="required-dot">*</span></span>
+                                        <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 400 }}>
+                                            {formik.values.message.length} / 800
+                                        </span>
+                                    </label>
+                                    <div className="input-container">
+                                        <textarea
+                                            id="message"
+                                            name="message"
+                                            value={formik.values.message}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            className={`form-input ${formik.touched.email && formik.errors.email
-                                                ? "error"
-                                                : ""
-                                                }`}
-                                            placeholder="your@email.com"
+                                            rows="5"
+                                            className={`modern-textarea ${formik.touched.message && formik.errors.message ? "field-error" : ""}`}
+                                            placeholder="Write your message here... Mention your order number if applicable."
                                         />
-                                        {formik.touched.email && formik.errors.email ? (
-                                            <div className="error-message">{formik.errors.email}</div>
-                                        ) : null}
                                     </div>
-                                </div>
-
-                                {/* Message */}
-                                <div className="form-group-full">
-                                    <label htmlFor="message" className="form-label">
-                                        Message <span className="required">*</span>
-                                    </label>
-                                    <textarea
-                                        id="message"
-                                        name="message"
-                                        value={formik.values.message}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        rows="6"
-                                        className={`form-textarea ${formik.touched.message && formik.errors.message
-                                            ? "error"
-                                            : ""
-                                            }`}
-                                        placeholder="Tell us how we can help you..."
-                                    />
-                                    {formik.touched.message && formik.errors.message ? (
-                                        <div className="error-message">{formik.errors.message}</div>
-                                    ) : null}
-                                </div>
-
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="submit-button"
-
-                                >
-                                    {loading ? (
-                                        <span className="button-loading"
-
-                                        >
-                                            <span className="spinner"></span>
-                                            Sending...
-                                        </span>
-                                    ) : (
-                                        "Send Message"
+                                    {formik.touched.message && formik.errors.message && (
+                                        <div className="field-error-text">
+                                            <FaExclamationCircle size={12} />
+                                            <span>{formik.errors.message}</span>
+                                        </div>
                                     )}
-                                </button>
+                                </div>
+
+                                {/* Submit Action */}
+                                <div className="submit-btn-wrapper">
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="modern-submit-btn"
+                                        aria-label="Send Message"
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <span className="spinner-dot" />
+                                                <span>Sending Your Message...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>Send Message</span>
+                                                <FaPaperPlane className="btn-icon-send" />
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+
+                                <div className="form-footer-privacy">
+                                    🔒 We value your privacy. Your personal information is kept secure and never shared.
+                                </div>
                             </form>
                         </div>
                     </div>
-                </div>
-            </div>
 
-        </>
+                </div>
+            </main>
+
+            {/* ── Footer ────────────────────────────────────────────────────── */}
+            <div className="container-fluid px-0">
+                <Footer />
+            </div>
+        </div>
     );
 }
 

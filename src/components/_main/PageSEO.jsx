@@ -303,6 +303,82 @@ Object.assign(PAGE_TEMPLATES, {
     },
 });
 
+// ── Detail / utility / private page templates ─────────────────────────────────
+// `noindex: true` keeps transactional or personal pages out of search results.
+Object.assign(PAGE_TEMPLATES, {
+    signatureDetail: {
+        titleTpl:       'Customize Your Signature Pizza | {name} in {city}',
+        descriptionTpl: 'Choose your size, crust and toppings for this signature pizza at {name} in {city}. Fresh made to order — delivery or pickup.',
+        keywords: ['signature pizza {city}', 'order pizza online {city}', 'custom signature pizza'],
+    },
+    otherPizzaDetail: {
+        titleTpl:       'Customize Your Pizza | {name} in {city}',
+        descriptionTpl: 'Pick your size, crust and toppings at {name} in {city}. Fresh made to order — delivery or pickup.',
+        keywords: ['pizza {city}', 'order pizza online {city}', 'pizza delivery {city}'],
+    },
+    dealDetail: {
+        titleTpl:       'Pizza Deal Details | {name} in {city}',
+        descriptionTpl: 'Build your pizza deal at {name} in {city}. Pick your pizzas, sides and drinks and save. Order online for delivery or pickup.',
+        keywords: ['pizza deal {city}', 'pizza combo {city}', 'pizza offer near me'],
+    },
+    drinkDetail: {
+        titleTpl:       'Choose Your Drink | {name} in {city}',
+        descriptionTpl: 'Pick your drink flavour and size at {name} in {city}. Add it to your pizza order online.',
+        keywords: ['drinks with pizza {city}', 'pop delivery {city}'],
+    },
+    popularItems: {
+        titleTpl:       'Popular Items | {name} — Customer Favourites in {city}',
+        descriptionTpl: 'See what customers love most at {name} in {city}. Our best-selling pizzas and more — order online for delivery or pickup.',
+        keywords: ['popular pizza {city}', 'best selling pizza {city}', 'best pizza near me'],
+    },
+    search: {
+        titleTpl:       'Search Results | {name}',
+        descriptionTpl: 'Search the {name} menu in {city}.',
+        keywords: [],
+        noindex: true,
+    },
+    login: {
+        titleTpl:       'Sign In | {name}',
+        descriptionTpl: 'Sign in to your {name} account to order faster, track orders and earn rewards.',
+        keywords: [],
+        noindex: true,
+    },
+    registration: {
+        titleTpl:       'Create Account | {name}',
+        descriptionTpl: 'Create your {name} account to order online, save addresses and track your orders.',
+        keywords: [],
+        noindex: true,
+    },
+    password: {
+        titleTpl:       'Reset Password | {name}',
+        descriptionTpl: 'Reset your {name} account password.',
+        keywords: [],
+        noindex: true,
+    },
+    account: {
+        titleTpl:       'My Account | {name}',
+        descriptionTpl: 'Manage your {name} profile, addresses and orders.',
+        keywords: [],
+        noindex: true,
+    },
+    payment: {
+        titleTpl:       'Order Status | {name}',
+        descriptionTpl: 'Your {name} order status.',
+        keywords: [],
+        noindex: true,
+    },
+    editItem: {
+        titleTpl:       'Edit Item | {name}',
+        descriptionTpl: 'Edit an item in your {name} cart.',
+        keywords: [],
+        noindex: true,
+    },
+});
+
+// Cart & checkout are personal/transactional — never index them.
+PAGE_TEMPLATES.cart.noindex = true;
+PAGE_TEMPLATES.checkout.noindex = true;
+
 
 // ── Template filler ───────────────────────────────────────────────────────────
 // Replaces {name}, {city}, {cuisine} with live admin values.
@@ -323,7 +399,7 @@ const buildOgLocale = (country, language) => {
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
+const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride, noindex }) => {
     const location  = useLocation();
     const { siteData } = useSiteDataContext();
 
@@ -361,6 +437,10 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
     const htmlLang = (language || '').toLowerCase().slice(0, 2) || 'en';
 
     const tpl = PAGE_TEMPLATES[pageKey] || PAGE_TEMPLATES.home;
+    const isNoIndex = noindex ?? !!tpl.noindex;
+    const robotsContent = isNoIndex
+        ? 'noindex, nofollow'
+        : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
     const title       = titleOverride       || fill(tpl.titleTpl,       name, city, cuisinePrefix);
     const description = descriptionOverride || fill(tpl.descriptionTpl, name, city, cuisinePrefix);
@@ -466,8 +546,8 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride }) => {
             {/* ── Basic ── */}
             <title>{title}</title>
             <meta name="description"  content={description} />
-            <meta name="keywords"     content={keywords} />
-            <meta name="robots"       content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+            {keywords && <meta name="keywords" content={keywords} />}
+            <meta name="robots"       content={robotsContent} />
             {name && <meta name="author" content={name} />}
 
             {/* ── Canonical URL — siteUrl from admin, path from router ── */}

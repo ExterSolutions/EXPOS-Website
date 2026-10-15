@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import http from '../../services/http'; 
+import PageSEO from './PageSEO';
 // import '../../assets/styles/new/header/searchResult.css';
 
 const SearchResult = () => {
@@ -84,6 +85,7 @@ const SearchResult = () => {
 
     return (
         <div className="search-results-page">
+            <PageSEO pageKey="search" titleOverride={`Search Results for "${decodeURIComponent(query)}"`} />
             <div className="container">
                 <h1>Search Results for "{decodeURIComponent(query)}"</h1>
                 {enrichedResults.length > 0 ? (

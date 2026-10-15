@@ -125,36 +125,43 @@ const PizzaCarousel = ({
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'row',
-                                    alignItems: 'stretch',
+                                    alignItems: 'center',
                                     background: '#ffffff',
-                                    borderRadius: '0.875rem',
-                                    border: '1.5px solid #e8edf4',
-                                    boxShadow: '0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
+                                    borderRadius: '1.15rem',
+                                    border: '1.5px solid #edf2f7',
+                                    boxShadow: '0 2px 10px rgba(15, 23, 42, 0.04)',
                                     textDecoration: 'none',
                                     color: 'inherit',
                                     overflow: 'hidden',
-                                    transition: 'box-shadow 0.18s, border-color 0.18s, transform 0.18s',
+                                    transition: 'box-shadow 0.22s ease, border-color 0.22s ease, transform 0.22s ease',
                                     WebkitTapHighlightColor: 'transparent',
                                     cursor: 'pointer',
                                 }}
                                 onMouseEnter={e => {
-                                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(255,107,53,0.16)';
+                                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(255,107,53,0.16)';
                                     e.currentTarget.style.borderColor = '#ff6b35';
                                     e.currentTarget.style.transform = 'translateY(-2px)';
                                 }}
                                 onMouseLeave={e => {
-                                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.07)';
-                                    e.currentTarget.style.borderColor = '#e8edf4';
+                                    e.currentTarget.style.boxShadow = '0 2px 10px rgba(15, 23, 42, 0.04)';
+                                    e.currentTarget.style.borderColor = '#edf2f7';
                                     e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
-                                {/* Thumbnail — square, left side */}
+                                {/* Thumbnail — rounded frame, left side */}
                                 <div style={{
-                                    width: '96px',
-                                    minWidth: '96px',
-                                    background: 'linear-gradient(135deg, #fff8f5, #fdeee6)',
+                                    width: '92px',
+                                    minWidth: '92px',
+                                    height: '92px',
+                                    margin: '0.6rem 0 0.6rem 0.65rem',
+                                    borderRadius: '0.85rem',
+                                    background: 'linear-gradient(135deg, #fff8f5 0%, #fdeee6 100%)',
                                     overflow: 'hidden',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
                                     flexShrink: 0,
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                                 }}>
                                     <img
                                         src={image}
@@ -166,7 +173,7 @@ const PizzaCarousel = ({
                                             height: '100%',
                                             objectFit: 'cover',
                                             display: 'block',
-                                            minHeight: '96px',
+                                            borderRadius: '0.85rem',
                                         }}
                                     />
                                 </div>
@@ -177,19 +184,35 @@ const PizzaCarousel = ({
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
-                                    padding: '0.65rem 0.75rem 0.65rem 0.7rem',
+                                    padding: '0.7rem 0.85rem 0.7rem 0.75rem',
                                     minWidth: 0,
-                                    gap: '0.4rem',
+                                    gap: '0.35rem',
                                 }}>
-                                    {/* Deal name — full text, wraps freely, no truncation */}
-                                    <div style={{
-                                        fontSize: '0.875rem',
-                                        fontWeight: 700,
-                                        color: '#1e293b',
-                                        lineHeight: 1.35,
-                                        letterSpacing: '-0.01em',
-                                    }}>
-                                        {name}
+                                    {/* Deal name — full text, clean bold typography */}
+                                    <div>
+                                        <div style={{
+                                            fontSize: '0.92rem',
+                                            fontWeight: 800,
+                                            color: '#0f172a',
+                                            lineHeight: 1.3,
+                                            letterSpacing: '-0.015em',
+                                        }}>
+                                            {name}
+                                        </div>
+                                        {description && (
+                                            <div style={{
+                                                fontSize: '0.72rem',
+                                                color: '#64748b',
+                                                lineHeight: 1.35,
+                                                marginTop: '2px',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 1,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                            }}>
+                                                {description}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Footer: price + CTA */}
@@ -201,9 +224,9 @@ const PizzaCarousel = ({
                                         marginTop: 'auto',
                                     }}>
                                         {price !== null && Number(price) > 0 ? (
-                                            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, gap: '1px' }}>
-                                                <span style={{ fontSize: '0.65rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>From</span>
-                                                <span style={{ fontSize: '1rem', fontWeight: 800, color: '#ff6b35', letterSpacing: '-0.02em' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, gap: '2px' }}>
+                                                <span style={{ fontSize: '0.62rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>From</span>
+                                                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ff6b35', letterSpacing: '-0.02em' }}>
                                                     ${Number(price).toFixed(2)}
                                                 </span>
                                             </div>
@@ -213,17 +236,18 @@ const PizzaCarousel = ({
                                         <button
                                             type="button"
                                             style={{
-                                                background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                                                background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
                                                 color: '#fff',
                                                 border: 'none',
-                                                borderRadius: '0.55rem',
-                                                padding: '0.38rem 0.8rem',
-                                                fontSize: '0.75rem',
+                                                borderRadius: '0.65rem',
+                                                padding: '0.42rem 0.95rem',
+                                                fontSize: '0.78rem',
                                                 fontWeight: 700,
                                                 cursor: 'pointer',
                                                 whiteSpace: 'nowrap',
                                                 flexShrink: 0,
                                                 letterSpacing: '0.01em',
+                                                boxShadow: '0 3px 8px rgba(255, 107, 53, 0.28)',
                                             }}
                                         >
                                             Order Now

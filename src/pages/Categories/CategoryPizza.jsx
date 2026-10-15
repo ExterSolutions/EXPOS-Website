@@ -32,7 +32,7 @@ const CategoryPizza = () => {
         {
             id: 1,
             name: 'Signature Pizzas',
-            tagline: 'Chef\'s Special',
+            tagline: 'Explore unique recipes',
             badge: '⭐ POPULAR',
             image: SignaturePizza,
             path: 'signaturepizza',
@@ -42,7 +42,7 @@ const CategoryPizza = () => {
         {
             id: 5,
             name: 'Create Your Own',
-            tagline: 'Built Your Way',
+            tagline: 'Customized just for you',
             badge: '🎨 CUSTOM',
             image: createPizza,
             path: 'create-your-own',
@@ -119,19 +119,21 @@ const CategoryPizza = () => {
                         }}
                         loop={false}
                         centeredSlides={false}
+                        slideToClickedSlide={true}
                         className="category-3d-swiper"
                         breakpoints={{
-                            0:    { slidesPerView: 2.2, spaceBetween: 12, centeredSlides: false },
-                            380:  { slidesPerView: 2.3, spaceBetween: 14, centeredSlides: false },
-                            540:  { slidesPerView: 3.2, spaceBetween: 16, centeredSlides: false },
-                            768:  { slidesPerView: 4.2, spaceBetween: 18, centeredSlides: false },
-                            1024: { slidesPerView: 6,   spaceBetween: 18, centeredSlides: false },
+                            0:    { slidesPerView: 2.15, spaceBetween: 12, centeredSlides: false },
+                            380:  { slidesPerView: 2.18, spaceBetween: 14, centeredSlides: false },
+                            540:  { slidesPerView: 3.2,  spaceBetween: 16, centeredSlides: false },
+                            768:  { slidesPerView: 4.2,  spaceBetween: 18, centeredSlides: false },
+                            1024: { slidesPerView: 6,    spaceBetween: 18, centeredSlides: false },
                         }}
                     >
                         {categories.map((cat, index) => (
                             <SwiperSlide key={index}>
                                 <div
                                     className="category-3d-card"
+                                    data-cat={cat.path}
                                     style={{ background: cat.bg }}
                                     onClick={() => handleCategorySelect(cat.id, cat.path)}
                                     role="button"

@@ -9,6 +9,7 @@ import {
     FaTimes,
     FaUser,
     FaUserPlus,
+    FaPhoneAlt,
 } from 'react-icons/fa';
 import { GiFullPizza, GiPizzaSlice } from 'react-icons/gi';
 import { IoColorPalette } from 'react-icons/io5';
@@ -156,19 +157,16 @@ const MobileMenu = () => {
                         </li>
                         {/* All Menu hidden from mobile sidebar */}
 
-                        {/* <li>
+                        <li className="nav-item">
                             <Link
                                 to="/contact-us"
-                                className={activeLink === 'contact' ? 'active' : ''}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleLinkClick('/contact-us');
-                                }}
+                                className={`nav-link ${isActive('/contact-us') ? 'active' : ''}`}
+                                onClick={() => handleLinkClick('/contact-us')}
                             >
-                                <FaPhone />
-                                <span className="nav-text">Contact</span>
+                                <FaPhoneAlt />
+                                <span className="nav-text">Contact Us</span>
                             </Link>
-                        </li> */}
+                        </li>
                     </ul>
                 </nav>
 

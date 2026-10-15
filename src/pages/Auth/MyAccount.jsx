@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import Footer from "../../components/_main/Footer";
 import swal from "sweetalert";
 import { GlobalContext } from "../../context/GlobalContext";
@@ -69,6 +70,7 @@ function MyAccount() {
 
     return (
         <>
+            <PageSEO pageKey="account" />
             <Header />
             <div className="nav-margin" />
             <div style={{ minHeight: "80vh", background: "#f5f5f5", paddingBottom: "calc(140px + env(safe-area-inset-bottom, 0px))" }}>

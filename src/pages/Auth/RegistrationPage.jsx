@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/_main/Header/Header";
+import PageSEO from "../../components/_main/PageSEO";
 import Footer from "../../components/_main/Footer";
 import Registration from "../../components/_main/Auth/Registration";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,7 @@ function RegistrationPage() {
 
     return (
         <>
+            <PageSEO pageKey="registration" />
             <Header />
             <div className="nav-margin"></div>
             <div

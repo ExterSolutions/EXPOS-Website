@@ -4,6 +4,7 @@ import LoadingLayout from "../../layouts/LoadingLayout";
 import paymentSuccess from "../../assets/images/payment-success.png";
 import { useNavigate } from "react-router-dom";
 import { useSiteData } from "../../components/_main/Header/hooks/useSiteData";
+import PageSEO from "../../components/_main/PageSEO";
 
 function Success() {
     const globalctx = useContext(GlobalContext);
@@ -38,6 +39,7 @@ function Success() {
                 <LoadingLayout />
             ) : (
                 <div className="container-fluid d-flex align-items-center justify-content-center flex-column">
+                    <PageSEO pageKey="payment" titleOverride="Order Confirmed" noindex />
                     <div className="w-100 d-flex flex-column align-items-center py-3">
                         {siteDataLoading || logoError ? (
                             <div className="placeholder-glow d-inline-block" style={{ width: '80px', height: '80px' }}>
