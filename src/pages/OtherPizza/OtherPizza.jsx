@@ -42,12 +42,6 @@ const OtherPizzaList = () => {
                 <Header />
                 <div className="nav-margin"></div>
                 <div className="container py-2">
-                    <div className="d-flex align-items-center justify-content-between innder-page-header">
-                        <div className="flex-grow-1 section-header">
-                            <span className="category-subtitle">{otherPizzaTitle}</span>
-                            <div className="section-title">Most Popular Pizzas</div>
-                        </div>
-                    </div>
                     <OtherPizza toppingsData={toppingsData} />
                 </div>
 

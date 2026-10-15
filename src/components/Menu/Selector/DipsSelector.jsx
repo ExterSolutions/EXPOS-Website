@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../../../assets/styles/modern-cards.css';
 import Dips from '../../_main/Dips/Dips';
 import CartFunction from '../../cart';
@@ -8,15 +9,18 @@ function DipsSelector({ dips }) {
     if (!dips || dips.length === 0) return null;
 
     return (
-        <section className="menu-section pt-4" id="dips">
-            <div className="menu-section-header-wrapper d-flex align-items-end justify-content-between mb-4 flex-wrap gap-2">
-                <div>
-                    <span className="menu-section-pill-tag">🥣 FLAVOR BOOSTERS</span>
-                    <h2 className="menu-section-heading mt-1 mb-0">Signature Dips</h2>
-                    <p className="menu-section-subtext mb-0 mt-1">
-                        Creamy garlic, cheddar jalapeño, ranch, and sweet chili sauces.
-                    </p>
+        <section className="menu-section" id="dips">
+            <div className="menu-section-header">
+                <span className="menu-section-pill-tag">🥣 FLAVOR BOOSTERS</span>
+                <div className="menu-section-title-row">
+                    <h2 className="menu-section-heading">Signature Dips</h2>
+                    <Link to="/dips" className="menu-section-view-all-btn">
+                        View All Dips →
+                    </Link>
                 </div>
+                <p className="menu-section-subtext">
+                    Creamy garlic, cheddar jalapeño, ranch, and sweet chili sauces.
+                </p>
             </div>
             <div className="mc-grid" id="dipsmenucard">
                 {dips.map((data) => (

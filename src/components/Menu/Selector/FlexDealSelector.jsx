@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaFire, FaArrowRight, FaTag } from 'react-icons/fa';
+import { useNavigate, Link } from 'react-router-dom';
+import { FaFire, FaTag } from 'react-icons/fa';
 import '../../../assets/styles/flex-deals.css';
 
 const PICKUP_ONLY   = ['pickupdeal', 'pickup'];
@@ -35,23 +35,20 @@ function FlexDealSelector({ deals }) {
     };
 
     return (
-        <section className="menu-section pt-3" id="deals">
-            <div className="menu-section-header-wrapper d-flex align-items-end justify-content-between mb-4 flex-wrap gap-2">
-                <div>
-                    <span className="menu-section-pill-tag">
-                        <FaFire className="me-1 text-danger" /> HOT SAVINGS & COMBOS
-                    </span>
-                    <h2 className="menu-section-heading mt-1 mb-0">Deals & Combos</h2>
-                    <p className="menu-section-subtext mb-0 mt-1">
-                        Best value pizza bundles, family feasts, and special multi-pizza combos.
-                    </p>
+        <section className="menu-section pt-1" id="deals">
+            <div className="menu-section-header">
+                <span className="menu-section-pill-tag">
+                    <FaFire className="me-1 text-danger" /> HOT DEALS & COMBOS
+                </span>
+                <div className="menu-section-title-row">
+                    <h2 className="menu-section-heading">Deals & Combos</h2>
+                    <Link to="/flex-deals" className="menu-section-view-all-btn">
+                        View All Deals →
+                    </Link>
                 </div>
-                <button
-                    className="menu-section-view-all-btn"
-                    onClick={() => navigate('/flex-deals')}
-                >
-                    View All Deals <FaArrowRight className="ms-1" size={12} />
-                </button>
+                <p className="menu-section-subtext">
+                    Best value pizza bundles, family feasts, and special multi-pizza combos.
+                </p>
             </div>
 
             <div className="fd-grid">

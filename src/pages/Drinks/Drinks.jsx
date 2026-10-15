@@ -26,12 +26,6 @@ const Drinks = () => {
         <Header />
         <div className="nav-margin"></div>
         <div className="container py-2">
-          <div className="d-flex align-items-center justify-content-between innder-page-header">
-            <div className="flex-grow-1 section-header">
-              <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
-              <div className="section-title">Drinks</div>
-            </div>
-          </div>
           <DrinkMenu searchQuery={searchQuery} searchCode={selectedCode} />
         </div>
 

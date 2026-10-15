@@ -216,3 +216,53 @@ p {
 .sp-hr-right {
     display: none !important;
 }
+
+/* ── Mobile Responsive Typography (< 768px) ──────────────────────────────── */
+@media (max-width: 768px) {
+    .page-header-modern {
+        padding: 0.85rem 0 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .page-subtitle-modern,
+    .category-subtitle,
+    .section-subtitle,
+    .mc-section-sub {
+        font-size: 0.68rem !important;
+        letter-spacing: 0.08em !important;
+        margin-bottom: 0.15rem !important;
+    }
+
+    .page-title-modern,
+    .section-title {
+        font-size: 1.25rem !important;
+        line-height: 1.2 !important;
+        letter-spacing: -0.02em !important;
+    }
+
+    .page-desc-modern,
+    .section-desc,
+    .menu-section-subtext {
+        font-size: 0.76rem !important;
+        line-height: 1.35 !important;
+        margin-top: 0.15rem !important;
+    }
+
+    .mc-card__name,
+    .fd-card__name {
+        font-size: 0.92rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .mc-card__desc,
+    .fd-card__desc {
+        font-size: 0.73rem !important;
+        line-height: 1.35 !important;
+    }
+
+    .mc-card__price,
+    .fd-card__price {
+        font-size: 1.05rem !important;
+    }
+}
+

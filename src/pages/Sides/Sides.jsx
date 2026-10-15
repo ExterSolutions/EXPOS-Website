@@ -24,11 +24,12 @@ const Sides = () => {
             <Header />
             <div className="nav-margin"></div>
             <div className="container py-2">
-                <div className="d-flex align-items-center justify-content-between">
-                    <div className="flex-grow-1 section-header">
-                        <span className="category-subtitle">CHOOSE YOUR FLAVOR</span>
-                        <div className="section-title">Sides</div>
-                    </div>
+                <div className="page-header-modern">
+                    <span className="page-subtitle-modern">🍟 CRAVABLE SIDES</span>
+                    <h1 className="page-title-modern">Sides & Appetizers</h1>
+                    <p className="page-desc-modern">
+                        Garlic bread, loaded fries, cheesy sticks, wings, and more.
+                    </p>
                 </div>
                 <div className="mb-4">
                     <SidesMenu searchQuery={searchQuery} searchCode={selectedCode} />
