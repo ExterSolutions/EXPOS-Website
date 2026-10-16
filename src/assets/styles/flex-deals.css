@@ -444,6 +444,12 @@
     display: flex; flex-direction: column;
     animation: fd-slide-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
+@media (max-width: 767px) {
+    .fd-picker-sheet--toppings-active {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+}
 @keyframes fd-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 .fd-picker-handle {
