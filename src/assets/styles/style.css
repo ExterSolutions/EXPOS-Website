@@ -22245,7 +22245,7 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
-  z-index: 1040;
+  z-index: 1090;
   animation: fade-backdrop 0.2s ease both;
 }
 
@@ -22254,25 +22254,17 @@ body {
   position: fixed;
   left: 0;
   right: 0;
-  /* Sit just above the BottomNav on mobile */
-  bottom: calc(var(--bottom-nav-h, 60px) + env(safe-area-inset-bottom, 0px));
-  z-index: 1050;
+  bottom: 0;
+  z-index: 1100;
   background: var(--bs-body-bg, #fff);
   border-radius: 20px 20px 0 0;
-  /*
-    Height = screen height minus the gap at the top we want visible (12%)
-    minus the bottom offset (BottomNav + safe area).
-    Use dvh so iOS Safari's dynamic toolbar is accounted for.
-  */
-  max-height: calc(88dvh - var(--bottom-nav-h, 60px) - env(safe-area-inset-bottom, 0px));
-  /* Fallback for older Safari that doesn't support dvh */
-  max-height: calc(88vh - var(--bottom-nav-h, 60px) - env(safe-area-inset-bottom, 0px));
-  max-height: calc(88dvh - var(--bottom-nav-h, 60px) - env(safe-area-inset-bottom, 0px));
+  max-height: 90vh;
+  max-height: 90dvh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.22);
   animation: sheet-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
-  /* No padding-bottom here — the bottom offset handles the gap */
+  overflow: hidden;
 }
 
 /* ── Desktop: centered modal ── */
@@ -22355,6 +22347,10 @@ body {
   flex-shrink: 0;
   overflow-x: auto;
   scrollbar-width: none;
+  background: var(--bs-body-bg, #fff);
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 .topping-sheet__tabs::-webkit-scrollbar {
   display: none;
@@ -22426,9 +22422,15 @@ body {
 
 /* Footer */
 .topping-sheet__footer {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgba(0, 0, 0, 0.07);
   flex-shrink: 0;
+  background: var(--bs-body-bg, #fff);
+}
+@media (min-width: 768px) {
+  .topping-sheet__footer {
+    padding: 0.75rem 1.25rem;
+  }
 }
 
 .topping-sheet__done {

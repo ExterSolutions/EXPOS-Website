@@ -9,6 +9,7 @@
 //   selected     string   — id of currently selected option
 //   onSelect     (id) => void
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { IoMdClose } from "react-icons/io";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
@@ -29,7 +30,7 @@ const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect 
 
     const selectedLabel = options.find(o => o.id === selected)?.label || selected || "—";
 
-    return (
+    const content = (
         <>
             {/* Backdrop */}
             <div className="topping-sheet-backdrop" onClick={onClose} aria-hidden="true" />
@@ -85,6 +86,8 @@ const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect 
             </div>
         </>
     );
+
+    return typeof document !== "undefined" ? createPortal(content, document.body) : content;
 };
 
 export default OptionSheet;

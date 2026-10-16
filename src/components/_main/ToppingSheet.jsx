@@ -2,6 +2,7 @@
 // Shared bottom-sheet / modal for selecting toppings across
 // all pizza customization screens (Signature, Create Your Own, etc.)
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { IoMdClose } from "react-icons/io";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
@@ -78,7 +79,7 @@ const ToppingSheet = ({
         { key: "free", label: indianStyleTitle,  count: indianCount  },
     ];
 
-    return (
+    const content = (
         <>
             {/* Backdrop */}
             <div
@@ -217,6 +218,8 @@ const ToppingSheet = ({
             </div>
         </>
     );
+
+    return typeof document !== "undefined" ? createPortal(content, document.body) : content;
 };
 
 export default ToppingSheet;

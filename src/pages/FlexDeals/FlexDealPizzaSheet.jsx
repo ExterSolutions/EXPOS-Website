@@ -21,6 +21,7 @@
  * to compute the slot's extra charge and display the summary.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
 import OptionSheet from '../../components/_main/OptionSheet';
 import { getAllIngredients, fetchSignaturePizzaDefaults, getSignaturePizza, getToppings } from '../../services';
@@ -84,22 +85,23 @@ function calcExtraCharge(toppings, freeAllowance = 0) {
 }
 
 // ── Topping sheet (3 tabs) ────────────────────────────────────────────────────
-const TOPPING_TABS = [
-    { id: 'countAsTwo', key: 'countAsTwoToppings', label: 'Premium Toppings' },
-    { id: 'countAsOne', key: 'countAsOneToppings', label: 'Regular Toppings' },
-    { id: 'free',       key: 'freeToppings',       label: 'Indian Toppings' },
-];
-
 const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, settings }) => {
     const [activeTab, setActiveTab] = useState('countAsTwo');
 
     const handleChange = (key, list) => setToppings(prev => ({ ...prev, [key]: list }));
 
     if (!isOpen) return null;
-    return (
+
+    const tabs = [
+        { id: 'countAsTwo', key: 'countAsTwoToppings', label: settings?.premiumTopppingLabel || 'Premium Toppings' },
+        { id: 'countAsOne', key: 'countAsOneToppings', label: settings?.regularToppingLabel || 'Regular Toppings' },
+        { id: 'free',       key: 'freeToppings',       label: settings?.indianToppingLabel || 'Indian Toppings' },
+    ];
+
+    const content = (
         <>
             <div className="topping-sheet-backdrop" onClick={onClose} aria-hidden="true" />
-            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
+            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true" aria-label="Choose Toppings">
                 <div className="topping-sheet__handle" />
                 <div className="topping-sheet__header">
                     <div>
@@ -108,10 +110,10 @@ const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, se
                             <p className="topping-sheet__subtitle">{toppingCountLabel(toppings)}</p>
                         )}
                     </div>
-                    <button className="topping-sheet__close" onClick={onClose}>✕</button>
+                    <button className="topping-sheet__close" onClick={onClose} type="button" aria-label="Close">✕</button>
                 </div>
                 <div className="topping-sheet__tabs">
-                    {TOPPING_TABS.map(tab => {
+                    {tabs.map(tab => {
                         const count = toppings?.[tab.key]?.length || 0;
                         return (
                             <button key={tab.id} type="button"
@@ -181,6 +183,8 @@ const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, se
             </div>
         </>
     );
+
+    return typeof document !== 'undefined' ? createPortal(content, document.body) : content;
 };
 
 // ── Pizza options (crust/sauce/etc) trigger buttons ───────────────────────────
