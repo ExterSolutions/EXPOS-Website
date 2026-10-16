@@ -22265,6 +22265,8 @@ body {
   box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.22);
   animation: sheet-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
   overflow: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* ── Desktop: centered modal ── */
@@ -22346,8 +22348,10 @@ body {
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   background: var(--bs-body-bg, #fff);
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 5;
