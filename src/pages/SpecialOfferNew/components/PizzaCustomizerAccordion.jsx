@@ -96,7 +96,7 @@ function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelect
             <div className="topping-sheet-backdrop" onClick={onClose} aria-hidden="true" />
 
             {/* Sheet */}
-            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true" aria-label="Choose Toppings">
+            <div className="topping-sheet" role="dialog" aria-modal="true" aria-label="Choose Toppings">
                 <div className="topping-sheet__handle" />
 
                 {/* Header */}

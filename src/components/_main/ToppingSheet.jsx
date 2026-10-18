@@ -90,7 +90,7 @@ const ToppingSheet = ({
             {/* Sheet */}
             <div
                 ref={sheetRef}
-                className="topping-sheet slide-up-in"
+                className="topping-sheet"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Select Toppings"

@@ -38,7 +38,7 @@ const OptionSheet = ({ isOpen, onClose, title, options = [], selected, onSelect 
             {/* Sheet */}
             <div
                 ref={sheetRef}
-                className="topping-sheet slide-up-in"
+                className="topping-sheet"
                 role="dialog"
                 aria-modal="true"
                 aria-label={title}

@@ -748,7 +748,7 @@ const CreatePizza = () => {
                     {openSheet === 'sides' && (
                       <>
                         <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                        <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
+                        <div className="topping-sheet" role="dialog" aria-modal="true">
                           <div className="topping-sheet__handle" />
                           <div className="topping-sheet__header">
                             <p className="topping-sheet__title">Add Sides</p>
@@ -767,7 +767,7 @@ const CreatePizza = () => {
                     {openSheet === 'drinks' && (
                       <>
                         <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                        <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
+                        <div className="topping-sheet" role="dialog" aria-modal="true">
                           <div className="topping-sheet__handle" />
                           <div className="topping-sheet__header">
                             <p className="topping-sheet__title">Add Drinks</p>
@@ -786,7 +786,7 @@ const CreatePizza = () => {
                     {openSheet === 'dips' && (
                       <>
                         <div className="topping-sheet-backdrop" onClick={() => setOpenSheet(null)} aria-hidden="true" />
-                        <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true">
+                        <div className="topping-sheet" role="dialog" aria-modal="true">
                           <div className="topping-sheet__handle" />
                           <div className="topping-sheet__header">
                             <p className="topping-sheet__title">Add Dips</p>

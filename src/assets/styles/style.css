@@ -22240,29 +22240,60 @@ body {
   }
 }
 
+@keyframes topping-sheet-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes topping-modal-in {
+  from {
+    transform: translate(-50%, calc(-50% + 20px));
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
 /* Backdrop */
 .topping-sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 1090;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99998;
   animation: fade-backdrop 0.2s ease both;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
-/* ── Mobile: full overlay sheet ── */
+/* ── Mobile: Dedicated Full-Screen Overlay ── */
 .topping-sheet {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   inset: 0;
-  z-index: 1200;
+  z-index: 99999;
   background: var(--bs-body-bg, #fff);
   border-radius: 0;
+  width: 100vw;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
   max-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-shadow: none;
-  animation: sheet-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: topping-sheet-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
   overflow: hidden;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
@@ -22271,20 +22302,20 @@ body {
 /* ── Desktop: centered modal ── */
 @media (min-width: 768px) {
   .topping-sheet {
-    top: 50%;
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    inset: auto;
-    transform: translate(-50%, -50%);
-    width: min(680px, 94vw);
-    height: auto;
-    max-height: 80vh;
-    max-height: 80dvh;
-    border-radius: 18px;
-    padding-bottom: 0;
-    box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.22);
-    animation: modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    inset: auto !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(680px, 94vw) !important;
+    height: auto !important;
+    max-height: 85vh !important;
+    max-height: 85dvh !important;
+    border-radius: 18px !important;
+    padding-bottom: 0 !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+    animation: topping-modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both !important;
   }
 }
 /* Drag handle — mobile only */
@@ -22305,10 +22336,52 @@ body {
 /* Header */
 .topping-sheet__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem 0.5rem;
+  padding: 0.85rem 1.25rem 0.65rem;
+  padding-top: max(0.85rem, env(safe-area-inset-top, 0.85rem));
   flex-shrink: 0;
+  background: var(--bs-body-bg, #fff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  gap: 0.75rem;
+}
+@media (min-width: 768px) {
+  .topping-sheet__header {
+    padding-top: 1rem;
+  }
+}
+
+.topping-sheet__back {
+  background: none;
+  border: none;
+  color: var(--primary, #2d7a2d);
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 4px 6px 4px 0;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.topping-sheet__back-arrow {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-top: -2px;
+}
+.topping-sheet__title-center {
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .topping-sheet__back {
+    display: none;
+  }
+  .topping-sheet__title-center {
+    text-align: left;
+  }
 }
 
 .topping-sheet__title {
@@ -22346,7 +22419,7 @@ body {
 .topping-sheet__tabs {
   display: flex;
   gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
+  padding: 0.65rem 1.25rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
   overflow-x: auto;
@@ -22356,7 +22429,7 @@ body {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 10;
 }
 .topping-sheet__tabs::-webkit-scrollbar {
   display: none;

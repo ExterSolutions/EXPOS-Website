@@ -26,6 +26,7 @@ import { toast } from 'react-toastify';
 import OptionSheet from '../../components/_main/OptionSheet';
 import { getAllIngredients, fetchSignaturePizzaDefaults, getSignaturePizza, getToppings } from '../../services';
 import ToppingsSelector from '../SpecialOfferNew/components/ToppingsSelector';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 // ── Option config (mirrors PizzaCustomizerAccordion) ─────────────────────────
 const OPTION_CONFIG = {
@@ -88,6 +89,8 @@ function calcExtraCharge(toppings, freeAllowance = 0) {
 const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, settings }) => {
     const [activeTab, setActiveTab] = useState('countAsTwo');
 
+    useBodyScrollLock(isOpen);
+
     const handleChange = (key, list) => setToppings(prev => ({ ...prev, [key]: list }));
 
     if (!isOpen) return null;
@@ -101,13 +104,19 @@ const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, se
     const content = (
         <>
             <div className="topping-sheet-backdrop" onClick={onClose} aria-hidden="true" />
-            <div className="topping-sheet slide-up-in" role="dialog" aria-modal="true" aria-label="Choose Toppings">
+            <div className="topping-sheet" role="dialog" aria-modal="true" aria-label="Choose Toppings">
                 <div className="topping-sheet__handle" />
                 <div className="topping-sheet__header">
-                    <div>
+                    <button className="topping-sheet__back" onClick={onClose} type="button" aria-label="Back">
+                        <span className="topping-sheet__back-arrow">‹</span>
+                        <span className="topping-sheet__back-text">Back</span>
+                    </button>
+                    <div className="topping-sheet__title-center">
                         <p className="topping-sheet__title">Choose Toppings</p>
-                        {toppingCountLabel(toppings) && (
+                        {toppingCountLabel(toppings) ? (
                             <p className="topping-sheet__subtitle">{toppingCountLabel(toppings)}</p>
+                        ) : (
+                            <p className="topping-sheet__subtitle">Select from categories below</p>
                         )}
                     </div>
                     <button className="topping-sheet__close" onClick={onClose} type="button" aria-label="Close">✕</button>
@@ -332,22 +341,6 @@ const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, sett
                     </div>
                 )}
             </div>
-
-            <ToppingSheet
-                isOpen={toppingSheetOpen}
-                onClose={() => setToppingSheetOpen(false)}
-                toppingsData={toppingsData}
-                toppings={options.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] }}
-                setToppings={(updater) => {
-                    setOptions(prev => ({
-                        ...prev,
-                        toppings: typeof updater === 'function'
-                            ? updater(prev.toppings || {})
-                            : updater,
-                    }));
-                }}
-                settings={settings}
-            />
         </div>
     );
 };
@@ -658,31 +651,28 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
 
     // ── Render ────────────────────────────────────────────────────────────────
     return (
-        <div className="fd-picker-overlay" onClick={onClose}>
-            <div className={`fd-picker-sheet ${toppingSheetOpen ? 'fd-picker-sheet--toppings-active' : ''}`} onClick={e => e.stopPropagation()}>
-                {!toppingSheetOpen && (
-                    <>
-                        <div className="fd-picker-handle" />
+        <>
+            <div className={`fd-picker-overlay ${toppingSheetOpen ? 'fd-picker-overlay--toppings-active' : ''}`} onClick={onClose}>
+                <div className="fd-picker-sheet" onClick={e => e.stopPropagation()}>
+                    <div className="fd-picker-handle" />
 
-                        <div className="fd-picker-header">
-                            <h4 className="fd-picker-title">Customize Pizza</h4>
-                            <button className="fd-picker-close" onClick={onClose}>✕</button>
+                    <div className="fd-picker-header">
+                        <h4 className="fd-picker-title">Customize Pizza</h4>
+                        <button className="fd-picker-close" onClick={onClose}>✕</button>
+                    </div>
+
+                    {freeAllowance > 0 && (
+                        <div className="fd-picker-free-hint">
+                            ★ {freeAllowance} free topping{freeAllowance !== 1 ? 's' : ''} included per pizza
                         </div>
+                    )}
 
-                        {freeAllowance > 0 && (
-                            <div className="fd-picker-free-hint">
-                                ★ {freeAllowance} free topping{freeAllowance !== 1 ? 's' : ''} included per pizza
-                            </div>
-                        )}
-
-                        <div className="fd-picker-tabs">
-                            <button className={`fd-picker-tab${tab === 'signature' ? ' active' : ''}`}
-                                onClick={() => setTab('signature')}>⭐ Signature</button>
-                            <button className={`fd-picker-tab${tab === 'cyo' ? ' active' : ''}`}
-                                onClick={() => setTab('cyo')}>🎨 Build Your Own</button>
-                        </div>
-                    </>
-                )}
+                    <div className="fd-picker-tabs">
+                        <button className={`fd-picker-tab${tab === 'signature' ? ' active' : ''}`}
+                            onClick={() => setTab('signature')}>⭐ Signature</button>
+                        <button className={`fd-picker-tab${tab === 'cyo' ? ' active' : ''}`}
+                            onClick={() => setTab('cyo')}>🎨 Build Your Own</button>
+                    </div>
 
                 <div className="fd-picker-body">
                     {dataLoading ? (
@@ -764,45 +754,66 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
                 </div>
 
                 {/* ── Sticky confirm footer — always visible, never scrolls ── */}
-                {!toppingSheetOpen && (
-                    <div className="fd-picker-footer">
-                        {tab === 'signature' && (
-                            <>
-                                {sigExtraCharge > 0 && (
-                                    <div className="fd-picker-extra-charge">
-                                        Extra toppings: +${sigExtraCharge.toFixed(2)}
-                                    </div>
-                                )}
-                                <button
-                                    className="fd-cyo-confirm__btn"
-                                    onClick={handleSigConfirm}
-                                    disabled={!sigCode}
-                                >
-                                    {sigCode
-                                        ? `✓ Confirm Pizza Selection${sigExtraCharge > 0 ? ` (+$${sigExtraCharge.toFixed(2)})` : ''}`
-                                        : 'Select a Pizza First'}
-                                </button>
-                            </>
-                        )}
-                        {tab === 'cyo' && cyoOptions && (
-                            <>
-                                {cyoExtraCharge > 0 && (
-                                    <div className="fd-picker-extra-charge">
-                                        Extra toppings: +${cyoExtraCharge.toFixed(2)}
-                                    </div>
-                                )}
-                                <button
-                                    className="fd-cyo-confirm__btn"
-                                    onClick={handleCYOConfirm}
-                                >
-                                    {`✓ Confirm Pizza Selection${cyoExtraCharge > 0 ? ` (+$${cyoExtraCharge.toFixed(2)})` : ''}`}
-                                </button>
-                            </>
-                        )}
-                    </div>
-                )}
+                <div className="fd-picker-footer">
+                    {tab === 'signature' && (
+                        <>
+                            {sigExtraCharge > 0 && (
+                                <div className="fd-picker-extra-charge">
+                                    Extra toppings: +${sigExtraCharge.toFixed(2)}
+                                </div>
+                            )}
+                            <button
+                                className="fd-cyo-confirm__btn"
+                                onClick={handleSigConfirm}
+                                disabled={!sigCode}
+                            >
+                                {sigCode
+                                    ? `✓ Confirm Pizza Selection${sigExtraCharge > 0 ? ` (+$${sigExtraCharge.toFixed(2)})` : ''}`
+                                    : 'Select a Pizza First'}
+                            </button>
+                        </>
+                    )}
+                    {tab === 'cyo' && cyoOptions && (
+                        <>
+                            {cyoExtraCharge > 0 && (
+                                <div className="fd-picker-extra-charge">
+                                    Extra toppings: +${cyoExtraCharge.toFixed(2)}
+                                </div>
+                            )}
+                            <button
+                                className="fd-cyo-confirm__btn"
+                                onClick={handleCYOConfirm}
+                            >
+                                {`✓ Confirm Pizza Selection${cyoExtraCharge > 0 ? ` (+$${cyoExtraCharge.toFixed(2)})` : ''}`}
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
         </div>
+
+        <ToppingSheet
+            isOpen={toppingSheetOpen}
+            onClose={() => setToppingSheetOpen(false)}
+            toppingsData={toppingsData}
+            toppings={(tab === 'signature' ? sigOptions?.toppings : cyoOptions?.toppings) || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] }}
+            setToppings={(updater) => {
+                const updateFn = typeof updater === 'function' ? updater : () => updater;
+                if (tab === 'signature') {
+                    setSigOptions(prev => ({
+                        ...prev,
+                        toppings: updateFn(prev?.toppings || {}),
+                    }));
+                } else {
+                    setCyoOptions(prev => ({
+                        ...prev,
+                        toppings: updateFn(prev?.toppings || {}),
+                    }));
+                }
+            }}
+            settings={settings}
+        />
+    </>
     );
 };
 
