@@ -22409,6 +22409,8 @@ body {
   flex-shrink: 0;
   margin-top: 2px;
   transition: background 0.15s;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .topping-sheet__close:hover {
   background: rgba(0, 0, 0, 0.12);
@@ -22446,6 +22448,8 @@ body {
   white-space: nowrap;
   transition: all 0.18s;
   color: inherit;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .topping-sheet__tab--active {
   background: var(--primary, #2d7a2d);
@@ -22500,7 +22504,8 @@ body {
 
 /* Footer */
 .topping-sheet__footer {
-  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  padding: 0.75rem 1.25rem;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgba(0, 0, 0, 0.07);
   flex-shrink: 0;
   background: var(--bs-body-bg, #fff);
@@ -22521,6 +22526,8 @@ body {
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
   transition:
     opacity 0.15s,
     transform 0.1s;
