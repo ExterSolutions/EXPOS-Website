@@ -444,7 +444,7 @@
     display: flex; flex-direction: column;
     animation: fd-slide-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
-@media (max-width: 767px) {
+@media (max-width: 991px) {
     .fd-picker-overlay--toppings-active {
         display: none !important;
     }

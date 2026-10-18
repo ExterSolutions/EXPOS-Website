@@ -22306,7 +22306,6 @@ body {
     left: 50% !important;
     right: auto !important;
     bottom: auto !important;
-    inset: auto !important;
     transform: translate(-50%, -50%) !important;
     width: min(680px, 94vw) !important;
     height: auto !important;
