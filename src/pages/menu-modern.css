@@ -67,7 +67,6 @@
     margin-bottom: 0;
 }
 
-/* ── Sticky Category Pill Navigation ────────────────────────────────────── */
 .menu-nav-sticky {
     position: sticky;
     top: 0;
@@ -79,6 +78,23 @@
     box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
     padding: 0.65rem 0;
     transition: all 0.2s ease;
+}
+
+.menu-nav-desktop {
+    display: flex;
+}
+
+.menu-nav-mobile {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .menu-nav-desktop {
+        display: none !important;
+    }
+    .menu-nav-mobile {
+        display: block !important;
+    }
 }
 
 .menu-nav-scroll-container {
@@ -303,34 +319,278 @@
         line-height: 1.4;
     }
 
-    /* Pinned category pills stick neatly below mobile top bar (70px) */
+    /* Sticky category bar sticks neatly below mobile top bar (70px) */
     .menu-nav-sticky {
         top: 70px !important;
         z-index: 1015 !important;
-        padding: 0.42rem 0;
+        padding: 0.35rem 0;
         background: rgba(255, 255, 255, 0.98);
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     }
 
-    .menu-nav-scroll-container {
+    /* ── Mobile Category Dropdown Selector ── */
+    .menu-mobile-dropdown-wrap {
+        padding: 0.15rem 0.75rem;
+        position: relative;
+    }
+
+    .menu-mobile-dropdown-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.55rem 0.95rem;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 9999px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .menu-mobile-dropdown-btn:active,
+    .menu-mobile-dropdown-btn.open {
+        border-color: #ff6b35;
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.18), 0 4px 12px rgba(255, 107, 53, 0.12);
+    }
+
+    .menu-mobile-current {
+        display: flex;
+        align-items: center;
         gap: 0.45rem;
-        padding: 0.1rem 0.75rem;
+        overflow: hidden;
     }
 
-    .menu-nav-pill {
-        padding: 0.36rem 0.8rem;
-        font-size: 0.78rem;
-        gap: 0.35rem;
-    }
-
-    .menu-nav-pill .pill-badge {
-        font-size: 0.58rem;
-        padding: 0.1rem 0.35rem;
-    }
-
-    .menu-nav-pill .pill-count {
+    .menu-mobile-current-prefix {
         font-size: 0.65rem;
-        padding: 0.05rem 0.35rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #94a3b8;
+        flex-shrink: 0;
+    }
+
+    .menu-mobile-current-icon {
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .menu-mobile-current-name {
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .menu-mobile-current-badge {
+        font-size: 0.58rem;
+        font-weight: 900;
+        background: #ef4444;
+        color: #ffffff;
+        padding: 0.1rem 0.4rem;
+        border-radius: 9999px;
+        letter-spacing: 0.03em;
+        flex-shrink: 0;
+    }
+
+    .menu-mobile-current-count {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #64748b;
+        flex-shrink: 0;
+    }
+
+    .menu-mobile-dropdown-chevron {
+        font-size: 0.75rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        margin-left: 0.5rem;
+        flex-shrink: 0;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+    }
+
+    .menu-mobile-dropdown-chevron.rotate-180 {
+        transform: rotate(180deg);
+        color: #ff6b35;
+    }
+
+    /* Dropdown Backdrop & Menu */
+    .menu-mobile-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        z-index: 1040;
+        animation: menuFadeIn 0.2s ease;
+    }
+
+    .menu-mobile-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0.75rem;
+        right: 0.75rem;
+        background: #ffffff;
+        border-radius: 1rem;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.22), 0 4px 14px rgba(15, 23, 42, 0.08);
+        z-index: 1050;
+        max-height: calc(80vh - 140px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: menuDropdownSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .menu-mobile-menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.7rem 1rem 0.6rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: #f8fafc;
+    }
+
+    .menu-mobile-menu-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+    }
+
+    .menu-mobile-menu-close {
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .menu-mobile-menu-close:active {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    .menu-mobile-menu-list {
+        padding: 0.45rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .menu-mobile-menu-item {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 0.7rem 0.85rem;
+        border-radius: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .menu-mobile-menu-item:active {
+        background: #f1f5f9;
+    }
+
+    .menu-mobile-menu-item.selected {
+        background: #fff7ed;
+    }
+
+    .menu-mobile-item-left {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .menu-mobile-item-icon {
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .menu-mobile-item-name {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .menu-mobile-menu-item.selected .menu-mobile-item-name {
+        color: #ea580c;
+        font-weight: 800;
+    }
+
+    .menu-mobile-item-badge {
+        font-size: 0.58rem;
+        font-weight: 900;
+        background: #ef4444;
+        color: #ffffff;
+        padding: 0.1rem 0.4rem;
+        border-radius: 9999px;
+        letter-spacing: 0.03em;
+    }
+
+    .menu-mobile-item-right {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+    }
+
+    .menu-mobile-item-count {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #94a3b8;
+        background: #f1f5f9;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+    }
+
+    .menu-mobile-menu-item.selected .menu-mobile-item-count {
+        background: #fed7aa;
+        color: #c2410c;
+    }
+
+    .menu-mobile-item-check {
+        color: #ea580c;
+        font-size: 0.85rem;
+    }
+
+    @keyframes menuFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes menuDropdownSlide {
+        from {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
 
     /* Scroll offset leaves clearance for mobile header (70px) + pills bar (44px) + margin */

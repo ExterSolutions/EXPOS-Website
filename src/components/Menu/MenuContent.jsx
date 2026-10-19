@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FaFire, FaStar, FaPizzaSlice, FaUtensils, FaTint, FaCoffee } from 'react-icons/fa';
+import {
+    FaFire,
+    FaStar,
+    FaPizzaSlice,
+    FaUtensils,
+    FaTint,
+    FaCoffee,
+    FaChevronDown,
+    FaCheck,
+    FaTimes,
+} from 'react-icons/fa';
 import FlexDealSelector from './Selector/FlexDealSelector';
 import SignatureSelector from './Selector/SignatureSelector';
 import OtherPizzaSelector from './Selector/OtherPizzaSelector';
@@ -17,6 +27,7 @@ function MenuContent({
     topping = []
 }) {
     const [activeCategory, setActiveCategory] = useState('deals');
+    const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 
     // Category pills data
     const categories = [
@@ -72,12 +83,15 @@ function MenuContent({
         },
     ].filter((cat) => cat.show);
 
+    const activeCatObj = categories.find((c) => c.id === activeCategory) || categories[0];
+
     const scrollToSection = (targetId, catId) => {
         setActiveCategory(catId);
+        setIsMobileDropdownOpen(false);
         const element = document.getElementById(targetId);
         if (element) {
             const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-            const yOffset = isMobile ? -118 : -85;
+            const yOffset = isMobile ? -130 : -85;
             const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
         }
@@ -87,7 +101,7 @@ function MenuContent({
     useEffect(() => {
         const handleScroll = () => {
             const isMobile = window.innerWidth < 768;
-            const scrollPos = window.scrollY + (isMobile ? 130 : 100);
+            const scrollPos = window.scrollY + (isMobile ? 140 : 100);
             for (let i = categories.length - 1; i >= 0; i--) {
                 const cat = categories[i];
                 const el = document.getElementById(cat.targetId);
@@ -102,28 +116,119 @@ function MenuContent({
         return () => window.removeEventListener('scroll', handleScroll);
     }, [categories]);
 
+    // Close mobile dropdown when clicking outside or pressing Escape
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setIsMobileDropdownOpen(false);
+            }
+        };
+        if (isMobileDropdownOpen) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isMobileDropdownOpen]);
+
     return (
         <div className="menu-container-inner">
             {/* Sticky Category Quick-Filter Navigation */}
             <div className="menu-nav-sticky">
                 <div className="container-fluid container-lg px-0">
-                    <div className="menu-nav-scroll-container">
-                        {categories.map((cat) => (
+                    {/* Desktop View (>= 768px): Horizontal Category Pills */}
+                    <div className="menu-nav-desktop d-none d-md-flex">
+                        <div className="menu-nav-scroll-container">
+                            {categories.map((cat) => (
+                                <button
+                                    key={'cat-pill-' + cat.id}
+                                    type="button"
+                                    className={`menu-nav-pill ${activeCategory === cat.id ? 'active' : ''}`}
+                                    onClick={() => scrollToSection(cat.targetId, cat.id)}
+                                >
+                                    <span className="pill-icon">{cat.icon}</span>
+                                    <span>{cat.name}</span>
+                                    {cat.badge ? (
+                                        <span className="pill-badge">{cat.badge}</span>
+                                    ) : (
+                                        <span className="pill-count">{cat.count}</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Mobile View (< 768px): Interactive Category Dropdown */}
+                    <div className="menu-nav-mobile d-md-none">
+                        <div className="menu-mobile-dropdown-wrap">
                             <button
-                                key={'cat-pill-' + cat.id}
                                 type="button"
-                                className={`menu-nav-pill ${activeCategory === cat.id ? 'active' : ''}`}
-                                onClick={() => scrollToSection(cat.targetId, cat.id)}
+                                className={`menu-mobile-dropdown-btn ${isMobileDropdownOpen ? 'open' : ''}`}
+                                onClick={() => setIsMobileDropdownOpen((prev) => !prev)}
+                                aria-label="Select Menu Category"
+                                aria-expanded={isMobileDropdownOpen}
                             >
-                                <span className="pill-icon">{cat.icon}</span>
-                                <span>{cat.name}</span>
-                                {cat.badge ? (
-                                    <span className="pill-badge">{cat.badge}</span>
-                                ) : (
-                                    <span className="pill-count">{cat.count}</span>
-                                )}
+                                <div className="menu-mobile-current">
+                                    <span className="menu-mobile-current-prefix">Category:</span>
+                                    <span className="menu-mobile-current-icon">{activeCatObj?.icon}</span>
+                                    <span className="menu-mobile-current-name">{activeCatObj?.name}</span>
+                                    {activeCatObj?.badge ? (
+                                        <span className="menu-mobile-current-badge">{activeCatObj.badge}</span>
+                                    ) : (
+                                        <span className="menu-mobile-current-count">({activeCatObj?.count})</span>
+                                    )}
+                                </div>
+                                <span className={`menu-mobile-dropdown-chevron ${isMobileDropdownOpen ? 'rotate-180' : ''}`}>
+                                    <FaChevronDown />
+                                </span>
                             </button>
-                        ))}
+
+                            {/* Dropdown Menu Popover + Backdrop */}
+                            {isMobileDropdownOpen && (
+                                <>
+                                    <div
+                                        className="menu-mobile-dropdown-backdrop"
+                                        onClick={() => setIsMobileDropdownOpen(false)}
+                                    />
+                                    <div className="menu-mobile-dropdown-menu" role="listbox">
+                                        <div className="menu-mobile-menu-header">
+                                            <span className="menu-mobile-menu-title">Select Menu Category</span>
+                                            <button
+                                                type="button"
+                                                className="menu-mobile-menu-close"
+                                                onClick={() => setIsMobileDropdownOpen(false)}
+                                                aria-label="Close category menu"
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </div>
+                                        <div className="menu-mobile-menu-list">
+                                            {categories.map((cat) => {
+                                                const isSelected = activeCategory === cat.id;
+                                                return (
+                                                    <button
+                                                        key={'mobile-cat-' + cat.id}
+                                                        type="button"
+                                                        className={`menu-mobile-menu-item ${isSelected ? 'selected' : ''}`}
+                                                        onClick={() => scrollToSection(cat.targetId, cat.id)}
+                                                    >
+                                                        <div className="menu-mobile-item-left">
+                                                            <span className="menu-mobile-item-icon">{cat.icon}</span>
+                                                            <span className="menu-mobile-item-name">{cat.name}</span>
+                                                            {cat.badge && (
+                                                                <span className="menu-mobile-item-badge">{cat.badge}</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="menu-mobile-item-right">
+                                                            <span className="menu-mobile-item-count">{cat.count}</span>
+                                                            {isSelected && <FaCheck className="menu-mobile-item-check" />}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
