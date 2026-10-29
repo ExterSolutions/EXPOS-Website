@@ -6,6 +6,7 @@ import CartFunction from '../components/cart';
 import { GlobalContext } from '../context/GlobalContext';
 import { useSiteData } from '../components/_main/Header/hooks/useSiteData';
 import PageSEO from '../components/_main/PageSEO';
+import { paymentVerified } from '../services';
 
 // ── MODULE-LEVEL: fires at JS parse time, before React mounts ──────────────
 console.log('[🔔 PaymentSuccess MODULE] JS loaded at', new Date().toISOString());
@@ -112,11 +113,33 @@ const PaymentSuccess = () => {
         const run = async () => {
             console.log('[🔔 PaymentSuccess] run() started — reading pendingOrderMeta from localStorage');
             const rawMeta = localStorage.getItem('pendingOrderMeta');
+            const storedOrderId = localStorage.getItem('OrderID');
+            const storedSessionId = localStorage.getItem('sessionId');
             console.log('[🔔 PaymentSuccess] raw pendingOrderMeta =', rawMeta);
 
+            let parsedMeta = null;
             if (rawMeta) {
                 try {
-                    const meta = JSON.parse(rawMeta);
+                    parsedMeta = JSON.parse(rawMeta);
+                } catch (e) {
+                    console.error('[🔔 PaymentSuccess] ❌ Could not parse pendingOrderMeta:', e);
+                }
+            }
+
+            // Direct Stripe-to-Admin verification fallback: if the Stripe webhook was delayed,
+            // this ensures paymentStatus='paid' and bell_status='ringing' are committed in DB before we notify the socket.
+            const verifyOrderCode = storedOrderId || parsedMeta?.orderCode;
+            if (storedSessionId && verifyOrderCode) {
+                try {
+                    await paymentVerified({ orderCode: verifyOrderCode, sessionId: storedSessionId });
+                } catch (verifyErr) {
+                    console.warn('[🔔 PaymentSuccess] payment/verify fallback warning:', verifyErr);
+                }
+            }
+
+            if (parsedMeta) {
+                try {
+                    const meta = parsedMeta;
                     // ── Pre-send validation ───────────────────────────────────────────
                     console.log('[🔔 PaymentSuccess] ✅ pendingOrderMeta parsed OK:');
                     console.log('  orderCode    =', meta.orderCode);
@@ -129,7 +152,7 @@ const PaymentSuccess = () => {
                     // ─────────────────────────────────────────────────────────────────
                     await notifySocketServer(meta);
                 } catch (e) {
-                    console.error('[🔔 PaymentSuccess] ❌ Could not parse pendingOrderMeta:', e);
+                    console.error('[🔔 PaymentSuccess] ❌ Error notifying socket server:', e);
                 }
             } else {
                 console.warn('[🔔 PaymentSuccess] ⚠️ No pendingOrderMeta found — socket notification skipped');

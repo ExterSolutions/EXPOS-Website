@@ -394,7 +394,7 @@ function AddressDetails() {
             localStorage.setItem("sessionId", orderResponse.sessionId);
             localStorage.setItem("pendingOrderMeta", JSON.stringify({
                 orderCode: orderResponse.orderCode,
-                orderNumber: orderResponse.orderNumber,
+                orderNumber: orderResponse.orderNumber || orderResponse.data?.orderNumber || orderResponse.receiptNo || "",
                 storeCode: currentStoreCode === 'EXP' ? undefined : currentStoreCode,
                 customerName: custFullName,
                 phoneNumber: values?.phoneno,

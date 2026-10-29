@@ -192,6 +192,8 @@ function PickupOrder() {
         const resolvedCityCode = selectedStore?.cityCode || globalctx.selectedStore[0]?.cityCode || "";
         console.log('[🛒 PickupOrder] cityCode resolved =', resolvedCityCode, '| selectedStore.cityCode =', selectedStore?.cityCode, '| globalStore.cityCode =', globalctx.selectedStore[0]?.cityCode);
 
+        const baseUrl = window.location.origin;
+        const resolvedStoreCode = selectedStore?.code || currentStoreCode || globalctx.selectedStore?.[0]?.code;
         const payload = {
             customerCode: user?.data?.customerCode,
             deliveryType: selectedType,
@@ -200,7 +202,7 @@ function PickupOrder() {
             products: cart?.product,
             cityCode: resolvedCityCode,
             discount_code: appliedCoupon?.code,
-            storeCode: selectedStore?.code,
+            storeCode: resolvedStoreCode,
             subTotal: cart?.subtotal,
             discountAmount: discountAmount,
             taxPer: taxPercent,
@@ -210,6 +212,8 @@ function PickupOrder() {
             deliveryCharges: 0,
             extraDeliveryCharges: 0,
             grandTotal: grand_total,
+            successUrl: `${baseUrl}/payment/success`,
+            cancelUrl: `${baseUrl}/payment/cancel`,
         };
 
         try {
@@ -220,13 +224,13 @@ function PickupOrder() {
             localStorage.setItem("sessionId", response.sessionId);
             localStorage.setItem("pendingOrderMeta", JSON.stringify({
                 orderCode: response.orderCode,
-                orderNumber: response.orderNumber,
-                storeCode: selectedStore?.code,
+                orderNumber: response.orderNumber || response.data?.orderNumber || response.receiptNo || "",
+                storeCode: resolvedStoreCode,
                 customerName: user?.data?.fullName,
                 phoneNumber: user?.data?.mobileNumber,
                 deliveryType: selectedType,
                 orderFrom: "online",
-                grandTotal: grand_total,
+                grandTotal: response?.pricing?.grandTotal || grand_total,
                 status: "pending",
             }));
 
