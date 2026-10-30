@@ -56,7 +56,12 @@ const PaymentSuccess = () => {
             navigate('/', { replace: true });
         };
 
-        window.history.pushState(null, '', window.location.href);
+        try {
+            const safePath = window.location.pathname.replace(/\/+/g, '/') + window.location.search;
+            window.history.pushState(null, '', safePath);
+        } catch (err) {
+            console.warn('[PaymentSuccess] pushState skipped:', err);
+        }
         window.addEventListener('popstate', handlePopState);
 
         return () => {

@@ -241,13 +241,29 @@ export const settingApi = async () => {
 };
 
 export const paymentVerified = async (payload) => {
-  const { data: response } = await http.post("payment/verify", payload);
-  return response;
+  try {
+    const { data: response } = await http.post("cashier/payment/verify", payload);
+    return response;
+  } catch (err) {
+    if (err?.response?.status === 404) {
+      const { data: response } = await http.post("payment/verify", payload);
+      return response;
+    }
+    throw err;
+  }
 };
 
 export const paymentCancel = async (payload) => {
-  const { data: response } = await http.post("payment/cancel", payload);
-  return response;
+  try {
+    const { data: response } = await http.post("cashier/payment/cancel", payload);
+    return response;
+  } catch (err) {
+    if (err?.response?.status === 404) {
+      const { data: response } = await http.post("payment/cancel", payload);
+      return response;
+    }
+    throw err;
+  }
 };
 
 export const getOrderList = async (payload) => {
