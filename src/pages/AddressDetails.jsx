@@ -336,7 +336,12 @@ function AddressDetails() {
         toast.success('Store selected successfully.');
     };
 
+    const submittingRef = useRef(false);
+    const idempotencyKeyRef = useRef(`web_del_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
+
     const onSubmit = async (values) => {
+        if (submittingRef.current || loading) return;
+
         // Block ordering when kitchen is closed
         console.log('[KitchenClosed][AddressDetails] onSubmit called — storeOpen =', storeOpen);
         if (storeOpen === false) {
@@ -355,6 +360,7 @@ function AddressDetails() {
             return;
         }
 
+        submittingRef.current = true;
         try {
             setLoading(true);
 
@@ -372,6 +378,7 @@ function AddressDetails() {
             const finalGrandTotal = Number(cartTotal + deliveryFee + tipAmount).toFixed(2);
 
             const orderPayload = {
+                idempotency_key: idempotencyKeyRef.current,
                 deviceType: "web",
                 customerCode: user?.data?.customerCode,
                 deliveryType: "delivery",
@@ -431,14 +438,19 @@ function AddressDetails() {
             setApiPricing(orderResponse.pricing);
 
             toast.success("Order placed! Redirecting to payment…");
-            setLoading(false);
 
             // ── Go directly to Stripe payment ──────────────────────────────
-            // No intermediate timer screen — redirect immediately so the
-            // customer pays before the Nash quote window expires.
-            window.location.href = orderResponse.paymentUrl;
+            // Keep loading=true and submittingRef.current=true during redirect so the
+            // Confirm & Pay button cannot be re-clicked while Stripe is loading.
+            if (orderResponse.paymentUrl) {
+                window.location.href = orderResponse.paymentUrl;
+            } else {
+                submittingRef.current = false;
+                setLoading(false);
+            }
 
         } catch (error) {
+            submittingRef.current = false;
             setLoading(false);
 
             if (error.response?.status === 400 || error.response?.status === 500) {
@@ -970,12 +982,14 @@ function AddressDetails() {
                                 <button
                                     type="submit"
                                     id="chk-confirm-btn"
-                                    className={`chk-cta-btn${nashQuote.loading ? ' chk-cta-btn--loading' : ''}`}
-                                    disabled={nashQuote.loading}
+                                    className={`chk-cta-btn${(nashQuote.loading || loading || formik.isSubmitting) ? ' chk-cta-btn--loading' : ''}`}
+                                    disabled={nashQuote.loading || loading || formik.isSubmitting}
                                 >
                                     {nashQuote.loading
                                         ? <><span className="chk-spinner" /> Calculating delivery fee…</>
-                                        : '🔒 Confirm & Pay'}
+                                        : (loading || formik.isSubmitting)
+                                            ? <><span className="chk-spinner" /> Processing order…</>
+                                            : '🔒 Confirm & Pay'}
                                 </button>
                             )}
 

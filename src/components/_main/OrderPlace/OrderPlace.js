@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -11,11 +11,14 @@ function OrderPlace({ values }) {
   const globalctx = useContext(GlobalContext);
   const [cart, setCart] = globalctx.cart;
   const navigate = useNavigate();
+  const submittedRef = useRef(false);
+  const idempotencyKeyRef = useRef(`web_ord_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
 
   const paymentGateway = (values) => {
     let custFullName = values.firstname + " " + values?.lastname;
     const baseUrl = window.location.origin; // Get current domain
     const payload = {
+      idempotency_key: idempotencyKeyRef.current,
       callbackUrl: `${baseUrl}/payment/success`,
       cancelUrl: `${baseUrl}/payment/cancel`,
       customerCode: user?.data?.customerCode,
@@ -77,6 +80,8 @@ function OrderPlace({ values }) {
   };
 
   useEffect(() => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
     placeOrder();
   }, []);
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -193,7 +193,12 @@ function PickupOrder() {
         }
     };
 
+    const submittingRef = useRef(false);
+    const idempotencyKeyRef = useRef(`web_pck_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
+
     const handlePickupOrder = async () => {
+        if (submittingRef.current || busyLoader) return;
+
         // Block ordering when kitchen is closed
         console.log('[KitchenClosed][PickupOrder] handlePickupOrder called — storeOpen =', storeOpen);
         if (storeOpen === false) {
@@ -201,6 +206,7 @@ function PickupOrder() {
             setShowKitchenClosed(true);
             return;
         }
+        submittingRef.current = true;
         setBusyLoader(true);
 
         // cityCode: prefer from selectedStore (API-fetched), fall back to GlobalContext store (store-picker)
@@ -210,6 +216,7 @@ function PickupOrder() {
         const baseUrl = window.location.origin;
         const resolvedStoreCode = selectedStore?.code || currentStoreCode || globalctx.selectedStore?.[0]?.code;
         const payload = {
+            idempotency_key: idempotencyKeyRef.current,
             customerCode: user?.data?.customerCode,
             deliveryType: selectedType,
             customerName: user?.data?.fullName,
@@ -259,9 +266,11 @@ function PickupOrder() {
                 window.location.href = response.paymentUrl;
             } else {
                 toast.error("Payment URL not available.");
+                submittingRef.current = false;
                 setBusyLoader(false);
             }
         } catch (error) {
+            submittingRef.current = false;
             setBusyLoader(false);
             toast.error(error.response?.data?.message || "Order placement failed");
         }
@@ -492,7 +501,13 @@ function PickupOrder() {
                                 <p className="mb-0"><strong>Final Price:</strong> ${grand_total}</p>
                             </div>
                             <div className="d-flex gap-3">
-                                <button className="btn btn-light flex-grow-1 py-2" onClick={() => setIsShowConfirmPickup(false)}>Back</button>
+                                <button
+                                    className="btn btn-light flex-grow-1 py-2"
+                                    onClick={() => !busyLoader && setIsShowConfirmPickup(false)}
+                                    disabled={busyLoader}
+                                >
+                                    Back
+                                </button>
                                 <button
                                     className="btn btn-primary flex-grow-1 py-2 fw-bold"
                                     style={{ backgroundColor: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: '10px' }}
