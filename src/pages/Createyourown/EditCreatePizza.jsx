@@ -1058,6 +1058,14 @@ const EditCreatePizza = () => {
                       Select any of the below to create your own pizza.
                     </p>
 
+                    <div className="mt-3">
+                      <IndianStyleRequiredCheck
+                        choice={indianStyleChoice}
+                        onChange={handleIndianStyleChoice}
+                        freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                      />
+                    </div>
+
                     {/* dough */}
                     <div className="mt-3">
                       <div className="accordion" id="accordionExample4">

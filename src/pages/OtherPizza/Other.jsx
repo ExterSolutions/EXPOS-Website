@@ -789,6 +789,11 @@ const Other = () => {
                                             {/* ── CUSTOMIZE TRIGGER BUTTONS ── */}
                                             <h6 className="mt-3 mb-1 fw-bold offer-section-label">CUSTOMIZE YOUR PIZZA</h6>
                                             <div className="d-flex flex-column gap-2 mb-3">
+                                                <IndianStyleRequiredCheck
+                                                    choice={indianStyleChoice}
+                                                    onChange={handleIndianStyleChoice}
+                                                    freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                                                />
                                                 <TriggerBtn icon="🫓" label="Dough" value={crustLabel} sheetKey="dough" />
                                                 <TriggerBtn icon="⭕" label="Crust Type" value={crustTypeLabel} sheetKey="crustType" />
                                                 {specialBaseOpts.length > 0 && <TriggerBtn icon="🍕" label="Special Base" value={specialBaseLabel} sheetKey="specialBase" />}
@@ -796,13 +801,6 @@ const Other = () => {
                                                 <TriggerBtn icon="🌶️" label="Spicy" value={spicyLabel} sheetKey="spicy" />
                                                 <TriggerBtn icon="🍅" label="Sauce" value={sauceLabel} sheetKey="sauce" />
                                                 <TriggerBtn icon="🔥" label="Cook" value={cookLabel} sheetKey="cook" />
-                                                <div className="mt-1">
-                                                    <IndianStyleRequiredCheck
-                                                        choice={indianStyleChoice}
-                                                        onChange={handleIndianStyleChoice}
-                                                        freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
-                                                    />
-                                                </div>
                                                 <TriggerBtn
                                                     icon="🥗"
                                                     label="Choose Toppings"

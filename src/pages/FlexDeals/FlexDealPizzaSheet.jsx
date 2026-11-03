@@ -256,6 +256,17 @@ const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, sett
 
     return (
         <div className="fd-pizza-options-form">
+            {/* ── Indian Style (Mandatory) ── */}
+            {typeof onIndianStyleChange === 'function' && (
+                <div className="mb-2">
+                    <IndianStyleRequiredCheck
+                        choice={indianStyleChoice}
+                        onChange={(c) => onIndianStyleChange(c, false)}
+                        freeToppingsCount={toppingsData?.freeToppings?.length || ingredients?.toppings?.freeToppings?.length || 0}
+                    />
+                </div>
+            )}
+
             {/* ── Dough ── */}
             {ingredients?.crust?.length > 0 && (
                 <div className="mb-2">
@@ -335,13 +346,6 @@ const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, sett
 
             {/* ── Toppings trigger ── */}
             <div className="mb-2">
-                {typeof onIndianStyleChange === 'function' && (
-                    <IndianStyleRequiredCheck
-                        choice={indianStyleChoice}
-                        onChange={(c) => onIndianStyleChange(c, false)}
-                        freeToppingsCount={toppingsData?.freeToppings?.length || ingredients?.toppings?.freeToppings?.length || 0}
-                    />
-                )}
                 <button className="topping-trigger-btn" onClick={() => setToppingSheetOpen(true)} type="button">
                     <span className="topping-trigger-btn__icon">🥗</span>
                     <span className="topping-trigger-btn__label">Choose Toppings</span>

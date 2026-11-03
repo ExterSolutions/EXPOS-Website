@@ -468,6 +468,15 @@ const PizzaCustomizerAccordion = ({
                             <div className="mt-3">
                                 <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>Customize Your Pizza</p>
 
+                                {/* ── Indian Style (Mandatory) ── */}
+                                <div className="mb-2">
+                                    <IndianStyleRequiredCheck
+                                        choice={pizzaSelections?.indianStyleChoice ?? (isEditMode ? ((pizzaSelections?.toppings?.freeToppings?.length || 0) > 0 ? "yes" : "no") : null)}
+                                        onChange={handleIndianStyleChoice}
+                                        freeToppingsCount={toppings?.freeToppings?.length || 0}
+                                    />
+                                </div>
+
                                 {/* ── Crust (Dough) ── */}
                                 {offerData?.crust?.length > 0 && (
                                     <div className="mb-2">
@@ -610,11 +619,6 @@ const PizzaCustomizerAccordion = ({
 
                                 {/* ── Toppings ── */}
                                 <div className="mb-2">
-                                    <IndianStyleRequiredCheck
-                                        choice={pizzaSelections?.indianStyleChoice ?? (isEditMode ? ((pizzaSelections?.toppings?.freeToppings?.length || 0) > 0 ? "yes" : "no") : null)}
-                                        onChange={handleIndianStyleChoice}
-                                        freeToppingsCount={toppings?.freeToppings?.length || 0}
-                                    />
                                     <button
                                         className="topping-trigger-btn"
                                         onClick={() => setOpenSheet("toppings")}

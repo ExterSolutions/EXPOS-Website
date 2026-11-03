@@ -387,6 +387,15 @@ function SpecialPizzaConfig({
                     <p className="fw-bold text-uppercase mb-2" style={{ fontSize: "0.8rem", letterSpacing: "0.06em", opacity: 0.7 }}>Customize Your Pizza</p>
                 </div>
 
+                {/* ── Indian Style (Mandatory) ── */}
+                <div className="mb-2">
+                    <IndianStyleRequiredCheck
+                        choice={slot.indianStyleChoice ?? null}
+                        onChange={handleIndianStyleChoice}
+                        freeToppingsCount={toppingsData?.toppings?.freeToppings?.length || 0}
+                    />
+                </div>
+
                 {/* ── Dough / Crust ── */}
                 {(specialOfferData?.crust?.length > 0) && (
                     <div className="mb-2">
@@ -509,11 +518,6 @@ function SpecialPizzaConfig({
 
                 {/* ── Toppings ── */}
                 <div className="mb-2">
-                    <IndianStyleRequiredCheck
-                        choice={slot.indianStyleChoice ?? null}
-                        onChange={handleIndianStyleChoice}
-                        freeToppingsCount={toppingsData?.toppings?.freeToppings?.length || 0}
-                    />
                     <button
                         className="topping-trigger-btn"
                         onClick={() => setToppingOpen(true)}

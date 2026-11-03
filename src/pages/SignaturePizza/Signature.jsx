@@ -792,6 +792,11 @@ const Signature = () => {
                                     <p className="fw-bold text-uppercase mb-2 mt-4" style={{ fontSize: '0.8rem', letterSpacing: '0.06em', opacity: 0.7 }}>CUSTOMIZE YOUR PIZZA</p>
                                     {/* Trigger buttons — same style as Other Pizza / Create Your Own */}
                                     <div className="d-flex flex-column gap-2 mb-2">
+                                        <IndianStyleRequiredCheck
+                                            choice={indianStyleChoice}
+                                            onChange={handleIndianStyleChoice}
+                                            freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                                        />
                                         <TriggerBtn icon="🍞" label="Dough" value={crustLabel} sheetKey="dough" />
                                         <TriggerBtn icon="🔥" label="Crust Type" value={crustTypeLabel} sheetKey="crustType" />
                                         <TriggerBtn icon="🧀" label="Cheese" value={cheeseLabel} sheetKey="cheese" />
@@ -929,11 +934,6 @@ const Signature = () => {
                                             </div> */}
                                     {/* TOPPINGS — bottom sheet trigger */}
                                     <div className="mt-3 mb-4">
-                                        <IndianStyleRequiredCheck
-                                            choice={indianStyleChoice}
-                                            onChange={handleIndianStyleChoice}
-                                            freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
-                                        />
                                         <button
                                             className="topping-trigger-btn"
                                             onClick={() => setToppingSheetOpen(true)}

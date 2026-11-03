@@ -824,6 +824,11 @@ const CreatePizza = () => {
 
                     <h6 className="offer-section-label mb-2 mt-1">CUSTOMIZE YOUR PIZZA</h6>
                     <div className="d-flex flex-column gap-2 mb-3">
+                      <IndianStyleRequiredCheck
+                        choice={indianStyleChoice}
+                        onChange={handleIndianStyleChoice}
+                        freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                      />
                       <button type="button" className="topping-trigger-btn" onClick={() => setOpenSheet('dough')}>
                         <span className="topping-trigger-btn__icon">🫓</span>
                         <span className="topping-trigger-btn__label">Dough</span>
@@ -872,11 +877,6 @@ const CreatePizza = () => {
 
 
                     <div className="mt-3 mb-4">
-                      <IndianStyleRequiredCheck
-                        choice={indianStyleChoice}
-                        onChange={handleIndianStyleChoice}
-                        freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
-                      />
                       <button
                         className="topping-trigger-btn"
                         onClick={() => setToppingSheetOpen(true)}

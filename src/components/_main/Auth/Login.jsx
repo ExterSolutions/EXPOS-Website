@@ -5,8 +5,10 @@ import { toast } from "react-toastify";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { LOGIN_SUCCESS } from "../../../redux/authProvider/actionType";
 import {
+    customerLogin,
     customerResendOtp,
     customerResetPassword,
+    customerUpdatePassword,
     customerVerifyOtp,
 } from "../../../services";
 
@@ -95,9 +97,22 @@ function Login({ setLoading }) {
 
         try {
             const res = await customerResetPassword({ mobileNumber: cleaned });
-            if (res?.isRegistered === false || (!res?.resetToken && String(res?.status) === "300")) {
+            const msgLower = String(res?.message || "").toLowerCase();
+            const isUnregistered =
+                res?.isRegistered === false ||
+                msgLower.includes("no account") ||
+                msgLower.includes("no users") ||
+                msgLower.includes("does not exist") ||
+                msgLower.includes("not found");
+
+            if (isUnregistered) {
                 toast.info(res?.message || "No account found with this number. Let's create your account!");
                 navigate("/registration", { state: { mobileNumber: cleaned } });
+                return;
+            }
+
+            if (res?.otpSent === false || (!res?.resetToken && String(res?.status) === "300")) {
+                toast.error(res?.message || "Failed to send OTP. Please try again.");
                 return;
             }
 
@@ -114,7 +129,13 @@ function Login({ setLoading }) {
             }
         } catch (err) {
             const data = err?.response?.data;
-            if (data?.isRegistered === false) {
+            const errMsgLower = String(data?.message || "").toLowerCase();
+            if (
+                data?.isRegistered === false ||
+                errMsgLower.includes("no account") ||
+                errMsgLower.includes("no users") ||
+                errMsgLower.includes("does not exist")
+            ) {
                 toast.info(data?.message || "No account found. Redirecting to registration...");
                 navigate("/registration", { state: { mobileNumber: cleaned } });
                 return;
@@ -145,6 +166,31 @@ function Login({ setLoading }) {
             if (String(res?.status) === "200" && res?.data && res?.token) {
                 completeLogin(res.data, res.token);
                 return;
+            }
+
+            // Backward-compatible bridge if backend verify_otp returned verified=true without profile payload
+            if ((String(res?.status) === "200" || res?.verified) && (res?.token || resetToken)) {
+                const verifyTok = res.token || resetToken;
+                const bridgeKey = `OtpBridge${otpString}A1`;
+                const updRes = await customerUpdatePassword({
+                    token: verifyTok,
+                    mobileNumber: phoneInput,
+                    password: bridgeKey,
+                    password_confirmation: bridgeKey,
+                });
+                if (updRes?.data && updRes?.token) {
+                    completeLogin(updRes.data, updRes.token);
+                    return;
+                }
+                const loginRes = await customerLogin({
+                    username: phoneInput,
+                    mobileNumber: phoneInput,
+                    password: bridgeKey,
+                });
+                if (loginRes?.data && loginRes?.token) {
+                    completeLogin(loginRes.data, loginRes.token);
+                    return;
+                }
             }
 
             setOtpError(res?.message || "Invalid or expired OTP. Please try again.");
