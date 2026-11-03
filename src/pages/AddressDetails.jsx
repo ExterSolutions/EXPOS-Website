@@ -20,6 +20,7 @@ import {
 import { useNashQuote } from '../hooks/useNashQuote';
 import { CountdownTimer } from '../components/CountdownTimer';
 import KitchenClosedModal from '../components/common/KitchenClosedModal';
+import AddressAutofill, { extractCanadianAddressParts } from '../components/common/AddressAutofill';
 
 
 const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
@@ -59,16 +60,19 @@ const ValidateSchema = Yup.object({
     city: Yup.string()
         .required("City is required")
         .matches(
-            /^[A-Za-z\ ]+$/,
+            /^[A-Za-z\s.\-']+$/,
             "City name should only contain alphabetic characters, spaces"
         )
-        .min(3, "City must be at least 3 characters")
+        .min(2, "City must be at least 2 characters")
         .max(50, "City cannot be longer than 50 characters"),
     postalcode: canadianPostalCode.required("Postal Code is Required"),
     address: Yup.string()
         .required("Address is required")
-        .min(10, "Address must be at least 10 characters")
+        .min(5, "Address must be at least 5 characters")
         .max(100, "Address cannot be longer than 100 characters"),
+    deliveryInstructions: Yup.string()
+        .max(300, "Delivery instructions cannot exceed 300 characters")
+        .nullable(),
 });
 
 function AddressDetails() {
@@ -115,7 +119,22 @@ function AddressDetails() {
         postalcode: "",
         city: "",
         address: "",
+        deliveryInstructions: "",
     });
+
+    // Tip state: default 10%, with 15%, 20%, and 'other' (editable custom amount, can be 0)
+    const [tipMode, setTipMode] = useState("10");
+    const [customTip, setCustomTip] = useState("0");
+
+    const baseTipSubtotal = Math.max(
+        0,
+        Number(cart?.subtotal || 0) - Number(cart?.discountAmount || 0)
+    );
+    const tipPercent = tipMode === "other" ? 0 : Number(tipMode);
+    const tipAmount =
+        tipMode === "other"
+            ? Math.round(Math.max(0, parseFloat(customTip) || 0) * 100) / 100
+            : Math.round(baseTipSubtotal * (tipPercent / 100) * 100) / 100;
 
     const navigate = useNavigate();
 
@@ -348,9 +367,9 @@ function AddressDetails() {
             const baseUrl = window.location.origin;
             let custFullName = values.firstname + " " + values.lastname;
 
-            // Grand total = cart total + Nash delivery fee
+            // Grand total = cart total + Nash delivery fee + tip
             const cartTotal = Number(cart?.grandtotal || 0);
-            const finalGrandTotal = Number(cartTotal + deliveryFee).toFixed(2);
+            const finalGrandTotal = Number(cartTotal + deliveryFee + tipAmount).toFixed(2);
 
             const orderPayload = {
                 deviceType: "web",
@@ -360,6 +379,7 @@ function AddressDetails() {
                 mobileNumber: values?.phoneno,
                 address: values?.address,
                 zipCode: values.postalcode,
+                deliveryInstructions: (values?.deliveryInstructions || "").trim(),
                 cityCode: selectedCity?.cityCode
                     || currentCity?.cityCode
                     || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode
@@ -371,7 +391,9 @@ function AddressDetails() {
                 discountAmount: cart?.discountAmount,
                 deliveryCharges: deliveryFee,           // Nash delivery fee (from quote)
                 extraDeliveryCharges: 0,
-                grandTotal: finalGrandTotal,            // cart total + delivery fee → Stripe charges this
+                tipAmount: Number(tipAmount.toFixed(2)),
+                tipPer: tipPercent,
+                grandTotal: finalGrandTotal,            // cart total + delivery fee + tip → Stripe charges this
                 successUrl: `${baseUrl}/payment/success`,
                 cancelUrl: `${baseUrl}/payment/cancel`,
             };
@@ -495,7 +517,7 @@ function AddressDetails() {
         const postal = formik.values.postalcode || '';
         const phone  = formik.values.phoneno   || '';
 
-        if (readOnly || addr.length < 10 || postal.length < 5 || !currentStoreCode) return;
+        if (readOnly || addr.length < 5 || postal.length < 5 || !currentStoreCode) return;
 
         const t = setTimeout(() => {
             nashQuote.fetchQuote({
@@ -522,11 +544,15 @@ function AddressDetails() {
     const cartFee       = cart?.deliveryCharges;
     const resolvedFee   = confirmedFee ?? estimatedFee ?? cartFee;
 
+    const resolvedTip = apiPricing?.tipAmount != null
+        ? Number(apiPricing.tipAmount)
+        : tipAmount;
+
     const grandTotal = apiPricing?.grandTotal
         ? Number(apiPricing.grandTotal)
-        : nashQuote.deliveryFee > 0
+        : (nashQuote.deliveryFee > 0
             ? Number(cart?.grandtotal || 0) + nashQuote.deliveryFee
-            : Number(cart?.grandtotal || 0);
+            : Number(cart?.grandtotal || 0)) + resolvedTip;
 
     /* ── Reusable: Order Summary lines ── */
     const SummaryLines = () => (
@@ -587,6 +613,12 @@ function AddressDetails() {
                     <span>$ {Number(apiPricing.extraDeliveryCharges).toFixed(2)}</span>
                 </div>
             )}
+
+            {/* Tip */}
+            <div className="chk-line">
+                <span>Tip {tipMode !== 'other' ? `(${tipPercent}%)` : ''}</span>
+                <span>$ {Number(resolvedTip).toFixed(2)}</span>
+            </div>
         </>
     );
 
@@ -701,19 +733,44 @@ function AddressDetails() {
                                     <label className="chk-label">
                                         Street Address <span className="chk-required">*</span>
                                     </label>
-                                    <div className="chk-input-wrap">
-                                        <span className="chk-input-icon">📍</span>
-                                        <input
-                                            className={`chk-input${formik.touched.address && formik.errors.address ? ' chk-input--error' : ''}`}
-                                            type="text"
-                                            name="address"
-                                            placeholder="e.g. 123 Main Street"
-                                            disabled={readOnly}
-                                            value={formik.values.address}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                        />
-                                    </div>
+                                    <AddressAutofill
+                                        disabled={readOnly}
+                                        options={{ country: "CA", language: "en" }}
+                                        onRetrieve={(res) => {
+                                            const feature = res?.features?.[0];
+                                            if (!feature) return;
+                                            if (feature.properties?._streetOnly) {
+                                                formik.setFieldValue("address", feature.properties.address_line1 || "");
+                                                return;
+                                            }
+                                            const parts = extractCanadianAddressParts(feature);
+                                            const resolvedAddress = (parts.fullAddress || parts.streetAddress || "").slice(0, 100);
+                                            if (resolvedAddress) {
+                                                formik.setFieldValue("address", resolvedAddress);
+                                            }
+                                            if (parts.city) {
+                                                formik.setFieldValue("city", parts.city);
+                                            }
+                                            if (parts.postalCode) {
+                                                formik.setFieldValue("postalcode", parts.postalCode);
+                                            }
+                                        }}
+                                    >
+                                        <div className="chk-input-wrap">
+                                            <span className="chk-input-icon">📍</span>
+                                            <input
+                                                className={`chk-input${formik.touched.address && formik.errors.address ? ' chk-input--error' : ''}`}
+                                                type="text"
+                                                name="address"
+                                                placeholder="Start typing delivery address..."
+                                                disabled={readOnly}
+                                                value={formik.values.address}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                    </AddressAutofill>
                                     {formik.touched.address && formik.errors.address && (
                                         <span className="chk-error-msg">{formik.errors.address}</span>
                                     )}
@@ -752,8 +809,16 @@ function AddressDetails() {
                                         list="postal-options"
                                         placeholder="e.g. L6X 4L9"
                                         disabled={readOnly}
+                                        maxLength={7}
                                         value={formik.values.postalcode}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) => {
+                                            const raw = e.target.value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+                                            const formatted = raw.length > 3
+                                                ? raw.slice(0, 3) + " " + raw.slice(3, 6)
+                                                : raw;
+                                            formik.setFieldValue("postalcode", formatted);
+                                        }}
+                                        onBlur={formik.handleBlur}
                                         autoComplete="off"
                                     />
                                     <datalist id="postal-options">
@@ -767,6 +832,130 @@ function AddressDetails() {
                                     )}
                                 </div>
 
+                                {/* Delivery Instructions (Optional) */}
+                                <div className="chk-field chk-field--full">
+                                    <label className="chk-label">
+                                        Delivery Instructions <span style={{ fontWeight: 400, color: '#6b7280', fontSize: '0.85em' }}>(Optional)</span>
+                                    </label>
+                                    <textarea
+                                        className="chk-input"
+                                        name="deliveryInstructions"
+                                        rows={2}
+                                        maxLength={300}
+                                        placeholder="e.g. Gate code #1234, leave at front door, ring doorbell..."
+                                        disabled={readOnly}
+                                        value={formik.values.deliveryInstructions || ""}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        style={{ resize: 'vertical', minHeight: '64px', paddingTop: '10px' }}
+                                    />
+                                    {formik.touched.deliveryInstructions && formik.errors.deliveryInstructions && (
+                                        <span className="chk-error-msg">{formik.errors.deliveryInstructions}</span>
+                                    )}
+                                </div>
+
+                            </div>
+
+                            {/* Tip Selection Section */}
+                            <div style={{ marginTop: '18px', padding: '14px 16px', borderRadius: '12px', border: '1px solid #e5e7eb', backgroundColor: '#fafafa' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                    <label className="chk-label" style={{ marginBottom: 0 }}>
+                                        💝 Add a Tip
+                                    </label>
+                                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#111827' }}>
+                                        $ {tipAmount.toFixed(2)}
+                                    </span>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                                    {[
+                                        { key: '10', label: '10%' },
+                                        { key: '15', label: '15%' },
+                                        { key: '20', label: '20%' },
+                                        { key: 'other', label: 'Other' },
+                                    ].map((opt) => {
+                                        const isSelected = tipMode === opt.key;
+                                        const calcVal = opt.key !== 'other'
+                                            ? (Math.round(baseTipSubtotal * (Number(opt.key) / 100) * 100) / 100).toFixed(2)
+                                            : null;
+                                        return (
+                                            <button
+                                                key={opt.key}
+                                                type="button"
+                                                disabled={readOnly}
+                                                onClick={() => {
+                                                    setTipMode(opt.key);
+                                                    if (opt.key === 'other' && customTip === '') {
+                                                        setCustomTip('0');
+                                                    }
+                                                }}
+                                                style={{
+                                                    padding: '8px 6px',
+                                                    borderRadius: '10px',
+                                                    border: isSelected ? '2px solid #e63946' : '1px solid #d1d5db',
+                                                    backgroundColor: isSelected ? '#fff1f2' : '#ffffff',
+                                                    color: isSelected ? '#e63946' : '#374151',
+                                                    fontWeight: isSelected ? 700 : 600,
+                                                    fontSize: '0.85rem',
+                                                    cursor: readOnly ? 'not-allowed' : 'pointer',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    lineHeight: 1.2,
+                                                    transition: 'all 0.15s ease',
+                                                }}
+                                            >
+                                                <span>{opt.label}</span>
+                                                {calcVal !== null ? (
+                                                    <span style={{ fontSize: '0.72rem', opacity: 0.8, marginTop: '2px' }}>${calcVal}</span>
+                                                ) : (
+                                                    <span style={{ fontSize: '0.72rem', opacity: 0.8, marginTop: '2px' }}>Custom / $0</span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {tipMode === 'other' && (
+                                    <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ position: 'relative', flex: 1 }}>
+                                            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 600, color: '#6b7280' }}>$</span>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.50"
+                                                disabled={readOnly}
+                                                className="chk-input"
+                                                style={{ paddingLeft: '28px', width: '100%' }}
+                                                placeholder="0.00"
+                                                value={customTip}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (val === '' || Number(val) >= 0) {
+                                                        setCustomTip(val);
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            disabled={readOnly}
+                                            onClick={() => setCustomTip('0')}
+                                            style={{
+                                                padding: '8px 12px',
+                                                borderRadius: '8px',
+                                                border: '1px solid #d1d5db',
+                                                backgroundColor: Number(customTip) === 0 ? '#111827' : '#ffffff',
+                                                color: Number(customTip) === 0 ? '#ffffff' : '#374151',
+                                                fontSize: '0.8rem',
+                                                fontWeight: 600,
+                                                cursor: readOnly ? 'not-allowed' : 'pointer',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            No Tip ($0)
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Quote hint */}

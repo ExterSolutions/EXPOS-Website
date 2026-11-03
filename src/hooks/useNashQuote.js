@@ -54,8 +54,12 @@ export function useNashQuote() {
             const firstLetter = postalcode.trim().toUpperCase()[0] || '';
             const province = POSTAL_TO_PROVINCE[firstLetter] || 'ON'; // 'ON' as safe fallback
 
-            const parts = [address.trim()];
-            if (city)       parts.push(city.trim());
+            const addrTrimmed = address.trim();
+            const addrLower = addrTrimmed.toLowerCase();
+            const parts = [addrTrimmed];
+            if (city && !addrLower.includes(city.trim().toLowerCase())) {
+                parts.push(city.trim());
+            }
             parts.push(province);
             parts.push(postalcode.trim());
             parts.push('Canada');

@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { LOGIN_SUCCESS } from "../../../redux/authProvider/actionType";
 import { customerRegistration, getPostalcodeList } from "../../../services";
+import AddressAutofill, { extractCanadianAddressParts } from "../../common/AddressAutofill";
 
 const canadianPhoneNumberRegExp = /^\d{10}$/;
 
@@ -44,7 +45,7 @@ const ValidationSchema = Yup.object({
 
     city: Yup.string()
         .required("City is required")
-        .matches(/^[A-Za-z\s]+$/, "City name should only contain alphabetic characters and spaces")
+        .matches(/^[A-Za-z\s.\-']+$/, "City name should only contain alphabetic characters and spaces")
         .min(2, "City must be at least 2 characters")
         .max(50, "City cannot be longer than 50 characters"),
 
@@ -228,12 +229,50 @@ function Registration({ setLoading }) {
                             formik={formik}
                         />
 
-                        <InputField
-                            label="Street Address"
-                            name="address"
-                            placeholder="House number & street name"
-                            formik={formik}
-                        />
+                        <div className="col-lg-6 col-md-6 col-sm-12 pb-2">
+                            <label className="form-label mb-1 fw-semibold" style={{ fontSize: "0.88rem" }}>
+                                Street Address <span className="text-danger">*</span>
+                            </label>
+                            <AddressAutofill
+                                options={{ country: "CA", language: "en" }}
+                                onRetrieve={(res) => {
+                                    const feature = res?.features?.[0];
+                                    if (!feature) return;
+                                    if (feature.properties?._streetOnly) {
+                                        formik.setFieldValue("address", feature.properties.address_line1 || "");
+                                        return;
+                                    }
+                                    const parts = extractCanadianAddressParts(feature);
+                                    const resolvedAddress = (parts.fullAddress || parts.streetAddress || "").slice(0, 100);
+                                    if (resolvedAddress) {
+                                        formik.setFieldValue("address", resolvedAddress);
+                                    }
+                                    if (parts.city) {
+                                        formik.setFieldValue("city", parts.city);
+                                    }
+                                    if (parts.postalCode) {
+                                        formik.setFieldValue("postalcode", parts.postalCode);
+                                    }
+                                }}
+                            >
+                                <input
+                                    className="form-control mb-1"
+                                    style={{ height: "46px", borderRadius: "10px" }}
+                                    type="text"
+                                    name="address"
+                                    placeholder="Start typing street address..."
+                                    value={formik.values.address}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    autoComplete="off"
+                                />
+                            </AddressAutofill>
+                            {formik.touched.address && formik.errors.address && (
+                                <div className="text-danger formErrMsg mb-1" style={{ fontSize: "0.78rem" }}>
+                                    {formik.errors.address}
+                                </div>
+                            )}
+                        </div>
 
                         <InputField
                             label="City"

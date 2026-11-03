@@ -7,6 +7,7 @@ import defaultPhoto from "../../../assets/images/avatar.jpg";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { useDispatch } from "react-redux";
 import { UPDATEUSER } from "../../../redux/authProvider/actionType";
+import AddressAutofill, { extractCanadianAddressParts } from "../../common/AddressAutofill";
 
 const validationSchema = Yup.object({
     firstName: Yup.string().min(2, "Minimum 2 characters").required("First name is required"),
@@ -274,17 +275,41 @@ function ProfileUpdate() {
                         <label htmlFor="address" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
                             Street Address
                         </label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            style={{ height: 46, borderRadius: 10 }}
-                            id="address"
-                            name="address"
-                            placeholder="House / Apt number and street"
-                            value={formik.values.address}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                        />
+                        <AddressAutofill
+                            options={{ country: "CA", language: "en" }}
+                            onRetrieve={(res) => {
+                                const feature = res?.features?.[0];
+                                if (!feature) return;
+                                if (feature.properties?._streetOnly) {
+                                    formik.setFieldValue("address", feature.properties.address_line1 || "");
+                                    return;
+                                }
+                                const parts = extractCanadianAddressParts(feature);
+                                const resolvedAddress = (parts.fullAddress || parts.streetAddress || "").slice(0, 100);
+                                if (resolvedAddress) {
+                                    formik.setFieldValue("address", resolvedAddress);
+                                }
+                                if (parts.city) {
+                                    formik.setFieldValue("city", parts.city);
+                                }
+                                if (parts.postalCode) {
+                                    formik.setFieldValue("zipcode", parts.postalCode);
+                                }
+                            }}
+                        >
+                            <input
+                                type="text"
+                                className="form-control"
+                                style={{ height: 46, borderRadius: 10 }}
+                                id="address"
+                                name="address"
+                                placeholder="Start typing street address..."
+                                value={formik.values.address}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                autoComplete="off"
+                            />
+                        </AddressAutofill>
                     </div>
 
                     <div className="col-md-6 col-12">
