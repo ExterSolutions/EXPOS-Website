@@ -396,6 +396,10 @@ function AddressDetails() {
                 products: cart?.product,
                 subTotal: cart?.subtotal,
                 discountAmount: cart?.discountAmount,
+                taxPer: cart?.taxPer ?? 0,
+                taxAmount: cart?.taxAmount ?? 0,
+                convinencePer: cart?.convinencePer ?? 0,
+                convinenceCharges: cart?.convinenceCharges ?? 0,
                 deliveryCharges: deliveryFee,           // Nash delivery fee (from quote)
                 extraDeliveryCharges: 0,
                 tipAmount: Number(tipAmount.toFixed(2)),
