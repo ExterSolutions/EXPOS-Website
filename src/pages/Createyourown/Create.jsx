@@ -18,6 +18,7 @@ import { CYOFreeToppingSelector } from "./CYOFreeToppingSelector";
 import { CYOToppingOneSelector } from "./CYOToppingOneSelector";
 import { CYOToppingTwoSelector } from "./CYOToppingTwoSelector";
 import ToppingSheet from "../../components/_main/ToppingSheet";
+import IndianStyleRequiredCheck from "../../components/_main/IndianStyleRequiredCheck";
 import CustomizePizzaImg from "../../assets/images/customizePizza.jpg";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import CustomizeViewSelectionModal from "./CustomizeViewSelectionModal";
@@ -62,6 +63,7 @@ const CreatePizza = () => {
   const [pizzaQuantity, setPizzaQuantity] = useState(1);
   const [selectedTopping, setSelectedToppings] = useState([]);
   const [isIndiansToppings, setIsIndiansToppings] = useState(false);
+  const [indianStyleChoice, setIndianStyleChoice] = useState(null);
   const [price, setPrice] = useState(16);
   //
   const [isFixed, setIsFixed] = useState(false);
@@ -102,19 +104,9 @@ const CreatePizza = () => {
       const sortedSizes = sortPizzaSizes(res?.data?.sizesAndPrices);
       setPizzaSizeArr(sortedSizes);
       setSize(sortedSizes[0]?.size);
-      const indianStyleToppings = res?.data?.toppings?.freeToppings?.map(
-        (el) => {
-          return {
-            code: el?.toppingsCode,
-            name: el?.toppingsName,
-            price: el?.price,
-            type: "free",
-            size: "whole",
-          };
-        }
-      );
-      setToppingsFree(indianStyleToppings);
-      setSelectedToppings(indianStyleToppings);
+      // Do not pre-select free toppings until the customer answers "Do you need it Indian Style?"
+      setToppingsFree([]);
+      setSelectedToppings([]);
     } catch (error) {
       if (error.response?.status === 400 || error.response?.status === 500) {
         toast.error(error.response.data.message);
@@ -184,6 +176,25 @@ const CreatePizza = () => {
   };
 
   // handle indian style toppings
+  const handleIndianStyleChoice = (choice) => {
+    setIndianStyleChoice(choice);
+    const nonFree = (selectedTopping || []).filter((top) => top?.type !== "free");
+    if (choice === "yes") {
+      const allFree = (Ingredients?.toppings?.freeToppings || []).map((el) => ({
+        code: el?.toppingsCode,
+        name: el?.toppingsName,
+        price: el?.price,
+        type: "free",
+        size: "whole",
+      }));
+      setToppingsFree(allFree);
+      setSelectedToppings([...nonFree, ...allFree]);
+    } else if (choice === "no") {
+      setToppingsFree([]);
+      setSelectedToppings(nonFree);
+    }
+  };
+
   const handleFreeToppings = (el) => {
     if (ToppingsFree.some((obj) => obj?.code === el?.code)) {
       const new_toppings = ToppingsFree?.filter(
@@ -194,9 +205,11 @@ const CreatePizza = () => {
         (top) => top?.code !== el?.code
       );
       setSelectedToppings(newSelectedToppings);
+      setIndianStyleChoice(new_toppings.length > 0 ? "yes" : "no");
     } else {
       setToppingsFree((prev) => [...prev, el]);
       setSelectedToppings((prev) => [...prev, el]);
+      setIndianStyleChoice("yes");
     }
   };
 
@@ -262,6 +275,7 @@ const CreatePizza = () => {
       );
       setToppingsFree(new_toppings);
       setSelectedToppings(topsfree);
+      setIndianStyleChoice(new_toppings.length > 0 ? "yes" : "no");
     }
   };
 
@@ -272,6 +286,7 @@ const CreatePizza = () => {
     );
     setToppingsFree([]);
     setSelectedToppings(filteredToppings);
+    setIndianStyleChoice("no");
   };
 
   // handle Remove drinks
@@ -340,6 +355,12 @@ const CreatePizza = () => {
   const handleAddToCart = () => {
     if (currentStoreCode === undefined || currentStoreCode === null) {
       setShowStorePopup(true);
+      return false;
+    }
+
+    const hasFreeToppingsOption = (Ingredients?.toppings?.freeToppings?.length || 0) > 0;
+    if (hasFreeToppingsOption && indianStyleChoice !== "yes" && indianStyleChoice !== "no") {
+      toast.error("Please select Yes or No for: Do you need it Indian Style?");
       return false;
     }
 
@@ -851,6 +872,11 @@ const CreatePizza = () => {
 
 
                     <div className="mt-3 mb-4">
+                      <IndianStyleRequiredCheck
+                        choice={indianStyleChoice}
+                        onChange={handleIndianStyleChoice}
+                        freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                      />
                       <button
                         className="topping-trigger-btn"
                         onClick={() => setToppingSheetOpen(true)}
@@ -893,6 +919,8 @@ const CreatePizza = () => {
                       regularTitle={regularToppingsTitle}
                       indianStyleTitle={indianStyleToppingsTitle}
                       premiumToppingCount={premiumToppingCount}
+                      indianStyleChoice={indianStyleChoice}
+                      onIndianStyleChange={handleIndianStyleChoice}
                     />
 
                     {/* ── Sides / Drinks / Dips trigger buttons ── */}

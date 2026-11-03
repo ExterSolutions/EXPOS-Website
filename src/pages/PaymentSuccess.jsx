@@ -134,7 +134,7 @@ const PaymentSuccess = () => {
             // Direct Stripe-to-Admin verification fallback: if the Stripe webhook was delayed,
             // this ensures paymentStatus='paid' and bell_status='ringing' are committed in DB before we notify the socket.
             const verifyOrderCode = storedOrderId || parsedMeta?.orderCode;
-            if (storedSessionId && verifyOrderCode) {
+            if (verifyOrderCode || storedSessionId) {
                 try {
                     await paymentVerified({ orderCode: verifyOrderCode, sessionId: storedSessionId });
                 } catch (verifyErr) {

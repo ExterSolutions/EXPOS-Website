@@ -24,6 +24,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
 import OptionSheet from '../../components/_main/OptionSheet';
+import IndianStyleRequiredCheck from '../../components/_main/IndianStyleRequiredCheck';
 import { getAllIngredients, fetchSignaturePizzaDefaults, getSignaturePizza, getToppings } from '../../services';
 import ToppingsSelector from '../SpecialOfferNew/components/ToppingsSelector';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
@@ -86,12 +87,17 @@ function calcExtraCharge(toppings, freeAllowance = 0) {
 }
 
 // ── Topping sheet (3 tabs) ────────────────────────────────────────────────────
-const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, settings }) => {
+const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, settings, indianStyleChoice, onIndianStyleChange }) => {
     const [activeTab, setActiveTab] = useState('countAsTwo');
 
     useBodyScrollLock(isOpen);
 
-    const handleChange = (key, list) => setToppings(prev => ({ ...prev, [key]: list }));
+    const handleChange = (key, list) => {
+        setToppings(prev => ({ ...prev, [key]: list }));
+        if (key === 'freeToppings' && typeof onIndianStyleChange === 'function') {
+            onIndianStyleChange(list.length > 0 ? 'yes' : 'no', true);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -167,16 +173,25 @@ const ToppingSheet = ({ isOpen, onClose, toppingsData, toppings, setToppings, se
                         />
                     )}
                     {activeTab === 'free' && (
-                        <ToppingsSelector
-                            key="indian"
-                            title={settings?.indianToppingLabel || 'Indian Toppings'}
-                            options={toppingsData?.freeToppings ?? []}
-                            defaultOptions={[]}
-                            selected={toppings?.freeToppings ?? []}
-                            onChange={list => handleChange('freeToppings', list)}
-                            toppingCount={1}
-                            isIndianStyle={true}
-                        />
+                        <>
+                            {typeof onIndianStyleChange === 'function' && (
+                                <IndianStyleRequiredCheck
+                                    choice={indianStyleChoice}
+                                    onChange={(c) => onIndianStyleChange(c, false)}
+                                    freeToppingsCount={toppingsData?.freeToppings?.length || 0}
+                                />
+                            )}
+                            <ToppingsSelector
+                                key="indian"
+                                title={settings?.indianToppingLabel || 'Indian Toppings'}
+                                options={toppingsData?.freeToppings ?? []}
+                                defaultOptions={[]}
+                                selected={toppings?.freeToppings ?? []}
+                                onChange={list => handleChange('freeToppings', list)}
+                                toppingCount={1}
+                                isIndianStyle={true}
+                            />
+                        </>
                     )}
                 </div>
                 <div className="topping-sheet__footer">
@@ -209,7 +224,7 @@ function TriggerBtn({ icon, label, value, onClick }) {
 }
 
 // ── Pizza options form (shared by both Signature and CYO) ─────────────────────
-const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, settings, freeAllowance, toppingSheetOpen, setToppingSheetOpen }) => {
+const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, settings, freeAllowance, toppingSheetOpen, setToppingSheetOpen, indianStyleChoice, onIndianStyleChange }) => {
     const [openSheet, setOpenSheet] = useState(null);
 
     // Lock scroll when any sub-sheet (option picker or toppings) is open
@@ -320,6 +335,13 @@ const PizzaOptionsForm = ({ ingredients, options, setOptions, toppingsData, sett
 
             {/* ── Toppings trigger ── */}
             <div className="mb-2">
+                {typeof onIndianStyleChange === 'function' && (
+                    <IndianStyleRequiredCheck
+                        choice={indianStyleChoice}
+                        onChange={(c) => onIndianStyleChange(c, false)}
+                        freeToppingsCount={toppingsData?.freeToppings?.length || ingredients?.toppings?.freeToppings?.length || 0}
+                    />
+                )}
                 <button className="topping-trigger-btn" onClick={() => setToppingSheetOpen(true)} type="button">
                     <span className="topping-trigger-btn__icon">🥗</span>
                     <span className="topping-trigger-btn__label">Choose Toppings</span>
@@ -355,17 +377,6 @@ function buildDefaultOptions(ing, toppingsDataRef) {
         return o ? { [codeKey]: o[codeKey], [nameKey]: o[nameKey], price: 0 } : null;
     };
 
-    // Prefer toppingsData.freeToppings (from getToppings()) over ing.toppings.freeToppings
-    // so the toppingsCode values are guaranteed to match what ToppingsSelector uses.
-    const freeSrc = toppingsDataRef?.freeToppings ?? ing?.toppings?.freeToppings ?? [];
-    const preselectedFree = freeSrc.map(t => ({
-        toppingsCode: t.toppingsCode || t.code,
-        toppingsName: t.toppingsName ?? t.name ?? 'Topping',
-        toppingsPrice: '0.00',
-        toppingsPlacement: 'whole',
-        amount: '0.00',
-    }));
-
     return {
         crust:        first(ing.crust,       'crustCode',       'crustName'),
         crustType:    first(ing.crustType,   'crustTypeCode',   'crustType'),
@@ -374,10 +385,11 @@ function buildDefaultOptions(ing, toppingsDataRef) {
         spicy:        first(ing.spices,      'spicyCode',       'spicy'),
         sauce:        first(ing.sauce,       'sauceCode',       'sauce'),
         cook:         first(ing.cook,        'cookCode',        'cook'),
+        indianStyleChoice: null,
         toppings: {
             countAsTwoToppings: [],
             countAsOneToppings: [],
-            freeToppings: preselectedFree,
+            freeToppings: [],
         },
     };
 }
@@ -418,20 +430,13 @@ function applySignatureDefaults(options, signatureDetails, ingredients, toppings
     // Build the pizza's own default toppings from the recipe fields returned by the API.
     // topping_as_2 → premium (countAsTwoToppings)
     // topping_as_1 → regular (countAsOneToppings)
-    // topping_as_free → Indian/free (freeToppings)
+    // Do NOT pre-select freeToppings until user answers "Do you need it Indian Style?"
     const countAsTwoToppings  = mapSigToppingList(signatureDetails.topping_as_2,    toppingsData?.countAsTwo   ?? []);
     const countAsOneToppings  = mapSigToppingList(signatureDetails.topping_as_1,    toppingsData?.countAsOne   ?? []);
-    const freeToppings        = mapSigToppingList(signatureDetails.topping_as_free, toppingsData?.freeToppings ?? []);
-
-    // If the signature has NO recipe toppings at all, fall back to pre-selecting
-    // all Indian-style toppings (the default behaviour for generic pizzas).
-    const hasRecipeToppings = countAsTwoToppings.length > 0 || countAsOneToppings.length > 0 || freeToppings.length > 0;
-    const defaultFreeToppings = hasRecipeToppings
-        ? freeToppings
-        : (options.toppings?.freeToppings ?? []);  // from buildDefaultOptions (all Indians)
 
     return {
         ...options,
+        indianStyleChoice: null,
         crust:        find(ingredients.crust,       'crustCode',       'crustName',       signatureDetails.crust?.code)        ?? options.crust,
         crustType:    find(ingredients.crustType,   'crustTypeCode',   'crustType',       signatureDetails.crust_type?.code)   ?? options.crustType,
         cheese:       find(ingredients.cheese,      'cheeseCode',      'cheeseName',      signatureDetails.cheese?.code)       ?? options.cheese,
@@ -442,7 +447,7 @@ function applySignatureDefaults(options, signatureDetails, ingredients, toppings
         toppings: {
             countAsTwoToppings,
             countAsOneToppings,
-            freeToppings: defaultFreeToppings,
+            freeToppings: [],
         },
     };
 }
@@ -498,10 +503,11 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
             // be overlaid from fetchSignaturePizzaDefaults once data loads.
             return {
                 toppings: existingSlot.toppingData,
+                indianStyleChoice: (existingSlot.toppingData.freeToppings?.length || 0) > 0 ? 'yes' : 'no',
                 ...(existingSlot.options || {}),
             };
         }
-        return { toppings: { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] } };
+        return { indianStyleChoice: null, toppings: { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] } };
     });
     const [sigSheetOpen, setSigSheetOpen] = useState(false);
 
@@ -530,13 +536,14 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
                     const isSamePizzaReEdit =
                         existingSlot?.type === 'signature' &&
                         existingSlot?.signaturePizzaCode === sigCode &&
-                        prevTotalToppings > 0;
+                        (prevTotalToppings > 0 || prev.indianStyleChoice === 'yes' || prev.indianStyleChoice === 'no');
 
                     if (isSamePizzaReEdit) {
                         // Preserve all the user's previous topping selections;
                         // only overlay crust/sauce/etc from the recipe.
                         return {
                             ...withPizzaDefaults,
+                            indianStyleChoice: prev.indianStyleChoice ?? ((prev.toppings?.freeToppings?.length || 0) > 0 ? 'yes' : 'no'),
                             toppings:     prev.toppings,
                             crust:        existingSlot?.options?.crust        ?? withPizzaDefaults.crust,
                             crustType:    existingSlot?.options?.crustType    ?? withPizzaDefaults.crustType,
@@ -564,17 +571,52 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
         if (sigCode && sigCode !== prevSigCodeRef.current) {
             prevSigCodeRef.current = sigCode;
             // Clear toppings so the fetch useEffect applies fresh defaults for the new pizza
-            setSigOptions({ toppings: { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] } });
+            setSigOptions({ indianStyleChoice: null, toppings: { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] } });
         }
     }, [sigCode]);
 
+    const handleIndianStyleChoice = (choice, isManualToggle = false) => {
+        const freeSrc = toppingsData?.freeToppings ?? ingredients?.toppings?.freeToppings ?? [];
+        const allFree = freeSrc.map(t => ({
+            toppingsCode: t.toppingsCode || t.code,
+            toppingsName: t.toppingsName ?? t.name ?? 'Topping',
+            toppingsPrice: '0.00',
+            toppingsPlacement: 'whole',
+            amount: '0.00',
+        }));
 
+        const updater = (prev) => {
+            if (!prev) return prev;
+            if (isManualToggle) {
+                return { ...prev, indianStyleChoice: choice };
+            }
+            return {
+                ...prev,
+                indianStyleChoice: choice,
+                toppings: {
+                    ...(prev.toppings || {}),
+                    freeToppings: choice === 'yes' ? allFree : [],
+                },
+            };
+        };
+
+        if (tab === 'signature') {
+            setSigOptions(updater);
+        } else {
+            setCyoOptions(updater);
+        }
+    };
 
     const sigPizza = useMemo(() => signatures.find(p => p.code === sigCode) || null, [signatures, sigCode]);
     const sigExtraCharge = calcExtraCharge(sigOptions.toppings, freeAllowance);
 
     const handleSigConfirm = () => {
         if (!sigCode) { toast.warning('Please select a signature pizza'); return; }
+        const hasFreeToppingsOption = (toppingsData?.freeToppings ?? ingredients?.toppings?.freeToppings ?? []).length > 0;
+        if (hasFreeToppingsOption && sigOptions?.indianStyleChoice !== 'yes' && sigOptions?.indianStyleChoice !== 'no') {
+            toast.error('Please select Yes or No for: Do you need it Indian Style?');
+            return;
+        }
         onPick({
 
             filled: true,
@@ -607,6 +649,7 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
             // Restore from existing slot (all user selections preserved)
             setCyoOptions({
                 ...base,
+                indianStyleChoice: (existingSlot.toppingData?.freeToppings?.length || 0) > 0 ? 'yes' : 'no',
                 crust:        existingSlot.options?.crust        ?? base.crust,
                 crustType:    existingSlot.options?.crustType    ?? base.crustType,
                 cheese:       existingSlot.options?.cheese       ?? base.cheese,
@@ -625,6 +668,11 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
 
     const handleCYOConfirm = () => {
         if (!cyoOptions) return;
+        const hasFreeToppingsOption = (toppingsData?.freeToppings ?? ingredients?.toppings?.freeToppings ?? []).length > 0;
+        if (hasFreeToppingsOption && cyoOptions?.indianStyleChoice !== 'yes' && cyoOptions?.indianStyleChoice !== 'no') {
+            toast.error('Please select Yes or No for: Do you need it Indian Style?');
+            return;
+        }
         onPick({
             filled: true,
             type: 'cyo',
@@ -721,6 +769,8 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
                                                 freeAllowance={freeAllowance}
                                                 toppingSheetOpen={toppingSheetOpen}
                                                 setToppingSheetOpen={setToppingSheetOpen}
+                                                indianStyleChoice={sigOptions?.indianStyleChoice ?? null}
+                                                onIndianStyleChange={handleIndianStyleChoice}
                                             />
                                         </div>
                                     )}
@@ -744,6 +794,8 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
                                                 freeAllowance={freeAllowance}
                                                 toppingSheetOpen={toppingSheetOpen}
                                                 setToppingSheetOpen={setToppingSheetOpen}
+                                                indianStyleChoice={cyoOptions?.indianStyleChoice ?? null}
+                                                onIndianStyleChange={handleIndianStyleChoice}
                                             />
                                             </>
                                     )}
@@ -812,6 +864,8 @@ const FlexDealPizzaSheet = ({ group, existingSlot, onPick, onClose, settings }) 
                 }
             }}
             settings={settings}
+            indianStyleChoice={tab === 'signature' ? (sigOptions?.indianStyleChoice ?? null) : (cyoOptions?.indianStyleChoice ?? null)}
+            onIndianStyleChange={handleIndianStyleChoice}
         />
     </>
     );

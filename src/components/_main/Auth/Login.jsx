@@ -1,169 +1,447 @@
-import { useFormik } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { LOGIN_SUCCESS } from "../../../redux/authProvider/actionType";
-import { customerLogin } from "../../../services";
-import { useTheme } from '../../../context/ThemeContext';
+import {
+    customerResendOtp,
+    customerResetPassword,
+    customerVerifyOtp,
+} from "../../../services";
 
-const getCharacterValidationError = (str) => {
-    return `Your password must have at least 1 ${str} character`;
+const cleanTenDigitPhone = (raw = "") => {
+    const digits = String(raw).replace(/\D/g, "");
+    if (digits.length === 11 && digits.startsWith("1")) {
+        return digits.slice(1);
+    }
+    return digits.slice(0, 10);
 };
-const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
 
-const ValidateSchema = Yup.object({
-    phoneno: Yup.string()
-        .required("Phone Number is Required")
-        .matches(canadianPhoneNumberRegExp, "Invalid Canadian phone number format"),
-    password: Yup.string()
-        .required("Password is Required")
-        .min(6, "Password must have at least 6 characters")
-        .max(20, "Password cannot be longer than 20 characters")
-        .matches(/[0-9]/, getCharacterValidationError("digit"))
-        .matches(/[a-z]/, getCharacterValidationError("lowercase"))
-        .matches(/[A-Z]/, getCharacterValidationError("uppercase")),
-});
+const formatDisplayPhone = (digits = "") => {
+    if (digits.length !== 10) return digits;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+};
 
 function Login({ setLoading }) {
-    const [showPassword, setShowPassword] = useState(false);
-    const [loginObj] = useState({ phoneno: "", password: "" });
+    const [step, setStep] = useState(1); // 1: Enter Phone, 2: Enter 4-digit OTP
+    const [phoneInput, setPhoneInput] = useState("");
+    const [phoneError, setPhoneError] = useState("");
+    const [otpDigits, setOtpDigits] = useState(["", "", "", ""]);
+    const [otpError, setOtpError] = useState("");
+    const [resetToken, setResetToken] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [resendLoading, setResendLoading] = useState(false);
+    const [resendCooldown, setResendCooldown] = useState(0);
+
+    const otpRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+
     const globalctx = useContext(GlobalContext);
-    const [user, setUser] = globalctx.user;
-    const [isAuthenticated, setIsAuthenticated] = globalctx.auth;
-    const [url, setUrl] = globalctx.urlPath;
-    const { theme, colors } = useTheme();
+    const [, setUser] = globalctx.user;
+    const [, setIsAuthenticated] = globalctx.auth;
+    const [, setUrl] = globalctx.urlPath;
     const navigate = useNavigate();
     const location = useLocation();
     const params = useParams();
     const dispatch = useDispatch();
 
-    const onSubmit = async (values) => {
-        setLoading(true);
-        let payload = {
-            username: values.phoneno.trim(),
-            password: values.password.trim(),
-        };
-        await customerLogin(payload)
-            .then((res) => {
-                toast.success("Logged in successfully...");
-                setIsAuthenticated(true);
-                setUser(res.data);
-                dispatch({ type: LOGIN_SUCCESS, payload: res.data, token: res.token });
-                localStorage.setItem("user", JSON.stringify(res.data));
-                localStorage.setItem("token", res.token);
-                let redirectParams = params || {};
-                let redirect = redirectParams.redirect || "/";
-                navigate(redirect);
-            })
-            .catch((err) => {
-                if (err.response?.status === 400 || err.response?.status === 500) {
-                    toast.error(err.response.data.message);
-                }
-                setLoading(false);
-            }).finally(() => {
-                setLoading(false);
-            });
-    };
-
-    const formik = useFormik({
-        initialValues: loginObj,
-        validateOnBlur: true,
-        validationSchema: ValidateSchema,
-        onSubmit,
-    });
-
     useEffect(() => {
         setUrl(location?.pathname);
-    }, [location]);
+    }, [location, setUrl]);
+
+    // Countdown timer for Resend OTP
+    useEffect(() => {
+        if (resendCooldown <= 0) return;
+        const timer = setInterval(() => {
+            setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [resendCooldown]);
+
+    // Auto-focus first OTP box when entering step 2
+    useEffect(() => {
+        if (step === 2) {
+            setTimeout(() => otpRefs[0]?.current?.focus(), 80);
+        }
+    }, [step]);
+
+    const completeLogin = (customerData, authToken) => {
+        toast.success("Signed in successfully!");
+        setIsAuthenticated(true);
+        setUser(customerData);
+        dispatch({ type: LOGIN_SUCCESS, payload: customerData, token: authToken });
+        localStorage.setItem("user", JSON.stringify(customerData));
+        localStorage.setItem("token", authToken);
+
+        const savedRedirect = localStorage.getItem("redirectTo");
+        if (savedRedirect) {
+            localStorage.removeItem("redirectTo");
+            navigate(savedRedirect);
+            return;
+        }
+        const redirectParams = params || {};
+        navigate(redirectParams.redirect || "/");
+    };
+
+    const handleSendOtp = async (e) => {
+        e.preventDefault();
+        const cleaned = cleanTenDigitPhone(phoneInput);
+        if (cleaned.length !== 10) {
+            setPhoneError("Please enter a valid 10-digit Canadian phone number");
+            return;
+        }
+        setPhoneError("");
+        setSubmitting(true);
+
+        try {
+            const res = await customerResetPassword({ mobileNumber: cleaned });
+            if (res?.isRegistered === false || (!res?.resetToken && String(res?.status) === "300")) {
+                toast.info(res?.message || "No account found with this number. Let's create your account!");
+                navigate("/registration", { state: { mobileNumber: cleaned } });
+                return;
+            }
+
+            if (res?.resetToken || String(res?.status) === "200") {
+                setResetToken(res.resetToken || "");
+                setPhoneInput(cleaned);
+                setOtpDigits(["", "", "", ""]);
+                setOtpError("");
+                setStep(2);
+                setResendCooldown(30);
+                toast.success(res.message || "4-digit verification code sent to your phone");
+            } else {
+                toast.error(res?.message || "Failed to send OTP. Please try again.");
+            }
+        } catch (err) {
+            const data = err?.response?.data;
+            if (data?.isRegistered === false) {
+                toast.info(data?.message || "No account found. Redirecting to registration...");
+                navigate("/registration", { state: { mobileNumber: cleaned } });
+                return;
+            }
+            toast.error(data?.message || "Unable to send verification code. Please try again.");
+        } finally {
+            setSubmitting(false);
+            if (setLoading) setLoading(false);
+        }
+    };
+
+    const verifyOtpCode = async (codeToVerify) => {
+        const otpString = (codeToVerify ?? otpDigits.join("")).trim();
+        if (!/^\d{4}$/.test(otpString)) {
+            setOtpError("Please enter the 4-digit verification code");
+            return;
+        }
+        setOtpError("");
+        setSubmitting(true);
+
+        try {
+            const res = await customerVerifyOtp({
+                mobileNumber: phoneInput,
+                otp: otpString,
+                token: resetToken,
+            });
+
+            if (String(res?.status) === "200" && res?.data && res?.token) {
+                completeLogin(res.data, res.token);
+                return;
+            }
+
+            setOtpError(res?.message || "Invalid or expired OTP. Please try again.");
+            toast.error(res?.message || "Invalid or expired OTP.");
+        } catch (err) {
+            const msg = err?.response?.data?.message || "OTP verification failed. Please try again.";
+            setOtpError(msg);
+            toast.error(msg);
+        } finally {
+            setSubmitting(false);
+            if (setLoading) setLoading(false);
+        }
+    };
+
+    const handleVerifySubmit = async (e) => {
+        e.preventDefault();
+        await verifyOtpCode(otpDigits.join(""));
+    };
+
+    const handleOtpBoxChange = (idx, rawVal) => {
+        const digitsOnly = String(rawVal).replace(/\D/g, "");
+        if (!digitsOnly) {
+            const next = [...otpDigits];
+            next[idx] = "";
+            setOtpDigits(next);
+            return;
+        }
+
+        // Handle paste or multi-digit autofill (e.g. iOS/Android SMS autofill)
+        if (digitsOnly.length > 1) {
+            const chars = digitsOnly.slice(0, 4).split("");
+            const next = ["", "", "", ""];
+            chars.forEach((c, i) => {
+                next[i] = c;
+            });
+            setOtpDigits(next);
+            setOtpError("");
+            const focusIdx = Math.min(chars.length, 3);
+            otpRefs[focusIdx]?.current?.focus();
+            if (chars.length === 4) {
+                verifyOtpCode(chars.join(""));
+            }
+            return;
+        }
+
+        const next = [...otpDigits];
+        next[idx] = digitsOnly;
+        setOtpDigits(next);
+        setOtpError("");
+
+        if (idx < 3) {
+            otpRefs[idx + 1]?.current?.focus();
+        } else if (next.every((d) => d.length === 1)) {
+            verifyOtpCode(next.join(""));
+        }
+    };
+
+    const handleOtpKeyDown = (idx, e) => {
+        if (e.key === "Backspace" && !otpDigits[idx] && idx > 0) {
+            otpRefs[idx - 1]?.current?.focus();
+        }
+    };
+
+    const handleOtpPaste = (e) => {
+        const pasted = (e.clipboardData?.getData("text") || "").replace(/\D/g, "").slice(0, 4);
+        if (pasted.length > 0) {
+            e.preventDefault();
+            const next = ["", "", "", ""];
+            pasted.split("").forEach((c, i) => {
+                next[i] = c;
+            });
+            setOtpDigits(next);
+            setOtpError("");
+            if (pasted.length === 4) {
+                verifyOtpCode(pasted);
+            } else {
+                otpRefs[pasted.length]?.current?.focus();
+            }
+        }
+    };
+
+    const handleResendOtp = async () => {
+        if (resendCooldown > 0 || resendLoading) return;
+        setResendLoading(true);
+        try {
+            const res = await customerResendOtp({ mobileNumber: phoneInput });
+            if (String(res?.status) === "200" || res?.otpSent) {
+                if (res?.resetToken) setResetToken(res.resetToken);
+                setOtpDigits(["", "", "", ""]);
+                setOtpError("");
+                setResendCooldown(30);
+                toast.success(res.message || "New verification code sent!");
+                otpRefs[0]?.current?.focus();
+            } else {
+                toast.error(res?.message || "Could not resend OTP.");
+            }
+        } catch (err) {
+            toast.error(err?.response?.data?.message || "Failed to resend OTP.");
+        } finally {
+            setResendLoading(false);
+        }
+    };
 
     return (
         <div className="login-mobile-wrapper">
             <div className="login-mobile-card">
-                {/* Brand Icon */}
                 <div className="login-brand-icon">
-                    <i className="bi bi-person-circle" style={{ fontSize: '2.5rem', color: 'var(--primary)' }} />
+                    <i
+                        className={`bi ${step === 1 ? "bi-shield-lock-fill" : "bi-chat-square-dots-fill"}`}
+                        style={{ fontSize: "2.5rem", color: "var(--primary, #2d7a2d)" }}
+                    />
                 </div>
-                <h2 className="login-title">Welcome Back</h2>
-                <p className="login-subtitle">Sign in to your account</p>
 
-                <form className="login-form" onSubmit={formik.handleSubmit}>
-                    {/* Phone Number */}
-                    <div className="login-field">
-                        <label className="login-label">Phone Number</label>
-                        <div className="login-input-wrap">
-                            <i className="bi bi-telephone login-input-icon" />
-                            <input
-                                className={`login-input ${formik.touched.phoneno && formik.errors.phoneno ? 'login-input--error' : ''}`}
-                                type="tel"
-                                name="phoneno"
-                                placeholder="e.g. 4161234567"
-                                value={formik.values.phoneno}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                autoComplete="tel"
-                            />
+                <h2 className="login-title">
+                    {step === 1 ? "Welcome Back" : "Verify Your Phone"}
+                </h2>
+                <p className="login-subtitle">
+                    {step === 1
+                        ? "Sign in instantly with a 4-digit SMS code — no password needed"
+                        : `Enter the 4-digit code sent to ${formatDisplayPhone(phoneInput)}`}
+                </p>
+
+                {step === 1 ? (
+                    <form className="login-form" onSubmit={handleSendOtp} noValidate>
+                        <div className="login-field">
+                            <label className="login-label" htmlFor="login-phone-input">
+                                Mobile Number
+                            </label>
+                            <div className="login-input-wrap">
+                                <i className="bi bi-telephone login-input-icon" />
+                                <input
+                                    id="login-phone-input"
+                                    className={`login-input ${phoneError ? "login-input--error" : ""}`}
+                                    type="tel"
+                                    inputMode="numeric"
+                                    name="phoneno"
+                                    placeholder="e.g. 5195740074"
+                                    value={phoneInput}
+                                    onChange={(e) => {
+                                        setPhoneInput(cleanTenDigitPhone(e.target.value));
+                                        if (phoneError) setPhoneError("");
+                                    }}
+                                    autoComplete="tel"
+                                    disabled={submitting}
+                                />
+                            </div>
+                            {phoneError && <div className="login-error">{phoneError}</div>}
                         </div>
-                        {formik.touched.phoneno && formik.errors.phoneno && (
-                            <div className="login-error">{formik.errors.phoneno}</div>
-                        )}
-                    </div>
 
-                    {/* Password */}
-                    <div className="login-field">
-                        <label className="login-label">Password</label>
-                        <div className="login-input-wrap">
-                            <i className="bi bi-lock login-input-icon" />
-                            <input
-                                className={`login-input ${formik.touched.password && formik.errors.password ? 'login-input--error' : ''}`}
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                placeholder="Enter your password"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                autoComplete="current-password"
-                            />
+                        <button
+                            type="submit"
+                            className="login-submit-btn"
+                            disabled={submitting}
+                        >
+                            {submitting ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" />
+                                    Sending OTP...
+                                </>
+                            ) : (
+                                "Send Verification Code"
+                            )}
+                        </button>
+                    </form>
+                ) : (
+                    <form className="login-form" onSubmit={handleVerifySubmit} noValidate>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "12px",
+                                margin: "6px 0 8px",
+                            }}
+                            onPaste={handleOtpPaste}
+                        >
+                            {otpDigits.map((digit, idx) => (
+                                <input
+                                    key={idx}
+                                    ref={otpRefs[idx]}
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    autoComplete={idx === 0 ? "one-time-code" : "off"}
+                                    maxLength={idx === 0 ? 4 : 1}
+                                    value={digit}
+                                    onChange={(e) => handleOtpBoxChange(idx, e.target.value)}
+                                    onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                                    disabled={submitting}
+                                    aria-label={`OTP digit ${idx + 1}`}
+                                    style={{
+                                        width: "58px",
+                                        height: "60px",
+                                        textAlign: "center",
+                                        fontSize: "1.5rem",
+                                        fontWeight: 700,
+                                        borderRadius: "14px",
+                                        border: otpError
+                                            ? "2px solid #e53935"
+                                            : digit
+                                            ? "2px solid var(--primary, #2d7a2d)"
+                                            : "1.5px solid #d6d6d6",
+                                        background: digit ? "#fff" : "#fafafa",
+                                        color: "#1a1a1a",
+                                        outline: "none",
+                                        transition: "all 0.18s ease",
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        {otpError && (
+                            <div className="login-error" style={{ textAlign: "center" }}>
+                                {otpError}
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="login-submit-btn"
+                            disabled={submitting}
+                        >
+                            {submitting ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" />
+                                    Verifying...
+                                </>
+                            ) : (
+                                "Verify & Sign In"
+                            )}
+                        </button>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginTop: "6px",
+                                fontSize: "0.86rem",
+                                flexWrap: "wrap",
+                                gap: "8px",
+                            }}
+                        >
                             <button
                                 type="button"
-                                className="login-eye-btn"
-                                onClick={() => setShowPassword(p => !p)}
-                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                onClick={() => {
+                                    setStep(1);
+                                    setOtpDigits(["", "", "", ""]);
+                                    setOtpError("");
+                                }}
+                                style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "#666",
+                                    padding: 0,
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                }}
                             >
-                                <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
+                                ← Change Number
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleResendOtp}
+                                disabled={resendCooldown > 0 || resendLoading}
+                                style={{
+                                    background: "none",
+                                    border: "none",
+                                    color:
+                                        resendCooldown > 0
+                                            ? "#999"
+                                            : "var(--primary, #2d7a2d)",
+                                    padding: 0,
+                                    fontWeight: 700,
+                                    cursor:
+                                        resendCooldown > 0 ? "not-allowed" : "pointer",
+                                }}
+                            >
+                                {resendLoading
+                                    ? "Sending..."
+                                    : resendCooldown > 0
+                                    ? `Resend Code in ${resendCooldown}s`
+                                    : "Resend OTP"}
                             </button>
                         </div>
-                        {formik.touched.password && formik.errors.password && (
-                            <div className="login-error">{formik.errors.password}</div>
-                        )}
-                    </div>
+                    </form>
+                )}
 
-                    {/* Forgot Password */}
-                    <div className="login-forgot">
-                        <Link to="/forget-password" className="login-forgot-link">
-                            Forgot Password?
-                        </Link>
-                    </div>
-
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        className="login-submit-btn"
-                        disabled={formik.isSubmitting}
-                    >
-                        {formik.isSubmitting ? (
-                            <span className="spinner-border spinner-border-sm me-2" />
-                        ) : null}
-                        Sign In
-                    </button>
-                </form>
-
-                {/* Register link */}
                 <div className="login-register-row">
-                    <span>Don't have an account?</span>
-                    <Link to="/registration" className="login-register-link">Create Account</Link>
+                    <span>New customer?</span>
+                    <Link
+                        to="/registration"
+                        state={{ mobileNumber: phoneInput }}
+                        className="login-register-link"
+                    >
+                        Create Account
+                    </Link>
                 </div>
             </div>
         </div>

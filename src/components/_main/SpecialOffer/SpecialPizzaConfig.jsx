@@ -3,6 +3,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import { GlobalContext } from "../../../context/GlobalContext";
 import OptionSheet from "../OptionSheet";
 import ToppingSheet from "../ToppingSheet";
+import IndianStyleRequiredCheck from "../IndianStyleRequiredCheck";
 // Special offer topping selectors (different API shape than Signature)
 import ToppingsTwoComponent from "./Configurations/Toppings/ToppingsTwo";
 import ToppingsOneComponent from "./Configurations/Toppings/ToppingsOne";
@@ -56,7 +57,7 @@ function TriggerBtn({ icon, label, value, onClick }) {
 
 // ─── Toppings wrapper (adapts SpecialOffer data shape → ToppingSheet) ────────
 
-function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState, toppingsData, noofToppings }) {
+function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState, toppingsData, noofToppings, indianStyleChoice, onIndianStyleChange }) {
     const { settings } = useContext(GlobalContext);
     const settingsData = settings?.[0];
 
@@ -119,7 +120,11 @@ function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState
             const updated = exists
                 ? existing.filter((t) => t.toppingsCode !== code)
                 : [...existing, { toppingsCode: code, toppingsName: name, toppingsPrice: "0", toppingsPlacement: size || "whole", amount: price, pizzaIndex: count }];
-            state[count] = { ...state[count], toppings: { ...state[count].toppings, freeToppings: updated } };
+            state[count] = {
+                ...state[count],
+                indianStyleChoice: updated.length > 0 ? "yes" : "no",
+                toppings: { ...state[count].toppings, freeToppings: updated }
+            };
             return state;
         });
     };
@@ -189,6 +194,8 @@ function SpecialToppingSheet({ isOpen, onClose, count, pizzaState, setPizzaState
             FreeToppingSelector={FreeToppingSelectorAdapter}
             nonRegularTitle={nonRegularToppingsTitle}
             regularTitle={regularToppingsTitle}
+            indianStyleChoice={indianStyleChoice}
+            onIndianStyleChange={onIndianStyleChange}
         />
     );
 }
@@ -272,6 +279,35 @@ function SpecialPizzaConfig({
         const item = specialOfferData?.crustType?.find((d) => getOptionId(d) === id);
         if (!item) return;
         setPizzaState((prev) => { const s = [...prev]; s[count] = { ...s[count], crustType: { crustTypeCode: getOptionId(item), crustTypeName: item?.crustType || item?.name || id, price: item?.price || 0 } }; return s; });
+    };
+
+    const handleIndianStyleChoice = (choice) => {
+        setPizzaState((prev) => {
+            const s = [...prev];
+            const currentToppings = s[count]?.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] };
+            if (choice === "yes") {
+                const allFree = (toppingsData?.toppings?.freeToppings || []).map((t) => ({
+                    toppingsCode: t.toppingsCode,
+                    toppingsName: t.toppingsName,
+                    toppingsPrice: "0",
+                    toppingsPlacement: "whole",
+                    amount: t.price || "0",
+                    pizzaIndex: count,
+                }));
+                s[count] = {
+                    ...s[count],
+                    indianStyleChoice: "yes",
+                    toppings: { ...currentToppings, freeToppings: allFree, isAllIndiansTps: true },
+                };
+            } else if (choice === "no") {
+                s[count] = {
+                    ...s[count],
+                    indianStyleChoice: "no",
+                    toppings: { ...currentToppings, freeToppings: [], isAllIndiansTps: false },
+                };
+            }
+            return s;
+        });
     };
 
     // Topping total count for this pizza
@@ -473,6 +509,11 @@ function SpecialPizzaConfig({
 
                 {/* ── Toppings ── */}
                 <div className="mb-2">
+                    <IndianStyleRequiredCheck
+                        choice={slot.indianStyleChoice ?? null}
+                        onChange={handleIndianStyleChoice}
+                        freeToppingsCount={toppingsData?.toppings?.freeToppings?.length || 0}
+                    />
                     <button
                         className="topping-trigger-btn"
                         onClick={() => setToppingOpen(true)}
@@ -502,6 +543,8 @@ function SpecialPizzaConfig({
                     setPizzaState={setPizzaState}
                     toppingsData={toppingsData}
                     noofToppings={specialOfferData?.noofToppings || 0}
+                    indianStyleChoice={slot.indianStyleChoice ?? null}
+                    onIndianStyleChange={handleIndianStyleChoice}
                 />
             </div>
             )}

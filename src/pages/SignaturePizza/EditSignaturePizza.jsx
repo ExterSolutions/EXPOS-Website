@@ -28,6 +28,7 @@ import { CookSelector } from "../Createyourown/CookSelector";
 import ResponsiveCart from "../../components/_main/Cart/ResponsiveCart";
 import { FaEye } from "react-icons/fa6";
 import SignatureViewSelectionModal from "./SignatureViewSelectionModal";
+import IndianStyleRequiredCheck from "../../components/_main/IndianStyleRequiredCheck";
 
 const EditSignature = () => {
     // navigate
@@ -72,6 +73,7 @@ const EditSignature = () => {
     const [pizzaQuantity, setPizzaQuantity] = useState(1);
     const [selectedTopping, setSelectedToppings] = useState([]);
     const [isIndiansToppings, setIsIndiansToppings] = useState(false);
+    const [indianStyleChoice, setIndianStyleChoice] = useState("no");
     const [price, setPrice] = useState(16);
 
     //
@@ -94,20 +96,6 @@ const EditSignature = () => {
             setSettingsData(settingResponse?.data);
             const res = await getAllIngredients();
             setIngredients(res?.data);
-            // setPizzaSizeArr(res?.data?.sizesAndPrices)
-            const indianStyleToppings = res?.data?.toppings?.freeToppings?.map(
-                (el) => {
-                    return {
-                        code: el?.toppingsCode,
-                        name: el?.toppingsName,
-                        price: el?.price,
-                        type: "free",
-                        size: "whole",
-                    };
-                }
-            );
-            setToppingsFree(indianStyleToppings);
-            setSelectedToppings(indianStyleToppings);
             return res;
         } catch (error) {
             if (error.response?.status === 400 || error.response?.status === 500) {
@@ -259,10 +247,11 @@ const EditSignature = () => {
                         size: el?.toppingsPlacement,
                     };
                 });
-            setToppingsFree(indianToppings);
-            setToppingsOne(oneToppings);
-            setToppingsTwo(twoToppings);
-            setSelectedToppings([...indianToppings, ...twoToppings, ...oneToppings]);
+            setToppingsFree(indianToppings || []);
+            setIndianStyleChoice((indianToppings || []).length > 0 ? "yes" : "no");
+            setToppingsOne(oneToppings || []);
+            setToppingsTwo(twoToppings || []);
+            setSelectedToppings([...(indianToppings || []), ...(twoToppings || []), ...(oneToppings || [])]);
             return res;
         } catch (error) {
             if (error.response?.status === 400 || error.response?.status === 500) {
@@ -324,6 +313,30 @@ const EditSignature = () => {
     };
 
     // handle indian style toppings
+    const handleIndianStyleChoice = (choice) => {
+        setIndianStyleChoice(choice);
+        const nonFree = (selectedTopping || []).filter((top) => top?.type !== "free");
+        if (choice === "yes") {
+            const allFree = (Ingredients?.toppings?.freeToppings || []).map((el) => {
+                const defaultToppingFree = DefaultToppingsFree?.find(
+                    (obj) => obj?.code === el?.toppingsCode
+                );
+                return {
+                    code: el?.toppingsCode,
+                    name: el?.toppingsName,
+                    price: defaultToppingFree ? defaultToppingFree.price : el?.price,
+                    type: "free",
+                    size: "whole",
+                };
+            });
+            setToppingsFree(allFree);
+            setSelectedToppings([...nonFree, ...allFree]);
+        } else if (choice === "no") {
+            setToppingsFree([]);
+            setSelectedToppings(nonFree);
+        }
+    };
+
     const handleFreeToppings = (el) => {
         if (ToppingsFree.some((obj) => obj?.code === el?.code)) {
             const new_toppings = ToppingsFree?.filter(
@@ -334,6 +347,7 @@ const EditSignature = () => {
                 (top) => top?.code !== el?.code
             );
             setSelectedToppings(newSelectedToppings);
+            setIndianStyleChoice(new_toppings.length > 0 ? "yes" : "no");
         } else {
             let toppingPrice = el?.price;
             const defaultToppingFree = DefaultToppingsFree.find(
@@ -345,6 +359,7 @@ const EditSignature = () => {
             const updatedElFree = { ...el, price: toppingPrice };
             setToppingsFree((prev) => [...prev, updatedElFree]);
             setSelectedToppings((prev) => [...prev, updatedElFree]);
+            setIndianStyleChoice("yes");
         }
     };
 
@@ -377,6 +392,7 @@ const EditSignature = () => {
             );
             setToppingsFree(new_toppings);
             setSelectedToppings(topsfree);
+            setIndianStyleChoice(new_toppings.length > 0 ? "yes" : "no");
         }
     };
 
@@ -387,6 +403,7 @@ const EditSignature = () => {
         );
         setToppingsFree([]);
         setSelectedToppings(filteredToppings);
+        setIndianStyleChoice("no");
     };
 
     // handle change toppings pizza size
@@ -424,6 +441,11 @@ const EditSignature = () => {
     const handleUpdatePizza = () => {
         if (currentStoreCode === undefined || currentStoreCode === null) {
             setShowStorePopup(true);
+            return false;
+        }
+        const hasFreeToppingsOption = (Ingredients?.toppings?.freeToppings?.length || 0) > 0;
+        if (hasFreeToppingsOption && indianStyleChoice !== "yes" && indianStyleChoice !== "no") {
+            toast.error("Please select Yes or No for: Do you need it Indian Style?");
             return false;
         }
         let crustObj = Ingredients?.crust?.find((el) => el?.crustCode === Crust);
@@ -1291,6 +1313,11 @@ const EditSignature = () => {
                                                             <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
                                                                 Indian Style
                                                             </div>
+                                                            <IndianStyleRequiredCheck
+                                                                choice={indianStyleChoice}
+                                                                onChange={handleIndianStyleChoice}
+                                                                freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                                                            />
                                                             <div className="d-flex flex-wrap gap-2">
                                                                 {Ingredients?.toppings?.freeToppings?.map((data, index) => (
                                                                     <FreeToppingSelector

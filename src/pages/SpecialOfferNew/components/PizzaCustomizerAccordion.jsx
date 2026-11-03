@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import SignaturePizzaSelector from "./SignaturePizzaSelector";
 import OptionSheet from "../../../components/_main/OptionSheet";
+import IndianStyleRequiredCheck from "../../../components/_main/IndianStyleRequiredCheck";
 import { fetchSignaturePizzaDefaults } from "../../../services";
 import ToppingsSelector from "./ToppingsSelector";
 
@@ -73,7 +74,7 @@ function allToppingNames(pizzaSelections) {
 // We'll use ToppingSheet's own internal rendering — which calls these class props.
 // Instead of faking adapters, we'll build a simpler inline topping popup using ToppingsSelector.
 
-function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelections, settings, onUpdateCustomization, index }) {
+function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelections, settings, onUpdateCustomization, index, indianStyleChoice, onIndianStyleChange }) {
     const TOPPINGS_TABS = [
         { id: "countAsTwo", label: settings?.premiumTopppingLabel || "Premium Toppings" },
         { id: "countAsOne", label: settings?.regularToppingLabel || "Regular Toppings" },
@@ -177,22 +178,32 @@ function ToppingSheetWrapper({ isOpen, onClose, toppings, offerData, pizzaSelect
                         />
                     )}
                     {activeTab === "free" && (
-                        <ToppingsSelector
-                            key={`indian-${index}`}
-                            title={TOPPINGS_TABS[2].label}
-                            options={toppings?.freeToppings ?? []}
-                            defaultOptions={[]}
-                            selected={pizzaSelections?.toppings?.freeToppings ?? []}
-                            onChange={(list) => {
-                                const totalFree = toppings?.freeToppings?.length || 0;
-                                const isAllSelected = list.length === totalFree;
-                                const current = pizzaSelections?.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] };
-                                onUpdateCustomization(index, "toppings", { ...current, freeToppings: list });
-                                onUpdateCustomization(index, "isAllIndiansTps", isAllSelected);
-                            }}
-                            toppingCount={1}
-                            isIndianStyle={true}
-                        />
+                        <>
+                            {typeof onIndianStyleChange === "function" && (
+                                <IndianStyleRequiredCheck
+                                    choice={indianStyleChoice}
+                                    onChange={onIndianStyleChange}
+                                    freeToppingsCount={toppings?.freeToppings?.length || 0}
+                                />
+                            )}
+                            <ToppingsSelector
+                                key={`indian-${index}`}
+                                title={TOPPINGS_TABS[2].label}
+                                options={toppings?.freeToppings ?? []}
+                                defaultOptions={[]}
+                                selected={pizzaSelections?.toppings?.freeToppings ?? []}
+                                onChange={(list) => {
+                                    const totalFree = toppings?.freeToppings?.length || 0;
+                                    const isAllSelected = list.length === totalFree;
+                                    const current = pizzaSelections?.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] };
+                                    onUpdateCustomization(index, "toppings", { ...current, freeToppings: list });
+                                    onUpdateCustomization(index, "isAllIndiansTps", isAllSelected);
+                                    onUpdateCustomization(index, "indianStyleChoice", list.length > 0 ? "yes" : "no");
+                                }}
+                                toppingCount={1}
+                                isIndianStyle={true}
+                            />
+                        </>
                     )}
                 </div>
 
@@ -284,6 +295,27 @@ const PizzaCustomizerAccordion = ({
         onUpdateCustomization(index, "isAllIndiansTps", true);
     };
 
+    const handleIndianStyleChoice = (choice) => {
+        const current = pizzaSelections?.toppings || { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] };
+        if (choice === "yes") {
+            const allFree = (toppings?.freeToppings || []).map((opt) => ({
+                toppingsCode: opt.toppingsCode || opt.code,
+                toppingsName: opt.toppingsName ?? opt.name ?? "Topping",
+                toppingsPrice: "0.00",
+                toppingsPlacement: "whole",
+                pizzaIndex: index,
+                amount: "0.00",
+            }));
+            onUpdateCustomization(index, "toppings", { ...current, freeToppings: allFree, isAllIndiansTps: true });
+            onUpdateCustomization(index, "isAllIndiansTps", true);
+            onUpdateCustomization(index, "indianStyleChoice", "yes");
+        } else if (choice === "no") {
+            onUpdateCustomization(index, "toppings", { ...current, freeToppings: [], isAllIndiansTps: false });
+            onUpdateCustomization(index, "isAllIndiansTps", false);
+            onUpdateCustomization(index, "indianStyleChoice", "no");
+        }
+    };
+
     const handleSignaturePizzaChange = (code) => {
         setSignatureCode(code);
         const pizzas = Array.isArray(signaturePizzas) ? signaturePizzas : (signaturePizzas?.data || []);
@@ -293,10 +325,12 @@ const PizzaCustomizerAccordion = ({
             onUpdateCustomization(index, "signaturePizzaCode", selectedPizza.code || selectedPizza.sideCode || selectedPizza.id || code);
             onUpdateCustomization(index, "signaturePizzaName", selectedPizza.pizza_name || selectedPizza.pizzaName || selectedPizza.name || selectedPizza.sideName || "");
             onUpdateCustomization(index, "toppings", { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] });
+            onUpdateCustomization(index, "indianStyleChoice", null);
         } else {
             onUpdateCustomization(index, "signaturePizzaCode", null);
             onUpdateCustomization(index, "signaturePizzaName", null);
             onUpdateCustomization(index, "toppings", { countAsTwoToppings: [], countAsOneToppings: [], freeToppings: [] });
+            onUpdateCustomization(index, "indianStyleChoice", null);
         }
     };
 
@@ -332,8 +366,31 @@ const PizzaCustomizerAccordion = ({
                 onUpdateCustomization(index, "sauce", normalizeDefault(findByCode("sauceCode", offerData.sauce, details.sauce?.code)));
                 onUpdateCustomization(index, "spicy", normalizeDefault(findByCode("spicyCode", offerData.spices, details.spices?.code)));
                 onUpdateCustomization(index, "cook", normalizeDefault(findByCode("cookCode", offerData.cook, details.cook?.code)));
+
+                const parseSigToppings = (raw, countAsVal) => {
+                    const list = typeof raw === "string" ? (() => { try { return JSON.parse(raw); } catch { return []; } })() : (Array.isArray(raw) ? raw : []);
+                    return list
+                        .filter(t => t && (t.toppingsName || t.name))
+                        .map(t => ({
+                            toppingsCode: t.toppingsCode || t.code || "",
+                            toppingsName: t.toppingsName || t.name || "",
+                            toppingsPlacement: t.toppingsPlacement || t.placement || "whole",
+                            toppingsPrice: "0.00",
+                            amount: 0,
+                            countAs: countAsVal,
+                            isDefault: true,
+                        }));
+                };
+
+                onUpdateCustomization(index, "toppings", {
+                    countAsTwoToppings: parseSigToppings(details.topping_as_2, 2),
+                    countAsOneToppings: parseSigToppings(details.topping_as_1, 1),
+                    freeToppings: [],
+                    isAllIndiansTps: false,
+                });
+                onUpdateCustomization(index, "indianStyleChoice", null);
+
                 setSignatureDetails(details);
-                preselectFreeToppingsIfNeeded();
             }
         } catch (err) {
             console.error("Signature pizza fetch failed", err);
@@ -553,6 +610,11 @@ const PizzaCustomizerAccordion = ({
 
                                 {/* ── Toppings ── */}
                                 <div className="mb-2">
+                                    <IndianStyleRequiredCheck
+                                        choice={pizzaSelections?.indianStyleChoice ?? (isEditMode ? ((pizzaSelections?.toppings?.freeToppings?.length || 0) > 0 ? "yes" : "no") : null)}
+                                        onChange={handleIndianStyleChoice}
+                                        freeToppingsCount={toppings?.freeToppings?.length || 0}
+                                    />
                                     <button
                                         className="topping-trigger-btn"
                                         onClick={() => setOpenSheet("toppings")}
@@ -583,6 +645,8 @@ const PizzaCustomizerAccordion = ({
                                     settings={settings}
                                     onUpdateCustomization={onUpdateCustomization}
                                     index={index}
+                                    indianStyleChoice={pizzaSelections?.indianStyleChoice ?? (isEditMode ? ((pizzaSelections?.toppings?.freeToppings?.length || 0) > 0 ? "yes" : "no") : null)}
+                                    onIndianStyleChange={handleIndianStyleChoice}
                                 />
                             </div>
                         )

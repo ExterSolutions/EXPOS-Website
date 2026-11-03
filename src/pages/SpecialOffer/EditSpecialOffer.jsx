@@ -248,7 +248,16 @@ const EditSpecialOffer = () => {
 
         // Robust initialization of pizzaState
         if (cProduct?.config?.pizza) {
-          setPizzaState(cProduct.config.pizza);
+          setPizzaState(
+            cProduct.config.pizza.map((p) => ({
+              ...p,
+              indianStyleChoice:
+                p.indianStyleChoice ||
+                ((p?.toppings?.freeToppings?.length || 0) > 0 || p?.toppings?.isAllIndiansTps
+                  ? "yes"
+                  : "no"),
+            }))
+          );
         } else if (data.noofPizzas > 0) {
           // Fallback if pizza config is missing from cart (should not happen but adds safety)
           const defaultPizza = {
@@ -265,7 +274,8 @@ const EditSpecialOffer = () => {
               countAsTwoToppings: [],
               freeToppings: [],
               isAllIndiansTps: false,
-            }
+            },
+            indianStyleChoice: "no",
           };
           setPizzaState(Array(data.noofPizzas).fill(defaultPizza));
         }
@@ -430,6 +440,20 @@ const EditSpecialOffer = () => {
     if (noOfFreeDips > 0) {
       if (!Array.isArray(Dips) || Dips.length === 0) {
         toast.error("Please select at least one dip");
+        return false;
+      }
+    }
+
+    const hasFreeToppingsOption = (toppingsData?.toppings?.freeToppings?.length || 0) > 0;
+    if (hasFreeToppingsOption) {
+      const missingIndianIdx = pizzaState.findIndex(
+        (pizza) => pizza?.indianStyleChoice !== "yes" && pizza?.indianStyleChoice !== "no"
+      );
+      if (missingIndianIdx !== -1) {
+        setActiveAccordion(`pizza-${missingIndianIdx}`);
+        toast.error(
+          `Pizza ${missingIndianIdx + 1}: Please select Yes or No for: Do you need it Indian Style?`
+        );
         return false;
       }
     }

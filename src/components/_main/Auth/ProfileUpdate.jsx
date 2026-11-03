@@ -4,20 +4,25 @@ import * as Yup from "yup";
 import { updateProfile } from "../../../services";
 import { useFormik } from "formik";
 import defaultPhoto from "../../../assets/images/avatar.jpg";
-import {GlobalContext} from "../../../context/GlobalContext";
+import { GlobalContext } from "../../../context/GlobalContext";
 import { useDispatch } from "react-redux";
 import { UPDATEUSER } from "../../../redux/authProvider/actionType";
 
-const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
-// const canadianPostalCode = /^[A-Za-z]\d[A-Za-z]\d[A-Za-z]\d$/;
-
 const validationSchema = Yup.object({
-    firstName: Yup.string().required("First name is required"),
-    lastName: Yup.string().required("Last name is required"),
+    firstName: Yup.string().min(2, "Minimum 2 characters").required("First name is required"),
+    lastName: Yup.string().min(2, "Minimum 2 characters").required("Last name is required"),
     email: Yup.string()
         .email("Invalid email address")
         .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid Email Address")
         .required("Email is required"),
+    address: Yup.string().nullable(),
+    city: Yup.string().nullable(),
+    zipcode: Yup.string()
+        .nullable()
+        .test("is-canadian-postal", "Enter a valid Canadian postal code (e.g. N2A 4J3)", (val) => {
+            if (!val || !val.trim()) return true;
+            return /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/i.test(val.trim());
+        }),
 });
 
 function ProfileUpdate() {
@@ -25,20 +30,32 @@ function ProfileUpdate() {
     const [user, setUser] = globalCtx.user;
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [saving, setSaving] = useState(false);
 
     const dispatch = useDispatch();
 
+    const profileData = user?.data || user || {};
+
+    const formatPostalCode = (value = "") => {
+        const cleaned = value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+        if (cleaned.length <= 3) return cleaned;
+        return cleaned.slice(0, 3) + " " + cleaned.slice(3, 6);
+    };
+
     const iniValues = {
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-        mobileNumber: user?.mobileNumber,
-        email: user?.email,
-        customerCode: user?.code || user?.customerCode,
+        firstName: profileData?.firstName || "",
+        lastName: profileData?.lastName || "",
+        mobileNumber: profileData?.mobileNumber || profileData?.phoneNo || "",
+        email: profileData?.email || "",
+        address: profileData?.address || "",
+        city: profileData?.city || "",
+        zipcode: profileData?.zipcode || "",
+        customerCode: profileData?.code || profileData?.customerCode || "",
     };
 
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setSelectedFile(file);
+        const file = event.target.files?.[0];
+        setSelectedFile(file || null);
 
         if (file) {
             const reader = new FileReader();
@@ -50,13 +67,17 @@ function ProfileUpdate() {
     };
 
     const onSubmit = async (values) => {
+        setSaving(true);
         const formData = new FormData();
 
-        formData.append("customerCode", user?.customerCode);
-        formData.append("firstName", values.firstName);
-        formData.append("lastName", values.lastName);
+        formData.append("customerCode", profileData?.customerCode || profileData?.code || values.customerCode);
+        formData.append("firstName", values.firstName.trim());
+        formData.append("lastName", values.lastName.trim());
         formData.append("mobileNumber", values.mobileNumber);
-        formData.append("email", values.email);
+        formData.append("email", values.email.trim());
+        if (values.address) formData.append("address", values.address.trim());
+        if (values.city) formData.append("city", values.city.trim());
+        if (values.zipcode) formData.append("zipcode", values.zipcode.trim());
         if (selectedFile) {
             formData.append("profilePhoto", selectedFile);
         }
@@ -64,23 +85,31 @@ function ProfileUpdate() {
         try {
             const result = await updateProfile(formData);
 
-            if (result.data) {
-                document.getElementById("profilePhoto").value = null;
+            if (result?.data) {
+                const fileInput = document.getElementById("profilePhoto");
+                if (fileInput) fileInput.value = "";
                 setSelectedFile(null);
                 setPreviewUrl(null);
 
-                const data = result.data;
-                localStorage.setItem("user", JSON.stringify(data));
-                setUser(data);
-                dispatch({ type: UPDATEUSER, payload: data });
-                setTimeout(() => {
-                    toast.success("Profile Updated Successfully.");
-                }, 500);
+                const mergedData = {
+                    ...profileData,
+                    ...result.data,
+                    address: result.data.address ?? values.address ?? profileData.address ?? "",
+                    city: result.data.city ?? values.city ?? profileData.city ?? "",
+                    zipcode: result.data.zipcode ?? values.zipcode ?? profileData.zipcode ?? "",
+                };
+
+                localStorage.setItem("user", JSON.stringify(mergedData));
+                setUser(mergedData);
+                dispatch({ type: UPDATEUSER, payload: mergedData });
+                toast.success("Profile updated successfully!");
             } else {
-                toast.error(result.message);
+                toast.error(result?.message || "Failed to update profile");
             }
         } catch (err) {
-            toast.error(err.response.data.message);
+            toast.error(err?.response?.data?.message || "Failed to update profile");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -93,135 +122,219 @@ function ProfileUpdate() {
     });
 
     return (
-        <div className="container py-3">
-            <form className="row w-100" onSubmit={formik.handleSubmit}>
-                <div className="col-lg-6 col-md-12 col-sm-12 mb-3">
-                    <label htmlFor="firstName" className="form-label profileLabel">
-                        First Name <small className="text-danger">*</small>{" "}
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control mb-3 profileInput"
-                        id="firstName"
-                        name="firstName"
-                        value={formik.values.firstName}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.firstName && formik.errors.firstName ? (
-                        <small className="text-danger formErrMsg mt-2 mb-3">
-                            {formik.errors.firstName}
-                        </small>
-                    ) : null}
-                </div>
-
-                <div className="col-lg-6 col-md-12 col-sm-12 mb-3">
-                    <label htmlFor="lastName" className="form-label profileLabel">
-                        Last Name <small className="text-danger">*</small>{" "}
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control mb-3 profileInput"
-                        id="lastName"
-                        name="lastName"
-                        value={formik.values.lastName}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.lastName && formik.errors.lastName ? (
-                        <small className="text-danger formErrMsg mt-2 mb-3">
-                            {formik.errors.lastName}
-                        </small>
-                    ) : null}
-                </div>
-
-                <div className="col-lg-6 col-md-12 col-sm-12 mb-3">
-                    <label htmlFor="mobileNumber" className="form-label profileLabel">
-                        Phone Number
-                    </label>
-                    <p className="text-secondary noteTxt mb-2">
-                        Please use a valid phone number.
-                    </p>
-                    <input
-                        type="tel"
-                        className="form-control mb-3 profileInput"
-                        id="mobileNumber"
-                        name="mobileNumber"
-                        value={formik.values.mobileNumber}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        readOnly
-                    />
-                </div>
-                <div className="col-lg-6 col-md-12 col-sm-12 mb-3">
-                    <label htmlFor="lastName" className="form-label profileLabel">
-                        Email Address <small className="text-danger">*</small>{" "}
-                    </label>
-                    <p className="text-secondary noteTxt mb-2">
-                        Please use a valid email address.
-                    </p>
-                    <input
-                        type="text"
-                        className="form-control mb-3 profileInput"
-                        id="email"
-                        name="email"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.email && formik.errors.email ? (
-                        <small className="text-danger formErrMsg mt-2 mb-3">
-                            {formik.errors.email}
-                        </small>
-                    ) : null}
-                </div>
-                <div className="col-lg-6 col-md-12 col-sm-12 mb-3">
-                    <label htmlFor="mobileNumber" className="form-label profileLabel">
-                        Updated Profile Photo
-                    </label>
-                    <p className="text-secondary noteTxt mb-2">
-                        Format: .jpeg, .jpg, .png
-                    </p>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="form-control mb-3 profileInput"
-                        id="profilePhoto"
-                        name="profilePhoto"
-                        onChange={handleFileChange}
-                    />
-                    {formik.touched.profilePhoto && formik.errors.profilePhoto ? (
-                        <small className="text-danger formErrMsg mt-2 mb-3">
-                            {formik.errors.profilePhoto}
-                        </small>
-                    ) : null}
-                </div>
-                <div className="col-lg-6 px-3">
+        <div className="container-fluid px-1 px-md-3 py-2">
+            <form onSubmit={formik.handleSubmit} noValidate>
+                {/* Avatar Upload Section */}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 16,
+                        padding: "12px 14px",
+                        background: "#f9fafb",
+                        borderRadius: 12,
+                        marginBottom: 20,
+                        flexWrap: "wrap",
+                    }}
+                >
                     <div
-                        className="col-12 rounded-circle"
-                        style={{ width: "4rem", height: "4rem", overflow: "hidden" }}
+                        style={{
+                            width: 68,
+                            height: 68,
+                            borderRadius: "50%",
+                            overflow: "hidden",
+                            flexShrink: 0,
+                            border: "2px solid var(--primary, #2d7a2d)",
+                            background: "#fff",
+                        }}
                     >
-                        {previewUrl ? (
-                            <img
-                                src={previewUrl}
-                                className="profile-picture"
-                                alt="Profile Preview"
-                            />
-                        ) : (
-                            <img
-                                src={user?.profilePhoto ? user?.profilePhoto : defaultPhoto}
-                                className="profile-picture"
-                                alt={user?.userName}
-                            />
+                        <img
+                            src={previewUrl || profileData?.profilePhoto || defaultPhoto}
+                            alt="Profile"
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            onError={(e) => {
+                                e.currentTarget.src = defaultPhoto;
+                            }}
+                        />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                        <label
+                            htmlFor="profilePhoto"
+                            style={{
+                                fontWeight: 600,
+                                fontSize: "0.9rem",
+                                color: "#222",
+                                display: "block",
+                                marginBottom: 4,
+                            }}
+                        >
+                            Profile Photo
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/jpg"
+                            className="form-control form-control-sm"
+                            id="profilePhoto"
+                            name="profilePhoto"
+                            onChange={handleFileChange}
+                        />
+                        <small className="text-muted" style={{ fontSize: "0.75rem" }}>
+                            Supported formats: JPG, PNG
+                        </small>
+                    </div>
+                </div>
+
+                {/* Personal Details */}
+                <h6 className="fw-bold mb-3" style={{ color: "#1a1a1a" }}>
+                    Personal Information
+                </h6>
+                <div className="row g-3 mb-4">
+                    <div className="col-md-6 col-12">
+                        <label htmlFor="firstName" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            First Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10 }}
+                            id="firstName"
+                            name="firstName"
+                            value={formik.values.firstName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        />
+                        {formik.touched.firstName && formik.errors.firstName && (
+                            <small className="text-danger d-block mt-1">{formik.errors.firstName}</small>
+                        )}
+                    </div>
+
+                    <div className="col-md-6 col-12">
+                        <label htmlFor="lastName" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            Last Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10 }}
+                            id="lastName"
+                            name="lastName"
+                            value={formik.values.lastName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        />
+                        {formik.touched.lastName && formik.errors.lastName && (
+                            <small className="text-danger d-block mt-1">{formik.errors.lastName}</small>
+                        )}
+                    </div>
+
+                    <div className="col-md-6 col-12">
+                        <label htmlFor="mobileNumber" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            Mobile Number (OTP Login ID)
+                        </label>
+                        <input
+                            type="tel"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10, background: "#f3f4f6" }}
+                            id="mobileNumber"
+                            name="mobileNumber"
+                            value={formik.values.mobileNumber}
+                            readOnly
+                        />
+                        <small className="text-muted" style={{ fontSize: "0.75rem" }}>
+                            Verified mobile number used for OTP sign-in
+                        </small>
+                    </div>
+
+                    <div className="col-md-6 col-12">
+                        <label htmlFor="email" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            Email Address <span className="text-danger">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10 }}
+                            id="email"
+                            name="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        />
+                        {formik.touched.email && formik.errors.email && (
+                            <small className="text-danger d-block mt-1">{formik.errors.email}</small>
                         )}
                     </div>
                 </div>
-                <div className="w-100 text-center mb-3 mt-4">
+
+                {/* Default Delivery Address */}
+                <h6 className="fw-bold mb-3" style={{ color: "#1a1a1a" }}>
+                    Saved Delivery Address
+                </h6>
+                <div className="row g-3 mb-4">
+                    <div className="col-12">
+                        <label htmlFor="address" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            Street Address
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10 }}
+                            id="address"
+                            name="address"
+                            placeholder="House / Apt number and street"
+                            value={formik.values.address}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        />
+                    </div>
+
+                    <div className="col-md-6 col-12">
+                        <label htmlFor="city" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            City
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10 }}
+                            id="city"
+                            name="city"
+                            placeholder="City"
+                            value={formik.values.city}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        />
+                    </div>
+
+                    <div className="col-md-6 col-12">
+                        <label htmlFor="zipcode" className="form-label fw-semibold mb-1" style={{ fontSize: "0.86rem" }}>
+                            Postal Code
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            style={{ height: 46, borderRadius: 10 }}
+                            id="zipcode"
+                            name="zipcode"
+                            placeholder="e.g. N2A 4J3"
+                            value={formik.values.zipcode}
+                            onChange={(e) => {
+                                formik.setFieldValue("zipcode", formatPostalCode(e.target.value));
+                            }}
+                            onBlur={formik.handleBlur}
+                        />
+                        {formik.touched.zipcode && formik.errors.zipcode && (
+                            <small className="text-danger d-block mt-1">{formik.errors.zipcode}</small>
+                        )}
+                    </div>
+                </div>
+
+                <div className="w-100 text-center mt-2">
                     <button
-                        className="py-2 fw-bold btn btn-md profileUpdateBtn"
+                        className="login-submit-btn"
                         type="submit"
+                        disabled={saving}
+                        style={{ maxWidth: 320, margin: "0 auto" }}
                     >
-                        Update Profile
+                        {saving ? "Saving Changes..." : "Save Profile"}
                     </button>
                 </div>
             </form>

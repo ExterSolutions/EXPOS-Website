@@ -27,6 +27,7 @@ import { SpicySelector } from "./SpicySelector";
 import { ToppingOneSelector } from "./ToppingOneSelector";
 import { ToppingTwoSelector } from "./ToppingTwoSelector";
 import { sortPizzaSizes } from "../../utils/pizzaUtils";
+import IndianStyleRequiredCheck from "../../components/_main/IndianStyleRequiredCheck";
 
 const EditCreatePizza = () => {
   // navigate
@@ -68,6 +69,7 @@ const EditCreatePizza = () => {
   const [pizzaQuantity, setPizzaQuantity] = useState(1);
   const [selectedTopping, setSelectedToppings] = useState([]);
   const [isIndiansToppings, setIsIndiansToppings] = useState(false);
+  const [indianStyleChoice, setIndianStyleChoice] = useState("no");
   const [price, setPrice] = useState(
     cart?.product?.find((el) => el?.id == uid)?.amount || 0
   );
@@ -164,6 +166,25 @@ const EditCreatePizza = () => {
   };
 
   // handle indian style toppings
+  const handleIndianStyleChoice = (choice) => {
+    setIndianStyleChoice(choice);
+    const nonFree = (selectedTopping || []).filter((top) => top?.type !== "free");
+    if (choice === "yes") {
+      const allFree = (Ingredients?.toppings?.freeToppings || []).map((el) => ({
+        code: el?.toppingsCode,
+        name: el?.toppingsName,
+        price: el?.price,
+        type: "free",
+        size: "whole",
+      }));
+      setToppingsFree(allFree);
+      setSelectedToppings([...nonFree, ...allFree]);
+    } else if (choice === "no") {
+      setToppingsFree([]);
+      setSelectedToppings(nonFree);
+    }
+  };
+
   const handleFreeToppings = (el) => {
     if (ToppingsFree.some((obj) => obj?.code === el?.code)) {
       const new_toppings = ToppingsFree?.filter(
@@ -174,9 +195,11 @@ const EditCreatePizza = () => {
         (top) => top?.code !== el?.code
       );
       setSelectedToppings(newSelectedToppings);
+      setIndianStyleChoice(new_toppings.length > 0 ? "yes" : "no");
     } else {
       setToppingsFree((prev) => [...prev, el]);
       setSelectedToppings((prev) => [...prev, el]);
+      setIndianStyleChoice("yes");
     }
   };
 
@@ -340,6 +363,7 @@ const EditCreatePizza = () => {
           );
         }
         setToppingsFree(freeToppingsArr);
+        setIndianStyleChoice(freeToppingsArr.length > 0 ? "yes" : "no");
         setToppingsOne(oneToppingsArr);
         setToppingsTwo(twoToppingsArr);
         setDrinks(drinksArray);
@@ -398,6 +422,7 @@ const EditCreatePizza = () => {
       );
       setToppingsFree(new_toppings);
       setSelectedToppings(topsfree);
+      setIndianStyleChoice(new_toppings.length > 0 ? "yes" : "no");
     }
   };
 
@@ -408,6 +433,7 @@ const EditCreatePizza = () => {
     );
     setToppingsFree([]);
     setSelectedToppings(filteredToppings);
+    setIndianStyleChoice("no");
   };
 
   // handle Remove drinks
@@ -476,6 +502,12 @@ const EditCreatePizza = () => {
   const handleUpdateToCart = () => {
     if (currentStoreCode === undefined || currentStoreCode === null) {
       setShowStorePopup(true);
+      return false;
+    }
+
+    const hasFreeToppingsOption = (Ingredients?.toppings?.freeToppings?.length || 0) > 0;
+    if (hasFreeToppingsOption && indianStyleChoice !== "yes" && indianStyleChoice !== "no") {
+      toast.error("Please select Yes or No for: Do you need it Indian Style?");
       return false;
     }
 
@@ -1439,6 +1471,11 @@ const EditCreatePizza = () => {
                                   <div className="pb-2 mb-2 fw-medium m-0 text-secondary">
                                     {indianStyleToppingsTitle}
                                   </div>
+                                  <IndianStyleRequiredCheck
+                                    choice={indianStyleChoice}
+                                    onChange={handleIndianStyleChoice}
+                                    freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
+                                  />
                                   <div className="d-flex flex-wrap gap-2">
                                     {Ingredients?.toppings?.freeToppings?.map((data, index) => (
                                       <FreeToppingSelector

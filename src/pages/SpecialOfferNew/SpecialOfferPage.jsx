@@ -199,7 +199,8 @@ const SpecialOfferPage = () => {
             countAsOneToppings: [],
             freeToppings: [],
           },
-          isAllIndiansTps: true,
+          isAllIndiansTps: false,
+          indianStyleChoice: null,
         };
       });
       /* ---------- Default Settings ---------- */
@@ -305,7 +306,8 @@ const SpecialOfferPage = () => {
           countAsOneToppings: [],
           freeToppings: [],
         },
-        isAllIndiansTps: true,
+        isAllIndiansTps: false,
+        indianStyleChoice: null,
       };
       return updated;
     });
@@ -337,6 +339,20 @@ const SpecialOfferPage = () => {
         "Please select the pizzas from the list and customize them before adding to cart.",
       );
       return;
+    }
+
+    const hasFreeToppingsOption = (toppings?.freeToppings?.length || 0) > 0;
+    if (hasFreeToppingsOption) {
+      const missingIndianIdx = pizzaSelections.findIndex(
+        (pizza) => pizza?.indianStyleChoice !== "yes" && pizza?.indianStyleChoice !== "no"
+      );
+      if (missingIndianIdx !== -1) {
+        setActivePizzaIndex(missingIndianIdx);
+        toast.error(
+          `Pizza ${missingIndianIdx + 1}: Please select Yes or No for: Do you need it Indian Style?`
+        );
+        return;
+      }
     }
 
     if (offerData.noofDips > 0 && !selectedDips?.length) {

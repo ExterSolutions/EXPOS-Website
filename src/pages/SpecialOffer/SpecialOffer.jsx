@@ -378,16 +378,10 @@ function SpecialOffer() {
               toppings: {
                 countAsTwoToppings: [],
                 countAsOneToppings: [],
-                freeToppings: toppingsD?.toppings?.freeToppings?.map((t) => ({
-                  toppingsCode: t.toppingsCode,
-                  toppingsName: t.toppingsName,
-                  toppingsPrice: "0",
-                  toppingsPlacement: "whole",
-                  amount: t.price || "0",
-                  pizzaIndex: mergedData.noofPizzas || 0,
-                })) || [],
-                isAllIndiansTps: true,
+                freeToppings: [],
+                isAllIndiansTps: false,
               },
+              indianStyleChoice: null,
             };
           },
         );
@@ -479,6 +473,20 @@ function SpecialOffer() {
     if (noOfFreeDips > 0) {
       if (!Array.isArray(Dips) || Dips.length === 0) {
         toast.error("Please select at least one dip");
+        return;
+      }
+    }
+
+    const hasFreeToppingsOption = (toppingsData?.toppings?.freeToppings?.length || 0) > 0;
+    if (hasFreeToppingsOption) {
+      const missingIndianIdx = pizzaState.findIndex(
+        (pizza) => pizza?.indianStyleChoice !== "yes" && pizza?.indianStyleChoice !== "no"
+      );
+      if (missingIndianIdx !== -1) {
+        setActiveAccordion(`pizza-${missingIndianIdx}`);
+        toast.error(
+          `Pizza ${missingIndianIdx + 1}: Please select Yes or No for: Do you need it Indian Style?`
+        );
         return;
       }
     }

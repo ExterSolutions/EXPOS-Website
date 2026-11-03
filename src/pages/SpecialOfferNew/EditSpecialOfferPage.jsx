@@ -202,7 +202,16 @@ const EditSpecialOfferPage = () => {
 
         // Set Pizza Selections
         if (cartItem.config?.pizza) {
-          setPizzaSelections(cartItem.config.pizza);
+          setPizzaSelections(
+            cartItem.config.pizza.map((p) => ({
+              ...p,
+              indianStyleChoice:
+                p.indianStyleChoice ||
+                ((p?.toppings?.freeToppings?.length || 0) > 0 || p?.isAllIndiansTps
+                  ? "yes"
+                  : "no"),
+            }))
+          );
         }
 
         // Set Sides
@@ -272,6 +281,19 @@ const EditSpecialOfferPage = () => {
         "Please select a signature pizza for all pizzas before updating cart.",
       );
       return;
+    }
+
+    const hasFreeToppingsOption = (toppings?.freeToppings?.length || 0) > 0;
+    if (hasFreeToppingsOption) {
+      const missingIndianIdx = pizzaSelections.findIndex(
+        (pizza) => pizza?.indianStyleChoice !== "yes" && pizza?.indianStyleChoice !== "no"
+      );
+      if (missingIndianIdx !== -1) {
+        toast.error(
+          `Pizza ${missingIndianIdx + 1}: Please select Yes or No for: Do you need it Indian Style?`
+        );
+        return;
+      }
     }
 
     if (offerData.noofDips > 0 && !selectedDips?.length) {

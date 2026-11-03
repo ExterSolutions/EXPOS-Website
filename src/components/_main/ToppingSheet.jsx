@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { IoMdClose } from "react-icons/io";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
+import IndianStyleRequiredCheck from "./IndianStyleRequiredCheck";
 
 /**
  * ToppingSheet — slides up from the bottom on mobile, centered modal on desktop.
@@ -52,6 +53,8 @@ const ToppingSheet = ({
     regularTitle = "Regular Toppings",
     indianStyleTitle = "Indian Toppings",
     premiumToppingCount = 2,
+    indianStyleChoice,
+    onIndianStyleChange,
 }) => {
     const sheetRef = useRef(null);
 
@@ -192,20 +195,29 @@ const ToppingSheet = ({
                         </div>
                     )}
                     {activeTab === "free" && (
-                        <div className="topping-sheet__list">
-                            {Ingredients?.toppings?.freeToppings?.map((data, index) => (
-                                <FreeToppingSelector
-                                    key={index}
-                                    data={data}
-                                    ToppingsFree={ToppingsFree}
-                                    handleTopping={(payload) => handleFreeToppings(payload)}
-                                    handleSizeChange={(payload) => handleSizeChange(payload)}
+                        <>
+                            {typeof onIndianStyleChange === "function" && (
+                                <IndianStyleRequiredCheck
+                                    choice={indianStyleChoice}
+                                    onChange={onIndianStyleChange}
+                                    freeToppingsCount={Ingredients?.toppings?.freeToppings?.length || 0}
                                 />
-                            ))}
-                            {!Ingredients?.toppings?.freeToppings?.length && (
-                                <p className="text-secondary text-center w-100 py-4">No Indian style toppings available.</p>
                             )}
-                        </div>
+                            <div className="topping-sheet__list">
+                                {Ingredients?.toppings?.freeToppings?.map((data, index) => (
+                                    <FreeToppingSelector
+                                        key={index}
+                                        data={data}
+                                        ToppingsFree={ToppingsFree}
+                                        handleTopping={(payload) => handleFreeToppings(payload)}
+                                        handleSizeChange={(payload) => handleSizeChange(payload)}
+                                    />
+                                ))}
+                                {!Ingredients?.toppings?.freeToppings?.length && (
+                                    <p className="text-secondary text-center w-100 py-4">No Indian style toppings available.</p>
+                                )}
+                            </div>
+                        </>
                     )}
                 </div>
 
