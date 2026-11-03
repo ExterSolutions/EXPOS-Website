@@ -117,9 +117,13 @@ const PaymentSuccess = () => {
 
         const run = async () => {
             console.log('[🔔 PaymentSuccess] run() started — reading pendingOrderMeta from localStorage');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlSessionId = urlParams.get('session_id') || urlParams.get('sessionId');
+            const urlOrderCode = urlParams.get('orderCode') || urlParams.get('order_code');
+
             const rawMeta = localStorage.getItem('pendingOrderMeta');
-            const storedOrderId = localStorage.getItem('OrderID');
-            const storedSessionId = localStorage.getItem('sessionId');
+            const storedOrderId = localStorage.getItem('OrderID') || urlOrderCode;
+            const storedSessionId = localStorage.getItem('sessionId') || urlSessionId;
             console.log('[🔔 PaymentSuccess] raw pendingOrderMeta =', rawMeta);
 
             let parsedMeta = null;

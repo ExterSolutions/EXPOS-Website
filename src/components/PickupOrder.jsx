@@ -41,6 +41,12 @@ function PickupOrder() {
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [discountAmount, setDiscountAmount] = useState(0);
 
+    // Tip state: default 10%, with 15%, 20%, and 'other' (editable custom amount, can be 0)
+    const [tipMode, setTipMode] = useState("10");
+    const [customTip, setCustomTip] = useState("0");
+    const [tipAmount, setTipAmount] = useState(0);
+    const [tipPercent, setTipPercent] = useState(10);
+
     const getStoreDetails = async () => {
         setLoading(true);
         try {
@@ -143,15 +149,24 @@ function PickupOrder() {
         const conv_val = (discountedSubtotal * conv_per * 0.01);
 
         const finalDiscount = Math.min(totalDiscount, subtotal);
-        const finalTotal = (subtotal + tax_val + conv_val) - finalDiscount;
+        const baseForTip = Math.max(0, subtotal - finalDiscount);
+        const effectiveTipPct = tipMode === "other" ? 0 : Number(tipMode);
+        const computedTip =
+            tipMode === "other"
+                ? Math.round(Math.max(0, parseFloat(customTip) || 0) * 100) / 100
+                : Math.round(baseForTip * (effectiveTipPct / 100) * 100) / 100;
+
+        const finalTotal = (subtotal + tax_val + conv_val) - finalDiscount + computedTip;
 
         setTaxPercent(tax_percent);
         setTaxAmount(tax_val.toFixed(2));
         setConvinencePer(conv_per);
         setConvinenceAmt(conv_val.toFixed(2));
         setDiscountAmount(finalDiscount.toFixed(2));
+        setTipPercent(effectiveTipPct);
+        setTipAmount(computedTip);
         setGrandTotal(finalTotal > 0 ? finalTotal.toFixed(2) : "0.00");
-    }, [selectedStore, appliedCoupon, cart, globalctx.settings]);
+    }, [selectedStore, appliedCoupon, cart, globalctx.settings, tipMode, customTip]);
 
     const handleApplyCoupon = () => {
         if (!couponCode) return toast.error("Please enter coupon code");
@@ -211,6 +226,8 @@ function PickupOrder() {
             convinenceCharges: convinenceAmt,
             deliveryCharges: 0,
             extraDeliveryCharges: 0,
+            tipAmount: Number(Number(tipAmount || 0).toFixed(2)),
+            tipPer: tipPercent,
             grandTotal: grand_total,
             successUrl: `${baseUrl}/payment/success`,
             cancelUrl: `${baseUrl}/payment/cancel`,
@@ -346,6 +363,96 @@ function PickupOrder() {
                                     </div>
                                 )}
 
+                                {/* Tip Section */}
+                                <div className="mt-3 mb-3 p-3 rounded-3" style={{ border: '1px solid #e5e7eb', backgroundColor: '#fafafa' }}>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <span className="fw-bold" style={{ fontSize: '0.9rem' }}>💝 Add a Tip</span>
+                                        <span className="fw-bold" style={{ fontSize: '0.9rem' }}>${Number(tipAmount || 0).toFixed(2)}</span>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                                        {[
+                                            { key: '10', label: '10%' },
+                                            { key: '15', label: '15%' },
+                                            { key: '20', label: '20%' },
+                                            { key: 'other', label: 'Other' },
+                                        ].map((opt) => {
+                                            const isSelected = tipMode === opt.key;
+                                            const baseSub = Math.max(0, Number(cart?.subtotal || 0) - Number(discountAmount || 0));
+                                            const calcVal = opt.key !== 'other'
+                                                ? (Math.round(baseSub * (Number(opt.key) / 100) * 100) / 100).toFixed(2)
+                                                : null;
+                                            return (
+                                                <button
+                                                    key={opt.key}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setTipMode(opt.key);
+                                                        if (opt.key === 'other' && customTip === '') {
+                                                            setCustomTip('0');
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        padding: '6px 4px',
+                                                        borderRadius: '8px',
+                                                        border: isSelected ? '2px solid var(--primary, #e63946)' : '1px solid #d1d5db',
+                                                        backgroundColor: isSelected ? '#fff1f2' : '#ffffff',
+                                                        color: isSelected ? 'var(--primary, #e63946)' : '#374151',
+                                                        fontWeight: isSelected ? 700 : 600,
+                                                        fontSize: '0.8rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        lineHeight: 1.2,
+                                                    }}
+                                                >
+                                                    <span>{opt.label}</span>
+                                                    {calcVal !== null ? (
+                                                        <span style={{ fontSize: '0.7rem', opacity: 0.85, marginTop: '2px' }}>${calcVal}</span>
+                                                    ) : (
+                                                        <span style={{ fontSize: '0.7rem', opacity: 0.85, marginTop: '2px' }}>Custom/$0</span>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {tipMode === 'other' && (
+                                        <div className="d-flex align-items-center gap-2 mt-2">
+                                            <div className="input-group input-group-sm">
+                                                <span className="input-group-text">$</span>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.50"
+                                                    className="form-control"
+                                                    placeholder="0.00"
+                                                    value={customTip}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        if (val === '' || Number(val) >= 0) {
+                                                            setCustomTip(val);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className={`btn btn-sm ${Number(customTip) === 0 ? 'btn-dark' : 'btn-outline-secondary'}`}
+                                                style={{ whiteSpace: 'nowrap', fontSize: '0.75rem', fontWeight: 600 }}
+                                                onClick={() => setCustomTip('0')}
+                                            >
+                                                No Tip ($0)
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="d-flex justify-content-between mb-2 text-muted">
+                                    <span>Tip {tipMode !== 'other' ? `(${tipPercent}%)` : ''}</span>
+                                    <span>+${Number(tipAmount || 0).toFixed(2)}</span>
+                                </div>
+
                                 <hr />
                                 <div className="d-flex justify-content-between mb-4">
                                     <span className="h5 fw-bold">Grand Total</span>
@@ -381,6 +488,7 @@ function PickupOrder() {
                                 <p className="mb-2"><strong>Store:</strong> {selectedStore?.storeLocation}</p>
                                 <p className="mb-2"><strong>Name:</strong> {user?.data?.fullName}</p>
                                 <p className="mb-2"><strong>Applied Coupon:</strong> {appliedCoupon ? appliedCoupon.code : "None"}</p>
+                                <p className="mb-2"><strong>Tip:</strong> ${Number(tipAmount || 0).toFixed(2)}</p>
                                 <p className="mb-0"><strong>Final Price:</strong> ${grand_total}</p>
                             </div>
                             <div className="d-flex gap-3">
