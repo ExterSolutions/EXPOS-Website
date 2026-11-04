@@ -28,7 +28,7 @@ import IndianStyleRequiredCheck from '../../components/_main/IndianStyleRequired
 import { getAllIngredients, fetchSignaturePizzaDefaults, getSignaturePizza, getToppings } from '../../services';
 import ToppingsSelector from '../SpecialOfferNew/components/ToppingsSelector';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
-import { pickDefaultSauce } from '../../utils/sauceDefaults';
+import { pickDefaultSauce, pickDefaultSpecialBase } from '../../utils/sauceDefaults';
 
 // ── Option config (mirrors PizzaCustomizerAccordion) ─────────────────────────
 const OPTION_CONFIG = {
@@ -386,7 +386,7 @@ function buildDefaultOptions(ing, toppingsDataRef) {
         crust:        first(ing.crust,       'crustCode',       'crustName'),
         crustType:    first(ing.crustType,   'crustTypeCode',   'crustType'),
         cheese:       first(ing.cheese,      'cheeseCode',      'cheeseName'),
-        specialBases: first(ing.specialbases,'specialbaseCode', 'specialbaseName'),
+        specialBases: first(ing.specialbases?.length ? [pickDefaultSpecialBase(ing.specialbases)] : ing.specialbases, 'specialbaseCode', 'specialbaseName'),
         spicy:        first(ing.spices,      'spicyCode',       'spicy'),
         sauce:        first(ing.sauce?.length ? [pickDefaultSauce(ing.sauce)] : ing.sauce, 'sauceCode', 'sauce'),
         cook:         first(ing.cook,        'cookCode',        'cook'),

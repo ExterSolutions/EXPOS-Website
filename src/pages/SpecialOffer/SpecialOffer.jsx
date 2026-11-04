@@ -37,7 +37,7 @@ import {
 import DealsViewSelectionModal from "./DealsViewSelectionModal";
 import SizeSelector from "../SpecialOfferNew/components/SizeSelector";
 import SummarySidebar from "../SpecialOfferNew/components/SummarySidebar";
-import { pickDefaultSauce } from '../../utils/sauceDefaults';
+import { pickDefaultSauce, pickDefaultSpecialBase } from '../../utils/sauceDefaults';
 
 function SpecialOffer() {
   // navigate
@@ -282,7 +282,7 @@ function SpecialOffer() {
             const firstSpicy = mergedData.spices?.[0];
             const firstSauce = pickDefaultSauce(mergedData.sauce);
             const firstCook = mergedData.cook?.[0];
-            const firstSpecialBase = mergedData.specialBases?.[0];
+            const firstSpecialBase = pickDefaultSpecialBase(mergedData.specialBases);
 
             return {
               signaturePizza: mergedData.signaturePizzas?.[0]

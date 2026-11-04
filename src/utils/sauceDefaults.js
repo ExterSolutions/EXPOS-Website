@@ -11,3 +11,15 @@ export const pickDefaultSauce = (sauces) => {
     if (!Array.isArray(sauces) || sauces.length === 0) return undefined;
     return sauces.find((s) => isDefaultFlag(s?.isDefault)) || sauces[0];
 };
+
+
+/**
+ * Same rule for any admin-defaultable option list (special base, ...):
+ * the item flagged `isDefault`, else the first item.
+ */
+export const pickDefault = (list) => {
+    if (!Array.isArray(list) || list.length === 0) return undefined;
+    return list.find((x) => isDefaultFlag(x?.isDefault)) || list[0];
+};
+
+export const pickDefaultSpecialBase = pickDefault;
