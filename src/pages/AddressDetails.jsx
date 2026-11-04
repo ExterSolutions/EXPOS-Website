@@ -365,51 +365,144 @@ function AddressDetails() {
             setLoading(true);
 
             // Use the already-fetched Nash delivery fee from the hook.
-            // Auto-fetch runs automatically when address+postalcode are filled (see useEffect below).
-            // If hook hasn't loaded yet, fall back to 0 — cashier can adjust on acceptance.
-            const deliveryFee = nashQuote.deliveryFee || 0;
+            // If the user clicked submit before the 900ms debounce fired, fetch it right now.
+            let activeQuoteData = nashQuote.data;
+            let customerDeliveryFee = nashQuote.customerDeliveryFee || 0;
+            let serviceFee = nashQuote.serviceFee || 0;
+            let totalDeliveryCharge = nashQuote.deliveryFee || (customerDeliveryFee + serviceFee);
+
+            if (!activeQuoteData && values?.address && values?.postalcode && currentStoreCode) {
+                const fetched = await nashQuote.fetchQuote({
+                    address: values.address,
+                    city: values.city || '',
+                    postalcode: values.postalcode,
+                    phoneno: values.phoneno || '',
+                    storeCode: currentStoreCode,
+                    orderValue: cart?.subtotal || 0,
+                });
+                if (fetched) {
+                    activeQuoteData = fetched.data;
+                    customerDeliveryFee = fetched.customerDeliveryFee || 0;
+                    serviceFee = fetched.serviceFee || 0;
+                    totalDeliveryCharge = fetched.deliveryFee || (customerDeliveryFee + serviceFee);
+                }
+            }
 
             // NOW CALL ORDER PLACE API
             const baseUrl = window.location.origin;
             let custFullName = values.firstname + " " + values.lastname;
 
-            // Grand total = cart total + Nash delivery fee + tip
+            // Grand total = cart total + Nash delivery fee (customerDeliveryFee + serviceFee) + tip
             const cartTotal = Number(cart?.grandtotal || 0);
-            const finalGrandTotal = Number(cartTotal + deliveryFee + tipAmount).toFixed(2);
+            const finalGrandTotal = Number(cartTotal + totalDeliveryCharge + tipAmount).toFixed(2);
 
-            const orderPayload = {
-                idempotency_key: idempotencyKeyRef.current,
-                deviceType: "web",
-                customerCode: user?.data?.customerCode,
-                deliveryType: "delivery",
-                customerName: custFullName,
-                mobileNumber: values?.phoneno,
-                address: values?.address,
-                zipCode: values.postalcode,
-                deliveryInstructions: (values?.deliveryInstructions || "").trim(),
-                cityCode: selectedCity?.cityCode
-                    || currentCity?.cityCode
-                    || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode
-                    || globalSelectedStore?.cityCode
-                    || "",
-                storeCode: currentStoreCode === 'EXP' ? undefined : currentStoreCode,
-                products: cart?.product,
-                subTotal: cart?.subtotal,
-                discountAmount: cart?.discountAmount,
-                taxPer: cart?.taxPer ?? 0,
-                taxAmount: cart?.taxAmount ?? 0,
-                convinencePer: cart?.convinencePer ?? 0,
-                convinenceCharges: cart?.convinenceCharges ?? 0,
-                deliveryCharges: deliveryFee,           // Nash delivery fee (from quote)
-                extraDeliveryCharges: 0,
-                tipAmount: Number(tipAmount.toFixed(2)),
-                tipPer: tipPercent,
-                grandTotal: finalGrandTotal,            // cart total + delivery fee + tip → Stripe charges this
-                successUrl: `${baseUrl}/payment/success`,
-                cancelUrl: `${baseUrl}/payment/cancel`,
+            const buildOrderPayload = (confirmUpdatedQuote = false, overrideQuote = null) => {
+                const qData = overrideQuote || activeQuoteData || {};
+                const payloadCustFee = overrideQuote
+                    ? Number(overrideQuote.customer_delivery_fee_dollars ?? overrideQuote.customer_delivery_fee ?? customerDeliveryFee)
+                    : customerDeliveryFee;
+                const payloadSrvFee = overrideQuote
+                    ? Number(overrideQuote.service_fee_dollars ?? overrideQuote.service_fee ?? serviceFee)
+                    : serviceFee;
+                const payloadTotalDel = overrideQuote
+                    ? Number(overrideQuote.total_customer_delivery_dollars ?? overrideQuote.total_customer_delivery_charge ?? (payloadCustFee + payloadSrvFee))
+                    : totalDeliveryCharge;
+                const payloadGrandTotal = overrideQuote
+                    ? Number(cartTotal + payloadTotalDel + tipAmount).toFixed(2)
+                    : finalGrandTotal;
+
+                return {
+                    idempotency_key: idempotencyKeyRef.current,
+                    deviceType: "web",
+                    customerCode: user?.data?.customerCode,
+                    deliveryType: "delivery",
+                    customerName: custFullName,
+                    mobileNumber: values?.phoneno,
+                    address: values?.address,
+                    zipCode: values.postalcode,
+                    deliveryInstructions: (values?.deliveryInstructions || "").trim(),
+                    cityCode: selectedCity?.cityCode
+                        || currentCity?.cityCode
+                        || cities.find(c => c.value === (selectedCity?.value || currentCity?.value))?.cityCode
+                        || globalSelectedStore?.cityCode
+                        || "",
+                    storeCode: currentStoreCode === 'EXP' ? undefined : currentStoreCode,
+                    products: cart?.product,
+                    subTotal: cart?.subtotal,
+                    discountAmount: cart?.discountAmount,
+                    taxPer: cart?.taxPer ?? 0,
+                    taxAmount: cart?.taxAmount ?? 0,
+                    convinencePer: cart?.convinencePer ?? 0,
+                    convinenceCharges: cart?.convinenceCharges ?? 0,
+                    deliveryCharges: payloadCustFee,
+                    customerDeliveryFee: payloadCustFee,
+                    serviceFee: payloadSrvFee,
+                    extraDeliveryCharges: 0,
+                    tipAmount: Number(tipAmount.toFixed(2)),
+                    tipPer: tipPercent,
+                    grandTotal: payloadGrandTotal,
+                    nash_quote_id: qData.quote_id || undefined,
+                    nash_quote_expires_at: qData.expires_at || undefined,
+                    nash_quoted_cost_cents: qData.nash_quoted_cost_cents ?? undefined,
+                    distance_km: qData.distance_km ?? undefined,
+                    confirmed_nash_quote_cents: qData.nash_quoted_cost_cents ?? undefined,
+                    confirmed_total_customer_delivery_cents: qData.total_customer_delivery_charge_cents
+                        ?? qData.total_customer_delivery_cents
+                        ?? qData.delivery_fee_cents
+                        ?? undefined,
+                    ...(confirmUpdatedQuote ? { confirm_updated_quote: true } : {}),
+                    successUrl: `${baseUrl}/payment/success`,
+                    cancelUrl: `${baseUrl}/payment/cancel`,
+                };
             };
 
-            const orderResponse = await orderPlace(orderPayload);
+            let orderResponse;
+            try {
+                orderResponse = await orderPlace(buildOrderPayload(false));
+            } catch (placeErr) {
+                if (placeErr?.response?.status === 409 && (placeErr?.response?.data?.quote_changed || placeErr?.response?.data?.quote_expired)) {
+                    let updatedQuote = placeErr.response.data.delivery_breakdown || placeErr.response.data.updated_quote || null;
+                    if (!updatedQuote) {
+                        const refreshed = await nashQuote.fetchQuote({
+                            address: values.address,
+                            city: values.city || '',
+                            postalcode: values.postalcode,
+                            phoneno: values.phoneno || '',
+                            storeCode: currentStoreCode,
+                            orderValue: cart?.subtotal || 0,
+                        });
+                        updatedQuote = refreshed?.data || {};
+                    }
+                    const newCustFee = Number(updatedQuote.customer_delivery_fee_dollars ?? updatedQuote.customer_delivery_fee ?? 0).toFixed(2);
+                    const newSrvFee = Number(updatedQuote.service_fee_dollars ?? updatedQuote.service_fee ?? 0).toFixed(2);
+                    const newTotalDel = Number(
+                        updatedQuote.total_customer_delivery_dollars
+                        ?? updatedQuote.total_customer_delivery_charge
+                        ?? (Number(newCustFee) + Number(newSrvFee))
+                    ).toFixed(2);
+                    const newGrand = (cartTotal + Number(newTotalDel) + tipAmount).toFixed(2);
+
+                    const confirmed = await swal({
+                        title: "Delivery Quote Updated",
+                        text: `The delivery quote has changed.\n\nDelivery Fee: $${newCustFee}\nService Fee: $${newSrvFee}\nUpdated Total: $${newGrand}\n\nWould you like to proceed with the updated total?`,
+                        icon: "info",
+                        buttons: ["Cancel", "Confirm Updated Total"],
+                    });
+
+                    if (!confirmed) {
+                        await nashQuote.refresh();
+                        submittingRef.current = false;
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Generate a fresh idempotency key for the confirmed retry
+                    idempotencyKeyRef.current = `web_del_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+                    orderResponse = await orderPlace(buildOrderPayload(true, updatedQuote));
+                } else {
+                    throw placeErr;
+                }
+            }
 
             // Clear the cart immediately since the order is placed backend
             const cartFn = new CartFunction();
@@ -553,74 +646,125 @@ function AddressDetails() {
 
     if (loading) return <LoadingLayout />;
 
-    /* ── Shared delivery-fee resolution (used in both columns) ── */
-    const confirmedFee  = apiPricing?.deliveryCharges;
-    const estimatedFee  = nashQuote.data?.delivery_fee_cents != null
-        ? nashQuote.data.delivery_fee_cents / 100 : null;
-    const cartFee       = cart?.deliveryCharges;
-    const resolvedFee   = confirmedFee ?? estimatedFee ?? cartFee;
+    /* ── Shared delivery-fee & service-fee resolution (used in both columns) ── */
+    const confirmedCustDel  = apiPricing?.customerDeliveryFee ?? apiPricing?.deliveryCharges;
+    const confirmedSrvFee   = apiPricing?.serviceFee;
+
+    const estimatedCustDel  = nashQuote.data?.customer_delivery_fee_cents != null
+        ? nashQuote.data.customer_delivery_fee_cents / 100
+        : (nashQuote.data?.delivery_fee_cents != null ? nashQuote.data.delivery_fee_cents / 100 : null);
+    const estimatedSrvFee   = nashQuote.data?.service_fee_cents != null
+        ? nashQuote.data.service_fee_cents / 100
+        : (estimatedCustDel != null ? 0 : null);
+    const estimatedTotalDel = nashQuote.data?.total_customer_delivery_charge_cents != null
+        ? nashQuote.data.total_customer_delivery_charge_cents / 100
+        : (nashQuote.data?.total_customer_delivery_cents != null
+            ? nashQuote.data.total_customer_delivery_cents / 100
+            : (estimatedCustDel != null ? estimatedCustDel + (estimatedSrvFee || 0) : null));
+
+    const cartFee           = cart?.deliveryCharges;
+    const resolvedCustDel   = confirmedCustDel != null ? Number(confirmedCustDel) : (estimatedCustDel ?? cartFee);
+    const resolvedSrvFee    = confirmedSrvFee != null ? Number(confirmedSrvFee) : (estimatedSrvFee ?? 0);
+    const resolvedTotalDel  = (resolvedCustDel != null ? Number(resolvedCustDel) + Number(resolvedSrvFee || 0) : null) ?? estimatedTotalDel;
+
+    const foodSubtotal = Number(apiPricing?.subTotal ?? cart?.subtotal ?? 0);
+    const discountVal  = Number(apiPricing?.discountAmount ?? cart?.discountAmount ?? 0);
+    const convCharges  = Number(apiPricing?.convinenceCharges ?? cart?.convinenceCharges ?? 0);
+    const taxVal       = Number(apiPricing?.taxAmount ?? cart?.taxAmount ?? 0);
+    const subtotalBeforeTax = Number(
+        apiPricing?.subtotalBeforeTax
+        ?? Math.max(0, foodSubtotal - discountVal) + Number(resolvedCustDel || 0) + Number(resolvedSrvFee || 0) + convCharges
+    );
 
     const resolvedTip = apiPricing?.tipAmount != null
         ? Number(apiPricing.tipAmount)
         : tipAmount;
 
-    const grandTotal = apiPricing?.grandTotal
+    const grandTotal = apiPricing?.grandTotal != null
         ? Number(apiPricing.grandTotal)
-        : (nashQuote.deliveryFee > 0
-            ? Number(cart?.grandtotal || 0) + nashQuote.deliveryFee
+        : (resolvedTotalDel != null
+            ? Number(cart?.grandtotal || 0) - Number(cart?.deliveryCharges || 0) + Number(resolvedTotalDel)
             : Number(cart?.grandtotal || 0)) + resolvedTip;
 
-    /* ── Reusable: Order Summary lines ── */
+    /* ── Reusable: Order Summary lines (ordered per Section 7 spec) ── */
     const SummaryLines = () => (
         <>
-            {/* Sub Total */}
+            {/* 1. Food Subtotal */}
             <div className="chk-line">
-                <span>Sub Total</span>
-                <span>$ {apiPricing?.subTotal
-                    ? Number(apiPricing.subTotal).toFixed(2)
-                    : cart?.subtotal ? cart.subtotal : '0.00'}</span>
+                <span>Food Subtotal</span>
+                <span>$ {foodSubtotal.toFixed(2)}</span>
             </div>
 
-            {/* Tax */}
-            {(apiPricing?.taxAmount || cart?.taxAmount) && Number(apiPricing?.taxAmount || cart?.taxAmount) > 0 && (
-                <div className="chk-line">
-                    <span>Tax ({apiPricing?.taxPer || cart?.taxPer || 0}%)</span>
-                    <span>$ {Number(apiPricing?.taxAmount || cart?.taxAmount).toFixed(2)}</span>
-                </div>
-            )}
-
-            {/* Discount */}
-            {apiPricing?.discountAmount && Number(apiPricing.discountAmount) > 0 && (
+            {/* Discount (if applicable) */}
+            {discountVal > 0 && (
                 <div className="chk-line chk-line--discount">
                     <span>Discount</span>
-                    <span>− $ {Number(apiPricing.discountAmount).toFixed(2)}</span>
+                    <span>− $ {discountVal.toFixed(2)}</span>
                 </div>
             )}
 
-            {/* Convenience Fee */}
-            {(apiPricing?.convinenceCharges || cart?.convinenceCharges) && Number(apiPricing?.convinenceCharges || cart?.convinenceCharges) > 0 && (
-                <div className="chk-line">
-                    <span>Convenience Fee ({apiPricing?.convinencePer || cart?.convinencePer || 0}%)</span>
-                    <span>$ {Number(apiPricing?.convinenceCharges || cart?.convinenceCharges).toFixed(2)}</span>
-                </div>
-            )}
-
-            {/* Delivery — always visible */}
+            {/* 2. Delivery Fee */}
             <div className="chk-line chk-line--delivery">
                 <span>
-                    Delivery Charges
-                    {estimatedFee != null && !confirmedFee && (
-                        <span className="chk-est-badge">est. · {nashQuote.data?.provider || 'courier'}</span>
+                    Delivery Fee
+                    {estimatedCustDel != null && !confirmedCustDel && (
+                        <span className="chk-est-badge">
+                            {nashQuote.data?.distance_km != null ? `${Number(nashQuote.data.distance_km).toFixed(1)} km` : 'est.'}
+                        </span>
                     )}
                 </span>
                 {nashQuote.loading ? (
                     <span className="chk-shimmer" style={{ width: 60 }} />
-                ) : resolvedFee != null ? (
-                    <span>$ {Number(resolvedFee).toFixed(2)}</span>
+                ) : resolvedCustDel != null ? (
+                    <span>$ {Number(resolvedCustDel).toFixed(2)}</span>
                 ) : (
                     <span className="chk-pending-fee">Enter address ↑</span>
                 )}
             </div>
+
+            {/* 3. Service Fee */}
+            <div className="chk-line chk-line--service-fee" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '2px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>
+                        Service Fee
+                        {nashQuote.data?.provider && !confirmedSrvFee && (
+                            <span className="chk-est-badge">{nashQuote.data.provider}</span>
+                        )}
+                    </span>
+                    {nashQuote.loading ? (
+                        <span className="chk-shimmer" style={{ width: 60 }} />
+                    ) : resolvedCustDel != null ? (
+                        <span>$ {Number(resolvedSrvFee).toFixed(2)}</span>
+                    ) : (
+                        <span className="chk-pending-fee">—</span>
+                    )}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#6b7280', lineHeight: 1.25 }}>
+                    {nashQuote.data?.disclosure || 'Service Fee helps cover third-party delivery partner and order fulfillment costs.'}
+                </div>
+            </div>
+
+            {/* Convenience Fee (if applicable) */}
+            {convCharges > 0 && (
+                <div className="chk-line">
+                    <span>Convenience Fee ({apiPricing?.convinencePer || cart?.convinencePer || 0}%)</span>
+                    <span>$ {convCharges.toFixed(2)}</span>
+                </div>
+            )}
+
+            {/* 4. Subtotal Before Applicable Tax */}
+            <div className="chk-line" style={{ borderTop: '1px dashed #e5e7eb', paddingTop: '6px', marginTop: '4px' }}>
+                <span>Subtotal Before Applicable Tax</span>
+                <span>$ {subtotalBeforeTax.toFixed(2)}</span>
+            </div>
+
+            {/* 5. Applicable Taxes */}
+            {taxVal > 0 && (
+                <div className="chk-line">
+                    <span>Applicable Taxes ({apiPricing?.taxPer || cart?.taxPer || 0}%)</span>
+                    <span>$ {taxVal.toFixed(2)}</span>
+                </div>
+            )}
 
             {/* Extra Delivery */}
             {apiPricing?.extraDeliveryCharges && Number(apiPricing.extraDeliveryCharges) > 0 && (

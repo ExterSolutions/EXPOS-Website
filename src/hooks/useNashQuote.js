@@ -11,17 +11,19 @@ import { getDeliveryQuote } from '../services';
  *   q.refresh();
  */
 export function useNashQuote() {
-    const [loading,     setLoading]     = useState(false);
-    const [error,       setError]       = useState(null);
-    const [data,        setData]        = useState(null);   // full Nash response .data object
-    const [deliveryFee, setDeliveryFee] = useState(0);      // dollars (float)
-    const [fetchedAt,   setFetchedAt]   = useState(null);   // ms timestamp
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [data, setData] = useState(null);   // full Nash response .data object
+    const [deliveryFee, setDeliveryFee] = useState(0);      // total customer delivery charge (delivery fee + service fee) in dollars
+    const [customerDeliveryFee, setCustomerDeliveryFee] = useState(0); // zone-based customer delivery fee in dollars
+    const [serviceFee, setServiceFee] = useState(0);      // 50% cost-sharing service fee in dollars
+    const [fetchedAt, setFetchedAt] = useState(null);   // ms timestamp
 
     const lastParamsRef = useRef(null);
 
     const fetchQuote = useCallback(async ({
         address,
-        city   = '',
+        city = '',
         postalcode,
         phoneno,
         storeCode,
@@ -74,30 +76,59 @@ export function useNashQuote() {
             });
 
             if (response?.success && response?.data) {
-                const fee = (response.data.delivery_fee_cents || 0) / 100;
+                const custDelCents = response.data.customer_delivery_fee_cents
+                    ?? response.data.delivery_fee_cents
+                    ?? 0;
+                const srvFeeCents = response.data.service_fee_cents ?? 0;
+                const totalDeliveryCents = response.data.total_customer_delivery_charge_cents
+                    ?? response.data.total_customer_delivery_cents
+                    ?? (custDelCents + srvFeeCents);
+
+                const fee = totalDeliveryCents / 100;
+                const custFee = custDelCents / 100;
+                const srvFee = srvFeeCents / 100;
+
                 // Log for debugging — shows what pickup address the backend resolved
                 console.log('[useNashQuote] ✅ Quote received', {
-                    pickup:  response.data._debug_pickup_address  || '(not returned)',
+                    pickup: response.data._debug_pickup_address || '(not returned)',
                     dropoff: response.data._debug_dropoff_address || dropoff,
-                    store:   response.data._debug_store_code      || storeCode,
-                    fee:     `$${fee.toFixed(2)}`,
+                    store: response.data._debug_store_code || storeCode,
+                    customerDeliveryFee: `$${custFee.toFixed(2)}`,
+                    serviceFee: `$${srvFee.toFixed(2)}`,
+                    totalDeliveryCharge: `$${fee.toFixed(2)}`,
+                    distanceKm: response.data.distance_km,
+                    zone: response.data.delivery_zone,
                     provider: response.data.provider,
                 });
                 setData(response.data);
                 setDeliveryFee(fee);
+                setCustomerDeliveryFee(custFee);
+                setServiceFee(srvFee);
                 setFetchedAt(Date.now());
                 setError(null);
+                return {
+                    data: response.data,
+                    deliveryFee: fee,
+                    customerDeliveryFee: custFee,
+                    serviceFee: srvFee,
+                };
             } else {
                 // No quote available — clear gracefully, don't block checkout
                 setData(null);
                 setDeliveryFee(0);
+                setCustomerDeliveryFee(0);
+                setServiceFee(0);
                 setFetchedAt(Date.now());
+                return null;
             }
         } catch (err) {
             const msg = err?.response?.data?.message || err?.message || 'Unable to fetch delivery quote';
             console.warn('[useNashQuote] fetch failed:', msg);
             setError(msg);
             setDeliveryFee(0);
+            setCustomerDeliveryFee(0);
+            setServiceFee(0);
+            return null;
         } finally {
             setLoading(false);
         }
@@ -117,8 +148,21 @@ export function useNashQuote() {
         setError(null);
         setData(null);
         setDeliveryFee(0);
+        setCustomerDeliveryFee(0);
+        setServiceFee(0);
         setFetchedAt(null);
     }, []);
 
-    return { loading, error, data, deliveryFee, fetchedAt, fetchQuote, refresh, reset };
+    return {
+        loading,
+        error,
+        data,
+        deliveryFee,
+        customerDeliveryFee,
+        serviceFee,
+        fetchedAt,
+        fetchQuote,
+        refresh,
+        reset,
+    };
 }
