@@ -38,6 +38,7 @@ import { useSelector } from "react-redux";
 import swal from "sweetalert";
 import ResponsiveCart from "../components/_main/Cart/ResponsiveCart";
 import Tabs from "../components/Tabs/Tabs";
+import { pickDefaultSauce } from '../utils/sauceDefaults';
 
 function CreateYourOwn() {
     const pizzaSizeArr = [
@@ -312,9 +313,9 @@ function CreateYourOwn() {
             price: allIngredients?.spices[0]?.price,
         });
         setSauce({
-            sauceCode: allIngredients?.sauce[0]?.sauceCode,
-            sauce: allIngredients?.sauce[0]?.sauce,
-            price: allIngredients?.sauce[0]?.price,
+            sauceCode: pickDefaultSauce(allIngredients?.sauce)?.sauceCode,
+            sauce: pickDefaultSauce(allIngredients?.sauce)?.sauce,
+            price: pickDefaultSauce(allIngredients?.sauce)?.price,
         });
         setCook({
             cookCode: allIngredients?.cook[0]?.cookCode,
@@ -396,9 +397,9 @@ function CreateYourOwn() {
                 price: allIngredients.spices[0]?.price,
             },
             sauce: {
-                sauceCode: allIngredients.sauce[0]?.sauceCode,
-                sauce: allIngredients.sauce[0]?.sauce,
-                price: allIngredients.sauce[0]?.price,
+                sauceCode: pickDefaultSauce(allIngredients.sauce)?.sauceCode,
+                sauce: pickDefaultSauce(allIngredients.sauce)?.sauce,
+                price: pickDefaultSauce(allIngredients.sauce)?.price,
             },
             cook: {
                 cookCode: allIngredients.cook[0]?.cookCode,

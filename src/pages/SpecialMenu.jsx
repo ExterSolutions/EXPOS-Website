@@ -25,6 +25,7 @@ import swal from "sweetalert";
 import { useSelector } from "react-redux";
 import ResponsiveCart from "../components/_main/Cart/ResponsiveCart";
 import SPNotFound from "../layouts/SPNotFound";
+import { pickDefaultSauce } from '../utils/sauceDefaults';
 
 function SpecialMenu() {
     // Global Context
@@ -617,9 +618,9 @@ function SpecialMenu() {
             price: getSpecialData?.spices[0]?.price,
         };
         let sauceObject = {
-            sauceCode: getSpecialData?.sauce[0]?.sauceCode,
-            sauce: getSpecialData?.sauce[0]?.sauce,
-            price: getSpecialData?.sauce[0]?.price,
+            sauceCode: pickDefaultSauce(getSpecialData?.sauce)?.sauceCode,
+            sauce: pickDefaultSauce(getSpecialData?.sauce)?.sauce,
+            price: pickDefaultSauce(getSpecialData?.sauce)?.price,
         };
         let cookObject = {
             cookCode: getSpecialData?.cook[0]?.cookCode,
