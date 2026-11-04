@@ -63,7 +63,7 @@ function MyOrders({ reset }) {
         {
             name: "Actions",
             cell: (row) => (
-                <div className="action-dropdown">
+                <div className="action-dropdown d-flex align-items-center gap-1 flex-wrap">
                     <button
                         className="btn btn-sm viewOrder"
                         onClick={() => {
@@ -73,6 +73,23 @@ function MyOrders({ reset }) {
                     >
                         View
                     </button>
+                    {String(row?.deliveryType || "").toLowerCase() === "delivery" &&
+                        row?.nashTrackingUrl && (
+                            <a
+                                href={row.nashTrackingUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-sm"
+                                style={{
+                                    backgroundColor: "#ea5b13",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    fontSize: "0.75rem",
+                                }}
+                            >
+                                Track Live
+                            </a>
+                        )}
                 </div>
             ),
         },
@@ -324,21 +341,42 @@ function MyOrders({ reset }) {
                                                     ${row?.grandTotal}
                                                 </span>
                                             </div>
-                                            <button
-                                                type="button"
-                                                className="w-100 btn btn-sm viewOrder"
-                                                style={{
-                                                    minHeight: 40,
-                                                    borderRadius: 10,
-                                                    fontWeight: 600,
-                                                }}
-                                                onClick={() => {
-                                                    setViewOrder(true);
-                                                    setSelectedCode(row?.code);
-                                                }}
-                                            >
-                                                View Order Details
-                                            </button>
+                                            <div className="d-flex flex-column gap-2">
+                                                <button
+                                                    type="button"
+                                                    className="w-100 btn btn-sm viewOrder"
+                                                    style={{
+                                                        minHeight: 40,
+                                                        borderRadius: 10,
+                                                        fontWeight: 600,
+                                                    }}
+                                                    onClick={() => {
+                                                        setViewOrder(true);
+                                                        setSelectedCode(row?.code);
+                                                    }}
+                                                >
+                                                    View Order Details
+                                                </button>
+                                                {String(row?.deliveryType || "").toLowerCase() === "delivery" &&
+                                                    row?.nashTrackingUrl && (
+                                                        <a
+                                                            href={row.nashTrackingUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="w-100 btn btn-sm d-flex align-items-center justify-content-center"
+                                                            style={{
+                                                                minHeight: 40,
+                                                                borderRadius: 10,
+                                                                fontWeight: 700,
+                                                                backgroundColor: "#ea5b13",
+                                                                color: "#fff",
+                                                                textDecoration: "none",
+                                                            }}
+                                                        >
+                                                            Track Your Order Live →
+                                                        </a>
+                                                    )}
+                                            </div>
                                         </div>
                                     );
                                 })}

@@ -113,6 +113,28 @@ function ViewOrder({ selectedCode }) {
                             <span className="contentTitle">Delivery Type: </span>
                             <span className="contentText">{orderData?.deliveryType}</span>
                         </div>
+                        {String(orderData?.deliveryType || "").toLowerCase() === "delivery" &&
+                            orderData?.nashTrackingUrl && (
+                                <div className="col-12 py-2">
+                                    <a
+                                        href={orderData.nashTrackingUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn btn-sm"
+                                        style={{
+                                            backgroundColor: "#ea5b13",
+                                            color: "#ffffff",
+                                            fontWeight: 700,
+                                            padding: "8px 16px",
+                                            borderRadius: 8,
+                                            textDecoration: "none",
+                                            display: "inline-block",
+                                        }}
+                                    >
+                                        Track Your Order Live →
+                                    </a>
+                                </div>
+                            )}
                         {orderData?.deliveryType === "pickup" && (
                             <div className="col-12 row m-0 p-0">
                                 <div className="col-lg-4 col-md-6 col-sm-12 py-2">
