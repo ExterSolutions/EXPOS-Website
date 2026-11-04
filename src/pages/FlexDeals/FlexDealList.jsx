@@ -95,11 +95,12 @@ const FlexDealCard = ({ deal, onClick }) => {
 
             <div className="fd-card__body">
                 <h3 className="fd-card__name">{deal.name}</h3>
-                {deal.description ? (
+                {deal.subtitle && (
+                    <p className="fd-card__subtitle">{deal.subtitle}</p>
+                )}
+                {deal.description && (
                     <p className="fd-card__desc">{deal.description}</p>
-                ) : deal.subtitle ? (
-                    <p className="fd-card__desc">{deal.subtitle}</p>
-                ) : null}
+                )}
 
                 <div className="fd-card__footer">
                     <div className="fd-card__price">

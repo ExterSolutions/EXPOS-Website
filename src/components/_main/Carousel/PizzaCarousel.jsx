@@ -114,6 +114,7 @@ const PizzaCarousel = ({
                     const rawPrice = item?.displayPrice ?? item?.pizza_prices?.[0]?.price ?? item?.combination?.[0]?.price ?? item?.price ?? null;
                     const price = rawPrice !== null && rawPrice !== undefined ? rawPrice : null;
                     const visitLink = getRedirectPath(item);
+                    const subtitle = item?.subtitle || item?.pizzaSubtitle || item?.pizza_subtitle || '';
                     const description = item?.description || item?.dipsDescription || item?.dipsDiscription;
 
                     // ── HORIZONTAL CARD (Option A) ────────────────────────────
@@ -199,6 +200,21 @@ const PizzaCarousel = ({
                                         }}>
                                             {name}
                                         </div>
+                                        {subtitle && (
+                                            <div style={{
+                                                fontSize: '0.74rem',
+                                                fontWeight: 600,
+                                                color: '#ff6b35',
+                                                lineHeight: 1.3,
+                                                marginTop: '2px',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 1,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                            }}>
+                                                {subtitle}
+                                            </div>
+                                        )}
                                         {description && (
                                             <div style={{
                                                 fontSize: '0.72rem',
@@ -313,6 +329,23 @@ const PizzaCarousel = ({
                                     }}
                                 >
                                     <h5 className="pizza-card-name">{name}</h5>
+                                    {subtitle && (
+                                        <p
+                                            className="pizza-card-subtitle"
+                                            style={{
+                                                fontSize: '0.76rem',
+                                                fontWeight: 600,
+                                                color: '#ff6b35',
+                                                margin: '0 0 0.25rem',
+                                                lineHeight: 1.3,
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            {subtitle}
+                                        </p>
+                                    )}
                                     <p
                                         className="pizza-card-desc"
                                         style={{

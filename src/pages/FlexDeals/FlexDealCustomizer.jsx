@@ -523,6 +523,7 @@ const FlexDealCustomizer = () => {
                         )}
                     </div>
                     <h1 className="fd-page__deal-name">{deal.name}</h1>
+                    {deal.subtitle && <p className="fd-page__deal-subtitle">{deal.subtitle}</p>}
                     {deal.description && <p className="fd-page__deal-desc">{deal.description}</p>}
                 </div>
             </div>

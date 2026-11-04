@@ -173,8 +173,9 @@ const Home = () => {
                 return {
                     code:         deal.code,
                     pizzaName:    deal.name,
+                    subtitle:     deal.subtitle || '',
                     pizzaImage:   deal.image,
-                    description:  deal.description || deal.subtitle || '',
+                    description:  deal.description || '',
                     displayPrice: minPrice > 0 ? minPrice : null,
                     productType:  'flex',   // routes to /flex-deals/:code
                 };
