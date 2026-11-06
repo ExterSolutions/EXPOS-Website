@@ -71,10 +71,23 @@ function ProfileUpdate() {
         setSaving(true);
         const formData = new FormData();
 
-        formData.append("customerCode", profileData?.customerCode || profileData?.code || values.customerCode);
+        const resolvedCode =
+            profileData?.customerCode ||
+            profileData?.code ||
+            profileData?.id ||
+            values.customerCode ||
+            "";
+
+        if (resolvedCode && resolvedCode !== "undefined" && resolvedCode !== "null") {
+            formData.append("customerCode", resolvedCode);
+        }
         formData.append("firstName", values.firstName.trim());
         formData.append("lastName", values.lastName.trim());
-        formData.append("mobileNumber", values.mobileNumber);
+
+        const rawPhone = values.mobileNumber || profileData?.mobileNumber || profileData?.phoneNo || "";
+        const cleanPhone = String(rawPhone).replace(/\D/g, "").slice(-10);
+        formData.append("mobileNumber", cleanPhone || rawPhone);
+
         formData.append("email", values.email.trim());
         if (values.address) formData.append("address", values.address.trim());
         if (values.city) formData.append("city", values.city.trim());
