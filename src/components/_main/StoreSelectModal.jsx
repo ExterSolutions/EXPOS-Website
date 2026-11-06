@@ -92,17 +92,20 @@ export default function StoreSelectModal({ onClose, required = false }) {
             isStoreOpen: apiStore.isStoreOpen ?? true,
         };
 
-        const currentCityName = currentCity?.value || currentCity?.city || '';
+        const currentCityName = (typeof currentCity === 'string'
+            ? currentCity
+            : (currentCity?.value || currentCity?.city || '')
+        ).trim();
+        const baseUrl = (cityGroup.site_url || '').trim().replace(/\/$/, '');
+        const isSameOrigin = !baseUrl || baseUrl === '/' || baseUrl.toLowerCase() === window.location.origin.toLowerCase();
 
-        if (cityGroup.city === currentCityName) {
+        if (isSameOrigin || cityGroup.city === currentCityName) {
             setLocalStoreCookie(storeDetail); // Update cookie for THIS subdomain
             globalCtx.updateSelectedStore(storeDetail);
             onClose();
         } else {
             // CROSS-SITE REDIRECT: Different city/subdomain
             setTransferStoreCookie(storeDetail); // Root domain for HANDOVER ONLY
-
-            const baseUrl = (cityGroup.site_url || '/').trim().replace(/\/$/, '');
             window.location.href = baseUrl;
         }
     };

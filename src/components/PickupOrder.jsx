@@ -58,18 +58,20 @@ function PickupOrder() {
             // Find the city group based on current context
             if (currentStoreCode) {
                 const myCityGroup = groups.find(g =>
-                    g.storeLocations.some(s => s.code === currentStoreCode)
+                    (g.storeLocations || []).some(s => s.code === currentStoreCode)
                 );
                 if (myCityGroup) {
                     filteredStores = myCityGroup.storeLocations.map(s => ({ ...s, cityCode: myCityGroup.cityCode }));
                 }
-            } else if (currentCity?.value) {
+            }
+            if (filteredStores.length === 0 && currentCity?.value) {
                 const myCityGroup = groups.find(g => g.city === currentCity?.value);
                 if (myCityGroup) {
                     filteredStores = myCityGroup.storeLocations.map(s => ({ ...s, cityCode: myCityGroup.cityCode }));
                 }
-            } else {
-                filteredStores = groups.flatMap(g => g.storeLocations.map(s => ({ ...s, cityCode: g.cityCode })));
+            }
+            if (filteredStores.length === 0) {
+                filteredStores = groups.flatMap(g => (g.storeLocations || []).map(s => ({ ...s, cityCode: g.cityCode })));
             }
 
             setStoreDetails(filteredStores);
@@ -110,17 +112,33 @@ function PickupOrder() {
     // Sync selectedStore when storeDetails or currentStoreCode changes
     useEffect(() => {
         if (storeDetails.length === 0) return;
-        if (selectedStore) return; // already have one, don't override
 
-        // Try to match by currentStoreCode
-        const preSelected = currentStoreCode
-            ? storeDetails.find(d => d.code === currentStoreCode)
+        // Try to match by currentStoreCode or existing selectedStore.code
+        const targetCode = currentStoreCode || selectedStore?.code;
+        const matched = targetCode
+            ? storeDetails.find(d => d.code === targetCode)
             : null;
 
-        if (preSelected) {
-            setSelectedStore(preSelected);
-        } else {
-            // Fallback: use the GlobalContext store (always set by store-picker popup)
+        if (matched) {
+            if (selectedStore?.code !== matched.code || !selectedStore?.province) {
+                setSelectedStore(matched);
+            }
+            return;
+        }
+
+        // Stale store code fallback: match by storeLocation name or single active store
+        const targetName = (selectedStore?.storeLocation || globalctx.selectedStore?.[0]?.storeLocation || '').trim().toLowerCase();
+        const nameMatched = targetName
+            ? storeDetails.find(d => (d.storeLocation || '').trim().toLowerCase() === targetName)
+            : null;
+        const fallbackStore = nameMatched || (storeDetails.length === 1 ? storeDetails[0] : null);
+
+        if (fallbackStore) {
+            setSelectedStore(fallbackStore);
+            if (globalctx.updateSelectedStore) {
+                globalctx.updateSelectedStore(fallbackStore);
+            }
+        } else if (!selectedStore) {
             const globalStore = globalctx.selectedStore[0];
             if (globalStore) setSelectedStore(globalStore);
         }
