@@ -169,11 +169,10 @@ const PaymentSuccess = () => {
             }
 
             localStorage.removeItem('OrderID');
+            localStorage.removeItem('orderCode');
             localStorage.removeItem('sessionId');
             localStorage.removeItem('pendingOrderMeta');
-            localStorage.removeItem('cart');
-            setCart({ product: [] });
-            cartFn.createCart(setCart);
+            cartFn.clearCart(setCart);
             setPaymentStatus('success');
             setLoading(false);
             console.log('[🔔 PaymentSuccess] run() complete — page should show success');
