@@ -1,19 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSiteData } from '../components/_main/Header/hooks/useSiteData';
 import PageSEO from '../components/_main/PageSEO';
+import { GlobalContext } from '../context/GlobalContext';
+import CartFunction from '../components/cart';
+import { cancelOrder, paymentCancel } from '../services';
 
 function PaymentCancel() {
     const navigate = useNavigate();
+    const globalCtx = useContext(GlobalContext);
+    const [, setCart] = globalCtx?.cart || [null, null];
     const { siteData, loading } = useSiteData();
     const [logoError, setLogoError] = useState(false);
 
     useEffect(() => {
-        // Clear any stored order data since payment was cancelled
+        const orderCode = localStorage.getItem('OrderID') || localStorage.getItem('orderCode');
+        const sessionId = localStorage.getItem('sessionId');
+
+        // Clear cart and stored order metadata immediately so refresh never brings stale items back
+        const cartFn = new CartFunction();
+        cartFn.clearCart(setCart);
         localStorage.removeItem('OrderID');
+        localStorage.removeItem('orderCode');
         localStorage.removeItem('sessionId');
-        // toast.error('Payment was cancelled.');
-    }, []);
+        localStorage.removeItem('pendingOrderMeta');
+
+        if (sessionId && orderCode) {
+            paymentCancel({ sessionId, orderCode }).catch(() => {});
+        } else if (orderCode) {
+            cancelOrder(orderCode).catch(() => {});
+        }
+    }, [setCart]);
 
     const handleRetryPayment = () => {
         // Navigate back to checkout or cart

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Header from "../components/_main/Header/Header";
 import Footer from "../components/_main/Footer";
 // import "../assets/styles/Cart/MainCartList.css";
@@ -10,7 +10,8 @@ import MainCartList from "../components/_main/Cart/MainCartList";
 import LoadingLayout from "../layouts/LoadingLayout";
 import { useSelector } from "react-redux";
 import swal from "sweetalert";
-import { deliverable, orderPlace } from "../services";
+import { cancelOrder, deliverable, orderPlace } from "../services";
+import CartFunction from "../components/cart";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { motion } from "framer-motion";
 import emptyCartImg from "../assets/images/empty-cart.png";
@@ -21,11 +22,13 @@ function Cart() {
     const globalCtx = useContext(GlobalContext);
     const [isAuthenticated, setIsAuthenticated] = globalCtx.auth;
     const [cart, setCart] = globalCtx.cart;
+    const [, setPayloadEdit] = globalCtx.productEdit || [undefined, () => {}];
     const [regUser, setRegUser] = globalCtx.regUser;
     const storeOpen = globalCtx.storeOpen; // reactive — updates as soon as settings load
     const [loading, setLoading] = useState(false);
     const [showKitchenClosed, setShowKitchenClosed] = useState(false);
     const user = useSelector((state) => state.user);
+    const cartFn = useMemo(() => new CartFunction(), []);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -62,8 +65,21 @@ function Cart() {
                 dangerMode: true,
             }).then(async (willDelete) => {
                 if (willDelete) {
-                    localStorage.removeItem("cart");
-                    setCart();
+                    const orderCode = localStorage.getItem("OrderID") || localStorage.getItem("orderCode");
+                    if (orderCode) {
+                        try {
+                            await cancelOrder(orderCode);
+                        } catch (_) {
+                            // Ignore if backend order was already cancelled or not yet created
+                        }
+                    }
+                    localStorage.removeItem("OrderID");
+                    localStorage.removeItem("orderCode");
+                    localStorage.removeItem("sessionId");
+                    localStorage.removeItem("pendingOrderMeta");
+                    setPayloadEdit(undefined);
+                    cartFn.clearCart(setCart);
+                    toast.success("Order cancelled and cart cleared.");
                 }
             });
         } else {

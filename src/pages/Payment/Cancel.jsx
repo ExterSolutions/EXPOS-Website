@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { paymentCancel } from "../../services";
 import { toast } from "react-toastify";
 import {GlobalContext} from "../../context/GlobalContext";
+import CartFunction from "../../components/cart";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import Header from "../../components/_main/Header/Header";
 import paymentCancelled from "../../assets/images/payment-cancel.png";
@@ -15,9 +16,10 @@ function Cancel() {
     const [errMsg, setErrMsg] = useState();
     const [unAuth, setUnAuth] = useState(false);
     const sessionId = localStorage.getItem("sessionId");
-    const orderCode = localStorage.getItem("orderCode");
+    const orderCode = localStorage.getItem("orderCode") || localStorage.getItem("OrderID");
 
     useEffect(() => {
+        const cartFn = new CartFunction();
         setLoading(true);
         if (sessionId === null) {
             setUnAuth(true);
@@ -33,7 +35,8 @@ function Cancel() {
                     localStorage.removeItem("sessionId");
                     localStorage.removeItem("orderCode");
                     localStorage.removeItem("OrderID");
-                    localStorage.removeItem("cart");
+                    localStorage.removeItem("pendingOrderMeta");
+                    cartFn.clearCart(setCart);
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -41,7 +44,7 @@ function Cancel() {
                     setLoading(false);
                 });
         }
-    }, []);
+    }, [orderCode, sessionId, setCart]);
 
     if (loading) {
         return <LoadingLayout />

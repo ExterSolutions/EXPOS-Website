@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../assets/styles/modern-cards.css';
 import Sides from '../../_main/Sides/Sides';
 import CartFunction from '../../cart';
 
 function SidesSelector({ sides }) {
-    const cartFn = new CartFunction();
+    const cartFn = useMemo(() => new CartFunction(), []);
     if (!sides || sides.length === 0) return null;
 
     return (

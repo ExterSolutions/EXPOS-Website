@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import '../../../assets/styles/modern-cards.css';
 import { GlobalContext } from "../../../context/GlobalContext";
@@ -18,22 +19,23 @@ function Sides({ data, cartFn }) {
     const handleShow = () => setShow(true);
 
     const [count, setCount] = useState(1);
-    const [product, setProduct] = useState(null);
     const sPlacementRef = useRef(null);
     const user = useSelector((state) => state?.user);
 
     const countDec = () => { if (count > 1) setCount(c => c - 1); };
     const countInc = () => { if (count < 10) setCount(c => c + 1); };
 
+    useEffect(() => { cartFn?.createCart(setCart); }, [cartFn, setCart]);
+
     const handleSides = () => {
         if (!currentStoreCode) { setShowStorePopup(true); return; }
-        let combinationData = {};
+        let combinationData = data?.combination?.[0] || {};
         if (sPlacementRef.current) {
             const selectedCode = sPlacementRef.current.value;
-            combinationData = data?.combination?.find(c => c.lineCode === selectedCode) || {};
+            combinationData = data?.combination?.find(c => c.lineCode === selectedCode) || combinationData;
         }
-        const totalPrice = combinationData?.price * count;
-        setProduct({
+        const totalPrice = Number(combinationData?.price || 0) * count;
+        const newProduct = {
             id: uuidv4(),
             customerCode: user?.data?.customerCode,
             cashierCode: "#NA",
@@ -41,25 +43,22 @@ function Sides({ data, cartFn }) {
             productName: data.sideName,
             productType: "side",
             config: { lineCode: combinationData?.lineCode, sidesSize: combinationData?.size, sidesType: data?.type },
-            price: combinationData?.price,
+            price: Number(combinationData?.price || 0).toFixed(2),
             quantity: count,
-            amount: totalPrice,
+            amount: totalPrice.toFixed(2),
             taxPer: 0,
             pizzaSize: "",
             comments: "",
-        });
+        };
+
+        let ct = JSON.parse(localStorage.getItem("cart") || "null") || { product: [] };
+        if (!Array.isArray(ct.product)) ct.product = [];
+        ct.product.push(newProduct);
+        cartFn.addCart(ct.product, setCart, false, settings);
+        toast.success("Added to cart! 🛒");
         setCount(1);
         if (sPlacementRef.current) sPlacementRef.current.value = data?.combination?.[0]?.lineCode;
     };
-
-    useEffect(() => { cartFn.createCart(setCart); }, [setCart]);
-    useEffect(() => {
-        if (product !== null) {
-            let ct = JSON.parse(localStorage.getItem("cart"));
-            ct.product.push(product);
-            cartFn.addCart(ct.product, setCart, false, settings);
-        }
-    }, [product]);
 
     const minPrice = data?.combination?.length
         ? Math.min(...data.combination.map(c => Number(c.price)))

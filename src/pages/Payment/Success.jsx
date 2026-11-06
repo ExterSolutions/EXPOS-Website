@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {GlobalContext} from "../../context/GlobalContext";
+import CartFunction from "../../components/cart";
 import LoadingLayout from "../../layouts/LoadingLayout";
 import paymentSuccess from "../../assets/images/payment-success.png";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +22,9 @@ function Success() {
     };
 
     useEffect(() => {
-        localStorage.removeItem("cart");
-        setCart({ product: [] });
-    }, [placeOrderData]);
+        const cartFn = new CartFunction();
+        cartFn.clearCart(setCart);
+    }, [placeOrderData, setCart]);
 
     useEffect(() => {
         if (placeOrderData !== null) {

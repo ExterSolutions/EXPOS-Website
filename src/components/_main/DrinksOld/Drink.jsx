@@ -18,7 +18,6 @@ const Drink = ({ data, cartFn }) => {
     const user = useSelector((state) => state?.user);
 
     const [count, setCount] = useState(1);
-    const [product, setProduct] = useState(null);
     const isJuice = data?.drinksType === "juice";
 
     // Flavor variants — the API returns drinkType[] for multi-flavor drinks
@@ -31,10 +30,12 @@ const Drink = ({ data, cartFn }) => {
 
     const handleNavigate = () => navigate(`/customize-drink/${data.softdrinkCode}`);
 
+    useEffect(() => { cartFn?.createCart(setCart); }, [cartFn, setCart]);
+
     const handleAddToCart = () => {
         if (!currentStoreCode) { setShowStorePopup(true); return; }
         const totalPrice = Number(data.price) * count;
-        setProduct({
+        const newProduct = {
             id: uuidv4(),
             customerCode: user?.data?.customerCode,
             cashierCode: "#NA",
@@ -48,27 +49,23 @@ const Drink = ({ data, cartFn }) => {
             taxPer: 0,
             pizzaSize: "",
             comments: selectedFlavor || "",
-        });
+        };
+
+        let ct = JSON.parse(localStorage.getItem("cart") || "null") || { product: [] };
+        if (!Array.isArray(ct.product)) ct.product = [];
+        const pCode = ct.product.find(p => p.productCode === newProduct.productCode);
+        if (pCode) {
+            pCode.quantity = Number(pCode.quantity || 0) + Number(newProduct.quantity);
+            pCode.amount = (Number(pCode.amount || 0) + Number(newProduct.amount)).toFixed(2);
+            cartFn.addCart(ct.product, setCart, true, settings);
+            toast.success('Cart updated! 🛒');
+        } else {
+            ct.product.push(newProduct);
+            cartFn.addCart(ct.product, setCart, false, settings);
+            toast.success('Added to cart! 🛒');
+        }
         setCount(1);
     };
-
-    useEffect(() => { cartFn?.createCart(setCart); }, [cartFn, setCart]);
-    useEffect(() => {
-        if (product) {
-            let ct = JSON.parse(localStorage.getItem("cart"));
-            const pCode = ct?.product.find(p => p.productCode === product.productCode);
-            if (pCode) {
-                pCode.quantity += product.quantity;
-                pCode.amount = (Number(pCode.amount) + Number(product.amount)).toFixed(2);
-                cartFn.addCart(ct.product, setCart, true, settings);
-                toast.success('Cart updated! 🛒');
-            } else {
-                ct.product.push(product);
-                cartFn.addCart(ct.product, setCart, false, settings);
-                toast.success('Added to cart! 🛒');
-            }
-        }
-    }, [product, cartFn, setCart, settings]);
 
     return (
         <div className="mc-card">

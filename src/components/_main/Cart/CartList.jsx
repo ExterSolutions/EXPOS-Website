@@ -43,15 +43,7 @@ function CartList({ cData }) {
       return false;
     }
 
-    const isSingleProduct = cart?.product?.length === 1;
-
     cartFn.deleteCart(cData, cart, setCart, settings);
-
-    if (isSingleProduct) {
-      localStorage.removeItem("cart");
-      setCart();
-      cartFn.createCart(setCart);
-    }
   };
 
   const handleRedirectToEdit = (pathUrl) => {

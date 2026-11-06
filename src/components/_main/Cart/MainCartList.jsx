@@ -1,5 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { GlobalContext } from "../../../context/GlobalContext";
 import CartFunction from "../../cart";
 
@@ -11,28 +12,17 @@ function MainCartList({ cData, setLoading }) {
     const [settings, setSettings] = globalctx.settings;
 
     // Helper Function
-    const cartFn = new CartFunction();
+    const cartFn = useMemo(() => new CartFunction(), []);
     const navigate = useNavigate();
     // Handle Delete Product
     const handleDelete = () => {
-        if (cart?.product?.length === 1) {
-            cartFn.deleteCart(cData, cart, setCart, settings);
-            localStorage.removeItem("cart");
-            setCart();
-            setPayloadEdit();
-            cartFn.createCart(setCart);
-        } else {
-            if (payloadEdit) {
-                if (payloadEdit?.id === cData?.id) {
-                    setPayloadEdit();
-                    cartFn.deleteCart(cData, cart, setCart, settings);
-                } else {
-                    cartFn.deleteCart(cData, cart, setCart, settings);
-                }
-            } else {
-                cartFn.deleteCart(cData, cart, setCart, settings);
-            }
+        if (payloadEdit && payloadEdit?.id === cData?.id) {
+            setPayloadEdit(undefined);
         }
+        if (cart?.product?.length === 1) {
+            setPayloadEdit(undefined);
+        }
+        cartFn.deleteCart(cData, cart, setCart, settings);
     };
     // Handle Edit Product
     const handleEdit = () => {
@@ -83,20 +73,48 @@ function MainCartList({ cData, setLoading }) {
                         <p className="mb-0 small fw-bold">Quantity:</p> 
                         <span className="ms-2 small">{cData?.quantity}</span>
                     </div>
-                    <div className="main-cartIcons">
-                        <i
-                            className="fa fa-trash mx-2 deleteIcon"
-                            aria-hidden="true"
+                    <div className="main-cartIcons d-flex align-items-center gap-2">
+                        <button
+                            type="button"
+                            className="btn btn-sm d-inline-flex align-items-center justify-content-center deleteIcon"
                             onClick={handleDelete}
-                        ></i>
+                            title="Remove item"
+                            aria-label={`Remove ${cData.productName}`}
+                            style={{
+                                background: "rgba(220, 53, 69, 0.1)",
+                                color: "#dc3545",
+                                border: "none",
+                                borderRadius: "50%",
+                                width: "32px",
+                                height: "32px",
+                                padding: 0,
+                                cursor: "pointer",
+                            }}
+                        >
+                            <FaTrash size={14} />
+                        </button>
                         {(cData.productType === "special_pizza" ||
                             cData.productType === "special_pizza_topping" ||
                             cData.productType === "custom_pizza") && (
-                            <i
-                                className="fa fa-edit mx-2 editIcon"
-                                aria-hidden="true"
+                            <button
+                                type="button"
+                                className="btn btn-sm d-inline-flex align-items-center justify-content-center editIcon"
                                 onClick={handleEdit}
-                            ></i>
+                                title="Edit item"
+                                aria-label={`Edit ${cData.productName}`}
+                                style={{
+                                    background: "rgba(13, 110, 253, 0.1)",
+                                    color: "#0d6efd",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    width: "32px",
+                                    height: "32px",
+                                    padding: 0,
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <FaEdit size={14} />
+                            </button>
                         )}
                     </div>
                 </div>

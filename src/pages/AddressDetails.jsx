@@ -255,15 +255,19 @@ function AddressDetails() {
 
             // Cleanup
             localStorage.removeItem("OrderID");
+            localStorage.removeItem("orderCode");
             localStorage.removeItem("sessionId");
+            localStorage.removeItem("pendingOrderMeta");
 
-            stopTimer();
+            const cartFn = new CartFunction();
+            cartFn.clearCart(setCart);
+
+            stopPriceLock();
             setShowOrderButtons(false);
             setReadOnly(false);
             setOrderResponse(null);
             setPaymentUrl("");
             setApiPricing(null);
-            setNashQuote(null);
 
         } catch (error) {
             toast.error(

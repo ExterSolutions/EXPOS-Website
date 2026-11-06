@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../assets/styles/modern-cards.css';
 import Drink from '../../_main/DrinksOld/Drink';
 import CartFunction from '../../cart';
 
 function DrinksSelector({ drinks }) {
-    const cartFn = new CartFunction();
+    const cartFn = useMemo(() => new CartFunction(), []);
     if (!drinks || drinks.length === 0) return null;
 
     return (

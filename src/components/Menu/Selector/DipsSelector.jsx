@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../assets/styles/modern-cards.css';
 import Dips from '../../_main/Dips/Dips';
 import CartFunction from '../../cart';
 
 function DipsSelector({ dips }) {
-    const cartFn = new CartFunction();
+    const cartFn = useMemo(() => new CartFunction(), []);
     if (!dips || dips.length === 0) return null;
 
     return (

@@ -532,10 +532,57 @@ export const GlobalProvider = ({ children }) => {
   useEffect(() => {
     // GUARD: Only recalculate if we have settings (to avoid zeroing out charges on initial load)
     if (selectedStore && cart?.product?.length > 0 && settings) {
-      const cartFn = new CartFunction();
-      cartFn.updateCartTotals(cart, setCart, settings, selectedStore);
+      try {
+        const storedCart = JSON.parse(localStorage.getItem("cart") || "null");
+        if (!storedCart?.product?.length) {
+          const cartFn = new CartFunction();
+          setCart(cartFn.getEmptyCart());
+          return;
+        }
+        const cartFn = new CartFunction();
+        cartFn.updateCartTotals(storedCart, setCart, settings, selectedStore);
+      } catch (_) {
+        // Ignore parse errors
+      }
     }
   }, [selectedStore, settings]);
+
+  // Keep cart state in sync across tabs (storage event) and browser Back/Forward cache (pageshow)
+  useEffect(() => {
+    const syncCartFromStorage = () => {
+      try {
+        const raw = localStorage.getItem("cart");
+        if (!raw) {
+          const cartFn = new CartFunction();
+          setCart(cartFn.getEmptyCart());
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        setCart(parsed && Array.isArray(parsed.product) ? parsed : { product: [] });
+      } catch (_) {
+        setCart({ product: [] });
+      }
+    };
+
+    const handleStorage = (e) => {
+      if (!e.key || e.key === "cart") {
+        syncCartFromStorage();
+      }
+    };
+
+    const handlePageShow = (e) => {
+      if (e.persisted) {
+        syncCartFromStorage();
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
 
   // Cart revalidation: strip flex deal items that are incompatible with the new order type.
   // e.g. if user switches to Delivery, remove any pickupdeal-only items from cart.

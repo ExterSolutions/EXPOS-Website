@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import '../../../assets/styles/modern-cards.css';
 import SafeImage from "../../common/SafeImage";
@@ -14,7 +15,6 @@ function Dips({ data, cartFn }) {
     const [showStorePopup, setShowStorePopup] = globalctx.showStorePopup;
 
     const [count, setCount] = useState(1);
-    const [product, setProduct] = useState(null);
 
     const user = useSelector((state) => state?.user);
 
@@ -25,6 +25,10 @@ function Dips({ data, cartFn }) {
     const countInc = () => {
         if (count < 10) setCount(prev => prev + 1);
     };
+
+    useEffect(() => {
+        cartFn?.createCart(setCart);
+    }, [cartFn, setCart]);
 
     const handleDips = (e) => {
         if (e && e.preventDefault) e.preventDefault();
@@ -48,32 +52,22 @@ function Dips({ data, cartFn }) {
             pizzaSize: "",
             comments: "",
         };
-        setProduct(obj);
+
+        let ct = JSON.parse(localStorage.getItem("cart") || "null") || { product: [] };
+        if (!Array.isArray(ct.product)) ct.product = [];
+        const pCode = ct.product.find(p => p.productCode === obj.productCode);
+        if (pCode) {
+            pCode.quantity = Number(pCode.quantity || 0) + Number(obj.quantity);
+            pCode.amount = (Number(pCode.amount || 0) + Number(obj.amount)).toFixed(2);
+            cartFn.addCart(ct.product, setCart, true, settings);
+            toast.success("Cart updated! 🛒");
+        } else {
+            ct.product.push(obj);
+            cartFn.addCart(ct.product, setCart, false, settings);
+            toast.success("Added to cart! 🛒");
+        }
         setCount(1);
     };
-
-    useEffect(() => {
-        cartFn.createCart(setCart);
-    }, [cartFn, setCart]);
-
-    useEffect(() => {
-        if (product !== null) {
-            let ct = JSON.parse(localStorage.getItem("cart"));
-            const pCode = ct?.product.find(p => p.productCode === product.productCode);
-            if (pCode) {
-                ct?.product.forEach(item => {
-                    if (item.productCode === pCode.productCode) {
-                        pCode.quantity += product.quantity;
-                        pCode.amount = Number(pCode.amount) + Number(product.amount);
-                    }
-                });
-                cartFn.addCart(ct.product, setCart, true, settings);
-            } else {
-                ct.product.push(product);
-                cartFn.addCart(ct.product, setCart, false, settings);
-            }
-        }
-    }, [product, cartFn, setCart, settings]);
 
     return (
         <div className="mc-card">
