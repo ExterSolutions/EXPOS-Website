@@ -14,12 +14,10 @@ function SidesModalTps({
     count,
     sPlacementRef,
     setCount,
-    setProduct,
-    product,
 }) {
     const globalctx = useContext(GlobalContext);
     const [cart, setCart] = globalctx.cart;
-    const [settings, setSettings] = globalctx.settings;
+    const [settings] = globalctx.settings;
     const cartFn = new CartFunction();
 
     const [selectedTps, setSelectedTps] = useState([]);
@@ -39,7 +37,8 @@ function SidesModalTps({
                 );
             }
 
-            const totalPrice = combinationData?.price * count;
+            const unitPrice = Number(combinationData?.price || 0);
+            const totalPrice = unitPrice * count;
             const obj = {
                 id: uuidv4(),
                 customerCode: user?.data?.customerCode,
@@ -52,17 +51,24 @@ function SidesModalTps({
                     sidesSize: combinationData?.size,
                     sidesType: data?.type,
                 },
-                price: combinationData?.price,
+                price: unitPrice.toFixed(2),
                 quantity: count,
-                amount: totalPrice,
+                amount: totalPrice.toFixed(2),
                 taxPer: 0,
                 pizzaSize: "",
                 comments: toppingsString ? toppingsString : "",
             };
-            setProduct(obj);
+
+            let ct = JSON.parse(localStorage.getItem("cart") || "null") || { product: [] };
+            if (!Array.isArray(ct.product)) ct.product = [];
+            ct.product.push(obj);
+            cartFn.addCart(ct.product, setCart, false, settings);
+            toast.success("Added to cart! 🛒");
             setCount(1);
             setSelectedTps([]);
-            sPlacementRef.current.value = data?.combination?.[0]?.lineCode;
+            if (sPlacementRef.current) {
+                sPlacementRef.current.value = data?.combination?.[0]?.lineCode;
+            }
             handleClose();
         } else {
             toast.warning("Please select at least one topping.");

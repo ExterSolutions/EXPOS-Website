@@ -119,7 +119,7 @@ function Sides({ data, cartFn }) {
             <SidesModalTps
                 show={show} handleShow={handleShow} handleClose={handleClose}
                 data={data} count={count} sPlacementRef={sPlacementRef}
-                setProduct={setProduct} setCount={setCount} product={product}
+                setCount={setCount}
             />
         </>
     );
