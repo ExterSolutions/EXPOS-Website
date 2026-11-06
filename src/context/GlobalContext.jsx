@@ -314,40 +314,84 @@ export const GlobalProvider = ({ children }) => {
     fetchSettings();
   }, []);
 
-  // ── Auto-enrich selectedStore with hours if missing (stale localStorage) ──
+  // ── Validate & enrich selectedStore against backend active stores ─────────
   useEffect(() => {
-    if (!selectedStore?.code) return;
-    // Already has hours — nothing to do
-    if (typeof selectedStore.isStoreOpen === 'boolean' && selectedStore.start_time) return;
+    const activeCode = selectedStore?.code || currentStoreCode;
+    if (!activeCode) return;
 
-    console.log('[KitchenClosed] selectedStore missing hours — enriching from API...');
-    const enrichStore = async () => {
+    const validateAndEnrichStore = async () => {
       try {
         const res = await getStoreLocationByCity();
         const groups = Array.isArray(res?.data) ? res.data : [];
-        // Find the matching store across all city groups
+        if (groups.length === 0) return;
+
+        const allStores = [];
         for (const group of groups) {
-          const match = (group.storeLocations ?? []).find(s => s.code === selectedStore.code);
-          if (match) {
-            const enriched = {
-              ...selectedStore,
-              timezone: match.timezone || selectedStore.timezone || '',
-              start_time: match.start_time || '',
-              end_time: match.end_time || '',
-              isStoreOpen: match.isStoreOpen ?? true,
-            };
-            console.log('[KitchenClosed] enriched selectedStore =', enriched);
-            setSelectedStore(enriched);
-            localStorage.setItem("selectedStore", JSON.stringify(enriched));
-            break;
+          const cityLabel = group.city || group.cityName || '';
+          for (const s of (group.storeLocations ?? [])) {
+            allStores.push({
+              ...s,
+              city: s.city || cityLabel || selectedStore?.city || '',
+            });
           }
         }
+        if (allStores.length === 0) return;
+
+        // 1. Exact store code match
+        const match = allStores.find(s => s.code === activeCode);
+        if (match) {
+          const enriched = {
+            ...selectedStore,
+            ...match,
+            timezone: match.timezone || selectedStore?.timezone || '',
+            start_time: match.start_time || selectedStore?.start_time || '',
+            end_time: match.end_time || selectedStore?.end_time || '',
+            isStoreOpen: match.isStoreOpen ?? true,
+          };
+          // Avoid infinite loop if nothing changed
+          if (
+            selectedStore?.code !== enriched.code ||
+            selectedStore?.start_time !== enriched.start_time ||
+            selectedStore?.end_time !== enriched.end_time ||
+            selectedStore?.isStoreOpen !== enriched.isStoreOpen ||
+            selectedStore?.timezone !== enriched.timezone
+          ) {
+            setSelectedStore(enriched);
+            localStorage.setItem("selectedStore", JSON.stringify(enriched));
+          }
+          return;
+        }
+
+        // 2. Stale/deleted store code (e.g. STR_2 replaced by STR_7 in DB):
+        //    Match by storeLocation name or auto-select when tenant has a single store.
+        const savedName = (selectedStore?.storeLocation || '').trim().toLowerCase();
+        const replacement =
+          (savedName ? allStores.find(s => (s.storeLocation || '').trim().toLowerCase() === savedName) : null) ||
+          (allStores.length === 1 ? allStores[0] : null);
+
+        if (replacement) {
+          console.warn(
+            `[GlobalContext] Remapping stale store code ${activeCode} → ${replacement.code} (${replacement.storeLocation})`
+          );
+          updateSelectedStore({
+            ...replacement,
+            timezone: replacement.timezone || '',
+            start_time: replacement.start_time || '',
+            end_time: replacement.end_time || '',
+            isStoreOpen: replacement.isStoreOpen ?? true,
+          });
+        } else {
+          console.warn(`[GlobalContext] Stale store code ${activeCode} not found in active stores; clearing selection.`);
+          clearStoreSelection();
+          setShowStorePopup(true);
+        }
       } catch (err) {
-        console.error("[KitchenClosed] Failed to enrich store hours:", err);
+        console.error("[KitchenClosed] Failed to validate/enrich store:", err);
       }
     };
-    enrichStore();
-  }, [selectedStore?.code]); // only re-run when store code changes
+    validateAndEnrichStore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStore?.code, currentStoreCode]);
 
   // ── Store Hours: compute isOpen from selectedStore (storelocation table) ─────
   //
