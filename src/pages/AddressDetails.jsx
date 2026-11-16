@@ -23,50 +23,47 @@ import KitchenClosedModal from '../components/common/KitchenClosedModal';
 import AddressAutofill, { extractCanadianAddressParts } from '../components/common/AddressAutofill';
 
 
-const canadianPhoneNumberRegExp = /^\d{3}\d{3}\d{4}$/;
+const normalizePhone = (raw) => {
+    const digits = String(raw || '').replace(/\D/g, '');
+    return digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+};
+
+const canadianPhoneNumberRegExp = /^\d{10}$/;
 const canadianPostalCode = Yup.string().test(
     "is-canadian-postal-code",
     "Invalid Canadian Postal Code",
     (value) => {
         if (!value) return true;
-        const postalCodeRegex = /^[A-Za-z]\d[A-Za-z]\s\d[A-Za-z]\d$/i;
-        return postalCodeRegex.test(value);
+        const postalCodeRegex = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/i;
+        return postalCodeRegex.test(value.trim());
     }
 );
 
 const ValidateSchema = Yup.object({
     firstname: Yup.string()
+        .trim()
         .required("First name is required")
-        .matches(
-            /^[A-Za-z\ ]+$/,
-            "First name should only contain alphabetic characters, spaces"
-        )
         .min(3, "First name must be at least 3 characters")
         .max(50, "First name cannot be longer than 50 characters"),
     lastname: Yup.string()
-        .required("Last name is required")
-        .matches(
-            /^[A-Za-z\ ]+$/,
-            "Last name should only contain alphabetic characters, spaces"
-        )
-        .min(3, "Last name must be at least 3 characters")
+        .trim()
+        .nullable()
         .max(50, "Last name cannot be longer than 50 characters"),
     phoneno: Yup.string()
+        .transform((val) => normalizePhone(val))
         .required("Phone number is required")
         .matches(
             canadianPhoneNumberRegExp,
             "Invalid Canadian phone number format. Use (XXX) XXX-XXXX."
         ),
     city: Yup.string()
+        .trim()
         .required("City is required")
-        .matches(
-            /^[A-Za-z\s.\-']+$/,
-            "City name should only contain alphabetic characters, spaces"
-        )
         .min(2, "City must be at least 2 characters")
         .max(50, "City cannot be longer than 50 characters"),
     postalcode: canadianPostalCode.required("Postal Code is Required"),
     address: Yup.string()
+        .trim()
         .required("Address is required")
         .min(5, "Address must be at least 5 characters")
         .max(100, "Address cannot be longer than 100 characters"),
@@ -112,10 +109,13 @@ function AddressDetails() {
     const [apiPricing, setApiPricing] = useState(null);
     const [showKitchenClosed, setShowKitchenClosed] = useState(false);
 
+    const profileFirstName = (user?.data?.firstName || user?.data?.fullName?.split(" ")[0] || "").trim();
+    const hasValidProfileFirstName = profileFirstName.length >= 3;
+
     const [initialValues, setInitialValues] = useState({
-        firstname: user?.data?.firstName,
-        lastname: user?.data?.lastName,
-        phoneno: user?.data?.mobileNumber,
+        firstname: profileFirstName,
+        lastname: user?.data?.lastName || user?.data?.fullName?.split(" ").slice(1).join(" ") || "",
+        phoneno: normalizePhone(user?.data?.mobileNumber),
         postalcode: "",
         city: "",
         address: "",
@@ -394,7 +394,8 @@ function AddressDetails() {
 
             // NOW CALL ORDER PLACE API
             const baseUrl = window.location.origin;
-            let custFullName = values.firstname + " " + values.lastname;
+            let custFullName = [values.firstname, values.lastname].filter(Boolean).join(" ").trim();
+            const normalizedPhone = normalizePhone(values?.phoneno);
 
             // Grand total = cart total + Nash delivery fee (customerDeliveryFee + serviceFee) + tip
             const cartTotal = Number(cart?.grandtotal || 0);
@@ -421,7 +422,7 @@ function AddressDetails() {
                     customerCode: user?.data?.customerCode,
                     deliveryType: "delivery",
                     customerName: custFullName,
-                    mobileNumber: values?.phoneno,
+                    mobileNumber: normalizedPhone,
                     address: values?.address,
                     zipCode: values.postalcode,
                     deliveryInstructions: (values?.deliveryInstructions || "").trim(),
@@ -546,6 +547,7 @@ function AddressDetails() {
             if (orderResponse.paymentUrl) {
                 window.location.href = orderResponse.paymentUrl;
             } else {
+                toast.error("Payment URL not available. Please try again.");
                 submittingRef.current = false;
                 setLoading(false);
             }
@@ -554,25 +556,21 @@ function AddressDetails() {
             submittingRef.current = false;
             setLoading(false);
 
-            if (error.response?.status === 400 || error.response?.status === 500) {
-                if (error.response.data.isStoreError === true) {
-                    swal({
-                        title: "Store has been closed.",
-                        text: `Unfortunately, placing an order is not possible at the moment. You can not place order right now.`,
-                        icon: "warning",
-                        buttons: "Ok",
-                        dangerMode: true,
-                    }).then(async (willOk) => {
-                        if (willOk) {
-                            navigate("/checkout");
-                        }
-                    });
-                } else {
-                    toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
-                }
+            if ((error.response?.status === 400 || error.response?.status === 500) && error.response?.data?.isStoreError === true) {
+                swal({
+                    title: "Store has been closed.",
+                    text: `Unfortunately, placing an order is not possible at the moment. You can not place order right now.`,
+                    icon: "warning",
+                    buttons: "Ok",
+                    dangerMode: true,
+                }).then(async (willOk) => {
+                    if (willOk) {
+                        navigate("/checkout");
+                    }
+                });
             } else {
-                console.error("Unexpected error:", error);
-                // toast.error("An unexpected error occurred.");
+                console.error("[AddressDetails] Order placement error:", error);
+                toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
             }
         }
     };
@@ -615,6 +613,22 @@ function AddressDetails() {
         enableReinitialize: true,
         onSubmit,
     });
+
+    const handleFormSubmit = async (e) => {
+        if (e?.preventDefault) e.preventDefault();
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length > 0) {
+            const touchedAll = Object.keys(errors).reduce((acc, k) => ({ ...acc, [k]: true }), {});
+            formik.setTouched({ ...formik.touched, ...touchedAll }, false);
+            const firstError = Object.values(errors)[0];
+            console.warn('[AddressDetails] Validation blocked submit:', errors);
+            toast.error(firstError || 'Please check your delivery details.');
+            const firstEl = document.querySelector('.chk-input--error');
+            firstEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+        await formik.submitForm();
+    };
 
     useEffect(() => {
         postalCodeList();
@@ -889,8 +903,32 @@ function AddressDetails() {
                             </div>
                         )}
 
-                        <form onSubmit={formik.handleSubmit}>
+                        <form id="chk-confirm-form" onSubmit={handleFormSubmit}>
                             <div className="chk-field-grid">
+
+                                {/* First Name — shown when missing or under 3 characters */}
+                                {!hasValidProfileFirstName && (
+                                    <div className="chk-field chk-field--full">
+                                        <label className="chk-label">
+                                            First Name <span className="chk-required">*</span>
+                                        </label>
+                                        <input
+                                            className={`chk-input${formik.touched.firstname && formik.errors.firstname ? ' chk-input--error' : ''}`}
+                                            type="text"
+                                            name="firstname"
+                                            placeholder="Enter first name (at least 3 letters)"
+                                            disabled={readOnly}
+                                            maxLength={50}
+                                            value={formik.values.firstname}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            autoComplete="given-name"
+                                        />
+                                        {formik.touched.firstname && formik.errors.firstname && (
+                                            <span className="chk-error-msg">{formik.errors.firstname}</span>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Street Address */}
                                 <div className="chk-field chk-field--full">
@@ -1240,13 +1278,16 @@ function AddressDetails() {
                         </span>
                     </div>
                     <button
-                        className={`chk-mobile-bar__btn${nashQuote.loading ? ' chk-mobile-bar__btn--loading' : ''}`}
-                        form="chk-confirm-form"
-                        onClick={() => formik.handleSubmit()}
-                        disabled={nashQuote.loading}
+                        className={`chk-mobile-bar__btn${(nashQuote.loading || loading || formik.isSubmitting) ? ' chk-mobile-bar__btn--loading' : ''}`}
+                        onClick={handleFormSubmit}
+                        disabled={nashQuote.loading || loading || formik.isSubmitting}
                         type="button"
                     >
-                        {nashQuote.loading ? '⏳ Calculating…' : '🔒 Confirm & Pay'}
+                        {nashQuote.loading
+                            ? '⏳ Calculating…'
+                            : (loading || formik.isSubmitting)
+                                ? '⏳ Processing…'
+                                : '🔒 Confirm & Pay'}
                     </button>
                 </div>
             )}
