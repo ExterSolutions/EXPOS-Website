@@ -25,7 +25,7 @@ import CustomizeViewSelectionModal from "./CustomizeViewSelectionModal";
 import SidesSelector from "./SidesSelector";
 import { sortPizzaSizes } from "../../utils/pizzaUtils";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
-import { pickDefaultSauce } from '../../utils/sauceDefaults';
+import { pickDefaultSauce, pickDefaultCheese } from '../../utils/sauceDefaults';
 
 const CreatePizza = () => {
   // navigate
@@ -98,7 +98,7 @@ const CreatePizza = () => {
       setIngredients(res?.data);
       setCrust(res?.data?.crust[0]?.crustCode);
       setCrustType(res?.data?.crustType[0]?.crustTypeCode);
-      setCheese(res?.data?.cheese[0]?.cheeseCode);
+      setCheese(pickDefaultCheese(res?.data?.cheese)?.cheeseCode);
       setSpicy(res?.data?.spices[0]?.spicyCode);
       setSauce(pickDefaultSauce(res?.data?.sauce)?.sauceCode);
       setCook(res?.data?.cook[0]?.cookCode);

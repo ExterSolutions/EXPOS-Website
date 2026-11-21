@@ -38,7 +38,7 @@ import { useSelector } from "react-redux";
 import swal from "sweetalert";
 import ResponsiveCart from "../components/_main/Cart/ResponsiveCart";
 import Tabs from "../components/Tabs/Tabs";
-import { pickDefaultSauce } from '../utils/sauceDefaults';
+import { pickDefaultSauce, pickDefaultCheese } from '../utils/sauceDefaults';
 
 function CreateYourOwn() {
     const pizzaSizeArr = [
@@ -303,9 +303,9 @@ function CreateYourOwn() {
             price: allIngredients?.crustType[0]?.price,
         });
         setCheese({
-            cheeseCode: allIngredients?.cheese[0].cheeseCode,
-            cheeseName: allIngredients?.cheese[0].cheeseName,
-            price: allIngredients?.cheese[0].price,
+            cheeseCode: pickDefaultCheese(allIngredients?.cheese)?.cheeseCode,
+            cheeseName: pickDefaultCheese(allIngredients?.cheese)?.cheeseName,
+            price: pickDefaultCheese(allIngredients?.cheese)?.price,
         });
         setSpicy({
             spicyCode: allIngredients?.spices[0].spicyCode,
@@ -387,9 +387,9 @@ function CreateYourOwn() {
                 price: allIngredients.crustType[0]?.price,
             },
             cheese: {
-                cheeseCode: allIngredients.cheese[0].cheeseCode,
-                cheeseName: allIngredients.cheese[0].cheeseName,
-                price: allIngredients.cheese[0].price,
+                cheeseCode: pickDefaultCheese(allIngredients.cheese)?.cheeseCode,
+                cheeseName: pickDefaultCheese(allIngredients.cheese)?.cheeseName,
+                price: pickDefaultCheese(allIngredients.cheese)?.price,
             },
             spicy: {
                 spicyCode: allIngredients.spices[0].spicyCode,
