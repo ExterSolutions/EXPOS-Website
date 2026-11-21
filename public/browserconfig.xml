@@ -2,9 +2,9 @@
 <browserconfig>
   <msapplication>
     <tile>
-      <square70x70logo src="https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png"/>
-      <square150x150logo src="https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png"/>
-      <square310x310logo src="https://newadmin.singhflames.ca/storage/uploads/settings/favicon_697c61b9b03f5.png"/>
+      <square70x70logo src="https://newadmin.singhflames.ca/storage/uploads/settings/logo_6b010446dce09.png"/>
+      <square150x150logo src="https://newadmin.singhflames.ca/storage/uploads/settings/logo_6b010446dce09.png"/>
+      <square310x310logo src="https://newadmin.singhflames.ca/storage/uploads/settings/logo_6b010446dce09.png"/>
       <TileColor>#ffffff</TileColor>
     </tile>
   </msapplication>

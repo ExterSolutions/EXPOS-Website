@@ -410,7 +410,7 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride, noindex
     const address       = siteData.address       || '';
     const postalCode    = siteData.postal_code   || '';
     const logo          = siteData.logo          || '';
-    const favicon       = siteData.favicon       || '';
+    const favicon       = siteData.favicon       || siteData.logo || '';
     const siteUrl       = siteData.siteUrl       || window.location.origin;
     const geo           = siteData.geo           || { lat: '', lng: '' };
     const province      = siteData.province      || '';

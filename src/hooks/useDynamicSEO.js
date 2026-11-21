@@ -76,8 +76,9 @@ export const useDynamicSEO = (data) => {
         updateMeta('og:description', desc);
         updateMeta('og:image',       data.logo || data.favicon);
 
-        // 3. Favicon — live update + cache for instant load on next visit
-        if (data.favicon) {
+        // 3. Favicon — live update + cache for instant load on next visit (falls back to logo if favicon missing)
+        const iconUrl = data.favicon || data.logo;
+        if (iconUrl) {
             let link = document.getElementById('dynamic-favicon');
             if (!link) {
                 link       = document.createElement('link');
@@ -86,11 +87,11 @@ export const useDynamicSEO = (data) => {
                 document.head.appendChild(link);
             }
             // Cache-bust with timestamp so browser always fetches the latest icon
-            link.href = `${data.favicon}?v=${Date.now()}`;
+            link.href = `${iconUrl}?v=${Date.now()}`;
 
             // Persist the base URL (without cache-bust) for Layer 1 on next visit
             try {
-                localStorage.setItem(CACHE_KEY, data.favicon);
+                localStorage.setItem(CACHE_KEY, iconUrl);
             } catch {
                 // Ignore localStorage errors (private/incognito mode)
             }

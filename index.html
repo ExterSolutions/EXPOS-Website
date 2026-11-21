@@ -3,8 +3,12 @@
 
 <head>
   <meta charset="UTF-8" />
-  <!-- Favicon is set dynamically via useDynamicSEO.js from the admin API; no hardcoded favicon here -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- ── Favicon & PWA (dynamically kept fresh by build + useDynamicSEO) ── -->
+  <link id="dynamic-favicon" rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.ico" />
+  <link rel="manifest" href="/manifest.json" />
 
   <!-- ── Primary SEO — overridden per-page by PageSEO.jsx (react-helmet-async) ── -->
   <!-- All values below are intentionally blank. PageSEO fills them from the admin API. -->

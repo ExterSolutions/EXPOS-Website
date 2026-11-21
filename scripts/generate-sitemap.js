@@ -89,6 +89,9 @@ const downloadUrl = (url) => {
                 downloadUrl(res.headers.location).then(resolve).catch(reject);
                 return;
             }
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+                return reject(new Error(`HTTP ${res.statusCode} from ${url}`));
+            }
             const chunks = [];
             res.on('data', chunk => chunks.push(chunk));
             res.on('end', () => resolve(Buffer.concat(chunks)));
@@ -125,10 +128,46 @@ if (FEED_URL) {
     console.warn('⚠️  VITE_APP_BASE_URL not set — skipping admin API fetch');
 }
 
+// ── Step 1b: Verify favicon & resolve fallback ────────────────────────────────
+let validFaviconUrl = null;
+let validFaviconBuf = null;
+
+if (adminFaviconUrl) {
+    try {
+        console.log(`⏳ Verifying admin favicon: ${adminFaviconUrl}`);
+        const buf = await downloadUrl(adminFaviconUrl);
+        const header = buf.slice(0, 20).toString('utf-8').toLowerCase();
+        if (!header.includes('<html') && !header.includes('<!doc')) {
+            validFaviconUrl = adminFaviconUrl;
+            validFaviconBuf = buf;
+            console.log(`✅ Admin favicon verified OK (${buf.length} bytes)`);
+        } else {
+            console.warn('⚠️  Admin favicon URL returned HTML error instead of image');
+        }
+    } catch (err) {
+        console.warn(`⚠️  Admin favicon download failed: ${err.message}`);
+    }
+}
+
+if (!validFaviconUrl && adminLogoUrl) {
+    try {
+        console.log(`⏳ Trying admin logo as favicon fallback: ${adminLogoUrl}`);
+        const buf = await downloadUrl(adminLogoUrl);
+        const header = buf.slice(0, 20).toString('utf-8').toLowerCase();
+        if (!header.includes('<html') && !header.includes('<!doc')) {
+            validFaviconUrl = adminLogoUrl;
+            validFaviconBuf = buf;
+            console.log(`✅ Admin logo verified as favicon fallback (${buf.length} bytes)`);
+        }
+    } catch (err) {
+        console.warn(`⚠️  Admin logo download failed: ${err.message}`);
+    }
+}
+
 // ── Step 2: Build sitemap.xml with image entries from admin ───────────────────
 // We include an image:image entry in every URL pointing at the admin favicon.
 // This tells Google exactly which image belongs to this site — no guessing.
-const imageXmlNs = adminFaviconUrl
+const imageXmlNs = validFaviconUrl
     ? '\n       xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'
     : '';
 
@@ -147,7 +186,7 @@ const urlEntries = routes.map(({ path, changefreq, priority }) => `
     <loc>${SITE_URL}${path}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>${buildImageEntry(adminFaviconUrl, SITE_URL, adminSiteName)}
+    <priority>${priority}</priority>${buildImageEntry(validFaviconUrl, SITE_URL, adminSiteName)}
   </url>`).join('');
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -162,8 +201,8 @@ writeFileSync(outPath, xml, 'utf-8');
 console.log(`✅ sitemap.xml generated for: ${SITE_URL}`);
 console.log(`   → ${outPath}`);
 console.log(`   → ${routes.length} URLs written`);
-if (adminFaviconUrl) {
-    console.log(`   → image:image entries use admin favicon: ${adminFaviconUrl}`);
+if (validFaviconUrl) {
+    console.log(`   → image:image entries use verified favicon: ${validFaviconUrl}`);
 }
 
 // ── Step 3: Patch robots.txt ──────────────────────────────────────────────────
@@ -184,17 +223,22 @@ try {
 // Ensures the browser tab icon is correct for:
 //   - First-time visitors (before localStorage cache is populated)
 //   - Plain XML pages like sitemap.xml (JavaScript doesn't execute there)
-if (adminFaviconUrl) {
+if (validFaviconBuf) {
     try {
-        const imgBuffer  = await downloadUrl(adminFaviconUrl);
         const faviconOut = resolve(ROOT, 'public', 'favicon.ico');
-        writeFileSync(faviconOut, imgBuffer);
-        console.log(`✅ favicon.ico downloaded from admin: ${adminFaviconUrl}`);
+        writeFileSync(faviconOut, validFaviconBuf);
+        console.log(`✅ favicon.ico written from verified admin asset: ${validFaviconUrl}`);
+
+        const icon192 = resolve(ROOT, 'public', 'icons', 'icon-192.png');
+        const icon512 = resolve(ROOT, 'public', 'icons', 'icon-512.png');
+        writeFileSync(icon192, validFaviconBuf);
+        writeFileSync(icon512, validFaviconBuf);
+        console.log(`✅ PWA icons (icon-192, icon-512) updated to verified admin asset`);
     } catch (err) {
-        console.warn(`⚠️  favicon.ico download failed: ${err.message}`);
+        console.warn(`⚠️  favicon.ico write failed: ${err.message}`);
     }
 } else {
-    console.warn('⚠️  No admin favicon URL — favicon.ico not updated');
+    console.warn('⚠️  No valid admin favicon or logo — favicon.ico not updated');
 }
 
 // ── Step 5: Update public/manifest.json with admin favicon ───────────────────
@@ -212,13 +256,13 @@ try {
         manifest.short_name = adminSiteName;
     }
 
-    // Replace icons[] with admin favicon URL in standard PWA sizes
-    if (adminFaviconUrl) {
+    // Replace icons[] with verified favicon URL in standard PWA sizes
+    if (validFaviconUrl) {
         manifest.icons = [
-            { src: adminFaviconUrl, sizes: '192x192', type: 'image/png' },
-            { src: adminFaviconUrl, sizes: '512x512', type: 'image/png' },
+            { src: validFaviconUrl, sizes: '192x192', type: 'image/png' },
+            { src: validFaviconUrl, sizes: '512x512', type: 'image/png' },
         ];
-        console.log(`✅ manifest.json icons updated to admin favicon: ${adminFaviconUrl}`);
+        console.log(`✅ manifest.json icons updated to verified asset: ${validFaviconUrl}`);
     } else {
         // Remove stale hardcoded icons so no wrong branding leaks through
         manifest.icons = [];
@@ -235,7 +279,7 @@ try {
 // (IE/legacy Edge). We use the admin favicon URL for all tile sizes.
 const browserConfigPath = resolve(ROOT, 'public', 'browserconfig.xml');
 try {
-    const tileImage = adminFaviconUrl || '';
+    const tileImage = validFaviconUrl || '';
     const bConfig = `<?xml version="1.0" encoding="utf-8"?>
 <browserconfig>
   <msapplication>
@@ -249,8 +293,8 @@ try {
 </browserconfig>
 `;
     writeFileSync(browserConfigPath, bConfig, 'utf-8');
-    if (adminFaviconUrl) {
-        console.log(`✅ browserconfig.xml updated with admin favicon`);
+    if (validFaviconUrl) {
+        console.log(`✅ browserconfig.xml updated with verified asset`);
     } else {
         console.warn('⚠️  browserconfig.xml written with empty image (no admin favicon available)');
     }
