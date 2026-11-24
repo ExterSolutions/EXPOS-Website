@@ -23,8 +23,10 @@ export const useSiteDataContext = () => {
 export const SiteDataProvider = ({ children }) => {
     const [siteData, setSiteData] = useState({
         // ── Identity ──────────────────────────────────────────────────────────
-        site_name:      '',
-        logo:           null,
+        site_name:             '',
+        meta_site_title:       '',
+        meta_site_description: '',
+        logo:                  null,
         favicon:        null,
         qrcode:         null,
 
@@ -109,8 +111,10 @@ export const SiteDataProvider = ({ children }) => {
                 const language = rawLang.toLowerCase().slice(0, 2);
 
                 setSiteData({
-                    site_name:      d.site_name      || '',
-                    logo:           d.logo           || null,
+                    site_name:             d.site_name             || '',
+                    meta_site_title:       d.meta_site_title       || '',
+                    meta_site_description: d.meta_site_description || '',
+                    logo:                  d.logo                  || null,
                     favicon:        d.favicon        || null,
                     qrcode:         d.qrcode         || null,
                     contact_email:  d.contact_email  || '',

@@ -70,7 +70,9 @@ export const useDynamicSEO = (data) => {
             el.setAttribute('content', value);
         };
 
-        const desc = `Order delicious pizzas from ${data.site_name}.`;
+        const desc = (data.meta_site_description || '').trim().length >= 20
+            ? data.meta_site_description.trim()
+            : `Order fresh food online from ${data.site_name}.`;
         updateMeta('description',    desc);
         updateMeta('og:title',       data.site_name);
         updateMeta('og:description', desc);

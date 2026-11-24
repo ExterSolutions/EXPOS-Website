@@ -21,7 +21,7 @@ import { useSiteDataContext } from '../../context/SiteDataContext';
 const PAGE_TEMPLATES = {
     home: {
         titleTpl:       '{name} | Best {cuisine}Pizza in {city} — Delivery & Pickup',
-        descriptionTpl: 'Order the best pizza in {city} from {name}. {cuisine}pizza, signature pizzas & more. Hot fresh delivery or pickup. Order online now!',
+        descriptionTpl: 'Order fresh {cuisineLabel} from {name} in {city}. Signature pizzas, deals, sides & more — hot delivery or fast pickup. Order online now!',
         keywords: [
             'best pizza in {city}',
             'pizza near me {city}',
@@ -381,12 +381,21 @@ PAGE_TEMPLATES.checkout.noindex = true;
 
 
 // ── Template filler ───────────────────────────────────────────────────────────
-// Replaces {name}, {city}, {cuisine} with live admin values.
-const fill = (str, name, city, cuisine) =>
+// Replaces {name}, {city}, {cuisine}, {cuisineLabel} with live admin values.
+const fill = (str, name, city, cuisine, cuisineLabel = 'pizza') =>
     str
-        .replace(/\{name\}/g,    name)
-        .replace(/\{city\}/g,    city)
-        .replace(/\{cuisine\}/g, cuisine);
+        .replace(/\{name\}/g,         name)
+        .replace(/\{city\}/g,         city)
+        .replace(/\{cuisine\}/g,      cuisine)
+        .replace(/\{cuisineLabel\}/g, cuisineLabel);
+
+// Format an array of cuisines naturally: ['Pizza', 'Sweets', 'Burgers'] -> 'Pizza, Sweets & Burgers'
+const formatCuisineList = (list) => {
+    if (!Array.isArray(list) || list.length === 0) return '';
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return `${list[0]} & ${list[1]}`;
+    return `${list.slice(0, -1).join(', ')} & ${list[list.length - 1]}`;
+};
 
 // ── Derive OG locale from admin country + language ────────────────────────────
 // e.g. country='CA', language='en' → 'en_CA'
@@ -426,9 +435,13 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride, noindex
 
     // Derive cuisine prefix for template placeholders
     // e.g. ['Pizza', 'Indian'] → 'Indian ' (used in "{cuisine}pizza")
-    const cuisinePrefix = cuisineList && cuisineList.length > 1
-        ? cuisineList.filter(c => c.toLowerCase() !== 'pizza').join(' / ') + ' '
+    const nonPizzaCuisines = cuisineList
+        ? cuisineList.filter(c => c.toLowerCase() !== 'pizza')
+        : [];
+    const cuisinePrefix = nonPizzaCuisines.length === 1
+        ? `${nonPizzaCuisines[0]} `
         : '';
+    const cuisineLabel = formatCuisineList(cuisineList) || 'pizza';
 
     // OG locale: fully derived from admin country + language fields
     const ogLocale = buildOgLocale(country, language);
@@ -442,9 +455,25 @@ const PageSEO = ({ pageKey = 'home', titleOverride, descriptionOverride, noindex
         ? 'noindex, nofollow'
         : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
-    const title       = titleOverride       || fill(tpl.titleTpl,       name, city, cuisinePrefix);
-    const description = descriptionOverride || fill(tpl.descriptionTpl, name, city, cuisinePrefix);
-    const keywords    = tpl.keywords.map(k  => fill(k, name, city, cuisinePrefix)).join(', ');
+    // On the homepage, use natural multi-cuisine title when multiple non-pizza cuisines exist
+    // e.g. "SinghFlames | Pizza, Sweets & Burgers in Surrey" (stays under ~60 chars)
+    const defaultHomeTitle = nonPizzaCuisines.length > 1
+        ? `${name} | ${formatCuisineList(cuisineList)} in ${city}`
+        : fill(tpl.titleTpl, name, city, cuisinePrefix, cuisineLabel);
+
+    const adminMetaTitle = (siteData.meta_site_title || '').trim();
+    const adminMetaDesc  = (siteData.meta_site_description || '').trim();
+
+    const homeTitleOverride = pageKey === 'home' && adminMetaTitle && adminMetaTitle.toLowerCase() !== name.trim().toLowerCase()
+        ? adminMetaTitle
+        : '';
+    const homeDescOverride = pageKey === 'home' && adminMetaDesc.length >= 20
+        ? adminMetaDesc
+        : '';
+
+    const title       = titleOverride       || homeTitleOverride || (pageKey === 'home' ? defaultHomeTitle : fill(tpl.titleTpl, name, city, cuisinePrefix, cuisineLabel));
+    const description = descriptionOverride || homeDescOverride  || fill(tpl.descriptionTpl, name, city, cuisinePrefix, cuisineLabel);
+    const keywords    = tpl.keywords.map(k  => fill(k, name, city, cuisinePrefix, cuisineLabel)).join(', ');
 
     // ── Canonical URL — built from admin siteUrl + current pathname ───────────
     // siteUrl comes from d.site_url in the API (e.g. "https://brampton.exter.ca")
